@@ -6,9 +6,37 @@ INSANE is a concept app for a future where cash has lost its meaning. It runs on
 
 This document covers the thesis, the economy, the screens, the engagement loops, what the simulator shows, and the guardrails needed to ship it without building the dystopia it describes.
 
-The interactive prototype and simulator are in [`prototype/index.html`](../prototype/index.html).
+The interactive prototype and simulator are in [`prototype/index.html`](../prototype/index.html) (v0.2). The original v0.1 is kept in [`prototype/v1/index.html`](../prototype/v1/index.html).
 
 ---
+
+## 0. What changed in v0.2
+
+v0.2 came out of a 30-day diary study ([`DIARY.md`](DIARY.md)) and a rebuilt simulator, following the method in [`DEEPER.md`](DEEPER.md). The main finding: **v0.1 didn't die of addiction. It died of loneliness, logistics, and mechanics that felt like punishments.** The v0.1 simulator below assumed everyone's friends were already on the app, so it never saw the cold-start problem.
+
+| v0.2 change | Diary moment it fixes | Simulator, if you put the v0.1 mechanic back |
+|---|---|---|
+| **Circles** of friends; the Market unlocks at 4 members | Day 1: two friends on the app, nothing to match | D30 23% → 11%, swaps/week 84 → 13 |
+| **Weekly Market Day**: one batch match, every handoff at one table | Days 7–9: three separate handoffs, loop half-failed | D30 23% → 15%, swaps 84 → 25 |
+| **Daily Dare**: one 15-second prompt per circle, written by members | Days 3, 11, 13, 22+: nothing to do | D30 23% → 14% |
+| **Favor board** for small services | Day 21: the best exchange was a service | D30 23% → 16% |
+| **Reliability** (completion rate) replaces decaying Trust | Days 2 and 12: opened only to stop a number falling | D30 23% → **29%** (see below) |
+| **24-hour chains** with one skip per week | Day 10: blamed for a broken chain at work | No change in D30 |
+| **IOUs stay in the circle**, credit limit −5 | Day 14: IOU sold to a stranger | D30 23% → 19%, swaps 84 → 56 |
+| **No free credits, ever** | Trueque 2002 and Bunz 2019 | Favor confidence 85% → 23%, swaps 84 → 43 |
+| **One tap** ("laughed" / "I would never") replaces four sliders | Day 1: stopped moving sliders by the third video | Not modeled |
+
+Figures are 3-seed averages at the default settings (150 friend groups, friend-value 0.7).
+
+**Before comparing designs, the simulator has to pass two checks:**
+1. **Calibration.** With no hooks, it lands inside published social-app retention ranges (≈28% / 8% / 5% on D1/D7/D30 against 25–29% / 9–16% / 4–10%).
+2. **History.** Giving every newcomer free favors reproduces the trueque/Bunz pattern: confidence in favors collapses and exchange volume halves.
+
+**Where the simulator disagrees with the diary:** putting Trust decay back into v0.2 *raises* simulated retention. Once a circle is dense, loss aversion does what it's designed to do. The model counts opens, not how opening felt. v0.2 leaves decay out on purpose, and the real-world test should settle it (one circle with decay, two without).
+
+**v0.2's D30 (≈23%) is above the published range.** Treat it as the optimistic end; the friend-value slider in the simulator is there to stress-test it. The comparison with v0.1 (≈9%) is what matters, not the absolute number.
+
+**New risks v0.2 introduces:** Daily Dare fatigue (BeReal's curve), peer pressure inside small circles, Market Day needing one city, and circles that churn together.
 
 ## 1. Thesis
 
@@ -84,9 +112,11 @@ Each loop below is a well-documented behavioral lever. The right-hand column is 
 | Provenance | Collection, narrative | Ownership trail on every item | People trade for the story, not the object |
 | Debt market | Liquidity | Sell IOUs to collectors | Strangers own your friendships |
 
-## 5. What the simulator shows
+## 5. What the v0.1 simulator showed
 
-The prototype includes an agent-based model (seeded, so runs are reproducible). Each user has boldness, susceptibility to hooks, and reciprocity, plus a small friend graph. Each day they decide whether to open the app, swap, dare, repay, or quit. Stress from debt and streak pressure raises churn. Harm from dangerous dares knocks people out and stresses their friends.
+> Superseded by the v0.2 simulator (section 0). This model started every user's friends on the app from day one, so it missed the cold-start problem entirely. Its escalation finding still holds for dense networks.
+
+The v0.1 prototype includes an agent-based model (seeded, so runs are reproducible). Each user has boldness, susceptibility to hooks, and reciprocity, plus a small friend graph. Each day they decide whether to open the app, swap, dare, repay, or quit. Stress from debt and streak pressure raises churn. Harm from dangerous dares knocks people out and stresses their friends.
 
 Representative results (400 users, 90 days, seed 7):
 
