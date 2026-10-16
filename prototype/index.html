@@ -166,7 +166,7 @@ button{cursor:pointer}
 .chip{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13.5px;cursor:pointer}
 .chip input{accent-color:var(--stamp);width:15px;height:15px;margin:0;flex:none}
 .chip .vt{font-family:var(--f-mono);font-size:9.5px;border-radius:4px;padding:0 4px;margin-left:auto;flex:none;border:1px solid}
-.vt.v2{color:var(--ballpoint);border-color:var(--ballpoint)}.vt.v3{color:var(--stamp);border-color:var(--stamp)}
+.vt.v2{color:var(--ballpoint);border-color:var(--ballpoint)}.vt.v4{color:var(--good);border-color:var(--good)}.vt.v3{color:var(--stamp);border-color:var(--stamp)}
 .sliders{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin-bottom:16px;font-size:13px}
 .sliders label{display:flex;align-items:center;gap:8px}
 .sliders input[type=range]{accent-color:var(--ink);width:120px}
@@ -206,6 +206,18 @@ button{cursor:pointer}
 .note.red{border:1.5px solid var(--stamp)}
 .sec{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:500;margin:24px 0 8px}
 @media (prefers-reduced-motion:reduce){.pulse{animation:none}.toast{transition:none}}
+.next-switch{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 10px}
+.next-switch button{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:5px 12px;font-size:12.5px;font-weight:600}
+.next-switch button.on{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+.chart canvas.tall{height:auto}
+.score{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 10px;margin-bottom:14px}
+.score .table{min-width:720px}
+.score td.v{white-space:nowrap}
+.tag{font-family:var(--f-mono);font-size:10px;padding:1px 7px;border-radius:9px;font-weight:600;white-space:nowrap}
+.tag.build{background:var(--good-soft);color:var(--good)}.tag.cheap{background:var(--ball-soft);color:var(--ballpoint)}.tag.later{background:var(--haz-soft);color:var(--hazard)}.tag.no{background:var(--stamp-soft);color:var(--stamp)}
+.cat{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px;vertical-align:1px}
+.legend i.cat{width:8px;height:8px;border:0}
+.live{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-4px 0 14px;font-size:12.5px;color:var(--muted)}
 </style>
 
 <header class="top wrap">
@@ -243,6 +255,7 @@ button{cursor:pointer}
   <section aria-label="Research console">
     <div class="ptabs" role="tablist">
       <button role="tab" data-p="road" aria-selected="true">Road to 90%</button>
+      <button role="tab" data-p="next" aria-selected="false">What to build next</button>
       <button role="tab" data-p="ideas" aria-selected="false">Your ideas, tested</button>
       <button role="tab" data-p="sim" aria-selected="false">Simulator</button>
       <button role="tab" data-p="week" aria-selected="false">A week on v0.3</button>
@@ -284,6 +297,47 @@ button{cursor:pointer}
       </ul></div>
     </div>
 
+    <!-- NEXT -->
+    <div id="p-next" hidden>
+      <div class="verdict">
+        <h3>Build three: pledge-then-pay Pots, Chapters and Missions. Add Homework, time-based favors and Duels because they're cheap. Leave out everything that touches money directly or hurts people.</h3>
+        <p>Every idea from <span class="mono">docs/OPTIONS.md</span> was added to v0.3 on its own, on the same 16 seeds, and the difference in day-30 retention measured pair by pair. The same pattern as v0.3 shows up again. The ideas that give a circle a reason to <b>need</b> the app (a shared pot for the trip, a chapter you belong to) beat the ideas that are only fun.</p>
+        <p><b>Pots:</b> the three money options are a statistical tie. A licensed partner holding the money buys a few tenths of a point over pledge-then-pay, and in exchange you get licences plus the risk of a Synapse-style collapse. The ledger-only pledge version wins on everything except a number too small to see.</p>
+        <p><b>Fewer is better.</b> Shipping all ten safe ideas looks best only if extra features cost users nothing. Once each one costs a little attention, the top three hold up and the all-ten build falls below v0.3.</p>
+      </div>
+      <div class="ladder" id="nextRungs"></div>
+      <div class="chart"><h5>Add one idea to v0.3 <span id="addnote">16 seeds · paired · whiskers ±2 SE</span></h5>
+        <div class="next-switch" id="nextSwitch"><button data-b="v3" class="on">on top of v0.3</button><button data-b="v2">on top of v0.2 (no Zones, League or ledger)</button></div>
+        <canvas id="ch-add" class="tall" aria-label="Day-30 retention change from each idea"></canvas>
+        <div class="legend"><span><i class="cat" style="background:var(--good)"></i>pooling money</span><span><i class="cat" style="background:var(--stamp)"></i>Fight Club layer</span><span><i class="cat" style="background:var(--ballpoint)"></i>niche ideas</span><span><i class="cat" style="background:var(--hazard)"></i>no-gos, simulated anyway</span></div>
+      </div>
+      <div class="live"><button class="btn sm ghost" id="liveBtn">Re-run live on 4 new seeds</button><span id="liveMsg">Takes about 15 seconds. Uses the friends' value slider from the Simulator tab.</span></div>
+      <h3 class="sec">Scorecard</h3>
+      <div class="score" id="nextTable"></div>
+      <p class="formula">Day 30, timid third (the least bold third of users), growth (share of the city that joined) and favor confidence are changes against v0.3, in points. "Top 3 under ±50%": in 20 runs where every idea's strength was drawn at random between half and one and a half times its default, how often it landed in the top three. *Legal load and build size are judgment calls from OPTIONS.md, not model outputs.</p>
+      <div class="chart"><h5>More features, less app <span>day-30 retention · 12 seeds</span></h5><canvas id="ch-clut" aria-label="Retention against cost per feature"></canvas>
+        <div class="legend"><span>x-axis: how much attention each extra feature costs users</span><span style="color:var(--good)">top 3</span><span style="color:var(--ballpoint)">top 5 (+ Homework, time-based favors)</span><span style="color:var(--stamp)">all 10 safe ideas</span><span>- - v0.3</span></div></div>
+      <div class="two">
+        <div class="note"><h4>What surprised the model</h4><ul>
+          <li><b>Chapters only work on top of Zones.</b> On v0.2 they add nothing to retention, though they still grow the network. Without chapter nights, a private invite-only club is just a smaller feed.</li>
+          <li><b>Missions are the growth idea.</b> Their retention gain is middling, but they bring in the most new people of anything tested, because a synchronized freeze in a station is the poster.</li>
+          <li><b>Duels are the only trust fix.</b> They barely move retention, but favor confidence rises about 8 points: disputes get settled instead of rotting.</li>
+          <li><b>Homework helps without Zones.</b> It works just as well on v0.2, so it's the cheapest thing to ship first.</li>
+        </ul></div>
+        <div class="note red"><h4>The no-gos, confirmed</h4><ul>
+          <li><b>Favor cash-out</b> is the only idea that loses users: favor confidence falls about 35 points. It's the IOU-selling failure of v0.1 again, with money attached.</li>
+          <li><b>Real fights</b> add about a point and a half of retention and roughly 40 more people hurt in 120 days.</li>
+          <li><b>Pay-to-enter prizes</b> add nothing measurable and turn every Drop into an illegal lottery.</li>
+          <li><b>A money partner that fails</b> wipes out the whole Pots gain and knocks swaps down for weeks.</li>
+        </ul></div>
+        <div class="note" style="grid-column:1/-1"><h4>What the model can't see</h4><ul>
+          <li>It counts opens. It can't tell an evening people loved from one they felt they had to show up to, so the diary test still decides.</li>
+          <li>Every idea gets the value its rules imply. Nothing in the model is a bad execution of a good idea, and in real life most are.</li>
+          <li>Levels above 70% on day 30 have no real-world precedent. Trust the ranking, not the level.</li>
+        </ul></div>
+      </div>
+    </div>
+
     <!-- IDEAS -->
     <div id="p-ideas" hidden>
       <p class="lead">Your three ideas, checked against what happened when someone tried them for real and against the simulator. One is out, one is in with a change, and one is the best idea in the whole project.</p>
@@ -292,13 +346,14 @@ button{cursor:pointer}
 
     <!-- SIM -->
     <div id="p-sim" hidden>
-      <p class="lead">Same calibrated model as v0.2: friend groups of 12, invites, daily decisions to open or quit. v0.3 adds the five new layers. <b>The dashed line is v0.2</b>. The checks from v0.2 still hold: the no-hooks version matches published retention, and free credits still collapse confidence.</p>
+      <p class="lead">Same calibrated model as v0.2: friend groups of 12, invites, daily decisions to open or quit. v0.3 adds the five new layers, and the v0.4 candidates from the What to build next tab are toggles too. <b>The dashed line is v0.2</b>. The checks from v0.2 still hold: the no-hooks version matches published retention, and free credits still collapse confidence.</p>
       <div class="presets" id="presets">
         <button data-preset="v2">v0.2</button>
         <button data-preset="v3">v0.3</button>
         <button data-preset="cash">v0.3 with cash drops</button>
         <button data-preset="nocap">v0.3 with no ceiling</button>
         <button data-preset="decay">v0.3 + trust decay</button>
+        <button data-preset="v4">v0.3 + top 3</button>
       </div>
       <div class="controls">
         <div class="cgroup"><h4>Infrastructure</h4>
@@ -329,6 +384,19 @@ button{cursor:pointer}
         <div class="cgroup"><h4>Credit</h4>
           <label class="chip"><input type="checkbox" id="c-limit">Credit limit −5<span class="vt v2">v0.2</span></label>
           <label class="chip"><input type="checkbox" id="c-bonus">Free welcome credits</label>
+        </div>
+        <div class="cgroup"><h4>v0.4 candidates</h4>
+          <label class="chip"><input type="checkbox" id="c-pledge">Pots: pledge, then pay<span class="vt v4">top 3</span></label>
+          <label class="chip"><input type="checkbox" id="c-chapters">Chapters<span class="vt v4">top 3</span></label>
+          <label class="chip"><input type="checkbox" id="c-missions">Missions<span class="vt v4">top 3</span></label>
+          <label class="chip"><input type="checkbox" id="c-homework">Homework</label>
+          <label class="chip"><input type="checkbox" id="c-timebank">Time-based favors</label>
+          <label class="chip"><input type="checkbox" id="c-duels">Duels</label>
+        </div>
+        <div class="cgroup"><h4>No-gos</h4>
+          <label class="chip"><input type="checkbox" id="c-cashOut">Favors can be cashed out</label>
+          <label class="chip"><input type="checkbox" id="c-realFights">Real fights at Zone Night</label>
+          <label class="chip"><input type="checkbox" id="c-payPrize">Pay to enter Drops</label>
         </div>
       </div>
       <div class="sliders">
@@ -449,7 +517,7 @@ $('#view').addEventListener('click',e=>{
 render();
 
 /* ================================================================
-   SIMULATOR (v0.2 engine + v0.3 layers)
+   SIMULATOR (v0.2 engine + v0.3 layers + v0.4 candidates)
    ================================================================ */
 const REASONS=['Nothing to do','Trust decay pressure','Blamed for a broken chain','IOU sold to a stranger','Debt stress','Hurt doing a dare','Swaps that fell through','Favors nobody would honor'];
 const V1={circles:0,daily:0,circlePrompts:0,board:0,market:0,decay:1,reminders:1,ladder:1,shortChains:1,sell:1,limit:0,bonus:0,jubilee:0,cap:0,downrank:0};
@@ -459,25 +527,42 @@ const BENCH={1:[.25,.29],7:[.09,.16],30:[.04,.10]};
 function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 const clamp=(x,a,b)=>x<a?a:x>b?b:x;
 
+const W=(c,k)=>c.w&&c.w[k]!=null?c.w[k]:1;
 function simulate(c){
   const K=c.k,R=mulberry(c.seed),gauss=()=>{let u=0;while(!u)u=R();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*R())};
   const G=c.groups,S=12,D=120,people=[];
-  for(let g=0;g<G;g++)for(let i=0;i<S;i++)people.push({id:people.length,g,joined:-1,on:false,s:clamp(.5+gauss()*.2,0,1),b:R(),r:.3+R()*.7,v:0,ann:new Float32Array(8),last:-99,opens:new Set(),owe:0,held:0,listed:0,unbacked:0});
+  for(let g=0;g<G;g++)for(let i=0;i<S;i++)people.push({id:people.length,g,joined:-1,on:false,s:clamp(.5+gauss()*.2,0,1),b:R(),r:.3+R()*.7,v:0,ann:new Float32Array(8),last:-99,opens:new Set(),owe:0,held:0,listed:0,unbacked:0,vouch:-1,inPot:0});
   const byG=g=>people.slice(g*S,g*S+S),pick=a=>a[Math.floor(R()*a.length)];
-  let debts=[],C=.9,norm=3,harm=0,pending=[];const reasons=new Array(8).fill(0);
+  let debts=[],C=.9,norm=3,harm=0,minor=0,pending=[],fails=0,duelsRun=0,potsDone=0,potsFailed=0,bounties=[],bountyDone=0,partnerFailed=false;
+  const reasons=new Array(8).fill(0);
   const o={dau:[],C:[],swaps:[],atomic:[],harmD:[]};let atomicShare=0;
-  const join=(p,d)=>{if(p.joined>=0)return;p.joined=d;p.on=true;p.last=d;p.v=.06;if(c.bonus)p.unbacked=5;
+  const pot=new Array(G).fill(null),wand=new Array(G).fill(-1),shedG=new Array(G).fill(0);
+  const accept=()=>c.chapters?.45+.15*W(c,'chapters'):.45;
+  const join=(p,d,by)=>{if(p.joined>=0)return;p.joined=d;p.on=true;p.last=d;p.v=.06;if(c.bonus)p.unbacked=5;if(by!=null)p.vouch=by;
     const fr=byG(p.g).filter(q=>q.joined<0),k=c.circles?3:(R()<.3?1:0);
-    for(let i=0;i<k&&i<fr.length;i++)if(R()<(c.circles?.45:.3))pending.push([pick(fr),d+1+Math.floor(R()*3)])};
+    for(let i=0;i<k&&i<fr.length;i++)if(R()<(c.circles?accept():.3))pending.push([pick(fr),d+1+Math.floor(R()*3),p.id])};
   for(let d=0;d<D;d++){
-    if(d<45){const n=Math.round(G*S*.0045);for(let i=0;i<n;i++)join(pick(people),d)}       // organic arrivals
-    pending=pending.filter(([p,t])=>{if(t===d){join(p,d);return false}return true});        // friends accepting invites
-    const af=new Array(G).fill(0);for(const p of people)if(p.on&&d-p.last<=3)af[p.g]++;       // active friends per group
+    if(d<45){const n=Math.round(G*S*.0045);for(let i=0;i<n;i++)join(pick(people),d)}
+    const missionDay=c.missions&&d%30===20;
+    if(missionDay){let act=0;for(const q of people)if(q.on)act++;const n=Math.round(act*.04*W(c,'missions'));for(let i=0;i<n;i++)join(pick(people),d)}   // missions get seen: word of mouth
+    pending=pending.filter(([p,t,by])=>{if(t===d){join(p,d,by);return false}return true});
+    const af=new Array(G).fill(0);for(const p of people)if(p.on&&d-p.last<=3)af[p.g]++;
     for(const p of people){p.owe=0;p.held=0}for(const x of debts){people[x.d].owe++;people[x.h].held++}
     let opens=0,swaps=0,dn=0,wS=0,wI=0,honor=0,tries=0;const market=c.market&&d%7===6;
     const dropG=new Array(G);for(let g=0;g<G;g++)dropG[g]=c.drops&&R()<.08;
     let activeTotal=0;for(const q of people)if(q.on)activeTotal++;
-    const zoneNight=c.zones&&d%7===4,fixture=c.league&&d%7===2,hunts=Math.min(1,atomicShare*4);
+    const zoneNight=c.zones&&d%7===4,fixture=c.league&&d%7===2,hunts=Math.min(1,atomicShare*4),hwDay=c.homework&&d%7===0;
+    if(c.custody&&c.partnerFailDay===d){partnerFailed=true;C*=.4;for(const q of people)if(q.on&&pot[q.g])q.ann[4]+=1.5;pot.fill(null)}   // the Synapse scenario
+    // pots: a trip or purchase every few weeks per circle with at least 3 active
+    const anyPot=c.pots||c.pledge||c.custody;
+    if(anyPot)for(let g=0;g<G;g++){
+      if(!pot[g]&&af[g]>=3&&!partnerFailed&&R()<.05)pot[g]={end:d+7+Math.floor(R()*4),n:0};
+      if(pot[g]&&pot[g].end===d){const P=pot[g],need=4,okRate=c.custody?.92:c.pledge?.85:.75;
+        const done=P.n>=(c.pledge?need:2)&&R()<okRate;
+        for(const q of byG(g))if(q.inPot){if(done)q.potWin=d;else q.ann[6]+=c.pledge?.03:.12;q.inPot=0}
+        done?potsDone++:potsFailed++;pot[g]=null}}
+    if(c.wanderers)for(let g=0;g<G;g++)if(af[g]>=2&&R()<.1){const q=byG(g).filter(x=>x.on&&x.id!==wand[g]);if(q.length){wand[g]=pick(q).id;people[wand[g]].wandAt=d}}   // passed on: a handoff
+    if(c.shed)for(let g=0;g<G;g++)shedG[g]*=.8;
     for(const p of people){if(!p.on)continue;
       const age=d-p.joined,f=Math.max(0,af[p.g]-(d-p.last<=3?1:0));
       let pull=0;
@@ -489,39 +574,63 @@ function simulate(c){
       if(zoneNight&&f>=1)pull+=.15;
       if(c.ledger&&f>0)pull+=.12*Math.min(1,f/4);
       if(dropG[p.g])pull+=.15;
-      if(c.league&&f>=3&&d-p.last>2&&R()<.25)pull+=.5;      // teammates pull you back
+      if(c.league&&f>=3&&d-p.last>2&&R()<.25)pull+=.5;
+      if(pot[p.g])pull+=.1*W(c,'pots');                                   // watching the pot fill
+      if(p.potWin===d)pull+=.4;
+      if(hwDay)pull+=.08*W(c,'homework');
+      if(missionDay&&f>=2)pull+=.2*W(c,'missions');
+      if(c.wanderers&&p.wandAt===d)pull+=.3*W(c,'wanderers');
       if(age===14)p.dense=f>=3;
-      const annoy=p.ann.reduce((a,b)=>a+b,0);
+      const annoy=p.ann.reduce((a,b)=>a+b,0)+(c.clutter||0);   // every extra feature is one more thing to learn
       const prob=clamp(.015+.42*Math.exp(-age/1.4)+1.1*p.v+pull*(.4+.6*p.s)-.25*annoy,.005,.95);
       let val=0;
       if(R()<prob){opens++;p.opens.add(age);p.last=d;
-        if(c.circles&&f<3&&R()<.08){const fr=byG(p.g).filter(q=>q.joined<0);if(fr.length&&R()<.45)pending.push([pick(fr),d+1])}
-        val+=Math.max(.12*Math.exp(-age/12),c.zones?.05:0);                                                            // strangers' feed: novelty wears off
-        if(R()<f/(f+3)*.5&&R()<.3+.6*p.b){val+=.3*K;                                          // a dare from a friend, accepted
+        if(c.circles&&f<3&&R()<.08){const fr=byG(p.g).filter(q=>q.joined<0);if(fr.length&&R()<accept())pending.push([pick(fr),d+1,p.id])}
+        val+=Math.max(.12*Math.exp(-age/12)*(c.chapters?.7:1),c.zones?.05:0);                 // chapters: less strangers' feed
+        const dareAcc=.3+.6*p.b+(c.chapters?.1*W(c,'chapters'):0);                           // private, 24h videos: easier to say yes
+        if(R()<f/(f+3)*.5&&R()<dareAcc){val+=.3*K;
           let ins=clamp(norm+gauss()*1.1+(c.ladder?.9*p.b:0),0,10);if(c.cap)ins=Math.min(ins,6.5);
           const w=c.downrank?(ins<=6?Math.pow(ins+.5,1.6):Math.pow(6.5,1.6)*Math.exp(-.9*(ins-6))):Math.pow(ins+.5,1.6);dn++;wS+=w;wI+=w*ins;
           if(ins>7&&R()<.02*(ins-7)*(ins-7)){harm++;p.ann[5]+=1.5}
           if(c.ladder&&R()<(c.shortChains?.12:.02))p.ann[2]+=.35}
         if(c.daily&&f>0)val+=.28*K*(f/(f+2))*(c.circlePrompts?.55+.45*Math.exp(-age/30):Math.exp(-age/25));
-        if(c.board&&f>0&&R()<f/(f+4)*(.3+.7*C)){val+=.22*K;
+        const boardP=f/(f+4)*(.3+.7*C)*(c.timebank?1+.2*W(c,'timebank'):1);
+        if(c.board&&f>0&&R()<boardP){val+=.22*K;
           if(R()<.3){const q=byG(p.g).filter(x=>x.on&&x!==p);if(q.length)debts.push({d:p.id,h:pick(q).id,t:d})}}
-        if(c.ledger&&f>0&&R()<(1-Math.exp(-f/3))*.6)val+=.22*K;                  // settle a shared expense
-        if(zoneNight&&f>=1&&R()<.3+.4*p.b){val+=.4*K;                             // zone night: supervised, filmed, louder
-          const zi=clamp(norm+1.5+gauss(),0,c.cap?8:10);if(zi>7&&R()<.02*(zi-7)*(zi-7)*.15){harm++;p.ann[5]+=1.5}}
-        if(c.hunts&&f>=2&&R()<.14*hunts){val+=.35*K}                             // hunt built by another circle
-        if(c.hunts&&f>=2&&R()<.03)val+=.15*K;                                     // build one for others
-        if(dropG[p.g]&&f>=2&&R()<.6){if(c.cashDrops){val+=.3*K/(1+activeTotal/500);p.unbacked+=2}else val+=.3*K}
+        if(c.ledger&&f>0&&R()<(1-Math.exp(-f/3))*.6)val+=.22*K;
+        if(zoneNight&&f>=1&&R()<.3+.4*p.b){val+=.4*K;
+          const zi=clamp(norm+1.5+gauss(),0,c.cap?8:10);if(zi>7&&R()<.02*(zi-7)*(zi-7)*.15){harm++;p.ann[5]+=1.5}
+          if(c.combat&&R()<.35){val+=.3*K*W(c,'combat');if(R()<.008){minor++;p.ann[5]+=.4}}           // pillow fights, foam swords, sumo suits
+          if(c.realFights&&R()<.35){val+=.4*K;if(R()<.04){harm++;p.ann[5]+=2}}}
+        if(c.hunts&&f>=2&&R()<.14*hunts){val+=.35*K}
+        if(c.hunts&&f>=2&&R()<.03)val+=.15*K;
+        if(dropG[p.g]&&f>=2){if(c.payPrize){if(R()<.3)val+=(R()<.3?.6:.05)*K}                    // pay to enter: fewer try, most lose
+          else if(R()<.6){if(c.cashDrops){val+=.3*K/(1+activeTotal/500);p.unbacked+=2}else val+=.3*K}}
+        if(hwDay&&R()<.5)val+=.3*K*(.5+.5*(1-p.b))*(.6+.4*Math.exp(-age/40))*W(c,'homework');      // courage, not danger: best for the timid
+        if(missionDay&&f>=2&&R()<.4)val+=.4*K*W(c,'missions');
+        if(c.wanderers&&p.wandAt===d)val+=.12*K*W(c,'wanderers');
+        if(pot[p.g]&&!p.inPot&&R()<.5){p.inPot=1;pot[p.g].n++;val+=.12*K*W(c,'pots')}
+        if(p.potWin===d)val+=.35*K*W(c,'pots');
+        if(c.shed&&(d+p.id)%30===0&&R()<.6){shedG[p.g]+=1;val+=.12*K*W(c,'shed')}               // gave away something loved
+        if(c.bounties&&R()<.04){bounties.push({p:p.id,g:p.g,t:d})}
+        if(c.cashOut&&R()<.05)p.unbacked+=2;                                                         // bought favors with money
         if(R()<.14)p.listed=1;
         if(p.listed&&(c.market?market:true)){
-          const pool=(c.market?3:1)*(f+1)*1.5+(c.market?0:6),q=c.market?1-Math.exp(-pool/14):1-Math.exp(-pool/90);
-          if(R()<q){const uneven=R()<.45,accepted=!uneven||R()<C;if(!accepted)p.ann[7]+=.05;
+          let pool=(c.market?3:1)*(f+1)*1.5+(c.market?0:6);
+          if(c.shed)pool+=shedG[p.g]*1.5*W(c,'shed');
+          if(c.bounties)pool+=bounties.filter(x=>x.g===p.g).length*2*W(c,'bounties');
+          const q=c.market?1-Math.exp(-pool/14):1-Math.exp(-pool/90);
+          if(R()<q){const uneven=R()<(c.timebank?.45-.2*W(c,'timebank'):.45),accepted=!uneven||R()<C;if(!accepted)p.ann[7]+=.05;
             if(R()<(c.market?.85:.45)&&accepted){swaps++;val+=.45*K;p.listed=0;
               if(uneven&&!(c.limit&&p.owe>=5)){const fr=byG(p.g).filter(x=>x.on&&x!==p);if(fr.length)debts.push({d:p.id,h:pick(fr).id,t:d})}}
             else p.ann[6]+=.12}
           else if(!c.market)p.ann[6]+=.008}
+        if(c.bounties&&market){const mine=bounties.filter(x=>x.p===p.id);for(const b of mine){if(R()<.45*W(c,'bounties')){bountyDone++;val+=.35*K;bounties.splice(bounties.indexOf(b),1)}else if(d-b.t>14){p.ann[6]+=.05;bounties.splice(bounties.indexOf(b),1)}}}
         if(p.held>0&&R()<.15){const x=debts.find(x=>x.h===p.id);if(x){const dbt=people[x.d];tries++;
-          if(dbt.on&&R()<.4+.5*dbt.r){honor++;debts.splice(debts.indexOf(x),1);val+=.1}else if(!dbt.on)debts.splice(debts.indexOf(x),1)}}
-        if(p.unbacked>0&&R()<.25){tries++;p.unbacked--;let unb=0;for(const q of people)if(q.on)unb+=q.unbacked;   // free credits nobody backs
+          if(dbt.on&&R()<.4+.5*dbt.r){honor++;debts.splice(debts.indexOf(x),1);val+=.1}
+          else if(!dbt.on)debts.splice(debts.indexOf(x),1)
+          else if(c.duels&&R()<.6*W(c,'duels')){duelsRun++;honor++;debts.splice(debts.indexOf(x),1);val+=(c.zones?.3:.15)*K;dbt.ann[7]=Math.max(0,dbt.ann[7]-.1)}}}  // settled in a duel, circle votes
+        if(p.unbacked>0&&R()<.25){tries++;p.unbacked--;let unb=0;for(const q of people)if(q.on)unb+=q.unbacked;
           if(R()<.85*C*Math.max(.1,1-unb/(4*Math.max(1,af[p.g])*G/10))){honor++;val+=.1;const q=byG(p.g).find(x=>x.on&&x!==p);if(q)q.ann[4]+=.06}else p.ann[7]+=.1}
         if(p.owe>0&&R()<.3*p.r){const x=debts.find(x=>x.d===p.id);if(x){debts.splice(debts.indexOf(x),1);honor++;tries++}}
       }
@@ -530,10 +639,13 @@ function simulate(c){
       for(let k=0;k<8;k++)p.ann[k]*=.93;
       if(p.last===d)p.v=p.v*.7+val*.3;
       let aqm=1,nqm=1;if(c.league&&f>=3){aqm=.6;nqm=.4}if(c.ledger&&f>=2&&p.owe+p.held>0){aqm*=.8;nqm*=.6}
-      const a2=p.ann.reduce((a,b)=>a+b,0),aq=.06*Math.max(0,a2-.12)*aqm,nq=(d-p.last>14?.08:0)*nqm;
-      if(R()<aq+nq){p.on=false;let best=0;if(R()<aq/(aq+nq)){let bv=-1;for(let k=1;k<8;k++)if(p.ann[k]>bv){bv=p.ann[k];best=k}}reasons[best]++}
+      if(p.inPot){aqm*=.8;nqm*=.6}                                        // your money's in the trip
+      if(c.chapters&&f>=3)nqm*=1-.25*W(c,'chapters');                     // belonging: you're a member, not a user
+      const a2=p.ann.reduce((a,b)=>a+b,0)+(c.clutter||0),aq=.06*Math.max(0,a2-.12)*aqm,nq=(d-p.last>14?.08:0)*nqm;
+      if(R()<aq+nq){p.on=false;let best=0;if(R()<aq/(aq+nq)){let bv=-1;for(let k=1;k<8;k++)if(p.ann[k]>bv){bv=p.ann[k];best=k}}reasons[best]++;
+        if(c.chapters&&p.vouch>=0&&age<21){const v=people[p.vouch];v.ann[2]+=.15}}               // your invitee flaked: your stake takes a hit
     }
-    if(c.sell&&debts.length){const act=[],cum=[];let t=0;for(const q of people)if(q.on){t+=Math.pow(q.held+1,1.8);act.push(q.id);cum.push(t)}
+    if((c.sell||c.cashOut)&&debts.length){const act=[],cum=[];let t=0;for(const q of people)if(q.on){t+=Math.pow(q.held+1,1.8);act.push(q.id);cum.push(t)}
       for(const x of debts)if(act.length&&R()<.05){const r=R()*t;let lo=0,hi=cum.length-1;while(lo<hi){const m=(lo+hi)>>1;if(cum[m]<r)lo=m+1;else hi=m}
         if(act[lo]!==x.d&&people[act[lo]].g!==people[x.d].g){x.h=act[lo];people[x.d].ann[3]+=.3}}}
     if(c.jubilee&&d>0&&d%30===0)debts=debts.filter(x=>d-x.t<30);
@@ -545,13 +657,16 @@ function simulate(c){
   const coh=people.filter(p=>p.joined>=0&&p.joined<=D-31),ret=[];
   for(let k=0;k<=30;k++){let n=0;for(const p of coh)if(p.opens.has(k))n++;ret.push(n/Math.max(1,coh.length))}
   const m1=n=>{let k=0;for(const p of n){for(let a=23;a<=30;a++)if(p.opens.has(a)){k++;break}}return k/Math.max(1,n.length)};
+  const d30=n=>n.filter(p=>p.opens.has(30)).length/Math.max(1,n.length);
   const dense=coh.filter(p=>p.dense);
-  return {...o,ret,reasons,harm,joined:people.filter(p=>p.joined>=0).length/people.length,ins:norm,m1:m1(coh),m1d:m1(dense),denseShare:dense.length/Math.max(1,coh.length)};
+  const timid=coh.filter(p=>p.b<1/3),bold=coh.filter(p=>p.b>2/3);
+  return {...o,ret,reasons,harm,minor,joined:people.filter(p=>p.joined>=0).length/people.length,ins:norm,m1:m1(coh),m1d:m1(dense),denseShare:dense.length/Math.max(1,coh.length),
+    d30timid:d30(timid),d30bold:d30(bold),pots:potsDone,potsFailed,duels:duelsRun,bountyDone};
 }
 const V3={...V2,ledger:1,league:1,zones:1,hunts:1,drops:1,cashDrops:0};
 const V2x={...V2,ledger:0,league:0,zones:0,hunts:0,drops:0,cashDrops:0};
-const PRE={v2:V2x,v3:V3,cash:{...V3,cashDrops:1},nocap:{...V3,cap:0,downrank:0},decay:{...V3,decay:1}};
-const KEYS=['ledger','league','circles','zones','hunts','drops','cashDrops','daily','board','market','decay','shortChains','sell','cap','downrank','limit','bonus'];
+const PRE={v2:V2x,v3:V3,cash:{...V3,cashDrops:1},nocap:{...V3,cap:0,downrank:0},decay:{...V3,decay:1},v4:{...V3,pledge:1,chapters:1,missions:1}};
+const KEYS=['ledger','league','circles','zones','hunts','drops','cashDrops','daily','board','market','decay','shortChains','sell','cap','downrank','limit','bonus','pledge','chapters','missions','homework','timebank','duels','cashOut','realFights','payPrize'];
 const SEEDS=3,GROUPS=150;
 const cache=new Map();
 function avgRun(flags,o){const key=JSON.stringify([flags,o]);if(cache.has(key))return cache.get(key);
@@ -670,14 +785,87 @@ function show(p){
   if(p==='road'){if(!wf)setTimeout(()=>{computeWF();drawWF()},30);else drawWF()}
   if(p==='ideas'&&!ideasDone){ideasDone=true;$('#ideasList').innerHTML='<p class="mono">Running the experiments…</p>';setTimeout(ideas,30)}
   if(p==='sim'){if(!cur)run();else drawSim()}
+  if(p==='next')drawNext();
 }
 document.querySelector('.ptabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)show(b.dataset.p)});
-const redraw=()=>{drawWF();drawSim()};
+const redraw=()=>{drawWF();drawSim();if(!$('#p-next').hidden){drawAdd();drawClutter()}};
 window.addEventListener('resize',()=>{clearTimeout(redraw.t);redraw.t=setTimeout(redraw,120)});
 const mq=matchMedia('(prefers-color-scheme: dark)');mq.addEventListener&&mq.addEventListener('change',redraw);
 new MutationObserver(redraw).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+/* ---- What to build next: the OPTIONS.md ideas, simulated ---- */
+const NEXT={"v3":{"base":{"D30":0.5863,"M1":0.9611,"C":0.851,"swk":227.5469,"harm":6.375,"joined":0.4287,"timid":0.5707},"add":{"pots":{"dD30":0.0462,"se":0.0074,"dTimid":0.0403,"dJoined":-0.0035,"dC":0.0049,"dHarm":-2.375,"minor":0,"dSwk":13.2031},"pledge":{"dD30":0.0484,"se":0.0088,"dTimid":0.049,"dJoined":0.001,"dC":0.0006,"dHarm":-1.6875,"minor":0,"dSwk":16.7812},"custody":{"dD30":0.051,"se":0.0064,"dTimid":0.0487,"dJoined":0.0015,"dC":-0.0036,"dHarm":-1.8125,"minor":0,"dSwk":15.7656},"custodyFail":{"dD30":0.0027,"se":0.0072,"dTimid":-0.0015,"dJoined":0.0138,"dC":-0.0035,"dHarm":-1.8125,"minor":0,"dSwk":-21.0469},"chapters":{"dD30":0.0447,"se":0.0054,"dTimid":0.0401,"dJoined":0.0585,"dC":-0.003,"dHarm":-0.5,"minor":0,"dSwk":46.9688},"homework":{"dD30":0.0288,"se":0.0065,"dTimid":0.0216,"dJoined":0.0044,"dC":-0.0025,"dHarm":-0.8125,"minor":0,"dSwk":9.0156},"shed":{"dD30":0.0071,"se":0.0076,"dTimid":0.0116,"dJoined":0.0002,"dC":0.0,"dHarm":-1.375,"minor":0,"dSwk":3.75},"combat":{"dD30":0.0113,"se":0.0068,"dTimid":0.003,"dJoined":0.0034,"dC":-0.0013,"dHarm":-1.25,"minor":8.625,"dSwk":8.0312},"duels":{"dD30":0.0095,"se":0.0076,"dTimid":-0.0099,"dJoined":-0.0012,"dC":0.0807,"dHarm":-1.75,"minor":0,"dSwk":17.6875},"missions":{"dD30":0.0353,"se":0.0064,"dTimid":0.0281,"dJoined":0.0726,"dC":-0.0013,"dHarm":-1,"minor":0,"dSwk":48.6094},"wanderers":{"dD30":0.0088,"se":0.0061,"dTimid":-0.0022,"dJoined":0.0043,"dC":0.0016,"dHarm":-0.9375,"minor":0,"dSwk":10.3594},"bounties":{"dD30":0.012,"se":0.0064,"dTimid":0.0083,"dJoined":-0.0012,"dC":-0.0035,"dHarm":-2.1875,"minor":0,"dSwk":11.6406},"timebank":{"dD30":0.0276,"se":0.0088,"dTimid":0.0395,"dJoined":-0.0022,"dC":-0.0025,"dHarm":-1.875,"minor":0,"dSwk":10.2656},"realFights":{"dD30":0.0158,"se":0.0093,"dTimid":0.012,"dJoined":0.0075,"dC":-0.0016,"dHarm":41.3125,"minor":0,"dSwk":0.2656},"payPrize":{"dD30":0.0043,"se":0.0062,"dTimid":0.0019,"dJoined":-0.0001,"dC":0.001,"dHarm":-1.5,"minor":0,"dSwk":1.2812},"cashOut":{"dD30":-0.0576,"se":0.0057,"dTimid":-0.0559,"dJoined":0.0187,"dC":-0.3487,"dHarm":-2.5,"minor":0,"dSwk":-85.3594}}},"v2":{"base":{"D30":0.2181},"add":{"pots":{"dD30":0.0412,"se":0.0057,"dTimid":0.0345,"dJoined":-0.0135,"dC":-0.0,"dHarm":0,"minor":0,"dSwk":15.6406},"pledge":{"dD30":0.0383,"se":0.0051,"dTimid":0.0345,"dJoined":-0.0134,"dC":-0.0028,"dHarm":0,"minor":0,"dSwk":18.3906},"custody":{"dD30":0.0448,"se":0.0053,"dTimid":0.0424,"dJoined":-0.006,"dC":-0.0038,"dHarm":0,"minor":0,"dSwk":19.8281},"custodyFail":{"dD30":0.0128,"se":0.0061,"dTimid":0.014,"dJoined":-0.0008,"dC":0.0077,"dHarm":0,"minor":0,"dSwk":-14.125},"chapters":{"dD30":-0.0011,"se":0.0042,"dTimid":0.005,"dJoined":0.0669,"dC":-0.0042,"dHarm":0,"minor":0,"dSwk":21},"homework":{"dD30":0.0322,"se":0.0046,"dTimid":0.0232,"dJoined":0.0057,"dC":0.002,"dHarm":0,"minor":0,"dSwk":13.7188},"shed":{"dD30":0.0045,"se":0.0045,"dTimid":0.0086,"dJoined":-0.0007,"dC":0.0111,"dHarm":0,"minor":0,"dSwk":2.1719},"combat":{"dD30":0,"se":0,"dTimid":0,"dJoined":0,"dC":0,"dHarm":0,"minor":0,"dSwk":0},"duels":{"dD30":0.0101,"se":0.0044,"dTimid":0.0052,"dJoined":-0.003,"dC":0.0734,"dHarm":0,"minor":0,"dSwk":3.1562},"missions":{"dD30":0.0176,"se":0.004,"dTimid":0.0201,"dJoined":0.0643,"dC":0.0014,"dHarm":0,"minor":0,"dSwk":19.8281},"wanderers":{"dD30":0.0104,"se":0.0053,"dTimid":0.0171,"dJoined":-0.0001,"dC":0.0005,"dHarm":0,"minor":0,"dSwk":3.4531},"bounties":{"dD30":0.0116,"se":0.0044,"dTimid":0.0107,"dJoined":-0.0011,"dC":-0.0039,"dHarm":0,"minor":0,"dSwk":3.8125},"timebank":{"dD30":0.0135,"se":0.004,"dTimid":0.0168,"dJoined":-0.0073,"dC":-0.003,"dHarm":0,"minor":0,"dSwk":6.0938},"realFights":{"dD30":0,"se":0,"dTimid":0,"dJoined":0,"dC":0,"dHarm":0,"minor":0,"dSwk":0},"payPrize":{"dD30":0,"se":0,"dTimid":0,"dJoined":0,"dC":0,"dHarm":0,"minor":0,"dSwk":0},"cashOut":{"dD30":-0.0353,"se":0.0051,"dTimid":-0.0297,"dJoined":0.0066,"dC":-0.4245,"dHarm":0,"minor":0,"dSwk":-40.75}}},"remove":{"pledge":{"loss":0.0307,"se":0.0059},"chapters":{"loss":0.0269,"se":0.0042},"missions":{"loss":0.0202,"se":0.0047},"homework":{"loss":0.0139,"se":0.0059},"wanderers":{"loss":0.0037,"se":0.0059},"timebank":{"loss":0.0122,"se":0.0036},"duels":{"loss":0.0113,"se":0.0048},"combat":{"loss":0.003,"se":0.005},"shed":{"loss":0.0054,"se":0.006},"bounties":{"loss":0.0018,"se":0.0034}},"v4":{"D30":0.7501,"M1":0.9841,"C":0.9238,"swk":375.0469,"harm":7.0625,"minor":11.8125,"joined":0.5518},"clutter":{"0":{"v0.3":0.5884,"top 3":0.6913,"top 5":0.7266,"all 10":0.7496,"top 3 + duels":0.691},"0.01":{"v0.3":0.5884,"top 3":0.6795,"top 5":0.7101,"all 10":0.7158,"top 3 + duels":0.6765},"0.02":{"v0.3":0.5884,"top 3":0.6665,"top 5":0.6714,"all 10":0.594,"top 3 + duels":0.6664},"0.03":{"v0.3":0.5884,"top 3":0.656,"top 5":0.6283,"all 10":0.4805,"top 3 + duels":0.6416}},"sens":[{"k":"chapters","top3":0.85,"rank":2.2},{"k":"pledge","top3":0.75,"rank":2.6},{"k":"pots","top3":0.65,"rank":3.1},{"k":"homework","top3":0.4,"rank":4.3},{"k":"missions","top3":0.25,"rank":4.8},{"k":"timebank","top3":0.05,"rank":7.0},{"k":"duels","top3":0,"rank":7.6},{"k":"wanderers","top3":0,"rank":8.2},{"k":"bounties","top3":0,"rank":8.3},{"k":"combat","top3":0,"rank":8.8},{"k":"shed","top3":0.05,"rank":8.9}]};
+const IDEAS=[['pledge','Pledge, then pay','money'],['pots','Pots, ledger only','money'],['custody','Partner holds the money','money'],['custodyFail','…and the partner fails','nogo'],
+ ['chapters','Chapters','fc'],['missions','Missions','fc'],['homework','Homework','fc'],['duels','Duels','fc'],['combat','Sanctioned combat','fc'],['shed','Shed','fc'],
+ ['wanderers','Wanderers','niche'],['timebank','Time-bank favors','niche'],['bounties','Bounties','niche'],
+ ['realFights','Real fights','nogo'],['payPrize','Pay-to-enter prizes','nogo'],['cashOut','Favor cash-out','nogo']];
+const CATC={money:'--good',fc:'--stamp',niche:'--ballpoint',nogo:'--hazard'};
+const JUDGE={pledge:['Low','M','build'],pots:['Low','M','build'],custody:['High: licences','XL','no'],custodyFail:['','','no'],chapters:['Low','M','build'],missions:['Medium: permits','M','build'],
+ homework:['Low','S','cheap'],duels:['Low','S','cheap'],combat:['Medium: waivers','M','later'],shed:['Low','S','later'],wanderers:['Low','S','later'],timebank:['Low','S','cheap'],bounties:['Low','S','later'],
+ realFights:['Very high','','no'],payPrize:['Very high: lottery','','no'],cashOut:['High: e-money','','no']};
+const VERD={build:'BUILD',cheap:'CHEAP ADD',later:'LATER',no:'NO'};
+let nextBase='v3',nextLive=null,nextBusy=false;
+const sgn=(v,f)=>(v>=0?'+':'−')+f(Math.abs(v));
+const pts=v=>sgn(v,x=>(x*100).toFixed(1));
+function drawAdd(){
+  const cv=$('#ch-add');if(!cv||!cv.clientWidth)return;const src=nextLive||NEXT[nextBase].add;
+  const rows=IDEAS.filter(i=>src[i[0]]).map(([k,l,c])=>({k,l,c,d:src[k].dD30,se:src[k].se})).sort((a,b)=>b.d-a.d);
+  const dpr=window.devicePixelRatio||1,W=cv.clientWidth,rh=24,T=22,B=22,H=T+B+rows.length*rh;cv.style.height=H+'px';
+  cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);
+  const ink=css('--ink'),muted=css('--muted'),ln=css('--line');
+  const narrow=W<520;x.font='600 12px "Instrument Sans", system-ui, sans-serif';const L=Math.min(narrow?150:190,12+Math.max(...rows.map(r=>x.measureText(r.l).width))),Rr=narrow?40:56,w=W-L-Rr;
+  const lo=Math.min(-.08,...rows.map(r=>r.d-2*r.se)),hi=Math.max(.08,...rows.map(r=>r.d+2*r.se)),X=v=>L+(v-lo)/(hi-lo)*w;
+  x.font='10px "IBM Plex Mono", ui-monospace, monospace';x.textBaseline='middle';x.textAlign='center';
+  const stp=narrow?.04:.02;for(let v=Math.ceil(lo/stp)*stp;v<=hi+1e-9;v+=stp){const xx=X(v);x.strokeStyle=ln;x.lineWidth=1;x.beginPath();x.moveTo(xx+.5,T-6);x.lineTo(xx+.5,H-B);x.stroke();x.fillStyle=muted;x.fillText((v>0?'+':'')+Math.round(v*100),xx,H-B+11)}
+  x.fillStyle=muted;x.textAlign='left';x.fillText((narrow?'day-30 points vs ':'points of day-30 retention vs ')+(nextLive||nextBase==='v3'?'v0.3':'v0.2'),L,9);
+  x.strokeStyle=ink;x.lineWidth=1.2;x.beginPath();x.moveTo(X(0)+.5,T-6);x.lineTo(X(0)+.5,H-B);x.stroke();
+  rows.forEach((r,i)=>{const y=T+i*rh+rh/2,col=css(CATC[r.c]);
+    x.fillStyle=col;x.globalAlpha=r.c==='nogo'?.55:.9;const a=X(Math.min(0,r.d)),b=X(Math.max(0,r.d));x.fillRect(a,y-7,Math.max(1,b-a),14);x.globalAlpha=1;
+    x.strokeStyle=ink;x.lineWidth=1;x.beginPath();x.moveTo(X(r.d-2*r.se),y+.5);x.lineTo(X(r.d+2*r.se),y+.5);x.moveTo(X(r.d-2*r.se)+.5,y-3);x.lineTo(X(r.d-2*r.se)+.5,y+4);x.moveTo(X(r.d+2*r.se)+.5,y-3);x.lineTo(X(r.d+2*r.se)+.5,y+4);x.stroke();
+    x.fillStyle=ink;x.textAlign='right';x.font=(JUDGE[r.k][2]==='build'?'600 ':'')+'12px "Instrument Sans", system-ui, sans-serif';x.fillText(r.l,L-8,y);
+    x.font='600 11px "IBM Plex Mono", ui-monospace, monospace';x.textAlign='left';x.fillText(pts(r.d),Math.max(X(r.d+2*r.se),X(0))+6,y)});
+  $('#addnote').textContent=nextLive?'live · 4 seeds · paired':'16 seeds · paired · whiskers ±2 SE';
+}
+function drawClutter(){
+  const cv=$('#ch-clut');if(!cv||!cv.clientWidth)return;const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
+  cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);
+  const ink=css('--ink'),muted=css('--muted'),ln=css('--line'),L=40,Rr=W<520?58:84,T=12,B=24,w=W-L-Rr,h=H-T-B;
+  const ks=Object.keys(NEXT.clutter).sort((a,b)=>a-b),lab=['none','low','medium','high'],lo=.4,hi=.8;
+  const X=i=>L+i/(ks.length-1)*w,Y=v=>T+h-(v-lo)/(hi-lo)*h;
+  x.font='10px "IBM Plex Mono", ui-monospace, monospace';x.textBaseline='middle';
+  for(let v=lo;v<=hi+1e-9;v+=.1){const y=Y(v);x.strokeStyle=ln;x.beginPath();x.moveTo(L,y+.5);x.lineTo(L+w,y+.5);x.stroke();x.fillStyle=muted;x.textAlign='right';x.fillText(Math.round(v*100)+'%',L-6,y)}
+  x.textAlign='center';x.textBaseline='top';ks.forEach((k,i)=>x.fillText(lab[i]||k,X(i),T+h+6));
+  const S=[['v0.3','--muted',1],['top 3','--good'],['top 5','--ballpoint'],['all 10','--stamp']];
+  const ends=[];
+  S.forEach(([n,c,dash])=>{const col=css(c);x.strokeStyle=col;x.lineWidth=2.2;if(dash)x.setLineDash([4,4]);x.beginPath();ks.forEach((k,i)=>{const v=NEXT.clutter[k][n];i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v))});x.stroke();x.setLineDash([]);
+    ks.forEach((k,i)=>{x.fillStyle=col;x.beginPath();x.arc(X(i),Y(NEXT.clutter[k][n]),3,0,7);x.fill()});ends.push([n,col,Y(NEXT.clutter[ks[ks.length-1]][n])])});
+  ends.sort((a,b)=>a[2]-b[2]);for(let i=1;i<ends.length;i++)if(ends[i][2]-ends[i-1][2]<12)ends[i][2]=ends[i-1][2]+12;
+  x.font='600 11px "IBM Plex Mono", ui-monospace, monospace';x.textAlign='left';x.textBaseline='middle';ends.forEach(([n,col,y])=>{x.fillStyle=col;x.fillText(n,L+w+8,y)});
+}
+function nextTable(){
+  const a=NEXT.v3.add,rows=IDEAS.filter(i=>a[i[0]]).map(i=>[...i,a[i[0]]]).sort((p,q)=>q[3].dD30-p[3].dD30);
+  const sens=Object.fromEntries(NEXT.sens.map(s=>[s.k,s.top3]));
+  $('#nextTable').innerHTML=`<table class="table"><thead><tr><th>Idea</th><th>Day 30</th><th>Timid third</th><th>Growth</th><th>Favor confidence</th><th>People hurt</th><th>Top 3 under ±50%</th><th>Legal load*</th><th>Build*</th><th>Verdict</th></tr></thead><tbody>`+
+   rows.map(([k,l,c,r])=>{const j=JUDGE[k];return `<tr><td><span class="cat" style="background:var(${CATC[c]})"></span>${l}</td><td class="n">${pts(r.dD30)}</td><td class="n">${pts(r.dTimid)}</td><td class="n">${pts(r.dJoined)}</td><td class="n">${pts(r.dC)}</td><td class="n">${k==='combat'?'+'+r.minor.toFixed(0)+' minor':k==='realFights'?'<b>'+sgn(r.dHarm,v=>v.toFixed(0))+'</b>':Math.abs(r.dHarm)<4?'≈ 0':sgn(r.dHarm,v=>v.toFixed(0))}</td><td class="n">${sens[k]!=null?Math.round(sens[k]*100)+'%':'–'}</td><td>${j[0]}</td><td class="n">${j[1]}</td><td class="v"><span class="tag ${j[2]}">${VERD[j[2]]}</span></td></tr>`}).join('')+`</tbody></table>`;
+}
+function nextRungs(){
+  const c=NEXT.clutter,k0=Object.keys(c).sort((a,b)=>a-b),med=c[k0[2]],none=c[k0[0]];
+  const r=(l,v,p,cls)=>`<div class="rung ${cls||''}"><small>${l}</small><b>${v}</b><p>${p}</p></div>`;
+  $('#nextRungs').innerHTML=r('Day 30, v0.3',pct(none['v0.3']),'where we are')+r('v0.3 + top 3',pct(none['top 3']),'Pledge pots, Chapters, Missions','hi')+r('v0.3 + all 10',pct(none['all 10']),'if extra features cost users nothing')+r('All 10, realistic',pct(med['all 10']),`with a medium cost per feature; top 3 holds at ${pct(med['top 3'])}`);
+}
+function drawNext(){nextRungs();drawAdd();drawClutter();nextTable()}
+function runLive(){if(nextBusy)return;nextBusy=true;const b=$('#liveBtn');b.disabled=true;
+  const seeds=[1,2,3,4].map(i=>i*7919),base=seeds.map(s=>simulate({...V3,groups:GROUPS,k:opt.k,seed:s})),res={},todo=IDEAS.map(i=>i[0]);let i=0;
+  const step=()=>{if(i>=todo.length){nextLive=res;nextBusy=false;b.disabled=false;b.textContent='Re-run live';$('#liveMsg').textContent='Live run done: same ideas, 4 new seeds. Ranks near the top should match the 16-seed table; small effects can swap.';drawAdd();return}
+    const k=todo[i],f=k==='custodyFail'?{custody:1,partnerFailDay:60}:{[k]:1};
+    const d=seeds.map((s,j)=>simulate({...V3,...f,groups:GROUPS,k:opt.k,seed:s}).ret[30]-base[j].ret[30]),mu=d.reduce((a,v)=>a+v,0)/d.length,se=Math.sqrt(d.reduce((a,v)=>a+(v-mu)**2,0)/(d.length-1)/d.length);
+    res[k]={dD30:mu,se};i++;$('#liveMsg').textContent=`Running ${i} of ${todo.length}…`;setTimeout(step,0)};
+  setTimeout(step,30)}
+$('#nextSwitch').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;nextBase=b.dataset.b;nextLive=null;document.querySelectorAll('#nextSwitch button').forEach(x=>x.classList.toggle('on',x===b));drawAdd()});
+$('#liveBtn').addEventListener('click',()=>{document.querySelectorAll('#nextSwitch button').forEach(x=>x.classList.toggle('on',x.dataset.b==='v3'));nextBase='v3';runLive()});
+
 sync();
-const startTab=['road','ideas','sim','week'].includes(location.hash.slice(1))?location.hash.slice(1):'road';
+const startTab=['road','next','ideas','sim','week'].includes(location.hash.slice(1))?location.hash.slice(1):'road';
 show(startTab);
 })();
 </script>

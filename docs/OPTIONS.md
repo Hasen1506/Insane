@@ -82,6 +82,9 @@ Fight Club's real appeal isn't punching. It's **secrecy, rules, belonging, and s
 - **Prizes you pay to enter.**
 - **Cash-out of favors.**
 
+## Which of these to build
+All of them were simulated: see [`IMPACT.md`](IMPACT.md). Short version: pledge-then-pay Pots, Chapters and Missions first; Homework, time-based favors and Duels as cheap additions; the no-gos really are no-gos.
+
 ## Sources
 - Barter tax: [IRS Topic 420](https://www.irs.gov/taxtopics/tc420.html)
 - Time banks: [Community Currencies Law: time banks](https://communitycurrencieslaw.org/time-banks/), [tax exemption](https://communitycurrencieslaw.org/choice-of-entity-and-tax-exemption/), [Yahoo News](https://news.yahoo.com/time-banks-way-spend-hour-183916839.html), [Yle on Finland](https://yle.fi/a/3-6722403)
