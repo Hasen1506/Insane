@@ -61,7 +61,7 @@ button{cursor:pointer}
 .view h2{font-size:17px;margin:2px 0 8px;font-weight:700;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .view h2 span{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);font-weight:500;letter-spacing:.04em}
 .view h3{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:16px 0 6px;font-weight:500}
-.nav{position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border-top:1px solid var(--line);padding:6px 6px 18px}
+.nav{position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(5,1fr);background:var(--card);border-top:1px solid var(--line);padding:6px 6px 18px}
 .nav button{background:none;border:0;padding:6px 0 2px;font-size:11px;font-weight:600;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px;position:relative}
 .nav button[aria-selected="true"]{color:var(--stamp)}
 .nav svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8}
@@ -218,19 +218,61 @@ button{cursor:pointer}
 .cat{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px;vertical-align:1px}
 .legend i.cat{width:8px;height:8px;border:0}
 .live{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-4px 0 14px;font-size:12.5px;color:var(--muted)}
+.card.mission{border:1.5px dashed var(--good)}
+.card.chap{border:1.5px solid var(--ink)}
+.card.pot{cursor:pointer}
+.card.pot.open{border:1.5px solid var(--good);cursor:default}
+.kind.m{color:var(--good)}.kind.c{color:var(--ink)}
+.btn.good{background:var(--good);border-color:var(--good);color:#fff}
+.link{background:none;border:0;padding:0;color:var(--ballpoint);font-size:12px;font-weight:600;text-decoration:underline}
+.bar{height:6px;border-radius:3px;background:var(--line);margin-top:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--good);border-radius:3px}
+.ppl{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:8px}
+.pp{border:1px solid var(--line);border-radius:8px;padding:3px 6px;font-family:var(--f-mono);font-size:9.5px;color:var(--muted)}
+.pp b{display:block;font-family:var(--f-body);font-size:12px;color:var(--ink)}
+.pp.paid,.pp.pledged{border-color:var(--good);background:var(--good-soft)}
+.pp.topay,.pp.checking{border-color:var(--hazard);background:var(--haz-soft)}
+.pp.out{opacity:.55}
+.payrow{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.safe{background:var(--good-soft);border-radius:12px;padding:9px 11px;font-size:12.5px;margin-bottom:8px;line-height:1.4}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:3px;margin-bottom:10px}
+.seg button{border:0;background:none;border-radius:8px;padding:6px;font-weight:600;font-size:13px;color:var(--muted)}
+.seg button[aria-selected="true"]{background:var(--ink);color:var(--paper)}
+.newpot label{display:block;font-size:11.5px;font-family:var(--f-mono);color:var(--muted);margin-top:8px}
+.newpot input:not([type=radio]),.newpot select{display:block;width:100%;margin-top:3px;border:1.5px solid var(--line);background:var(--screen);border-radius:8px;padding:7px 9px;font-family:var(--f-body);font-size:16px}
+.np2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.newpot fieldset{border:0;padding:0;margin:8px 0 0}
+.newpot legend{font-size:11.5px;font-family:var(--f-mono);color:var(--muted);padding:0}
+.newpot .rad{display:flex;gap:8px;align-items:flex-start;font-family:var(--f-body);font-size:12.5px;color:var(--ink);margin-top:6px;line-height:1.35}
+.newpot .rad input{margin-top:2px;accent-color:var(--good);flex:none}
+.brief{background:var(--ink);color:var(--paper);border-radius:10px;padding:8px 10px;margin-top:8px;font-size:12.5px;line-height:1.4}
+.brief small{display:block;font-family:var(--f-mono);font-size:9.5px;letter-spacing:.08em;opacity:.75;margin-bottom:2px}
+.rules{border-radius:14px;padding:11px 14px;background:#151D36;color:#ECEEE7;margin-bottom:8px}
+.rules .k{font-family:var(--f-mono);font-size:10px;letter-spacing:.1em;opacity:.8}
+.rules ol{margin:5px 0 0;padding-left:18px;font-size:12.5px;line-height:1.45}
+.vault{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.vt-tile{border:0;border-radius:12px;min-height:92px;padding:8px;color:#fff;text-align:left;display:flex;flex-direction:column;justify-content:flex-end;position:relative}
+.vt-tile b{font-size:12.5px;line-height:1.2}
+.vt-tile small{font-family:var(--f-mono);font-size:9.5px;opacity:.85}
+.vt-tile .left{position:absolute;top:7px;right:8px;font-family:var(--f-mono);font-size:9.5px;background:rgba(0,0,0,.35);border-radius:6px;padding:1px 5px}
+.members{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.members div{display:grid;grid-template-columns:auto 1fr;column-gap:7px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:5px 7px;min-width:0}
+.members .av{grid-row:span 2;width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--paper);font-family:var(--f-mono);font-size:9.5px;display:grid;place-items:center}
+.members b{font-size:12.5px;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.members small{font-family:var(--f-mono);font-size:9.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 
 <header class="top wrap">
   <div class="brandrow">
-    <span class="wordmark">INSANE</span><span class="ver">v0.3</span>
-    <span class="ticket">The city is the board · no cash accepted</span>
+    <span class="wordmark">INSANE</span><span class="ver">v0.4</span>
+    <span class="ticket">The city is the board · the app never holds money</span>
   </div>
-  <h1>Hooks got us to 23%. To get to 90%, the app has to become the thing your friends can't leave.</h1>
-  <p>Only one kind of app keeps around 90% of its users: the one your people <b>talk and pay</b> through. So v0.3 does two things at once. The ledger becomes your circle's everyday money, which is the boring part that keeps people. And the city becomes the board, which is the part that earns the name: <b>Zones</b> where you can go big on camera with staff on site, <b>Hunts</b> that circles build for each other, <b>Drops</b> of real stuff, and a <b>League</b> where your circle has a fixture every week.</p>
+  <h1>v0.4 builds the three ideas that won the simulation: Pots, Chapters and Missions.</h1>
+  <p><b>Pots</b> let a circle pool money for a trip or a purchase without the app ever holding it: a split pot you pay the organizer into, or pledge-then-pay, where nobody pays unless enough of you commit. <b>Chapters</b> are invite-only clubs that meet at Zones, with videos that vanish after 24 hours and a vouch on everyone you bring in. <b>Missions</b> are monthly city-wide stunts with no victims, revealed two hours before. Everything from v0.3 stays. Try the phone: pledge for the PS5, open the chapter, join Mission 07.</p>
 </header>
 
 <main class="wrap grid">
-  <section class="phone-col" aria-label="App prototype v0.3">
+  <section class="phone-col" aria-label="App prototype v0.4">
     <div class="phone">
       <div class="screen">
         <div class="status"><span id="clock">18:42</span><span class="notch" aria-hidden="true"></span><span>5G ▮▮▮</span></div>
@@ -244,12 +286,13 @@ button{cursor:pointer}
         <nav class="nav" role="tablist" aria-label="App sections">
           <button role="tab" data-tab="map" aria-selected="true"><svg viewBox="0 0 24 24"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg>City<span class="badge" id="bMap">1</span></button>
           <button role="tab" data-tab="today"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>Today</button>
+          <button role="tab" data-tab="chapter"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>Chapter<span class="badge" id="bChap">1</span></button>
           <button role="tab" data-tab="league"><svg viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 01-10 0zM12 14v4M8 20h8M7 6H4a3 3 0 003 4M17 6h3a3 3 0 01-3 4"/></svg>League</button>
-          <button role="tab" data-tab="ledger"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>Ledger<span class="badge" id="bLed">1</span></button>
+          <button role="tab" data-tab="money"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>Money<span class="badge" id="bMon">1</span></button>
         </nav>
       </div>
     </div>
-    <div class="phone-note">v0.3 · Thursday, fixture day · tap the pins</div>
+    <div class="phone-note">v0.4 · Thursday · try Money → Pots, then Chapter</div>
   </section>
 
   <section aria-label="Research console">
@@ -258,7 +301,7 @@ button{cursor:pointer}
       <button role="tab" data-p="next" aria-selected="false">What to build next</button>
       <button role="tab" data-p="ideas" aria-selected="false">Your ideas, tested</button>
       <button role="tab" data-p="sim" aria-selected="false">Simulator</button>
-      <button role="tab" data-p="week" aria-selected="false">A week on v0.3</button>
+      <button role="tab" data-p="week" aria-selected="false">A week on v0.4</button>
     </div>
 
     <!-- ROAD -->
@@ -303,6 +346,7 @@ button{cursor:pointer}
         <h3>Build three: pledge-then-pay Pots, Chapters and Missions. Add Homework, time-based favors and Duels because they're cheap. Leave out everything that touches money directly or hurts people.</h3>
         <p>Every idea from <span class="mono">docs/OPTIONS.md</span> was added to v0.3 on its own, on the same 16 seeds, and the difference in day-30 retention measured pair by pair. The same pattern as v0.3 shows up again. The ideas that give a circle a reason to <b>need</b> the app (a shared pot for the trip, a chapter you belong to) beat the ideas that are only fun.</p>
         <p><b>Pots:</b> the three money options are a statistical tie. A licensed partner holding the money buys a few tenths of a point over pledge-then-pay, and in exchange you get licences plus the risk of a Synapse-style collapse. The ledger-only pledge version wins on everything except a number too small to see.</p>
+        <p><b>Built:</b> the phone on the left is now v0.4, with Pots (split and pledge-then-pay) under Money, a Chapter tab, and Mission 07 on the map. The cheap additions (Homework, time-based favors, Duels) are next.</p>
         <p><b>Fewer is better.</b> Shipping all ten safe ideas looks best only if extra features cost users nothing. Once each one costs a little attention, the top three hold up and the all-ten build falls below v0.3.</p>
       </div>
       <div class="ladder" id="nextRungs"></div>
@@ -353,7 +397,7 @@ button{cursor:pointer}
         <button data-preset="cash">v0.3 with cash drops</button>
         <button data-preset="nocap">v0.3 with no ceiling</button>
         <button data-preset="decay">v0.3 + trust decay</button>
-        <button data-preset="v4">v0.3 + top 3</button>
+        <button data-preset="v4">v0.4 (v0.3 + top 3)</button>
       </div>
       <div class="controls">
         <div class="cgroup"><h4>Infrastructure</h4>
@@ -416,20 +460,20 @@ button{cursor:pointer}
 
     <!-- WEEK -->
     <div id="p-week" hidden>
-      <p class="lead">Same user as the v0.1 and v0.2 diaries, one week on v0.3. <b>Opened 7 of 7 days.</b> The difference isn't that each day is more exciting. Every day has something the circle needs from you.</p>
+      <p class="lead">Same user as the earlier diaries, one week on v0.4. <b>Opened 7 of 7 days.</b> v0.3 gave every day something the circle needs from you. v0.4 adds the things you plan together: a trip, a purchase, a night, a stunt.</p>
       <div class="week">
-        <div class="wd"><div class="day">Mon<small>4 min</small></div><span class="tag" style="color:var(--good)">Ledger</span><p>Pia logged the week's groceries: six ways, I owe half a favor. Settled it by offering to cook Tuesday. That's how money works now.</p></div>
-        <div class="wd"><div class="day">Tue<small>6 min</small></div><span class="tag" style="color:var(--good)">Ledger · League</span><p>Cooked for four, so each eater owes me a quarter. Thursday's fixture is set: <b>4B &amp; co vs Third Floor</b> at Zone Night. We need four in the lineup. I tapped in.</p></div>
-        <div class="wd"><div class="day">Wed<small>11 min</small></div><span class="tag" style="color:var(--ballpoint)">Hunt</span><p>Third Floor's hunt, "The Lost Toaster": five clues across the neighborhood. Clue 2 needed a 10-second dare filmed at the bakery mural. Jules and I did three clues after work.</p></div>
-        <div class="wd"><div class="day">Thu<small>9 min + 2 h out</small></div><span class="tag" style="color:var(--stamp)">Zone · Fixture</span><p>Zone Night at The Loading Dock, a skatepark that partners with the app: staff, padded ramp, fixed cameras, ceiling 8. Our entry was a slow-motion action-movie fight with foam swords, scored 7.4. We won the fixture 3–2. <b>Best night of the month.</b></p></div>
-        <div class="wd"><div class="day">Fri<small>5 min</small></div><span class="tag" style="color:var(--hazard)">Drop</span><p>A bike shop dropped a refurbished bike at the river steps. Claiming it needed three of us there together within two hours. Maya, Rin and I made it. The bike goes into Sunday's Market pool.</p></div>
-        <div class="wd"><div class="day">Sat<small>2 min</small></div><span class="tag" style="color:var(--muted)">Quiet</span><p>Barely opened. Rin pinged the circle about Sunday. No streak, no decay, no guilt.</p></div>
-        <div class="wd"><div class="day">Sun<small>8 min + 1 h out</small></div><span class="tag" style="color:var(--ballpoint)">Market</span><p>Market at Zone 2. Four loops for me, including the drop bike going to someone in another circle for two hours of their help moving house.</p></div>
+        <div class="wd"><div class="day">Mon<small>5 min</small></div><span class="tag" style="color:var(--good)">Ledger · Pot</span><p>Pia logged the groceries: half a favor. Maya opened the Lisbon pot, €80 each. I paid Maya from my bank app and the pot ticked me off when she confirmed. The app never touched the money.</p></div>
+        <div class="wd"><div class="day">Tue<small>4 min</small></div><span class="tag" style="color:var(--good)">Pledge pot</span><p>Dev wants a PS5 for the flat: £75 each, only if six of us pledge by Friday. Four had. I pledged and asked Jules. Jules made it six on Wednesday, and we each paid Game Hut directly.</p></div>
+        <div class="wd"><div class="day">Wed<small>11 min</small></div><span class="tag" style="color:var(--ballpoint)">Hunt</span><p>Third Floor’s hunt. Jules and I filmed three clues after work.</p></div>
+        <div class="wd"><div class="day">Thu<small>9 min + 4 h out</small></div><span class="tag" style="color:var(--stamp)">Chapter</span><p>Won the fixture 3–2 at The Loading Dock, then the Basement’s chapter night in the back room. I went as STATIC: a roast battle and my rejection-homework story. The Vault videos were gone by Friday night. <b>Best night of the month again.</b></p></div>
+        <div class="wd"><div class="day">Fri<small>6 min</small></div><span class="tag" style="color:var(--hazard)">Drop · Vouch</span><p>Claimed the drop bike with Maya and Rin. Used my one invite to vouch for Sam. If Sam flakes in three weeks, I lose a point of Reliability.</p></div>
+        <div class="wd"><div class="day">Sat<small>3 min + 1 h out</small></div><span class="tag" style="color:var(--good)">Mission</span><p>Mission 07, The Freeze: 230 people stopped dead in Union Square for 60 seconds, then walked off. Three strangers asked how to join. Sam’s first event.</p></div>
+        <div class="wd"><div class="day">Sun<small>8 min + 1 h out</small></div><span class="tag" style="color:var(--ballpoint)">Market</span><p>Market at Zone 2. The drop bike went to someone in another circle for two hours of help moving house.</p></div>
       </div>
-      <h3 class="sec">Who v0.3 is not for, and what keeps them anyway</h3>
+      <h3 class="sec">Who v0.4 is not for, and what keeps them anyway</h3>
       <div class="two">
-        <div class="note"><h4>The trader (41, parent)</h4><p>Won't go to Zone Night, won't hunt. Still opens most days, because the ledger settles the school-run rota and the favor board finds a babysitter. In v0.1 they quit on day 9.</p></div>
-        <div class="note"><h4>The performer (19, student)</h4><p>Lives at the Zones. The ceiling of 8 with staff present gives them somewhere to go big. In v0.1 the same person was escalating on the street with nobody watching.</p></div>
+        <div class="note"><h4>The trader (41, parent)</h4><p>Won’t go to Zone Night or chapter night. Still opens most days: the ledger settles the school-run rota, and the family holiday pot lives in Money now. Pots give them a reason to bring their partner in.</p></div>
+        <div class="note"><h4>The performer (19, student)</h4><p>Lives at the Zones and now has a chapter. The Vault gives them an audience that matters without posting anything public that follows them forever.</p></div>
       </div>
     </div>
   </section>
@@ -442,9 +486,10 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const pct=v=>Math.round(v*100)+'%',fmt=n=>Math.round(n).toLocaleString('en-US');
 
 /* ================================================================
-   PHONE v0.3
+   PHONE v0.4: v0.3 + Pots (split or pledge), Chapters, Missions
    ================================================================ */
-const P={tab:'map',sel:'zone',lineup:{You:false,Maya:true,Jules:true,Dev:false,Pia:true,Rin:false},clues:2,claim:0,posted:false};
+const P={tab:'map',sel:'zone',lineup:{You:false,Maya:true,Jules:true,Dev:false,Pia:true,Rin:false},clues:2,claim:0,posted:false,
+  money:'pots',pot:'ps5',pay:null,newPot:false,rsvp:false,going:13,missionIn:false,missionN:212,handle:0,vouch:0,watched:{}};
 let tx=[
  {t:'Groceries for the week, split 6 ways',who:'Pia',amt:-.5,when:'Mon'},
  {t:'Cooked dinner for 4',who:'You',amt:+.75,when:'Tue'},
@@ -452,10 +497,32 @@ let tx=[
  {t:'Borrowed Dev’s drill',who:'Dev',amt:-.25,when:'Wed'},
  {t:'Won the Zone Night entry fee pot',who:'Circle',amt:+.5,when:'last Thu'},
 ];
+// Pots: the app tracks who's in and who's paid. Money only ever moves person to person, or straight to the shop.
+const POTS=[
+ {id:'ps5',name:'PS5 for the flat',mode:'pledge',org:'Dev',payee:'Game Hut',cur:'£',each:75,need:6,due:'Fri 18:00',
+  in:{Maya:1,Pia:1,Dev:1,Rin:1},paid:{}},
+ {id:'lisbon',name:'Lisbon, May bank holiday',mode:'split',org:'Maya',payee:'Maya',cur:'€',each:80,due:'Fri 24th',
+  in:{You:1,Maya:1,Jules:1,Pia:1},paid:{Maya:1,Jules:1}},
+ {id:'cake',name:'Rin’s birthday cake',mode:'split',org:'Pia',payee:'Pia',cur:'£',each:6,due:'done',
+  in:{You:1,Maya:1,Jules:1,Pia:1,Dev:1},paid:{You:1,Maya:1,Jules:1,Pia:1,Dev:1}},
+];
+const CIRCLE=['You','Maya','Jules','Pia','Dev','Rin'];
+const HANDLES=['STATIC','LOW TIDE','PAPERCUT','NIGHT BUS'];
+const VAULT=[
+ {who:'MOTH',what:'Roast battle, round 3',left:'3 h 12 m',g:'linear-gradient(150deg,#C8214B,#3B1640)'},
+ {who:'GRANITE',what:'Slow-mo foam sword duel',left:'9 h 40 m',g:'linear-gradient(150deg,#2443C4,#151D36)'},
+ {who:'STATIC',what:'You, rejected 10 times',left:'14 h 05 m',g:'linear-gradient(150deg,#1F7A4D,#0E1320)'},
+ {who:'VELVET',what:'Arm-wrestle final',left:'21 h 30 m',g:'linear-gradient(150deg,#B98C00,#3B1640)'},
+];
+const MEMBERS=[['Maya','you'],['Jules','Maya'],['MOTH','founder'],['GRANITE','MOTH'],['VELVET','GRANITE'],['Rin','Jules']];
 const bal=()=>tx.reduce((a,x)=>a+x.amt,0);
-function toast(m){const t=$('#toast');t.innerHTML=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),3400)}
+const potOf=id=>POTS.find(p=>p.id===id);
+const nIn=p=>Object.keys(p.in).length,nPaid=p=>Object.keys(p.paid).length;
+const met=p=>p.mode==='split'||nIn(p)>=p.need;
+const owesYou=()=>POTS.filter(p=>p.in.You&&!p.paid.You&&met(p)&&p.due!=='done').length;
+function toast(m){const t=$('#toast');t.innerHTML=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),3800)}
 function hud(){const b=bal();$('#balV').textContent=(b>0?'+':b<0?'−':'')+Math.abs(b).toFixed(2).replace(/\.?0+$/,'');}
-const mapSVG=()=>`<svg viewBox="0 0 320 250" role="img" aria-label="City map with zones, a hunt route and a drop">
+const mapSVG=()=>`<svg viewBox="0 0 320 250" role="img" aria-label="City map with zones, a hunt route, a drop and a mission area">
   <rect width="320" height="250" fill="var(--map)"/>
   <path class="water" d="M0 178 C70 160 120 200 190 186 S290 160 320 172 L320 214 C270 205 220 230 160 222 S60 205 0 222Z"/>
   <rect class="park" x="214" y="28" width="78" height="54" rx="8"/>
@@ -464,28 +531,72 @@ const mapSVG=()=>`<svg viewBox="0 0 320 250" role="img" aria-label="City map wit
   <text class="lbl" x="232" y="58">Elm Park</text><text class="lbl" x="120" y="242">river steps</text><text class="lbl" x="76" y="56">Market St</text>
   <path d="M95 112 L140 78 L188 104 L232 112 L270 150" fill="none" stroke="var(--ballpoint)" stroke-width="2" stroke-dasharray="5 4"/>
   ${[[95,112],[140,78],[188,104],[232,112],[270,150]].map(([x,y],i)=>`<g class="pin" data-pin="hunt"><circle cx="${x}" cy="${y}" r="8" fill="${i<P.clues?'var(--ballpoint)':'var(--card)'}" stroke="var(--ballpoint)" stroke-width="2"/><text x="${x}" y="${y+3}" text-anchor="middle" style="font:700 8px var(--f-mono);fill:${i<P.clues?'#fff':'var(--ballpoint)'}">${i+1}</text></g>`).join('')}
+  <g class="pin" data-pin="mission"><circle cx="34" cy="148" r="26" fill="var(--good-soft)" stroke="var(--good)" stroke-width="1.5" stroke-dasharray="4 3"/><circle cx="34" cy="148" r="10" fill="var(--good)"/><text x="34" y="152" text-anchor="middle" style="font:700 12px var(--f-mono);fill:#fff">?</text><text class="zl" x="34" y="186" text-anchor="middle">Mission 07</text></g>
   <g class="pin" data-pin="zone"><circle cx="48" cy="34" r="15" fill="var(--stamp)"/><path d="M41 30h10v8H41zM51 32l5-3v10l-5-3" fill="#fff"/><text class="zl" x="48" y="62" text-anchor="middle">The Loading Dock</text></g>
   <g class="pin" data-pin="market"><circle cx="205" cy="150" r="12" fill="var(--ink)"/><path d="M199 147l2-4h8l2 4zM199 147h12v7h-12z" fill="var(--paper)"/><text class="zl" x="205" y="172" text-anchor="middle">Zone 2 · Market</text></g>
   <g class="pin" data-pin="drop"><circle class="pulse" cx="150" cy="206" r="14" fill="var(--hazard)"/><circle cx="150" cy="206" r="8" fill="var(--hazard)" stroke="var(--card)" stroke-width="2"/></g>
 </svg>`;
+const missionCard=()=>`<div class="card mission"><div class="meta"><span class="kind m">Mission 07 · Sat 13:00</span><span>${P.missionN} in</span></div>
+  <p><b>The Freeze.</b> At 13:00 everyone in the square stops mid-motion for 60 seconds, then walks off as if nothing happened. Somewhere in this circle. The exact spot is revealed two hours before.</p>
+  ${P.missionIn?`<div class="brief"><small>YOUR BRIEFING · SECRET UNTIL SAT</small>Freeze mid-laugh, phone raised as if taking a selfie with the person to your left. They’re a member too.<br><span class="mono" style="font-size:10.5px">Exact spot: Sat 11:00 · bring nothing</span></div>`:''}
+  <div class="sub">No property damage · nobody is the target · permit filed with the city · leave it as you found it</div>
+  <div class="btns">${P.missionIn?'<button class="btn sm ghost" data-act="mOut">Can’t make it</button>':'<button class="btn sm good" data-act="mIn">I’m in</button>'}</div></div>`;
 const DETAIL={
- zone:()=>`<div class="card zone"><div class="meta"><span class="kind z">Zone · tonight 20:00</span><span>ceiling 8</span></div><p><b>The Loading Dock</b>, a skatepark partner. Staff on site, padded ramp, three fixed cameras. Your fixture against Third Floor happens here.</p><div class="sub">Above 6.5 only happens in Zones. A danger flag still removes reward.</div><div class="btns"><button class="btn sm red" data-act="league">Set the lineup</button></div></div>`,
+ zone:()=>`<div class="card zone"><div class="meta"><span class="kind z">Zone · tonight 20:00</span><span>ceiling 8</span></div><p><b>The Loading Dock</b>, a skatepark partner. Staff on site, padded ramp, three fixed cameras. Your fixture against Third Floor happens here, and The Basement’s chapter night is in the back room after.</p><div class="sub">Above 6.5 only happens in Zones. A danger flag still removes reward.</div><div class="btns"><button class="btn sm red" data-act="league">Set the lineup</button><button class="btn sm ghost" data-act="chapter">Chapter night</button></div></div>`,
  hunt:()=>`<div class="card hunt"><div class="meta"><span class="kind h">Hunt by Third Floor</span><span>${P.clues}/5 clues</span></div><p><b>The Lost Toaster.</b> Each clue is a 10-second dare filmed at the spot. The last pin opens a box with a real prize from their Market pool.</p><div class="clues">${[0,1,2,3,4].map(i=>`<i class="${i<P.clues?'on':''}"></i>`).join('')}</div><div class="btns"><button class="btn sm" data-act="clue" ${P.clues>=5?'disabled':''}>${P.clues>=5?'Box opened':'Film clue '+(P.clues+1)}</button></div></div>`,
  drop:()=>`<div class="card drop"><div class="meta"><span class="kind d">Drop · 1 h 52 m left</span><span>${P.claim}/3 there</span></div><p><b>Refurbished bike</b> from Spoke &amp; Chain, at the river steps. Claim needs three of your circle in the same place. It’s real stuff from a shop that wants the foot traffic, never favors.</p><div class="btns"><button class="btn sm" data-act="claim" ${P.claim>=3?'disabled':''}>${P.claim>=3?'Claimed for the circle':'I’m here'}</button></div></div>`,
  market:()=>`<div class="card"><div class="meta"><span class="kind l">Market · Sun 11:00</span><span>Zone 2</span></div><p>The weekly Market moved into a Zone. Same one-table handoffs as v0.2, with staff to hold items for no-shows.</p></div>`,
+ mission:missionCard,
 };
+function potCard(p){const open=P.pot===p.id,n=nIn(p),done=p.due==='done';
+  const prog=p.mode==='pledge'?`${n}/${p.need} pledged`:`${nPaid(p)}/${n} paid`;
+  const frac=p.mode==='pledge'?n/p.need:nPaid(p)/n;
+  let body='';
+  if(open){
+    body+=`<div class="ppl">${CIRCLE.map(k=>{const i=p.in[k],pd=p.paid[k];const st=!i?'out':p.mode==='pledge'&&!met(p)?'pledged':pd==='wait'?'checking':pd?'paid':'to pay';return `<span class="pp ${st.replace(' ','')}"><b>${k}</b>${st}</span>`}).join('')}</div>`;
+    if(p.mode==='pledge'&&!met(p))body+=`<div class="sub">Nobody pays anything unless ${p.need} pledge by ${p.due}. If it falls short, the pot just closes: no refunds needed, because no money moved.</div>`+
+      (p.in.You?`<div class="btns"><button class="btn sm ghost" data-act="unpledge" data-pot="${p.id}">Take back my pledge</button>${CIRCLE.find(k=>!p.in[k])?`<button class="btn sm ghost" data-act="nudge" data-pot="${p.id}">Ask ${CIRCLE.find(k=>!p.in[k])}</button>`:''}</div>`:`<div class="btns"><button class="btn sm good" data-act="pledge" data-pot="${p.id}">Pledge ${p.cur}${p.each}</button></div>`);
+    else if(p.in.You&&!p.paid.You&&!done){
+      body+=`<div class="sub">${p.mode==='pledge'?`Goal met. Everyone pays <b>${p.payee}</b> directly, ${p.cur}${p.each} each. Dev collects the console.`:`Pay <b>${p.payee}</b> ${p.cur}${p.each} with whatever you already use. ${p.org} confirms it landed.`}</div>`+
+        (P.pay===p.id?`<div class="payrow">${['Bank transfer','PayPal','Revolut','Cash in hand'].map(m=>`<button class="btn sm ghost" data-act="payvia" data-pot="${p.id}" data-m="${m}">${m}</button>`).join('')}</div>`:`<div class="btns"><button class="btn sm good" data-act="pay" data-pot="${p.id}">Pay ${esc(p.payee)} ${p.cur}${p.each}</button></div>`);}
+    else if(p.paid.You==='wait')body+=`<div class="sub">You marked it paid. Waiting for ${p.org} to confirm it arrived.</div>`;
+    else if(done)body+=`<div class="sub">Closed. Everyone paid ${p.payee} directly.</div>`;
+    else body+=`<div class="sub">You’re paid up.</div>`;
+  }
+  return `<div class="card pot ${done?'done':''} ${open?'open':''}" data-potcard="${p.id}" ${open?'':'tabindex="0" role="button" aria-label="Open pot: '+esc(p.name)+'"'}><div class="meta"><span class="kind l">${p.mode==='pledge'?'Pledge, then pay':'Split pot'} · ${esc(p.org)}</span><span>${done?'closed':'by '+esc(p.due)}</span></div>
+    <p><b>${esc(p.name)}</b> · ${p.cur}${p.each} each</p><div class="bar"><i style="width:${Math.min(100,frac*100)}%"></i></div><div class="meta" style="margin-top:4px"><span>${prog}</span><span>${open?'':'tap to open'}</span></div>${body}</div>`}
 const V={
-map(){return `<h2>City <span>4 live things near you</span></h2>
+map(){return `<h2>City <span>5 live things near you</span></h2>
   <div class="mapbox">${mapSVG()}</div>
-  <div class="legendrow"><span><i style="background:var(--stamp)"></i>Zone</span><span><i style="background:var(--ballpoint)"></i>Hunt</span><span><i style="background:var(--hazard)"></i>Drop</span><span><i style="background:var(--ink)"></i>Market</span></div>
+  <div class="legendrow"><span><i style="background:var(--stamp)"></i>Zone</span><span><i style="background:var(--ballpoint)"></i>Hunt</span><span><i style="background:var(--hazard)"></i>Drop</span><span><i style="background:var(--good)"></i>Mission</span><span><i style="background:var(--ink)"></i>Market</span></div>
   <h3>Selected</h3>${DETAIL[P.sel]()}
-  <div class="formula">The map never shows where people are. Only places and things.</div>`},
-today(){return `<h2>Today <span>Thu · fixture day</span></h2>
+  <div class="formula">The map never shows where people are. Only places and things. Missions show an area until two hours before.</div>`},
+today(){const ps5=potOf('ps5');return `<h2>Today <span>Thu · fixture day</span></h2>
   <div class="dd"><div class="k">DAILY DARE · BY RIN</div><div class="q">Order your coffee in the voice of a movie trailer.</div>${P.posted?'<span class="mono" style="font-size:11px">Posted · 5 of 6</span>':'<button class="btn sm" data-act="post">Record 15 s</button>'}</div>
   <h3>Needs you</h3>
+  ${!ps5.in.You?`<div class="card pot"><div class="meta"><span class="kind l">Pledge pot · Dev</span><span>${nIn(ps5)}/${ps5.need} pledged</span></div><p>PS5 for the flat, £75 each. Nobody pays unless six pledge by Friday.</p><div class="btns"><button class="btn sm good" data-act="openPot" data-pot="ps5">See the pot</button></div></div>`:''}
+  ${owesYou()?`<div class="card pot"><div class="meta"><span class="kind l">Pots</span><span>${owesYou()} to pay</span></div><p>${POTS.filter(p=>p.in.You&&!p.paid.You&&met(p)&&p.due!=='done').map(p=>esc(p.name)).join(' · ')}</p><div class="btns"><button class="btn sm good" data-act="money">Open Pots</button></div></div>`:''}
   <div class="card"><div class="meta"><span class="kind l">Ledger</span><span>from Pia</span></div><p>Groceries split six ways. Your share is ½ favor.</p><div class="btns"><button class="btn sm" data-act="settle">Settle by cooking Sat</button></div></div>
   <div class="card zone"><div class="meta"><span class="kind z">Fixture · 20:00</span><span>${Object.values(P.lineup).filter(Boolean).length}/4 in lineup</span></div><p>4B &amp; co vs Third Floor at The Loading Dock.</p><div class="btns"><button class="btn sm red" data-act="league">Lineup</button></div></div>
+  <h3>Later</h3>
+  <div class="card chap"><div class="meta"><span class="kind c">Chapter night · 22:00</span><span>${P.going} going</span></div><p>The Basement, back room at The Loading Dock.</p><div class="btns"><button class="btn sm ghost" data-act="chapter">Open chapter</button></div></div>
+  <div class="card mission"><div class="meta"><span class="kind m">Mission 07 · Sat</span><span>${P.missionN} in</span></div><p>The Freeze. ${P.missionIn?'You’re in. Briefing on the map.':'60 seconds, a whole square, one secret.'}</p><div class="btns"><button class="btn sm ghost" data-act="seeMission">Show on map</button></div></div>
   <div class="card drop"><div class="meta"><span class="kind d">Drop</span><span>1 h 52 m</span></div><p>A bike at the river steps. Needs three of you.</p><div class="btns"><button class="btn sm ghost" data-act="seeDrop">Show on map</button></div></div>`},
+chapter(){const h=HANDLES[P.handle];return `<h2>The Basement <span>chapter · ${21+P.vouch} members</span></h2>
+  <div class="rules"><div class="k">THE RULES</div><ol><li>Chapter videos live in the Vault and vanish after 24 hours.</li><li>You vouch for who you bring in.</li><li>Nobody is ever the target.</li><li>At chapter night you go by your handle.</li></ol></div>
+  <div class="card chap"><div class="meta"><span class="kind c">Chapter night · tonight 22:00</span><span>${P.going} going</span></div><p>Back room at The Loading Dock, after the fixture. Roast battles, arm-wrestling, this week’s Homework stories.</p>
+   <div class="sub">You go as <b class="mono">${h}</b> <button class="link" data-act="handle">change</button></div>
+   <div class="btns"><button class="btn sm ${P.rsvp?'ghost':'red'}" data-act="rsvp">${P.rsvp?'Going · undo':'I’m going'}</button></div></div>
+  <h3>The Vault <span class="mono" style="text-transform:none;letter-spacing:0">· members only · no downloads</span></h3>
+  <div class="vault">${VAULT.map((v,i)=>`<button class="vt-tile" data-act="watch" data-i="${i}" style="background:${v.g}"><span class="left">${v.left}</span><b>${esc(v.what)}</b><small>${v.who}${P.watched[i]?' · watched':''}</small></button>`).join('')}</div>
+  <div class="formula">Gone after 24 hours. If someone screenshots, the person in it is told.</div>
+  <h3>Bring someone in</h3>
+  ${P.vouch===0?`<div class="card"><p>You have <b>1 invite</b> this month. You stake <b>1 Reliability</b> on whoever you bring. If they flake within three weeks you lose it; if they stick, you both get it back plus one.</p><div class="btns"><button class="btn sm" data-act="vouch">Vouch for Sam</button></div></div>`:
+   `<div class="card"><div class="meta"><span class="kind c">Vouched · pending</span><span>day 0 of 21</span></div><p><b>Sam</b>, brought in by you. Their first chapter night is tonight. Your 1 Reliability is on the line until the 21st.</p></div>`}
+  <h3>Who brought who</h3>
+  <div class="members">${MEMBERS.map(([n,b])=>`<div><span class="av">${n.slice(0,2).toUpperCase()}</span><b>${n}</b><small>vouched by ${b}</small></div>`).join('')}${P.vouch?'<div><span class="av">SA</span><b>Sam</b><small>vouched by you</small></div>':''}</div>
+  <h3>This month’s mission</h3>${missionCard()}
+  <div class="formula">Chapters are invite-only and cross circles: 21 people from 6 circles. Circles are who you share a fridge with; a chapter is who you go big with.</div>`},
 league(){const n=Object.values(P.lineup).filter(Boolean).length;return `<h2>League <span>Season 2 · week 6 of 8</span></h2>
   <div class="card zone"><div class="meta"><span class="kind z">Tonight's fixture</span><span>${n}/4 needed</span></div><p><b>4B &amp; co vs Third Floor</b> · The Loading Dock, 20:00. Three rounds, judged by both circles and the Zone crowd.</p>
   <div class="lineup">${Object.entries(P.lineup).map(([k,v])=>`<button data-lu="${k}" class="${v?'in':''}">${k}<small>${v?'in':'tap to join'}</small></button>`).join('')}</div>
@@ -494,26 +605,67 @@ league(){const n=Object.values(P.lineup).filter(Boolean).length;return `<h2>Leag
   <table class="table"><thead><tr><th>#</th><th>Circle</th><th>P</th><th style="text-align:right">Pts</th></tr></thead><tbody>
   ${[['Basement Kings',5,18],['Night Shift',5,15],['4B & co',5,14],['Third Floor',5,12],['Allotment 9',5,7],['The Cousins',5,4]].map((r,i)=>`<tr class="${r[0]==='4B & co'?'me':''}"><td>${i+1}</td><td>${esc(r[0])}</td><td>${r[1]}</td><td class="n">${r[2]}</td></tr>`).join('')}</tbody></table>
   <div class="formula">Top two go up, bottom two go down. Insane Week in 12 days: every circle in the city, one weekend, Zone finals.</div>`},
-ledger(){const b=bal();return `<h2>Ledger <span>your circle's money</span></h2>
-  <div class="money"><div class="mono" style="font-size:10.5px;color:var(--muted);letter-spacing:.06em">YOUR BALANCE</div><div class="big">${b>0?'+':''}${b.toFixed(2).replace(/\.?0+$/,'')} favors</div><div class="formula">Limit −5 · stays in the circle · no free credits · jubilee in 21 days</div></div>
+money(){const b=bal();return `<h2>Money <span>favors and pots</span></h2>
+  <div class="seg" role="tablist"><button data-seg="pots" aria-selected="${P.money==='pots'}">Pots</button><button data-seg="favors" aria-selected="${P.money==='favors'}">Favors</button></div>
+  ${P.money==='favors'?`<div class="money"><div class="mono" style="font-size:10.5px;color:var(--muted);letter-spacing:.06em">YOUR BALANCE</div><div class="big">${b>0?'+':''}${b.toFixed(2).replace(/\.?0+$/,'')} favors</div><div class="formula">Limit −5 · stays in the circle · no free credits · can’t be bought or cashed out · jubilee in 21 days</div></div>
   <h3>This week</h3>
-  ${tx.map(x=>`<div class="tx"><span>${esc(x.t)}</span><span class="amt ${x.amt<0?'neg':'pos'}">${x.amt>0?'+':'−'}${Math.abs(x.amt)}</span><small>${x.who} · ${x.when}</small></div>`).join('')}
-  <div class="formula">Groceries, dinners, chores, borrowed tools. When money stops meaning anything, this is where the day-to-day lives.</div>`},
+  ${tx.map(x=>`<div class="tx"><span>${esc(x.t)}</span><span class="amt ${x.amt<0?'neg':'pos'}">${x.amt>0?'+':x.amt<0?'−':''}${Math.abs(x.amt)}</span><small>${x.who} · ${x.when}</small></div>`).join('')}
+  <div class="formula">Groceries, dinners, chores, borrowed tools. When money stops meaning anything, this is where the day-to-day lives.</div>`:
+  `<div class="safe"><b>INSANE never holds your money.</b> Pots track who’s in and who’s paid. You pay each other, or the shop, with whatever you already use.</div>
+  ${POTS.map(potCard).join('')}
+  ${P.newPot?`<div class="card newpot"><div class="meta"><span class="kind l">New pot</span><button class="link" data-act="cancelPot">cancel</button></div>
+    <label>What for<input id="np-name" maxlength="40" placeholder="Festival tickets"></label>
+    <div class="np2"><label>Each<input id="np-each" type="number" min="1" max="2000" value="40" inputmode="numeric"></label><label>By<select id="np-due"><option>Sun</option><option selected>Fri 24th</option><option>end of month</option></select></label></div>
+    <fieldset><legend>How it works</legend><label class="rad"><input type="radio" name="np-mode" value="pledge" checked><span><b>Pledge, then pay.</b> Only goes ahead if enough of you commit. Best for buying something.</span></label><label class="rad"><input type="radio" name="np-mode" value="split"><span><b>Split pot.</b> Everyone pays the organizer as they go. Best for trips you’re already booking.</span></label></fieldset>
+    <div class="btns"><button class="btn sm good" data-act="createPot">Create pot</button></div></div>`:`<div class="btns"><button class="btn sm" data-act="newPot">+ New pot</button></div>`}
+  <div class="formula">No balance to top up, nothing to withdraw, no card. That’s what keeps INSANE out of the money-transmission business.</div>`}`},
 };
 function render(){$('#view').innerHTML=V[P.tab]();document.querySelectorAll('.nav button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===P.tab));hud();
-  $('#bMap').textContent=P.claim>=3?'':'1';$('#bMap').hidden=P.claim>=3}
-document.querySelector('.nav').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;P.tab=b.dataset.tab;$('#view').scrollTop=0;render()});
+  $('#bMap').textContent=P.claim>=3?'':'1';$('#bMap').hidden=P.claim>=3;
+  const m=owesYou()+(potOf('ps5').in.You?0:1);$('#bMon').textContent=m;$('#bMon').hidden=!m;$('#bChap').hidden=P.rsvp}
+const go=(tab,extra)=>{P.tab=tab;Object.assign(P,extra||{});$('#view').scrollTop=0;render()};
+document.querySelector('.nav').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;go(b.dataset.tab)});
 $('#view').addEventListener('click',e=>{
   const pin=e.target.closest('[data-pin]');if(pin){P.sel=pin.dataset.pin;render();return}
-  const t=e.target.closest('button');if(!t)return;const a=t.dataset.act;
+  const seg=e.target.closest('[data-seg]');if(seg){P.money=seg.dataset.seg;render();return}
+  const t=e.target.closest('button');
+  if(!t){const pc=e.target.closest('[data-potcard]');if(pc&&!e.target.closest('input,select,label')){P.pot=P.pot===pc.dataset.potcard?null:pc.dataset.potcard;P.pay=null;render()}return}
+  const a=t.dataset.act,pot=t.dataset.pot&&potOf(t.dataset.pot);
   if(t.dataset.lu){const k=t.dataset.lu;P.lineup[k]=!P.lineup[k];render();if(k==='You'&&P.lineup.You)toast('You’re in. Four of six: the fixture is on.');return}
-  if(a==='league'){P.tab='league';render();return}
+  if(a==='league'){go('league');return}
+  if(a==='chapter'){go('chapter');return}
+  if(a==='money'){go('money',{money:'pots'});return}
+  if(a==='openPot'){go('money',{money:'pots',pot:t.dataset.pot});return}
   if(a==='clue'){P.clues++;render();toast(P.clues>=5?'Box opened: a Polaroid camera from Third Floor’s pool.':`Clue ${P.clues} filmed. Next pin unlocked.`);return}
-  if(a==='claim'){P.claim=Math.min(3,P.claim+(P.claim===0?1:1));if(P.claim<3)toast(`${P.claim} of 3 there. Maya is 6 minutes away.`);else{tx.unshift({t:'Claimed a drop for the circle: bike',who:'Circle',amt:0,when:'now'});toast('Claimed. The bike goes into Sunday’s Market pool.')}render();return}
+  if(a==='claim'){P.claim=Math.min(3,P.claim+1);if(P.claim<3)toast(`${P.claim} of 3 there. Maya is 6 minutes away.`);else{tx.unshift({t:'Claimed a drop for the circle: bike',who:'Circle',amt:0,when:'now'});toast('Claimed. The bike goes into Sunday’s Market pool.')}render();return}
   if(a==='post'){P.posted=true;render();toast('Posted. Five tiles unlocked.');return}
   if(a==='settle'){tx.unshift({t:'Will cook Saturday for Pia’s groceries',who:'You',amt:+.5,when:'now'});render();toast('Settled. Pia sees it right away.');return}
-  if(a==='seeDrop'){P.tab='map';P.sel='drop';render();return}
+  if(a==='seeDrop'){go('map',{sel:'drop'});return}
+  if(a==='seeMission'){go('map',{sel:'mission'});return}
+  // Pots
+  if(a==='pledge'){pot.in.You=1;render();const left=pot.need-nIn(pot);toast(left>0?`Pledged. ${nIn(pot)} of ${pot.need}: ${left} more and it happens. Nothing is charged.`:'Pledged. Goal met.');return}
+  if(a==='unpledge'){delete pot.in.You;render();toast('Pledge withdrawn. Nothing was charged, so there’s nothing to refund.');return}
+  if(a==='nudge'){const who=CIRCLE.find(k=>!pot.in[k]);if(!who)return;t.disabled=true;toast(`Asked ${who}. They see a nudge from you, not from the app.`);
+    setTimeout(()=>{pot.in[who]=1;const m=met(pot);if(m&&pot.id==='ps5'){pot.paid.Maya=1;pot.paid.Dev=1}render();toast(m?`<b>${who} pledged. ${nIn(pot)} of ${pot.need}: goal met.</b> Everyone now pays ${esc(pot.payee)} directly.`:`${who} pledged. ${nIn(pot)} of ${pot.need}.`)},1600);return}
+  if(a==='pay'){P.pay=pot.id;render();return}
+  if(a==='payvia'){const m=t.dataset.m;pot.paid.You='wait';P.pay=null;render();
+    toast(m==='Cash in hand'?`Marked as cash to ${esc(pot.payee)}. They confirm when they have it.`:`Opens ${m} with ${esc(pot.payee)}’s details filled in. INSANE never sees the money, only the tick.`);
+    setTimeout(()=>{pot.paid.You=1;render();toast(pot.payee===pot.org?`${esc(pot.org)} confirmed your ${pot.cur}${pot.each} arrived.`:`${esc(pot.org)} confirmed ${esc(pot.payee)} has your ${pot.cur}${pot.each}.`)},2200);return}
+  if(a==='newPot'){P.newPot=true;render();setTimeout(()=>$('#np-name')&&$('#np-name').focus(),0);return}
+  if(a==='cancelPot'){P.newPot=false;render();return}
+  if(a==='createPot'){const name=($('#np-name').value||'').trim()||'Festival tickets',each=Math.max(1,Math.min(2000,Math.round(+$('#np-each').value||40))),mode=document.querySelector('input[name=np-mode]:checked').value,due=$('#np-due').value;
+    const id='p'+Date.now();POTS.unshift({id,name,mode,org:'You',payee:'You',cur:'£',each,need:4,due,in:{You:1},paid:mode==='split'?{You:1}:{}});P.newPot=false;P.pot=id;render();
+    toast(mode==='pledge'?'Pot created. Your circle gets one message. It goes ahead if four of you pledge.':'Pot created. Your circle gets one message with your payment details.');return}
+  // Chapters
+  if(a==='rsvp'){P.rsvp=!P.rsvp;P.going+=P.rsvp?1:-1;render();if(P.rsvp)toast(`You’re going as ${HANDLES[P.handle]}. Doors 22:00, back room.`);return}
+  if(a==='handle'){P.handle=(P.handle+1)%HANDLES.length;render();return}
+  if(a==='watch'){const i=+t.dataset.i;P.watched[i]=1;render();toast(`Played “${esc(VAULT[i].what)}”. Gone in ${VAULT[i].left}. No download, no share.`);return}
+  if(a==='vouch'){P.vouch=1;render();toast('Sam’s in. They get your handle and tonight’s door code, and nothing from before they joined.');return}
+  // Missions
+  if(a==='mIn'){P.missionIn=true;P.missionN++;render();toast('You’re in. Your briefing is secret until Saturday. Tell nobody the time.');return}
+  if(a==='mOut'){P.missionIn=false;P.missionN--;render();toast('Out, no penalty. Missions are never owed.');return}
 });
+$('#view').addEventListener('keydown',e=>{const pc=e.target.closest&&e.target.closest('[data-potcard]');if(pc&&e.target===pc&&(e.key==='Enter'||e.key===' ')){e.preventDefault();pc.click()}});
 render();
 
 /* ================================================================

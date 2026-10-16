@@ -11,6 +11,7 @@ The interactive prototype and simulator are in [`prototype/index.html`](../proto
 ---
 
 > **v0.3** (city layer: ledger as money, League, Zones, Hunts, Drops) is described in [`V03.md`](V03.md).
+> **v0.4** (Pots, Chapters, Missions) is described in [`V04.md`](V04.md); why those three is in [`IMPACT.md`](IMPACT.md).
 
 ## 0. What changed in v0.2
 

@@ -8,9 +8,11 @@ A concept for a post-money barter-and-dare app. Swap stuff in multi-person loops
 
 | Path | What it is |
 |---|---|
-| [`prototype/index.html`](prototype/index.html) | **v0.3.** The city is the board: Zones, Hunts, Drops, a League, and the ledger as your circle's money. Console: the road to 90%, what to build next, your ideas tested, the simulator, and a week on v0.3 |
+| [`prototype/index.html`](prototype/index.html) | **v0.4.** v0.3 plus the three ideas that won the simulation: Pots (split, or pledge-then-pay) under Money, a Chapter tab with the Vault and vouching, and Missions on the map. Console: the road to 90%, what to build next, your ideas tested, the simulator, and a week on v0.4 |
+| [`prototype/v3/index.html`](prototype/v3/index.html) | v0.3: the city is the board, with Zones, Hunts, Drops, the League and the ledger as money |
 | [`prototype/v2/index.html`](prototype/v2/index.html) | v0.2: circles, Daily Dare, favor board, weekly Market Day, with the 30-day diary and calibrated simulator |
 | [`prototype/v1/index.html`](prototype/v1/index.html) | v0.1, the original prototype |
+| [`docs/V04.md`](docs/V04.md) | What v0.4 builds: Pots, Chapters and Missions, with their rules |
 | [`docs/IMPACT.md`](docs/IMPACT.md) | Every OPTIONS.md idea simulated: what to build next, what to skip, and why fewer features win |
 | [`docs/OPTIONS.md`](docs/OPTIONS.md) | Pooling money and compliance options, whether swapping is legal, and the Fight Club layer |
 | [`docs/V03.md`](docs/V03.md) | What it would take to get from 23% to 90%, and what v0.3 adds |
@@ -38,3 +40,5 @@ Before it compares designs, the simulator has to match published social-app rete
 **v0.3:** to get toward 90%, the app has to become infrastructure, not just entertainment. The ledger becomes the circle's everyday money and the League gives every circle a weekly fixture. Zones (camera-equipped venues with staff, where the insanity ceiling rises), circle-built Hunts and real-item Drops give the app its name. The model puts v0.3 at about 58% day-30 retention and about 96% "month one" (a loose measure; a plain app scores 39% on it). Cash drops and removing the insanity ceiling are the two ways to sink it.
 
 **What to build next:** every idea in OPTIONS.md was simulated on top of v0.3, adding one at a time on paired seeds. The best are pledge-then-pay Pots, Chapters and Missions (together about +10 points of day 30). Homework, time-based favors and Duels are cheap additions. Favor cash-out is the only idea that loses users, and shipping all ten safe ideas falls apart once each feature costs users a little attention. See [`docs/IMPACT.md`](docs/IMPACT.md).
+
+**v0.4** builds those three. Pots never hold money: the app tracks who's in and who's paid, and people pay each other or the shop directly. Chapters are invite-only, cross-circle clubs whose videos vanish after 24 hours, and you put your Reliability on everyone you vouch for. Missions are monthly stunts with no victims; you see the area, and the exact spot is revealed two hours before. See [`docs/V04.md`](docs/V04.md).

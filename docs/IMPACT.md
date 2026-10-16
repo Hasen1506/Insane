@@ -8,6 +8,8 @@ The question: *of the pooling options, the Fight Club layer and the niche ideas,
 - **Leave out** anything where the app holds money, favors turn into cash, or people get hurt.
 - **Ship fewer features.** Once extra features cost users anything at all, the top three beat shipping everything.
 
+**Built in v0.4:** see [`V04.md`](V04.md). The phone in the prototype now has Pots, Chapters and Missions.
+
 The interactive version is the **What to build next** tab in [`prototype/index.html`](../prototype/index.html). Its candidate ideas are also toggles in the Simulator tab, and it can re-run the ranking live.
 
 ## Method
