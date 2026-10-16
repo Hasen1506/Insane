@@ -11,6 +11,7 @@ A concept for a post-money barter-and-dare app. Swap stuff in multi-person loops
 | [`prototype/index.html`](prototype/index.html) | **v0.3.** The city is the board: Zones, Hunts, Drops, a League, and the ledger as your circle's money. Console: the road to 90%, your ideas tested, the simulator, and a week on v0.3 |
 | [`prototype/v2/index.html`](prototype/v2/index.html) | v0.2: circles, Daily Dare, favor board, weekly Market Day, with the 30-day diary and calibrated simulator |
 | [`prototype/v1/index.html`](prototype/v1/index.html) | v0.1, the original prototype |
+| [`docs/OPTIONS.md`](docs/OPTIONS.md) | Pooling money and compliance options, whether swapping is legal, and the Fight Club layer |
 | [`docs/V03.md`](docs/V03.md) | What it would take to get from 23% to 90%, and what v0.3 adds |
 | [`docs/DIARY.md`](docs/DIARY.md) | 30 days as a real user on v0.1 and v0.2, plus a real-world test plan |
 | [`docs/DEEPER.md`](docs/DEEPER.md) | The "deeper, not bigger" method, the rewritten prompt, and sources |
