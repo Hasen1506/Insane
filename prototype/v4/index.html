@@ -1,0 +1,1023 @@
+<title>INSANE</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: same pawn-ticket identity. Phone left (sticky) now opens on a city map; console right argues the road to 90%. Stacks on phones. */
+:root{
+  --paper:#ECEEE7; --card:#F9FAF6; --ink:#151D36; --muted:#596277; --line:#CDD2C8;
+  --stamp:#C8214B; --ballpoint:#2443C4; --hazard:#B98C00; --good:#1F7A4D;
+  --stamp-soft:rgba(200,33,75,.10); --ball-soft:rgba(36,67,196,.10); --haz-soft:rgba(217,164,0,.16); --good-soft:rgba(31,122,77,.13);
+  --screen:#F4F5F0; --bezel:#151D36; --map:#E3E7DE; --road:#FBFCF8; --water:#C9D6E8; --park:#CFE0CC;
+  --f-display:"Dela Gothic One","Arial Black",Impact,sans-serif;
+  --f-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0E1320; --card:#161D2D; --ink:#E5E8E0; --muted:#8C95A8; --line:#283149;
+  --stamp:#FF5A7E; --ballpoint:#8197FF; --hazard:#F2C53D; --good:#4CC38A;
+  --stamp-soft:rgba(255,90,126,.14); --ball-soft:rgba(129,151,255,.14); --haz-soft:rgba(242,197,61,.14); --good-soft:rgba(76,195,138,.14);
+  --screen:#111827; --bezel:#05070D; --map:#1A2233; --road:#26304A; --water:#1E3150; --park:#1F3328; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0E1320; --card:#161D2D; --ink:#E5E8E0; --muted:#8C95A8; --line:#283149;
+  --stamp:#FF5A7E; --ballpoint:#8197FF; --hazard:#F2C53D; --good:#4CC38A;
+  --stamp-soft:rgba(255,90,126,.14); --ball-soft:rgba(129,151,255,.14); --haz-soft:rgba(242,197,61,.14); --good-soft:rgba(76,195,138,.14);
+  --screen:#111827; --bezel:#05070D; --map:#1A2233; --road:#26304A; --water:#1E3150; --park:#1F3328; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--ballpoint);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto}
+.mono{font-family:var(--f-mono)}
+
+.top{padding-block:28px 22px;border-bottom:1.5px dashed var(--line);margin-bottom:24px}
+.brandrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.wordmark{font-family:var(--f-display);font-size:clamp(34px,6vw,56px);line-height:.9;color:var(--stamp);transform:rotate(-2deg);display:inline-block;border:3px solid var(--stamp);padding:6px 12px 2px;border-radius:6px}
+.ver{font-family:var(--f-display);font-size:18px;color:var(--ballpoint);border:2px solid var(--ballpoint);border-radius:4px;padding:2px 8px 0;transform:rotate(3deg)}
+.ticket{font-family:var(--f-mono);font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.top h1{font-weight:700;font-size:clamp(22px,3.2vw,34px);line-height:1.15;margin:18px 0 8px;max-width:26ch;text-wrap:balance}
+.top p{margin:0;max-width:68ch;color:var(--muted)}
+.top p b{color:var(--ink);font-weight:600}
+
+.grid{display:grid;grid-template-columns:380px minmax(0,1fr);gap:32px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+.phone-col{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px)}
+@media (max-width:900px){.phone-col{position:static;display:flex;flex-direction:column;align-items:center}}
+.phone-note{font-family:var(--f-mono);font-size:11.5px;color:var(--muted);margin-top:10px;text-align:center;letter-spacing:.03em}
+
+.phone{width:100%;max-width:372px;height:760px;background:var(--bezel);border-radius:48px;padding:12px;box-shadow:0 30px 60px -30px rgba(10,15,35,.45)}
+.screen{position:relative;height:100%;background:var(--screen);border-radius:38px;overflow:hidden;display:flex;flex-direction:column}
+.status{display:flex;justify-content:space-between;align-items:center;padding:12px 26px 4px;font-family:var(--f-mono);font-size:11px;font-weight:600}
+.notch{width:96px;height:24px;background:var(--bezel);border-radius:14px}
+.hud{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:6px;padding:6px 14px 10px;border-bottom:1px solid var(--line)}
+.hud div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:5px 8px;min-width:0}
+.hud small{display:block;font-family:var(--f-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.hud b{font-family:var(--f-mono);font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.view{flex:1;overflow-y:auto;padding:12px 14px 86px;scrollbar-width:thin}
+.view h2{font-size:17px;margin:2px 0 8px;font-weight:700;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.view h2 span{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);font-weight:500;letter-spacing:.04em}
+.view h3{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:16px 0 6px;font-weight:500}
+.nav{position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(5,1fr);background:var(--card);border-top:1px solid var(--line);padding:6px 6px 18px}
+.nav button{background:none;border:0;padding:6px 0 2px;font-size:11px;font-weight:600;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px;position:relative}
+.nav button[aria-selected="true"]{color:var(--stamp)}
+.nav svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8}
+.badge{position:absolute;top:0;right:24%;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:var(--stamp);color:var(--card);font-size:10px;font-family:var(--f-mono);line-height:16px}
+.toast{position:absolute;left:14px;right:14px;bottom:78px;background:var(--ink);color:var(--paper);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.35;transform:translateY(12px);opacity:0;transition:.25s;pointer-events:none}
+.toast.on{transform:none;opacity:1}
+
+.mapbox{border-radius:16px;overflow:hidden;border:1.5px solid var(--ink);background:var(--map)}
+.mapbox svg{display:block;width:100%;height:auto}
+.mapbox .road{stroke:var(--road);fill:none}
+.mapbox .water{fill:var(--water)}
+.mapbox .park{fill:var(--park)}
+.mapbox .lbl{font-family:var(--f-mono);font-size:8.5px;fill:var(--muted)}
+.mapbox .zl{font-family:var(--f-body);font-size:9.5px;font-weight:700;fill:var(--ink)}
+.mapbox .pin{cursor:pointer}
+.pulse{animation:pulse 1.6s ease-out infinite;transform-origin:center;transform-box:fill-box}
+@keyframes pulse{0%{opacity:.7;transform:scale(.6)}100%{opacity:0;transform:scale(1.8)}}
+.legendrow{display:flex;gap:10px;flex-wrap:wrap;font-family:var(--f-mono);font-size:10px;color:var(--muted);margin:6px 2px 0}
+.legendrow i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;position:relative}
+.card .meta{display:flex;justify-content:space-between;gap:8px;font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}
+.card p{margin:4px 0 0;font-size:13.5px;line-height:1.4}
+.card .sub{font-size:12px;margin-top:4px;color:var(--muted)}
+.card .sub b{color:var(--ink);font-weight:600}
+.card.zone{border:1.5px solid var(--stamp)}
+.card.hunt{border:1.5px dashed var(--ballpoint)}
+.card.drop{border:1.5px solid var(--hazard)}
+.card.done{opacity:.6}
+.kind{font-family:var(--f-mono);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.kind.z{color:var(--stamp)}.kind.h{color:var(--ballpoint)}.kind.d{color:var(--hazard)}.kind.l{color:var(--good)}
+.clues{display:flex;gap:4px;margin-top:8px}
+.clues i{flex:1;height:6px;border-radius:3px;background:var(--line)}
+.clues i.on{background:var(--ballpoint)}
+.btn{border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:10px;padding:8px 12px;font-weight:600;font-size:13px}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.red{background:var(--stamp);border-color:var(--stamp);color:#fff}
+.btn.sm{padding:5px 9px;font-size:12px;border-radius:8px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.dd{border-radius:14px;padding:12px 14px;color:#fff;background:linear-gradient(160deg,#C8214B,#3B1640)}
+.dd .k{font-family:var(--f-mono);font-size:10px;letter-spacing:.08em;opacity:.9}
+.dd .q{font-family:var(--f-display);font-size:18px;line-height:1.12;margin:5px 0 8px;text-wrap:balance}
+.dd .btn{background:#fff;color:#3B1640;border-color:#fff}
+.money{background:var(--card);border:1.5px solid var(--ink);border-radius:14px;padding:12px}
+.money .big{font-family:var(--f-display);font-size:28px;line-height:1}
+.tx{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px}
+.tx small{grid-column:1/-1;font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}
+.tx .amt{font-family:var(--f-mono);font-size:12.5px;font-weight:600}
+.tx .amt.neg{color:var(--stamp)}.tx .amt.pos{color:var(--good)}
+.table{width:100%;border-collapse:collapse;font-size:12.5px}
+.table th,.table td{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left}
+.table th{font-family:var(--f-mono);font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:500}
+.table td.n{font-family:var(--f-mono);text-align:right}
+.table tr.me td{font-weight:700;background:var(--stamp-soft)}
+.lineup{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.lineup button{border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:6px;font-size:12px;text-align:left}
+.lineup button.in{border-color:var(--good);background:var(--good-soft)}
+.lineup small{display:block;font-family:var(--f-mono);font-size:9.5px;color:var(--muted)}
+.formula{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);margin-top:6px;line-height:1.45}
+
+/* console */
+.ptabs{display:flex;gap:4px;border-bottom:1.5px solid var(--ink);margin-bottom:18px;overflow-x:auto}
+.ptabs button{background:none;border:0;padding:10px 14px;font-weight:600;font-size:14px;color:var(--muted);border-radius:8px 8px 0 0;white-space:nowrap}
+.ptabs button[aria-selected="true"]{background:var(--ink);color:var(--paper)}
+.lead{max-width:70ch;color:var(--muted);margin:0 0 16px}
+.lead b{color:var(--ink)}
+.verdict{background:var(--card);border:1.5px solid var(--ink);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+.verdict h3{margin:0 0 6px;font-size:19px;line-height:1.25;text-wrap:balance}
+.verdict p{margin:0;max-width:72ch;font-size:14.5px}
+.verdict p+p{margin-top:8px}
+.chart{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px 10px;min-width:0;margin-bottom:14px}
+.chart h5{margin:0 0 2px;font-size:14px;font-weight:600;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.chart h5 span{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);font-weight:500}
+.chart canvas{width:100%;height:260px;display:block}
+.chart.small canvas{height:160px}
+.ladder{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}
+@media (max-width:760px){.ladder{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.rung{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0}
+.rung small{display:block;font-family:var(--f-mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.rung b{display:block;font-family:var(--f-mono);font-size:22px;font-weight:600;margin-top:2px}
+.rung p{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
+.rung.hi{border:1.5px solid var(--good)}
+.ideas{display:flex;flex-direction:column;gap:14px}
+.idea{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px}
+@media (max-width:760px){.idea{grid-template-columns:minmax(0,1fr)}}
+.idea h4{margin:0;font-size:17px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.idea .st{font-family:var(--f-mono);font-size:10.5px;padding:2px 8px;border-radius:10px;font-weight:600}
+.st.no{background:var(--stamp-soft);color:var(--stamp)}.st.yes{background:var(--good-soft);color:var(--good)}.st.mod{background:var(--haz-soft);color:var(--hazard)}
+.idea p{margin:6px 0 0;font-size:14px}
+.idea .ev{font-size:13px;color:var(--muted)}
+.idea .ev b{color:var(--ink)}
+.idea .num{font-family:var(--f-mono);font-size:12px;background:var(--paper);border-radius:8px;padding:8px 10px;margin-top:8px;line-height:1.6}
+.presets{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.presets button{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600}
+.presets button.on{border-color:var(--stamp);color:var(--stamp);background:var(--stamp-soft)}
+.controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 18px;margin-bottom:14px}
+@media (max-width:760px){.controls{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.controls{grid-template-columns:minmax(0,1fr)}}
+.cgroup{min-width:0}
+.cgroup h4{margin:0 0 4px;font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:500}
+.chip{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13.5px;cursor:pointer}
+.chip input{accent-color:var(--stamp);width:15px;height:15px;margin:0;flex:none}
+.chip .vt{font-family:var(--f-mono);font-size:9.5px;border-radius:4px;padding:0 4px;margin-left:auto;flex:none;border:1px solid}
+.vt.v2{color:var(--ballpoint);border-color:var(--ballpoint)}.vt.v4{color:var(--good);border-color:var(--good)}.vt.v3{color:var(--stamp);border-color:var(--stamp)}
+.sliders{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin-bottom:16px;font-size:13px}
+.sliders label{display:flex;align-items:center;gap:8px}
+.sliders input[type=range]{accent-color:var(--ink);width:120px}
+.sliders output{font-family:var(--f-mono);min-width:3ch}
+.stats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:16px}
+@media (max-width:1100px){.stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:460px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0}
+.stat small{display:block;font-family:var(--f-mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.stat b{display:block;font-family:var(--f-mono);font-size:22px;font-weight:600;margin-top:2px}
+.pill{display:inline-block;margin-top:4px;font-family:var(--f-mono);font-size:10px;padding:1px 7px;border-radius:10px;font-weight:600}
+.pill.ok{background:var(--good-soft);color:var(--good)}.pill.warn{background:var(--haz-soft);color:var(--hazard)}.pill.bad{background:var(--stamp-soft);color:var(--stamp)}.pill.ref{background:var(--ball-soft);color:var(--ballpoint)}
+.charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:640px){.charts{grid-template-columns:minmax(0,1fr)}}
+.charts .chart{margin-bottom:0}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-family:var(--f-mono);font-size:11px;color:var(--muted);margin:10px 0 0}
+.legend i{display:inline-block;width:16px;height:0;border-top:2px solid var(--stamp);vertical-align:middle;margin-right:5px}
+.legend i.ghost{border-top:2px dashed var(--muted)}
+.story{margin-top:18px;background:var(--card);border:1.5px solid var(--ink);border-radius:14px;padding:14px 18px}
+.story h4{margin:0 0 6px;font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:500}
+.story ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch}
+.story li::marker{color:var(--stamp)}
+.week{display:flex;flex-direction:column;border-top:1.5px solid var(--ink)}
+.wd{display:grid;grid-template-columns:64px 110px minmax(0,1fr);gap:14px;padding:12px 0;border-bottom:1px dashed var(--line)}
+@media (max-width:640px){.wd{grid-template-columns:56px minmax(0,1fr)}.wd .what{grid-column:2}}
+.wd .day{font-family:var(--f-mono);font-weight:600;font-size:13px}
+.wd .day small{display:block;font-weight:400;color:var(--muted)}
+.wd .tag{font-family:var(--f-mono);font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.wd p{margin:0;font-size:14px}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:760px){.two{grid-template-columns:minmax(0,1fr)}}
+.note{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;min-width:0}
+.note h4{margin:0 0 6px;font-size:15px}
+.note p,.note li{font-size:14px;margin:0}
+.note ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px}
+.note a{color:var(--ballpoint);word-break:break-word}
+.note.red{border:1.5px solid var(--stamp)}
+.sec{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:500;margin:24px 0 8px}
+@media (prefers-reduced-motion:reduce){.pulse{animation:none}.toast{transition:none}}
+.next-switch{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 10px}
+.next-switch button{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:5px 12px;font-size:12.5px;font-weight:600}
+.next-switch button.on{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+.chart canvas.tall{height:auto}
+.score{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 10px;margin-bottom:14px}
+.score .table{min-width:720px}
+.score td.v{white-space:nowrap}
+.tag{font-family:var(--f-mono);font-size:10px;padding:1px 7px;border-radius:9px;font-weight:600;white-space:nowrap}
+.tag.build{background:var(--good-soft);color:var(--good)}.tag.cheap{background:var(--ball-soft);color:var(--ballpoint)}.tag.later{background:var(--haz-soft);color:var(--hazard)}.tag.no{background:var(--stamp-soft);color:var(--stamp)}
+.cat{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px;vertical-align:1px}
+.legend i.cat{width:8px;height:8px;border:0}
+.live{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-4px 0 14px;font-size:12.5px;color:var(--muted)}
+.card.mission{border:1.5px dashed var(--good)}
+.card.chap{border:1.5px solid var(--ink)}
+.card.pot{cursor:pointer}
+.card.pot.open{border:1.5px solid var(--good);cursor:default}
+.kind.m{color:var(--good)}.kind.c{color:var(--ink)}
+.btn.good{background:var(--good);border-color:var(--good);color:#fff}
+.link{background:none;border:0;padding:0;color:var(--ballpoint);font-size:12px;font-weight:600;text-decoration:underline}
+.bar{height:6px;border-radius:3px;background:var(--line);margin-top:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--good);border-radius:3px}
+.ppl{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:8px}
+.pp{border:1px solid var(--line);border-radius:8px;padding:3px 6px;font-family:var(--f-mono);font-size:9.5px;color:var(--muted)}
+.pp b{display:block;font-family:var(--f-body);font-size:12px;color:var(--ink)}
+.pp.paid,.pp.pledged{border-color:var(--good);background:var(--good-soft)}
+.pp.topay,.pp.checking{border-color:var(--hazard);background:var(--haz-soft)}
+.pp.out{opacity:.55}
+.payrow{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.safe{background:var(--good-soft);border-radius:12px;padding:9px 11px;font-size:12.5px;margin-bottom:8px;line-height:1.4}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:3px;margin-bottom:10px}
+.seg button{border:0;background:none;border-radius:8px;padding:6px;font-weight:600;font-size:13px;color:var(--muted)}
+.seg button[aria-selected="true"]{background:var(--ink);color:var(--paper)}
+.newpot label{display:block;font-size:11.5px;font-family:var(--f-mono);color:var(--muted);margin-top:8px}
+.newpot input:not([type=radio]),.newpot select{display:block;width:100%;margin-top:3px;border:1.5px solid var(--line);background:var(--screen);border-radius:8px;padding:7px 9px;font-family:var(--f-body);font-size:16px}
+.np2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.newpot fieldset{border:0;padding:0;margin:8px 0 0}
+.newpot legend{font-size:11.5px;font-family:var(--f-mono);color:var(--muted);padding:0}
+.newpot .rad{display:flex;gap:8px;align-items:flex-start;font-family:var(--f-body);font-size:12.5px;color:var(--ink);margin-top:6px;line-height:1.35}
+.newpot .rad input{margin-top:2px;accent-color:var(--good);flex:none}
+.brief{background:var(--ink);color:var(--paper);border-radius:10px;padding:8px 10px;margin-top:8px;font-size:12.5px;line-height:1.4}
+.brief small{display:block;font-family:var(--f-mono);font-size:9.5px;letter-spacing:.08em;opacity:.75;margin-bottom:2px}
+.rules{border-radius:14px;padding:11px 14px;background:#151D36;color:#ECEEE7;margin-bottom:8px}
+.rules .k{font-family:var(--f-mono);font-size:10px;letter-spacing:.1em;opacity:.8}
+.rules ol{margin:5px 0 0;padding-left:18px;font-size:12.5px;line-height:1.45}
+.vault{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.vt-tile{border:0;border-radius:12px;min-height:92px;padding:8px;color:#fff;text-align:left;display:flex;flex-direction:column;justify-content:flex-end;position:relative}
+.vt-tile b{font-size:12.5px;line-height:1.2}
+.vt-tile small{font-family:var(--f-mono);font-size:9.5px;opacity:.85}
+.vt-tile .left{position:absolute;top:7px;right:8px;font-family:var(--f-mono);font-size:9.5px;background:rgba(0,0,0,.35);border-radius:6px;padding:1px 5px}
+.members{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.members div{display:grid;grid-template-columns:auto 1fr;column-gap:7px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:5px 7px;min-width:0}
+.members .av{grid-row:span 2;width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--paper);font-family:var(--f-mono);font-size:9.5px;display:grid;place-items:center}
+.members b{font-size:12.5px;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.members small{font-family:var(--f-mono);font-size:9.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style>
+
+<header class="top wrap">
+  <div class="brandrow">
+    <span class="wordmark">INSANE</span><span class="ver">v0.4</span>
+    <span class="ticket">The city is the board · the app never holds money</span>
+  </div>
+  <h1>v0.4 builds the three ideas that won the simulation: Pots, Chapters and Missions.</h1>
+  <p><b>Pots</b> let a circle pool money for a trip or a purchase without the app ever holding it: a split pot you pay the organizer into, or pledge-then-pay, where nobody pays unless enough of you commit. <b>Chapters</b> are invite-only clubs that meet at Zones, with videos that vanish after 24 hours and a vouch on everyone you bring in. <b>Missions</b> are monthly city-wide stunts with no victims, revealed two hours before. Everything from v0.3 stays. Try the phone: pledge for the PS5, open the chapter, join Mission 07.</p>
+</header>
+
+<main class="wrap grid">
+  <section class="phone-col" aria-label="App prototype v0.4">
+    <div class="phone">
+      <div class="screen">
+        <div class="status"><span id="clock">18:42</span><span class="notch" aria-hidden="true"></span><span>5G ▮▮▮</span></div>
+        <div class="hud">
+          <div><small>Circle</small><b>4B &amp; co · 6</b></div>
+          <div><small>League</small><b>3rd · 14 pts</b></div>
+          <div><small>Balance</small><b id="balV">+1.5</b></div>
+        </div>
+        <div class="view" id="view"></div>
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+        <nav class="nav" role="tablist" aria-label="App sections">
+          <button role="tab" data-tab="map" aria-selected="true"><svg viewBox="0 0 24 24"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg>City<span class="badge" id="bMap">1</span></button>
+          <button role="tab" data-tab="today"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>Today</button>
+          <button role="tab" data-tab="chapter"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>Chapter<span class="badge" id="bChap">1</span></button>
+          <button role="tab" data-tab="league"><svg viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 01-10 0zM12 14v4M8 20h8M7 6H4a3 3 0 003 4M17 6h3a3 3 0 01-3 4"/></svg>League</button>
+          <button role="tab" data-tab="money"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>Money<span class="badge" id="bMon">1</span></button>
+        </nav>
+      </div>
+    </div>
+    <div class="phone-note">v0.4 · Thursday · try Money → Pots, then Chapter</div>
+  </section>
+
+  <section aria-label="Research console">
+    <div class="ptabs" role="tablist">
+      <button role="tab" data-p="road" aria-selected="true">Road to 90%</button>
+      <button role="tab" data-p="next" aria-selected="false">What to build next</button>
+      <button role="tab" data-p="ideas" aria-selected="false">Your ideas, tested</button>
+      <button role="tab" data-p="sim" aria-selected="false">Simulator</button>
+      <button role="tab" data-p="week" aria-selected="false">A week on v0.4</button>
+    </div>
+
+    <!-- ROAD -->
+    <div id="p-road">
+      <div class="verdict">
+        <h3>90% of people opening on exactly day 30 isn't something any app has. 90% still around in month one is, and only apps that are infrastructure get there.</h3>
+        <p>Typical social apps keep 4–10% of users on day 30. The one app reported near 90% month-one retention is WhatsApp, at about 86% (Sensor Tower, via a secondhand report). Nobody gets there with streaks or prizes. WhatsApp got there because leaving means losing the people you talk to.</p>
+        <p>So v0.3 adds two layers. <b>Infrastructure</b>: the ledger becomes the money your circle runs on, and the League gives your circle a fixture every week. <b>Spectacle</b>: Zones, Hunts and Drops get people out into the city together and make the app worth its name. The chart shows what each layer adds, one at a time, in the calibrated simulator.</p>
+        <p>Read the two numbers differently. <b>Day 30</b> is calibrated against published benchmarks. <b>Month one</b> (opened on any day from 23 to 30) is looser: a plain app with no hooks already scores about 39% on it. v0.3 clears 90% on month one; on day 30 it reaches the high 50s, well above every published social-app range, so treat it as the optimistic end.</p>
+      </div>
+      <div class="ladder" id="ladder"><div class="rung"><small>Simulator</small><b>…</b><p>running 21 simulations</p></div></div>
+      <div class="chart"><h5>Building v0.3 one layer at a time <span id="wfnote">day-30 retention · 3-seed average · running…</span></h5><canvas id="ch-wf" aria-label="Retention by layer chart"></canvas><div class="legend"><span><i class="band" style="display:inline-block;width:14px;height:8px;border:0;background:var(--good-soft);outline:1px solid var(--good);margin-right:5px"></i>typical social apps on day 30 (4–10%)</span><span>bars: day-30 retention</span><span>▼ month one (opened any day 23–30)</span><span style="color:var(--stamp)">- - your 90% target</span></div></div>
+      <div class="two">
+        <div class="note"><h4>What carries the number</h4><ul>
+          <li><b>The ledger as money</b> is the biggest single step. When your groceries, dinners and chores are settled in favors, you open the app for the same reason you open a banking app.</li>
+          <li><b>The League</b> works like a five-a-side team. Teammates notice when you're missing and pull you back, which is something no notification can do.</li>
+          <li><b>Zones</b> add a weekly night out with your circle, and give the feed fresh local content so it never goes stale.</li>
+        </ul></div>
+        <div class="note"><h4>What earns the name but not the number</h4><ul>
+          <li><b>Hunts and Drops</b> add only 1–3 points each in the model. They're the stories people tell, the reason a stranger installs, and the screenshot on the poster.</li>
+          <li>That split is normal. Pokémon GO's daily users fell by about a third within weeks of its peak, and HQ Trivia's prize-driven crowd evaporated. Spectacle recruits; obligation retains.</li>
+        </ul></div>
+        <div class="note red" style="grid-column:1/-1"><h4>The two things that would sink it</h4><ul>
+          <li><b>Removing the insanity ceiling.</b> In a network this dense, escalation runs away: the simulator injures about 690 people in 120 days without it, against about 5 with it. Zones allow a higher ceiling (8 instead of 6.5) <i>only</i> because staff, padding and fixed cameras are there.</li>
+          <li><b>Paying drops in favors.</b> That's free issuance, the same mistake as the trueque clubs and Bunz. Confidence in favors falls from 85% to about 50%.</li>
+        </ul></div>
+      </div>
+      <h3 class="sec">Sources</h3>
+      <div class="note"><ul>
+        <li>WhatsApp month-one retention (secondhand, unverified): <a href="https://www.producthunt.com/p/general/if-you-re-building-a-consumer-app-what-does-your-retention-look-like">Product Hunt, citing Sensor Tower</a></li>
+        <li>Retention benchmarks: <a href="https://phiture.com/mobilegrowthstack/managing-retention-rate-benchmarks-and-expectations/">Phiture</a> · <a href="https://www.braze.com/resources/articles/mobile-app-retention">Braze</a> · <a href="https://trysonar.app/blog/app-user-retention-benchmarks-and-what-moves-it">Sonar (Adjust data)</a></li>
+        <li>HQ Trivia: <a href="https://techcrunch.com/2020/02/14/hq-trivia-shuts-down">TechCrunch</a> · <a href="https://www.thedrum.com/news/hq-trivia-shuts-down-after-3-years">The Drum</a></li>
+        <li>Pokémon GO: <a href="https://www.digitaltrends.com/phones/pokemon-go-decline-player-numbers/">Digital Trends</a> · <a href="https://mcvuk.com/pokemon-go-has-lost-around-15m-daily-users/0171558">MCV</a></li>
+        <li>Streaks: <a href="https://www.businessofapps.com/news/duolingos-streak-feature-drives-record-17-million-daus">Business of Apps on Duolingo</a></li>
+        <li>Trueque and Bunz: see <span class="mono">docs/DEEPER.md</span></li>
+      </ul></div>
+    </div>
+
+    <!-- NEXT -->
+    <div id="p-next" hidden>
+      <div class="verdict">
+        <h3>Build three: pledge-then-pay Pots, Chapters and Missions. Add Homework, time-based favors and Duels because they're cheap. Leave out everything that touches money directly or hurts people.</h3>
+        <p>Every idea from <span class="mono">docs/OPTIONS.md</span> was added to v0.3 on its own, on the same 16 seeds, and the difference in day-30 retention measured pair by pair. The same pattern as v0.3 shows up again. The ideas that give a circle a reason to <b>need</b> the app (a shared pot for the trip, a chapter you belong to) beat the ideas that are only fun.</p>
+        <p><b>Pots:</b> the three money options are a statistical tie. A licensed partner holding the money buys a few tenths of a point over pledge-then-pay, and in exchange you get licences plus the risk of a Synapse-style collapse. The ledger-only pledge version wins on everything except a number too small to see.</p>
+        <p><b>Built:</b> the phone on the left is now v0.4, with Pots (split and pledge-then-pay) under Money, a Chapter tab, and Mission 07 on the map. The cheap additions (Homework, time-based favors, Duels) are next.</p>
+        <p><b>Fewer is better.</b> Shipping all ten safe ideas looks best only if extra features cost users nothing. Once each one costs a little attention, the top three hold up and the all-ten build falls below v0.3.</p>
+      </div>
+      <div class="ladder" id="nextRungs"></div>
+      <div class="chart"><h5>Add one idea to v0.3 <span id="addnote">16 seeds · paired · whiskers ±2 SE</span></h5>
+        <div class="next-switch" id="nextSwitch"><button data-b="v3" class="on">on top of v0.3</button><button data-b="v2">on top of v0.2 (no Zones, League or ledger)</button></div>
+        <canvas id="ch-add" class="tall" aria-label="Day-30 retention change from each idea"></canvas>
+        <div class="legend"><span><i class="cat" style="background:var(--good)"></i>pooling money</span><span><i class="cat" style="background:var(--stamp)"></i>Fight Club layer</span><span><i class="cat" style="background:var(--ballpoint)"></i>niche ideas</span><span><i class="cat" style="background:var(--hazard)"></i>no-gos, simulated anyway</span></div>
+      </div>
+      <div class="live"><button class="btn sm ghost" id="liveBtn">Re-run live on 4 new seeds</button><span id="liveMsg">Takes about 15 seconds. Uses the friends' value slider from the Simulator tab.</span></div>
+      <h3 class="sec">Scorecard</h3>
+      <div class="score" id="nextTable"></div>
+      <p class="formula">Day 30, timid third (the least bold third of users), growth (share of the city that joined) and favor confidence are changes against v0.3, in points. "Top 3 under ±50%": in 20 runs where every idea's strength was drawn at random between half and one and a half times its default, how often it landed in the top three. *Legal load and build size are judgment calls from OPTIONS.md, not model outputs.</p>
+      <div class="chart"><h5>More features, less app <span>day-30 retention · 12 seeds</span></h5><canvas id="ch-clut" aria-label="Retention against cost per feature"></canvas>
+        <div class="legend"><span>x-axis: how much attention each extra feature costs users</span><span style="color:var(--good)">top 3</span><span style="color:var(--ballpoint)">top 5 (+ Homework, time-based favors)</span><span style="color:var(--stamp)">all 10 safe ideas</span><span>- - v0.3</span></div></div>
+      <div class="two">
+        <div class="note"><h4>What surprised the model</h4><ul>
+          <li><b>Chapters only work on top of Zones.</b> On v0.2 they add nothing to retention, though they still grow the network. Without chapter nights, a private invite-only club is just a smaller feed.</li>
+          <li><b>Missions are the growth idea.</b> Their retention gain is middling, but they bring in the most new people of anything tested, because a synchronized freeze in a station is the poster.</li>
+          <li><b>Duels are the only trust fix.</b> They barely move retention, but favor confidence rises about 8 points: disputes get settled instead of rotting.</li>
+          <li><b>Homework helps without Zones.</b> It works just as well on v0.2, so it's the cheapest thing to ship first.</li>
+        </ul></div>
+        <div class="note red"><h4>The no-gos, confirmed</h4><ul>
+          <li><b>Favor cash-out</b> is the only idea that loses users: favor confidence falls about 35 points. It's the IOU-selling failure of v0.1 again, with money attached.</li>
+          <li><b>Real fights</b> add about a point and a half of retention and roughly 40 more people hurt in 120 days.</li>
+          <li><b>Pay-to-enter prizes</b> add nothing measurable and turn every Drop into an illegal lottery.</li>
+          <li><b>A money partner that fails</b> wipes out the whole Pots gain and knocks swaps down for weeks.</li>
+        </ul></div>
+        <div class="note" style="grid-column:1/-1"><h4>What the model can't see</h4><ul>
+          <li>It counts opens. It can't tell an evening people loved from one they felt they had to show up to, so the diary test still decides.</li>
+          <li>Every idea gets the value its rules imply. Nothing in the model is a bad execution of a good idea, and in real life most are.</li>
+          <li>Levels above 70% on day 30 have no real-world precedent. Trust the ranking, not the level.</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- IDEAS -->
+    <div id="p-ideas" hidden>
+      <p class="lead">Your three ideas, checked against what happened when someone tried them for real and against the simulator. One is out, one is in with a change, and one is the best idea in the whole project.</p>
+      <div class="ideas" id="ideasList"></div>
+    </div>
+
+    <!-- SIM -->
+    <div id="p-sim" hidden>
+      <p class="lead">Same calibrated model as v0.2: friend groups of 12, invites, daily decisions to open or quit. v0.3 adds the five new layers, and the v0.4 candidates from the What to build next tab are toggles too. <b>The dashed line is v0.2</b>. The checks from v0.2 still hold: the no-hooks version matches published retention, and free credits still collapse confidence.</p>
+      <div class="presets" id="presets">
+        <button data-preset="v2">v0.2</button>
+        <button data-preset="v3">v0.3</button>
+        <button data-preset="cash">v0.3 with cash drops</button>
+        <button data-preset="nocap">v0.3 with no ceiling</button>
+        <button data-preset="decay">v0.3 + trust decay</button>
+        <button data-preset="v4">v0.4 (v0.3 + top 3)</button>
+      </div>
+      <div class="controls">
+        <div class="cgroup"><h4>Infrastructure</h4>
+          <label class="chip"><input type="checkbox" id="c-ledger">Ledger is the circle's money<span class="vt v3">v0.3</span></label>
+          <label class="chip"><input type="checkbox" id="c-league">League with weekly fixtures<span class="vt v3">v0.3</span></label>
+          <label class="chip"><input type="checkbox" id="c-circles">Circles unlock at 4<span class="vt v2">v0.2</span></label>
+        </div>
+        <div class="cgroup"><h4>Spectacle</h4>
+          <label class="chip"><input type="checkbox" id="c-zones">Zones, weekly Zone Night<span class="vt v3">v0.3</span></label>
+          <label class="chip"><input type="checkbox" id="c-hunts">Hunts built by circles<span class="vt v3">v0.3</span></label>
+          <label class="chip"><input type="checkbox" id="c-drops">Drops of real stuff<span class="vt v3">v0.3</span></label>
+          <label class="chip"><input type="checkbox" id="c-cashDrops">Drops pay favors instead</label>
+        </div>
+        <div class="cgroup"><h4>Daily (v0.2)</h4>
+          <label class="chip"><input type="checkbox" id="c-daily">Daily Dare<span class="vt v2">v0.2</span></label>
+          <label class="chip"><input type="checkbox" id="c-board">Favor board<span class="vt v2">v0.2</span></label>
+          <label class="chip"><input type="checkbox" id="c-market">Weekly Market Day<span class="vt v2">v0.2</span></label>
+        </div>
+        <div class="cgroup"><h4>Pressure</h4>
+          <label class="chip"><input type="checkbox" id="c-decay">Trust decay</label>
+          <label class="chip"><input type="checkbox" id="c-shortChains">2-hour chain window</label>
+          <label class="chip"><input type="checkbox" id="c-sell">IOUs can be sold</label>
+        </div>
+        <div class="cgroup"><h4>Safety</h4>
+          <label class="chip"><input type="checkbox" id="c-cap">Insanity ceiling (8 in Zones)<span class="vt v2">v0.2</span></label>
+          <label class="chip"><input type="checkbox" id="c-downrank">Danger down-ranking<span class="vt v2">v0.2</span></label>
+        </div>
+        <div class="cgroup"><h4>Credit</h4>
+          <label class="chip"><input type="checkbox" id="c-limit">Credit limit −5<span class="vt v2">v0.2</span></label>
+          <label class="chip"><input type="checkbox" id="c-bonus">Free welcome credits</label>
+        </div>
+        <div class="cgroup"><h4>v0.4 candidates</h4>
+          <label class="chip"><input type="checkbox" id="c-pledge">Pots: pledge, then pay<span class="vt v4">top 3</span></label>
+          <label class="chip"><input type="checkbox" id="c-chapters">Chapters<span class="vt v4">top 3</span></label>
+          <label class="chip"><input type="checkbox" id="c-missions">Missions<span class="vt v4">top 3</span></label>
+          <label class="chip"><input type="checkbox" id="c-homework">Homework</label>
+          <label class="chip"><input type="checkbox" id="c-timebank">Time-based favors</label>
+          <label class="chip"><input type="checkbox" id="c-duels">Duels</label>
+        </div>
+        <div class="cgroup"><h4>No-gos</h4>
+          <label class="chip"><input type="checkbox" id="c-cashOut">Favors can be cashed out</label>
+          <label class="chip"><input type="checkbox" id="c-realFights">Real fights at Zone Night</label>
+          <label class="chip"><input type="checkbox" id="c-payPrize">Pay to enter Drops</label>
+        </div>
+      </div>
+      <div class="sliders">
+        <label for="s-k">How much friends' activity is worth <input type="range" id="s-k" min="0.4" max="1" step="0.05" value="0.7"><output id="o-k">0.70</output></label>
+        <label for="s-seed">Seed <input type="range" id="s-seed" min="1" max="20" step="1" value="1"><output id="o-seed">1</output></label>
+      </div>
+      <div class="stats" id="stats"></div>
+      <div class="charts">
+        <div class="chart small"><h5>Cohort retention <span>share opening on day N after joining</span></h5><canvas id="ch-ret" aria-label="Cohort retention chart"></canvas></div>
+        <div class="chart small"><h5>Daily opens <span>whole network · 120 days</span></h5><canvas id="ch-dau" aria-label="Daily opens chart"></canvas></div>
+        <div class="chart small"><h5>Favor confidence <span>share of favors honored</span></h5><canvas id="ch-c" aria-label="Favor confidence chart"></canvas></div>
+        <div class="chart small"><h5>People hurt <span>cumulative</span></h5><canvas id="ch-harm" aria-label="Harm chart"></canvas></div>
+      </div>
+      <div class="legend"><span><i></i>this run</span><span><i class="ghost"></i>v0.2</span></div>
+      <div class="story"><h4>What happened in this run</h4><ul id="story"></ul></div>
+    </div>
+
+    <!-- WEEK -->
+    <div id="p-week" hidden>
+      <p class="lead">Same user as the earlier diaries, one week on v0.4. <b>Opened 7 of 7 days.</b> v0.3 gave every day something the circle needs from you. v0.4 adds the things you plan together: a trip, a purchase, a night, a stunt.</p>
+      <div class="week">
+        <div class="wd"><div class="day">Mon<small>5 min</small></div><span class="tag" style="color:var(--good)">Ledger · Pot</span><p>Pia logged the groceries: half a favor. Maya opened the Lisbon pot, €80 each. I paid Maya from my bank app and the pot ticked me off when she confirmed. The app never touched the money.</p></div>
+        <div class="wd"><div class="day">Tue<small>4 min</small></div><span class="tag" style="color:var(--good)">Pledge pot</span><p>Dev wants a PS5 for the flat: £75 each, only if six of us pledge by Friday. Four had. I pledged and asked Jules. Jules made it six on Wednesday, and we each paid Game Hut directly.</p></div>
+        <div class="wd"><div class="day">Wed<small>11 min</small></div><span class="tag" style="color:var(--ballpoint)">Hunt</span><p>Third Floor’s hunt. Jules and I filmed three clues after work.</p></div>
+        <div class="wd"><div class="day">Thu<small>9 min + 4 h out</small></div><span class="tag" style="color:var(--stamp)">Chapter</span><p>Won the fixture 3–2 at The Loading Dock, then the Basement’s chapter night in the back room. I went as STATIC: a roast battle and my rejection-homework story. The Vault videos were gone by Friday night. <b>Best night of the month again.</b></p></div>
+        <div class="wd"><div class="day">Fri<small>6 min</small></div><span class="tag" style="color:var(--hazard)">Drop · Vouch</span><p>Claimed the drop bike with Maya and Rin. Used my one invite to vouch for Sam. If Sam flakes in three weeks, I lose a point of Reliability.</p></div>
+        <div class="wd"><div class="day">Sat<small>3 min + 1 h out</small></div><span class="tag" style="color:var(--good)">Mission</span><p>Mission 07, The Freeze: 230 people stopped dead in Union Square for 60 seconds, then walked off. Three strangers asked how to join. Sam’s first event.</p></div>
+        <div class="wd"><div class="day">Sun<small>8 min + 1 h out</small></div><span class="tag" style="color:var(--ballpoint)">Market</span><p>Market at Zone 2. The drop bike went to someone in another circle for two hours of help moving house.</p></div>
+      </div>
+      <h3 class="sec">Who v0.4 is not for, and what keeps them anyway</h3>
+      <div class="two">
+        <div class="note"><h4>The trader (41, parent)</h4><p>Won’t go to Zone Night or chapter night. Still opens most days: the ledger settles the school-run rota, and the family holiday pot lives in Money now. Pots give them a reason to bring their partner in.</p></div>
+        <div class="note"><h4>The performer (19, student)</h4><p>Lives at the Zones and now has a chapter. The Vault gives them an audience that matters without posting anything public that follows them forever.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+(()=>{
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pct=v=>Math.round(v*100)+'%',fmt=n=>Math.round(n).toLocaleString('en-US');
+
+/* ================================================================
+   PHONE v0.4: v0.3 + Pots (split or pledge), Chapters, Missions
+   ================================================================ */
+const P={tab:'map',sel:'zone',lineup:{You:false,Maya:true,Jules:true,Dev:false,Pia:true,Rin:false},clues:2,claim:0,posted:false,
+  money:'pots',pot:'ps5',pay:null,newPot:false,rsvp:false,going:13,missionIn:false,missionN:212,handle:0,vouch:0,watched:{}};
+let tx=[
+ {t:'Groceries for the week, split 6 ways',who:'Pia',amt:-.5,when:'Mon'},
+ {t:'Cooked dinner for 4',who:'You',amt:+.75,when:'Tue'},
+ {t:'Signed for Pia’s parcel',who:'You',amt:+1,when:'Wed'},
+ {t:'Borrowed Dev’s drill',who:'Dev',amt:-.25,when:'Wed'},
+ {t:'Won the Zone Night entry fee pot',who:'Circle',amt:+.5,when:'last Thu'},
+];
+// Pots: the app tracks who's in and who's paid. Money only ever moves person to person, or straight to the shop.
+const POTS=[
+ {id:'ps5',name:'PS5 for the flat',mode:'pledge',org:'Dev',payee:'Game Hut',cur:'£',each:75,need:6,due:'Fri 18:00',
+  in:{Maya:1,Pia:1,Dev:1,Rin:1},paid:{}},
+ {id:'lisbon',name:'Lisbon, May bank holiday',mode:'split',org:'Maya',payee:'Maya',cur:'€',each:80,due:'Fri 24th',
+  in:{You:1,Maya:1,Jules:1,Pia:1},paid:{Maya:1,Jules:1}},
+ {id:'cake',name:'Rin’s birthday cake',mode:'split',org:'Pia',payee:'Pia',cur:'£',each:6,due:'done',
+  in:{You:1,Maya:1,Jules:1,Pia:1,Dev:1},paid:{You:1,Maya:1,Jules:1,Pia:1,Dev:1}},
+];
+const CIRCLE=['You','Maya','Jules','Pia','Dev','Rin'];
+const HANDLES=['STATIC','LOW TIDE','PAPERCUT','NIGHT BUS'];
+const VAULT=[
+ {who:'MOTH',what:'Roast battle, round 3',left:'3 h 12 m',g:'linear-gradient(150deg,#C8214B,#3B1640)'},
+ {who:'GRANITE',what:'Slow-mo foam sword duel',left:'9 h 40 m',g:'linear-gradient(150deg,#2443C4,#151D36)'},
+ {who:'STATIC',what:'You, rejected 10 times',left:'14 h 05 m',g:'linear-gradient(150deg,#1F7A4D,#0E1320)'},
+ {who:'VELVET',what:'Arm-wrestle final',left:'21 h 30 m',g:'linear-gradient(150deg,#B98C00,#3B1640)'},
+];
+const MEMBERS=[['Maya','you'],['Jules','Maya'],['MOTH','founder'],['GRANITE','MOTH'],['VELVET','GRANITE'],['Rin','Jules']];
+const bal=()=>tx.reduce((a,x)=>a+x.amt,0);
+const potOf=id=>POTS.find(p=>p.id===id);
+const nIn=p=>Object.keys(p.in).length,nPaid=p=>Object.keys(p.paid).length;
+const met=p=>p.mode==='split'||nIn(p)>=p.need;
+const owesYou=()=>POTS.filter(p=>p.in.You&&!p.paid.You&&met(p)&&p.due!=='done').length;
+function toast(m){const t=$('#toast');t.innerHTML=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),3800)}
+function hud(){const b=bal();$('#balV').textContent=(b>0?'+':b<0?'−':'')+Math.abs(b).toFixed(2).replace(/\.?0+$/,'');}
+const mapSVG=()=>`<svg viewBox="0 0 320 250" role="img" aria-label="City map with zones, a hunt route, a drop and a mission area">
+  <rect width="320" height="250" fill="var(--map)"/>
+  <path class="water" d="M0 178 C70 160 120 200 190 186 S290 160 320 172 L320 214 C270 205 220 230 160 222 S60 205 0 222Z"/>
+  <rect class="park" x="214" y="28" width="78" height="54" rx="8"/>
+  <g class="road" stroke-width="7"><path d="M0 60H320"/><path d="M0 130H320"/><path d="M70 0V250"/><path d="M160 0V178"/><path d="M250 0V178"/></g>
+  <g class="road" stroke-width="3"><path d="M0 95H320"/><path d="M115 0V178"/><path d="M205 0V178"/><path d="M30 0V178"/></g>
+  <text class="lbl" x="232" y="58">Elm Park</text><text class="lbl" x="120" y="242">river steps</text><text class="lbl" x="76" y="56">Market St</text>
+  <path d="M95 112 L140 78 L188 104 L232 112 L270 150" fill="none" stroke="var(--ballpoint)" stroke-width="2" stroke-dasharray="5 4"/>
+  ${[[95,112],[140,78],[188,104],[232,112],[270,150]].map(([x,y],i)=>`<g class="pin" data-pin="hunt"><circle cx="${x}" cy="${y}" r="8" fill="${i<P.clues?'var(--ballpoint)':'var(--card)'}" stroke="var(--ballpoint)" stroke-width="2"/><text x="${x}" y="${y+3}" text-anchor="middle" style="font:700 8px var(--f-mono);fill:${i<P.clues?'#fff':'var(--ballpoint)'}">${i+1}</text></g>`).join('')}
+  <g class="pin" data-pin="mission"><circle cx="34" cy="148" r="26" fill="var(--good-soft)" stroke="var(--good)" stroke-width="1.5" stroke-dasharray="4 3"/><circle cx="34" cy="148" r="10" fill="var(--good)"/><text x="34" y="152" text-anchor="middle" style="font:700 12px var(--f-mono);fill:#fff">?</text><text class="zl" x="34" y="186" text-anchor="middle">Mission 07</text></g>
+  <g class="pin" data-pin="zone"><circle cx="48" cy="34" r="15" fill="var(--stamp)"/><path d="M41 30h10v8H41zM51 32l5-3v10l-5-3" fill="#fff"/><text class="zl" x="48" y="62" text-anchor="middle">The Loading Dock</text></g>
+  <g class="pin" data-pin="market"><circle cx="205" cy="150" r="12" fill="var(--ink)"/><path d="M199 147l2-4h8l2 4zM199 147h12v7h-12z" fill="var(--paper)"/><text class="zl" x="205" y="172" text-anchor="middle">Zone 2 · Market</text></g>
+  <g class="pin" data-pin="drop"><circle class="pulse" cx="150" cy="206" r="14" fill="var(--hazard)"/><circle cx="150" cy="206" r="8" fill="var(--hazard)" stroke="var(--card)" stroke-width="2"/></g>
+</svg>`;
+const missionCard=()=>`<div class="card mission"><div class="meta"><span class="kind m">Mission 07 · Sat 13:00</span><span>${P.missionN} in</span></div>
+  <p><b>The Freeze.</b> At 13:00 everyone in the square stops mid-motion for 60 seconds, then walks off as if nothing happened. Somewhere in this circle. The exact spot is revealed two hours before.</p>
+  ${P.missionIn?`<div class="brief"><small>YOUR BRIEFING · SECRET UNTIL SAT</small>Freeze mid-laugh, phone raised as if taking a selfie with the person to your left. They’re a member too.<br><span class="mono" style="font-size:10.5px">Exact spot: Sat 11:00 · bring nothing</span></div>`:''}
+  <div class="sub">No property damage · nobody is the target · permit filed with the city · leave it as you found it</div>
+  <div class="btns">${P.missionIn?'<button class="btn sm ghost" data-act="mOut">Can’t make it</button>':'<button class="btn sm good" data-act="mIn">I’m in</button>'}</div></div>`;
+const DETAIL={
+ zone:()=>`<div class="card zone"><div class="meta"><span class="kind z">Zone · tonight 20:00</span><span>ceiling 8</span></div><p><b>The Loading Dock</b>, a skatepark partner. Staff on site, padded ramp, three fixed cameras. Your fixture against Third Floor happens here, and The Basement’s chapter night is in the back room after.</p><div class="sub">Above 6.5 only happens in Zones. A danger flag still removes reward.</div><div class="btns"><button class="btn sm red" data-act="league">Set the lineup</button><button class="btn sm ghost" data-act="chapter">Chapter night</button></div></div>`,
+ hunt:()=>`<div class="card hunt"><div class="meta"><span class="kind h">Hunt by Third Floor</span><span>${P.clues}/5 clues</span></div><p><b>The Lost Toaster.</b> Each clue is a 10-second dare filmed at the spot. The last pin opens a box with a real prize from their Market pool.</p><div class="clues">${[0,1,2,3,4].map(i=>`<i class="${i<P.clues?'on':''}"></i>`).join('')}</div><div class="btns"><button class="btn sm" data-act="clue" ${P.clues>=5?'disabled':''}>${P.clues>=5?'Box opened':'Film clue '+(P.clues+1)}</button></div></div>`,
+ drop:()=>`<div class="card drop"><div class="meta"><span class="kind d">Drop · 1 h 52 m left</span><span>${P.claim}/3 there</span></div><p><b>Refurbished bike</b> from Spoke &amp; Chain, at the river steps. Claim needs three of your circle in the same place. It’s real stuff from a shop that wants the foot traffic, never favors.</p><div class="btns"><button class="btn sm" data-act="claim" ${P.claim>=3?'disabled':''}>${P.claim>=3?'Claimed for the circle':'I’m here'}</button></div></div>`,
+ market:()=>`<div class="card"><div class="meta"><span class="kind l">Market · Sun 11:00</span><span>Zone 2</span></div><p>The weekly Market moved into a Zone. Same one-table handoffs as v0.2, with staff to hold items for no-shows.</p></div>`,
+ mission:missionCard,
+};
+function potCard(p){const open=P.pot===p.id,n=nIn(p),done=p.due==='done';
+  const prog=p.mode==='pledge'?`${n}/${p.need} pledged`:`${nPaid(p)}/${n} paid`;
+  const frac=p.mode==='pledge'?n/p.need:nPaid(p)/n;
+  let body='';
+  if(open){
+    body+=`<div class="ppl">${CIRCLE.map(k=>{const i=p.in[k],pd=p.paid[k];const st=!i?'out':p.mode==='pledge'&&!met(p)?'pledged':pd==='wait'?'checking':pd?'paid':'to pay';return `<span class="pp ${st.replace(' ','')}"><b>${k}</b>${st}</span>`}).join('')}</div>`;
+    if(p.mode==='pledge'&&!met(p))body+=`<div class="sub">Nobody pays anything unless ${p.need} pledge by ${p.due}. If it falls short, the pot just closes: no refunds needed, because no money moved.</div>`+
+      (p.in.You?`<div class="btns"><button class="btn sm ghost" data-act="unpledge" data-pot="${p.id}">Take back my pledge</button>${CIRCLE.find(k=>!p.in[k])?`<button class="btn sm ghost" data-act="nudge" data-pot="${p.id}">Ask ${CIRCLE.find(k=>!p.in[k])}</button>`:''}</div>`:`<div class="btns"><button class="btn sm good" data-act="pledge" data-pot="${p.id}">Pledge ${p.cur}${p.each}</button></div>`);
+    else if(p.in.You&&!p.paid.You&&!done){
+      body+=`<div class="sub">${p.mode==='pledge'?`Goal met. Everyone pays <b>${p.payee}</b> directly, ${p.cur}${p.each} each. Dev collects the console.`:`Pay <b>${p.payee}</b> ${p.cur}${p.each} with whatever you already use. ${p.org} confirms it landed.`}</div>`+
+        (P.pay===p.id?`<div class="payrow">${['Bank transfer','PayPal','Revolut','Cash in hand'].map(m=>`<button class="btn sm ghost" data-act="payvia" data-pot="${p.id}" data-m="${m}">${m}</button>`).join('')}</div>`:`<div class="btns"><button class="btn sm good" data-act="pay" data-pot="${p.id}">Pay ${esc(p.payee)} ${p.cur}${p.each}</button></div>`);}
+    else if(p.paid.You==='wait')body+=`<div class="sub">You marked it paid. Waiting for ${p.org} to confirm it arrived.</div>`;
+    else if(done)body+=`<div class="sub">Closed. Everyone paid ${p.payee} directly.</div>`;
+    else body+=`<div class="sub">You’re paid up.</div>`;
+  }
+  return `<div class="card pot ${done?'done':''} ${open?'open':''}" data-potcard="${p.id}" ${open?'':'tabindex="0" role="button" aria-label="Open pot: '+esc(p.name)+'"'}><div class="meta"><span class="kind l">${p.mode==='pledge'?'Pledge, then pay':'Split pot'} · ${esc(p.org)}</span><span>${done?'closed':'by '+esc(p.due)}</span></div>
+    <p><b>${esc(p.name)}</b> · ${p.cur}${p.each} each</p><div class="bar"><i style="width:${Math.min(100,frac*100)}%"></i></div><div class="meta" style="margin-top:4px"><span>${prog}</span><span>${open?'':'tap to open'}</span></div>${body}</div>`}
+const V={
+map(){return `<h2>City <span>5 live things near you</span></h2>
+  <div class="mapbox">${mapSVG()}</div>
+  <div class="legendrow"><span><i style="background:var(--stamp)"></i>Zone</span><span><i style="background:var(--ballpoint)"></i>Hunt</span><span><i style="background:var(--hazard)"></i>Drop</span><span><i style="background:var(--good)"></i>Mission</span><span><i style="background:var(--ink)"></i>Market</span></div>
+  <h3>Selected</h3>${DETAIL[P.sel]()}
+  <div class="formula">The map never shows where people are. Only places and things. Missions show an area until two hours before.</div>`},
+today(){const ps5=potOf('ps5');return `<h2>Today <span>Thu · fixture day</span></h2>
+  <div class="dd"><div class="k">DAILY DARE · BY RIN</div><div class="q">Order your coffee in the voice of a movie trailer.</div>${P.posted?'<span class="mono" style="font-size:11px">Posted · 5 of 6</span>':'<button class="btn sm" data-act="post">Record 15 s</button>'}</div>
+  <h3>Needs you</h3>
+  ${!ps5.in.You?`<div class="card pot"><div class="meta"><span class="kind l">Pledge pot · Dev</span><span>${nIn(ps5)}/${ps5.need} pledged</span></div><p>PS5 for the flat, £75 each. Nobody pays unless six pledge by Friday.</p><div class="btns"><button class="btn sm good" data-act="openPot" data-pot="ps5">See the pot</button></div></div>`:''}
+  ${owesYou()?`<div class="card pot"><div class="meta"><span class="kind l">Pots</span><span>${owesYou()} to pay</span></div><p>${POTS.filter(p=>p.in.You&&!p.paid.You&&met(p)&&p.due!=='done').map(p=>esc(p.name)).join(' · ')}</p><div class="btns"><button class="btn sm good" data-act="money">Open Pots</button></div></div>`:''}
+  <div class="card"><div class="meta"><span class="kind l">Ledger</span><span>from Pia</span></div><p>Groceries split six ways. Your share is ½ favor.</p><div class="btns"><button class="btn sm" data-act="settle">Settle by cooking Sat</button></div></div>
+  <div class="card zone"><div class="meta"><span class="kind z">Fixture · 20:00</span><span>${Object.values(P.lineup).filter(Boolean).length}/4 in lineup</span></div><p>4B &amp; co vs Third Floor at The Loading Dock.</p><div class="btns"><button class="btn sm red" data-act="league">Lineup</button></div></div>
+  <h3>Later</h3>
+  <div class="card chap"><div class="meta"><span class="kind c">Chapter night · 22:00</span><span>${P.going} going</span></div><p>The Basement, back room at The Loading Dock.</p><div class="btns"><button class="btn sm ghost" data-act="chapter">Open chapter</button></div></div>
+  <div class="card mission"><div class="meta"><span class="kind m">Mission 07 · Sat</span><span>${P.missionN} in</span></div><p>The Freeze. ${P.missionIn?'You’re in. Briefing on the map.':'60 seconds, a whole square, one secret.'}</p><div class="btns"><button class="btn sm ghost" data-act="seeMission">Show on map</button></div></div>
+  <div class="card drop"><div class="meta"><span class="kind d">Drop</span><span>1 h 52 m</span></div><p>A bike at the river steps. Needs three of you.</p><div class="btns"><button class="btn sm ghost" data-act="seeDrop">Show on map</button></div></div>`},
+chapter(){const h=HANDLES[P.handle];return `<h2>The Basement <span>chapter · ${21+P.vouch} members</span></h2>
+  <div class="rules"><div class="k">THE RULES</div><ol><li>Chapter videos live in the Vault and vanish after 24 hours.</li><li>You vouch for who you bring in.</li><li>Nobody is ever the target.</li><li>At chapter night you go by your handle.</li></ol></div>
+  <div class="card chap"><div class="meta"><span class="kind c">Chapter night · tonight 22:00</span><span>${P.going} going</span></div><p>Back room at The Loading Dock, after the fixture. Roast battles, arm-wrestling, this week’s Homework stories.</p>
+   <div class="sub">You go as <b class="mono">${h}</b> <button class="link" data-act="handle">change</button></div>
+   <div class="btns"><button class="btn sm ${P.rsvp?'ghost':'red'}" data-act="rsvp">${P.rsvp?'Going · undo':'I’m going'}</button></div></div>
+  <h3>The Vault <span class="mono" style="text-transform:none;letter-spacing:0">· members only · no downloads</span></h3>
+  <div class="vault">${VAULT.map((v,i)=>`<button class="vt-tile" data-act="watch" data-i="${i}" style="background:${v.g}"><span class="left">${v.left}</span><b>${esc(v.what)}</b><small>${v.who}${P.watched[i]?' · watched':''}</small></button>`).join('')}</div>
+  <div class="formula">Gone after 24 hours. If someone screenshots, the person in it is told.</div>
+  <h3>Bring someone in</h3>
+  ${P.vouch===0?`<div class="card"><p>You have <b>1 invite</b> this month. You stake <b>1 Reliability</b> on whoever you bring. If they flake within three weeks you lose it; if they stick, you both get it back plus one.</p><div class="btns"><button class="btn sm" data-act="vouch">Vouch for Sam</button></div></div>`:
+   `<div class="card"><div class="meta"><span class="kind c">Vouched · pending</span><span>day 0 of 21</span></div><p><b>Sam</b>, brought in by you. Their first chapter night is tonight. Your 1 Reliability is on the line until the 21st.</p></div>`}
+  <h3>Who brought who</h3>
+  <div class="members">${MEMBERS.map(([n,b])=>`<div><span class="av">${n.slice(0,2).toUpperCase()}</span><b>${n}</b><small>vouched by ${b}</small></div>`).join('')}${P.vouch?'<div><span class="av">SA</span><b>Sam</b><small>vouched by you</small></div>':''}</div>
+  <h3>This month’s mission</h3>${missionCard()}
+  <div class="formula">Chapters are invite-only and cross circles: 21 people from 6 circles. Circles are who you share a fridge with; a chapter is who you go big with.</div>`},
+league(){const n=Object.values(P.lineup).filter(Boolean).length;return `<h2>League <span>Season 2 · week 6 of 8</span></h2>
+  <div class="card zone"><div class="meta"><span class="kind z">Tonight's fixture</span><span>${n}/4 needed</span></div><p><b>4B &amp; co vs Third Floor</b> · The Loading Dock, 20:00. Three rounds, judged by both circles and the Zone crowd.</p>
+  <div class="lineup">${Object.entries(P.lineup).map(([k,v])=>`<button data-lu="${k}" class="${v?'in':''}">${k}<small>${v?'in':'tap to join'}</small></button>`).join('')}</div>
+  <div class="formula">${n>=4?'Lineup complete. Teammates can see who showed up.':'If the lineup is short, the circle forfeits. Teammates get a nudge to ask you, not a notification from the app.'}</div></div>
+  <h3>Table</h3>
+  <table class="table"><thead><tr><th>#</th><th>Circle</th><th>P</th><th style="text-align:right">Pts</th></tr></thead><tbody>
+  ${[['Basement Kings',5,18],['Night Shift',5,15],['4B & co',5,14],['Third Floor',5,12],['Allotment 9',5,7],['The Cousins',5,4]].map((r,i)=>`<tr class="${r[0]==='4B & co'?'me':''}"><td>${i+1}</td><td>${esc(r[0])}</td><td>${r[1]}</td><td class="n">${r[2]}</td></tr>`).join('')}</tbody></table>
+  <div class="formula">Top two go up, bottom two go down. Insane Week in 12 days: every circle in the city, one weekend, Zone finals.</div>`},
+money(){const b=bal();return `<h2>Money <span>favors and pots</span></h2>
+  <div class="seg" role="tablist"><button data-seg="pots" aria-selected="${P.money==='pots'}">Pots</button><button data-seg="favors" aria-selected="${P.money==='favors'}">Favors</button></div>
+  ${P.money==='favors'?`<div class="money"><div class="mono" style="font-size:10.5px;color:var(--muted);letter-spacing:.06em">YOUR BALANCE</div><div class="big">${b>0?'+':''}${b.toFixed(2).replace(/\.?0+$/,'')} favors</div><div class="formula">Limit −5 · stays in the circle · no free credits · can’t be bought or cashed out · jubilee in 21 days</div></div>
+  <h3>This week</h3>
+  ${tx.map(x=>`<div class="tx"><span>${esc(x.t)}</span><span class="amt ${x.amt<0?'neg':'pos'}">${x.amt>0?'+':x.amt<0?'−':''}${Math.abs(x.amt)}</span><small>${x.who} · ${x.when}</small></div>`).join('')}
+  <div class="formula">Groceries, dinners, chores, borrowed tools. When money stops meaning anything, this is where the day-to-day lives.</div>`:
+  `<div class="safe"><b>INSANE never holds your money.</b> Pots track who’s in and who’s paid. You pay each other, or the shop, with whatever you already use.</div>
+  ${POTS.map(potCard).join('')}
+  ${P.newPot?`<div class="card newpot"><div class="meta"><span class="kind l">New pot</span><button class="link" data-act="cancelPot">cancel</button></div>
+    <label>What for<input id="np-name" maxlength="40" placeholder="Festival tickets"></label>
+    <div class="np2"><label>Each<input id="np-each" type="number" min="1" max="2000" value="40" inputmode="numeric"></label><label>By<select id="np-due"><option>Sun</option><option selected>Fri 24th</option><option>end of month</option></select></label></div>
+    <fieldset><legend>How it works</legend><label class="rad"><input type="radio" name="np-mode" value="pledge" checked><span><b>Pledge, then pay.</b> Only goes ahead if enough of you commit. Best for buying something.</span></label><label class="rad"><input type="radio" name="np-mode" value="split"><span><b>Split pot.</b> Everyone pays the organizer as they go. Best for trips you’re already booking.</span></label></fieldset>
+    <div class="btns"><button class="btn sm good" data-act="createPot">Create pot</button></div></div>`:`<div class="btns"><button class="btn sm" data-act="newPot">+ New pot</button></div>`}
+  <div class="formula">No balance to top up, nothing to withdraw, no card. That’s what keeps INSANE out of the money-transmission business.</div>`}`},
+};
+function render(){$('#view').innerHTML=V[P.tab]();document.querySelectorAll('.nav button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===P.tab));hud();
+  $('#bMap').textContent=P.claim>=3?'':'1';$('#bMap').hidden=P.claim>=3;
+  const m=owesYou()+(potOf('ps5').in.You?0:1);$('#bMon').textContent=m;$('#bMon').hidden=!m;$('#bChap').hidden=P.rsvp}
+const go=(tab,extra)=>{P.tab=tab;Object.assign(P,extra||{});$('#view').scrollTop=0;render()};
+document.querySelector('.nav').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;go(b.dataset.tab)});
+$('#view').addEventListener('click',e=>{
+  const pin=e.target.closest('[data-pin]');if(pin){P.sel=pin.dataset.pin;render();return}
+  const seg=e.target.closest('[data-seg]');if(seg){P.money=seg.dataset.seg;render();return}
+  const t=e.target.closest('button');
+  if(!t){const pc=e.target.closest('[data-potcard]');if(pc&&!e.target.closest('input,select,label')){P.pot=P.pot===pc.dataset.potcard?null:pc.dataset.potcard;P.pay=null;render()}return}
+  const a=t.dataset.act,pot=t.dataset.pot&&potOf(t.dataset.pot);
+  if(t.dataset.lu){const k=t.dataset.lu;P.lineup[k]=!P.lineup[k];render();if(k==='You'&&P.lineup.You)toast('You’re in. Four of six: the fixture is on.');return}
+  if(a==='league'){go('league');return}
+  if(a==='chapter'){go('chapter');return}
+  if(a==='money'){go('money',{money:'pots'});return}
+  if(a==='openPot'){go('money',{money:'pots',pot:t.dataset.pot});return}
+  if(a==='clue'){P.clues++;render();toast(P.clues>=5?'Box opened: a Polaroid camera from Third Floor’s pool.':`Clue ${P.clues} filmed. Next pin unlocked.`);return}
+  if(a==='claim'){P.claim=Math.min(3,P.claim+1);if(P.claim<3)toast(`${P.claim} of 3 there. Maya is 6 minutes away.`);else{tx.unshift({t:'Claimed a drop for the circle: bike',who:'Circle',amt:0,when:'now'});toast('Claimed. The bike goes into Sunday’s Market pool.')}render();return}
+  if(a==='post'){P.posted=true;render();toast('Posted. Five tiles unlocked.');return}
+  if(a==='settle'){tx.unshift({t:'Will cook Saturday for Pia’s groceries',who:'You',amt:+.5,when:'now'});render();toast('Settled. Pia sees it right away.');return}
+  if(a==='seeDrop'){go('map',{sel:'drop'});return}
+  if(a==='seeMission'){go('map',{sel:'mission'});return}
+  // Pots
+  if(a==='pledge'){pot.in.You=1;render();const left=pot.need-nIn(pot);toast(left>0?`Pledged. ${nIn(pot)} of ${pot.need}: ${left} more and it happens. Nothing is charged.`:'Pledged. Goal met.');return}
+  if(a==='unpledge'){delete pot.in.You;render();toast('Pledge withdrawn. Nothing was charged, so there’s nothing to refund.');return}
+  if(a==='nudge'){const who=CIRCLE.find(k=>!pot.in[k]);if(!who)return;t.disabled=true;toast(`Asked ${who}. They see a nudge from you, not from the app.`);
+    setTimeout(()=>{pot.in[who]=1;const m=met(pot);if(m&&pot.id==='ps5'){pot.paid.Maya=1;pot.paid.Dev=1}render();toast(m?`<b>${who} pledged. ${nIn(pot)} of ${pot.need}: goal met.</b> Everyone now pays ${esc(pot.payee)} directly.`:`${who} pledged. ${nIn(pot)} of ${pot.need}.`)},1600);return}
+  if(a==='pay'){P.pay=pot.id;render();return}
+  if(a==='payvia'){const m=t.dataset.m;pot.paid.You='wait';P.pay=null;render();
+    toast(m==='Cash in hand'?`Marked as cash to ${esc(pot.payee)}. They confirm when they have it.`:`Opens ${m} with ${esc(pot.payee)}’s details filled in. INSANE never sees the money, only the tick.`);
+    setTimeout(()=>{pot.paid.You=1;render();toast(pot.payee===pot.org?`${esc(pot.org)} confirmed your ${pot.cur}${pot.each} arrived.`:`${esc(pot.org)} confirmed ${esc(pot.payee)} has your ${pot.cur}${pot.each}.`)},2200);return}
+  if(a==='newPot'){P.newPot=true;render();setTimeout(()=>$('#np-name')&&$('#np-name').focus(),0);return}
+  if(a==='cancelPot'){P.newPot=false;render();return}
+  if(a==='createPot'){const name=($('#np-name').value||'').trim()||'Festival tickets',each=Math.max(1,Math.min(2000,Math.round(+$('#np-each').value||40))),mode=document.querySelector('input[name=np-mode]:checked').value,due=$('#np-due').value;
+    const id='p'+Date.now();POTS.unshift({id,name,mode,org:'You',payee:'You',cur:'£',each,need:4,due,in:{You:1},paid:mode==='split'?{You:1}:{}});P.newPot=false;P.pot=id;render();
+    toast(mode==='pledge'?'Pot created. Your circle gets one message. It goes ahead if four of you pledge.':'Pot created. Your circle gets one message with your payment details.');return}
+  // Chapters
+  if(a==='rsvp'){P.rsvp=!P.rsvp;P.going+=P.rsvp?1:-1;render();if(P.rsvp)toast(`You’re going as ${HANDLES[P.handle]}. Doors 22:00, back room.`);return}
+  if(a==='handle'){P.handle=(P.handle+1)%HANDLES.length;render();return}
+  if(a==='watch'){const i=+t.dataset.i;P.watched[i]=1;render();toast(`Played “${esc(VAULT[i].what)}”. Gone in ${VAULT[i].left}. No download, no share.`);return}
+  if(a==='vouch'){P.vouch=1;render();toast('Sam’s in. They get your handle and tonight’s door code, and nothing from before they joined.');return}
+  // Missions
+  if(a==='mIn'){P.missionIn=true;P.missionN++;render();toast('You’re in. Your briefing is secret until Saturday. Tell nobody the time.');return}
+  if(a==='mOut'){P.missionIn=false;P.missionN--;render();toast('Out, no penalty. Missions are never owed.');return}
+});
+$('#view').addEventListener('keydown',e=>{const pc=e.target.closest&&e.target.closest('[data-potcard]');if(pc&&e.target===pc&&(e.key==='Enter'||e.key===' ')){e.preventDefault();pc.click()}});
+render();
+
+/* ================================================================
+   SIMULATOR (v0.2 engine + v0.3 layers + v0.4 candidates)
+   ================================================================ */
+const REASONS=['Nothing to do','Trust decay pressure','Blamed for a broken chain','IOU sold to a stranger','Debt stress','Hurt doing a dare','Swaps that fell through','Favors nobody would honor'];
+const V1={circles:0,daily:0,circlePrompts:0,board:0,market:0,decay:1,reminders:1,ladder:1,shortChains:1,sell:1,limit:0,bonus:0,jubilee:0,cap:0,downrank:0};
+const V2={circles:1,daily:1,circlePrompts:1,board:1,market:1,decay:0,reminders:1,ladder:1,shortChains:0,sell:0,limit:1,bonus:0,jubilee:1,cap:1,downrank:1};
+const PRESETS={v1:V1,v2:V2,trueque:{...V2,bonus:1,limit:0},base:{...V1,decay:0,reminders:0,ladder:0,shortChains:0,sell:0}};
+const BENCH={1:[.25,.29],7:[.09,.16],30:[.04,.10]};
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const clamp=(x,a,b)=>x<a?a:x>b?b:x;
+
+const W=(c,k)=>c.w&&c.w[k]!=null?c.w[k]:1;
+function simulate(c){
+  const K=c.k,R=mulberry(c.seed),gauss=()=>{let u=0;while(!u)u=R();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*R())};
+  const G=c.groups,S=12,D=120,people=[];
+  for(let g=0;g<G;g++)for(let i=0;i<S;i++)people.push({id:people.length,g,joined:-1,on:false,s:clamp(.5+gauss()*.2,0,1),b:R(),r:.3+R()*.7,v:0,ann:new Float32Array(8),last:-99,opens:new Set(),owe:0,held:0,listed:0,unbacked:0,vouch:-1,inPot:0});
+  const byG=g=>people.slice(g*S,g*S+S),pick=a=>a[Math.floor(R()*a.length)];
+  let debts=[],C=.9,norm=3,harm=0,minor=0,pending=[],fails=0,duelsRun=0,potsDone=0,potsFailed=0,bounties=[],bountyDone=0,partnerFailed=false;
+  const reasons=new Array(8).fill(0);
+  const o={dau:[],C:[],swaps:[],atomic:[],harmD:[]};let atomicShare=0;
+  const pot=new Array(G).fill(null),wand=new Array(G).fill(-1),shedG=new Array(G).fill(0);
+  const accept=()=>c.chapters?.45+.15*W(c,'chapters'):.45;
+  const join=(p,d,by)=>{if(p.joined>=0)return;p.joined=d;p.on=true;p.last=d;p.v=.06;if(c.bonus)p.unbacked=5;if(by!=null)p.vouch=by;
+    const fr=byG(p.g).filter(q=>q.joined<0),k=c.circles?3:(R()<.3?1:0);
+    for(let i=0;i<k&&i<fr.length;i++)if(R()<(c.circles?accept():.3))pending.push([pick(fr),d+1+Math.floor(R()*3),p.id])};
+  for(let d=0;d<D;d++){
+    if(d<45){const n=Math.round(G*S*.0045);for(let i=0;i<n;i++)join(pick(people),d)}
+    const missionDay=c.missions&&d%30===20;
+    if(missionDay){let act=0;for(const q of people)if(q.on)act++;const n=Math.round(act*.04*W(c,'missions'));for(let i=0;i<n;i++)join(pick(people),d)}   // missions get seen: word of mouth
+    pending=pending.filter(([p,t,by])=>{if(t===d){join(p,d,by);return false}return true});
+    const af=new Array(G).fill(0);for(const p of people)if(p.on&&d-p.last<=3)af[p.g]++;
+    for(const p of people){p.owe=0;p.held=0}for(const x of debts){people[x.d].owe++;people[x.h].held++}
+    let opens=0,swaps=0,dn=0,wS=0,wI=0,honor=0,tries=0;const market=c.market&&d%7===6;
+    const dropG=new Array(G);for(let g=0;g<G;g++)dropG[g]=c.drops&&R()<.08;
+    let activeTotal=0;for(const q of people)if(q.on)activeTotal++;
+    const zoneNight=c.zones&&d%7===4,fixture=c.league&&d%7===2,hunts=Math.min(1,atomicShare*4),hwDay=c.homework&&d%7===0;
+    if(c.custody&&c.partnerFailDay===d){partnerFailed=true;C*=.4;for(const q of people)if(q.on&&pot[q.g])q.ann[4]+=1.5;pot.fill(null)}   // the Synapse scenario
+    // pots: a trip or purchase every few weeks per circle with at least 3 active
+    const anyPot=c.pots||c.pledge||c.custody;
+    if(anyPot)for(let g=0;g<G;g++){
+      if(!pot[g]&&af[g]>=3&&!partnerFailed&&R()<.05)pot[g]={end:d+7+Math.floor(R()*4),n:0};
+      if(pot[g]&&pot[g].end===d){const P=pot[g],need=4,okRate=c.custody?.92:c.pledge?.85:.75;
+        const done=P.n>=(c.pledge?need:2)&&R()<okRate;
+        for(const q of byG(g))if(q.inPot){if(done)q.potWin=d;else q.ann[6]+=c.pledge?.03:.12;q.inPot=0}
+        done?potsDone++:potsFailed++;pot[g]=null}}
+    if(c.wanderers)for(let g=0;g<G;g++)if(af[g]>=2&&R()<.1){const q=byG(g).filter(x=>x.on&&x.id!==wand[g]);if(q.length){wand[g]=pick(q).id;people[wand[g]].wandAt=d}}   // passed on: a handoff
+    if(c.shed)for(let g=0;g<G;g++)shedG[g]*=.8;
+    for(const p of people){if(!p.on)continue;
+      const age=d-p.joined,f=Math.max(0,af[p.g]-(d-p.last<=3?1:0));
+      let pull=0;
+      if(c.decay)pull+=.08;
+      if(c.reminders)pull+=.1*Math.min(1,p.owe/2);
+      if(c.market&&d%7===5)pull+=.12;
+      if(market&&p.listed)pull+=.35;
+      if(fixture&&f>=3)pull+=.2;
+      if(zoneNight&&f>=1)pull+=.15;
+      if(c.ledger&&f>0)pull+=.12*Math.min(1,f/4);
+      if(dropG[p.g])pull+=.15;
+      if(c.league&&f>=3&&d-p.last>2&&R()<.25)pull+=.5;
+      if(pot[p.g])pull+=.1*W(c,'pots');                                   // watching the pot fill
+      if(p.potWin===d)pull+=.4;
+      if(hwDay)pull+=.08*W(c,'homework');
+      if(missionDay&&f>=2)pull+=.2*W(c,'missions');
+      if(c.wanderers&&p.wandAt===d)pull+=.3*W(c,'wanderers');
+      if(age===14)p.dense=f>=3;
+      const annoy=p.ann.reduce((a,b)=>a+b,0)+(c.clutter||0);   // every extra feature is one more thing to learn
+      const prob=clamp(.015+.42*Math.exp(-age/1.4)+1.1*p.v+pull*(.4+.6*p.s)-.25*annoy,.005,.95);
+      let val=0;
+      if(R()<prob){opens++;p.opens.add(age);p.last=d;
+        if(c.circles&&f<3&&R()<.08){const fr=byG(p.g).filter(q=>q.joined<0);if(fr.length&&R()<accept())pending.push([pick(fr),d+1,p.id])}
+        val+=Math.max(.12*Math.exp(-age/12)*(c.chapters?.7:1),c.zones?.05:0);                 // chapters: less strangers' feed
+        const dareAcc=.3+.6*p.b+(c.chapters?.1*W(c,'chapters'):0);                           // private, 24h videos: easier to say yes
+        if(R()<f/(f+3)*.5&&R()<dareAcc){val+=.3*K;
+          let ins=clamp(norm+gauss()*1.1+(c.ladder?.9*p.b:0),0,10);if(c.cap)ins=Math.min(ins,6.5);
+          const w=c.downrank?(ins<=6?Math.pow(ins+.5,1.6):Math.pow(6.5,1.6)*Math.exp(-.9*(ins-6))):Math.pow(ins+.5,1.6);dn++;wS+=w;wI+=w*ins;
+          if(ins>7&&R()<.02*(ins-7)*(ins-7)){harm++;p.ann[5]+=1.5}
+          if(c.ladder&&R()<(c.shortChains?.12:.02))p.ann[2]+=.35}
+        if(c.daily&&f>0)val+=.28*K*(f/(f+2))*(c.circlePrompts?.55+.45*Math.exp(-age/30):Math.exp(-age/25));
+        const boardP=f/(f+4)*(.3+.7*C)*(c.timebank?1+.2*W(c,'timebank'):1);
+        if(c.board&&f>0&&R()<boardP){val+=.22*K;
+          if(R()<.3){const q=byG(p.g).filter(x=>x.on&&x!==p);if(q.length)debts.push({d:p.id,h:pick(q).id,t:d})}}
+        if(c.ledger&&f>0&&R()<(1-Math.exp(-f/3))*.6)val+=.22*K;
+        if(zoneNight&&f>=1&&R()<.3+.4*p.b){val+=.4*K;
+          const zi=clamp(norm+1.5+gauss(),0,c.cap?8:10);if(zi>7&&R()<.02*(zi-7)*(zi-7)*.15){harm++;p.ann[5]+=1.5}
+          if(c.combat&&R()<.35){val+=.3*K*W(c,'combat');if(R()<.008){minor++;p.ann[5]+=.4}}           // pillow fights, foam swords, sumo suits
+          if(c.realFights&&R()<.35){val+=.4*K;if(R()<.04){harm++;p.ann[5]+=2}}}
+        if(c.hunts&&f>=2&&R()<.14*hunts){val+=.35*K}
+        if(c.hunts&&f>=2&&R()<.03)val+=.15*K;
+        if(dropG[p.g]&&f>=2){if(c.payPrize){if(R()<.3)val+=(R()<.3?.6:.05)*K}                    // pay to enter: fewer try, most lose
+          else if(R()<.6){if(c.cashDrops){val+=.3*K/(1+activeTotal/500);p.unbacked+=2}else val+=.3*K}}
+        if(hwDay&&R()<.5)val+=.3*K*(.5+.5*(1-p.b))*(.6+.4*Math.exp(-age/40))*W(c,'homework');      // courage, not danger: best for the timid
+        if(missionDay&&f>=2&&R()<.4)val+=.4*K*W(c,'missions');
+        if(c.wanderers&&p.wandAt===d)val+=.12*K*W(c,'wanderers');
+        if(pot[p.g]&&!p.inPot&&R()<.5){p.inPot=1;pot[p.g].n++;val+=.12*K*W(c,'pots')}
+        if(p.potWin===d)val+=.35*K*W(c,'pots');
+        if(c.shed&&(d+p.id)%30===0&&R()<.6){shedG[p.g]+=1;val+=.12*K*W(c,'shed')}               // gave away something loved
+        if(c.bounties&&R()<.04){bounties.push({p:p.id,g:p.g,t:d})}
+        if(c.cashOut&&R()<.05)p.unbacked+=2;                                                         // bought favors with money
+        if(R()<.14)p.listed=1;
+        if(p.listed&&(c.market?market:true)){
+          let pool=(c.market?3:1)*(f+1)*1.5+(c.market?0:6);
+          if(c.shed)pool+=shedG[p.g]*1.5*W(c,'shed');
+          if(c.bounties)pool+=bounties.filter(x=>x.g===p.g).length*2*W(c,'bounties');
+          const q=c.market?1-Math.exp(-pool/14):1-Math.exp(-pool/90);
+          if(R()<q){const uneven=R()<(c.timebank?.45-.2*W(c,'timebank'):.45),accepted=!uneven||R()<C;if(!accepted)p.ann[7]+=.05;
+            if(R()<(c.market?.85:.45)&&accepted){swaps++;val+=.45*K;p.listed=0;
+              if(uneven&&!(c.limit&&p.owe>=5)){const fr=byG(p.g).filter(x=>x.on&&x!==p);if(fr.length)debts.push({d:p.id,h:pick(fr).id,t:d})}}
+            else p.ann[6]+=.12}
+          else if(!c.market)p.ann[6]+=.008}
+        if(c.bounties&&market){const mine=bounties.filter(x=>x.p===p.id);for(const b of mine){if(R()<.45*W(c,'bounties')){bountyDone++;val+=.35*K;bounties.splice(bounties.indexOf(b),1)}else if(d-b.t>14){p.ann[6]+=.05;bounties.splice(bounties.indexOf(b),1)}}}
+        if(p.held>0&&R()<.15){const x=debts.find(x=>x.h===p.id);if(x){const dbt=people[x.d];tries++;
+          if(dbt.on&&R()<.4+.5*dbt.r){honor++;debts.splice(debts.indexOf(x),1);val+=.1}
+          else if(!dbt.on)debts.splice(debts.indexOf(x),1)
+          else if(c.duels&&R()<.6*W(c,'duels')){duelsRun++;honor++;debts.splice(debts.indexOf(x),1);val+=(c.zones?.3:.15)*K;dbt.ann[7]=Math.max(0,dbt.ann[7]-.1)}}}  // settled in a duel, circle votes
+        if(p.unbacked>0&&R()<.25){tries++;p.unbacked--;let unb=0;for(const q of people)if(q.on)unb+=q.unbacked;
+          if(R()<.85*C*Math.max(.1,1-unb/(4*Math.max(1,af[p.g])*G/10))){honor++;val+=.1;const q=byG(p.g).find(x=>x.on&&x!==p);if(q)q.ann[4]+=.06}else p.ann[7]+=.1}
+        if(p.owe>0&&R()<.3*p.r){const x=debts.find(x=>x.d===p.id);if(x){debts.splice(debts.indexOf(x),1);honor++;tries++}}
+      }
+      if(c.decay)p.ann[1]+=(1-p.s)*.012;
+      if(p.owe>2)p.ann[4]+=.02*(p.owe-2);
+      for(let k=0;k<8;k++)p.ann[k]*=.93;
+      if(p.last===d)p.v=p.v*.7+val*.3;
+      let aqm=1,nqm=1;if(c.league&&f>=3){aqm=.6;nqm=.4}if(c.ledger&&f>=2&&p.owe+p.held>0){aqm*=.8;nqm*=.6}
+      if(p.inPot){aqm*=.8;nqm*=.6}                                        // your money's in the trip
+      if(c.chapters&&f>=3)nqm*=1-.25*W(c,'chapters');                     // belonging: you're a member, not a user
+      const a2=p.ann.reduce((a,b)=>a+b,0)+(c.clutter||0),aq=.06*Math.max(0,a2-.12)*aqm,nq=(d-p.last>14?.08:0)*nqm;
+      if(R()<aq+nq){p.on=false;let best=0;if(R()<aq/(aq+nq)){let bv=-1;for(let k=1;k<8;k++)if(p.ann[k]>bv){bv=p.ann[k];best=k}}reasons[best]++;
+        if(c.chapters&&p.vouch>=0&&age<21){const v=people[p.vouch];v.ann[2]+=.15}}               // your invitee flaked: your stake takes a hit
+    }
+    if((c.sell||c.cashOut)&&debts.length){const act=[],cum=[];let t=0;for(const q of people)if(q.on){t+=Math.pow(q.held+1,1.8);act.push(q.id);cum.push(t)}
+      for(const x of debts)if(act.length&&R()<.05){const r=R()*t;let lo=0,hi=cum.length-1;while(lo<hi){const m=(lo+hi)>>1;if(cum[m]<r)lo=m+1;else hi=m}
+        if(act[lo]!==x.d&&people[act[lo]].g!==people[x.d].g){x.h=act[lo];people[x.d].ann[3]+=.3}}}
+    if(c.jubilee&&d>0&&d%30===0)debts=debts.filter(x=>d-x.t<30);
+    if(tries>0)C=C*.9+.1*(honor/tries);
+    if(dn>0)norm=clamp(norm+.12*(wI/wS-norm)+(c.ladder?.03:0),0,10);
+    let atomic=0;for(let g=0;g<G;g++)if(af[g]>=4)atomic++;
+    atomicShare=atomic/G;o.dau.push(opens);o.C.push(C);o.swaps.push(swaps);o.atomic.push(atomic/G);o.harmD.push(harm);
+  }
+  const coh=people.filter(p=>p.joined>=0&&p.joined<=D-31),ret=[];
+  for(let k=0;k<=30;k++){let n=0;for(const p of coh)if(p.opens.has(k))n++;ret.push(n/Math.max(1,coh.length))}
+  const m1=n=>{let k=0;for(const p of n){for(let a=23;a<=30;a++)if(p.opens.has(a)){k++;break}}return k/Math.max(1,n.length)};
+  const d30=n=>n.filter(p=>p.opens.has(30)).length/Math.max(1,n.length);
+  const dense=coh.filter(p=>p.dense);
+  const timid=coh.filter(p=>p.b<1/3),bold=coh.filter(p=>p.b>2/3);
+  return {...o,ret,reasons,harm,minor,joined:people.filter(p=>p.joined>=0).length/people.length,ins:norm,m1:m1(coh),m1d:m1(dense),denseShare:dense.length/Math.max(1,coh.length),
+    d30timid:d30(timid),d30bold:d30(bold),pots:potsDone,potsFailed,duels:duelsRun,bountyDone};
+}
+const V3={...V2,ledger:1,league:1,zones:1,hunts:1,drops:1,cashDrops:0};
+const V2x={...V2,ledger:0,league:0,zones:0,hunts:0,drops:0,cashDrops:0};
+const PRE={v2:V2x,v3:V3,cash:{...V3,cashDrops:1},nocap:{...V3,cap:0,downrank:0},decay:{...V3,decay:1},v4:{...V3,pledge:1,chapters:1,missions:1}};
+const KEYS=['ledger','league','circles','zones','hunts','drops','cashDrops','daily','board','market','decay','shortChains','sell','cap','downrank','limit','bonus','pledge','chapters','missions','homework','timebank','duels','cashOut','realFights','payPrize'];
+const SEEDS=3,GROUPS=150;
+const cache=new Map();
+function avgRun(flags,o){const key=JSON.stringify([flags,o]);if(cache.has(key))return cache.get(key);
+  const runs=[];for(let i=0;i<SEEDS;i++)runs.push(simulate({...V2x,...flags,groups:GROUPS,k:o.k,seed:o.seed*101+i*17}));
+  const mean=k=>runs[0][k].map((_,j)=>runs.reduce((a,r)=>a+r[k][j],0)/SEEDS),sc=k=>runs.reduce((a,r)=>a+r[k],0)/SEEDS;
+  const out={ret:mean('ret'),dau:mean('dau'),C:mean('C'),swaps:mean('swaps'),harmD:mean('harmD'),m1:sc('m1'),harm:sc('harm'),joined:sc('joined'),dense:sc('denseShare')};
+  cache.set(key,out);return out}
+const kpi=o=>({D1:o.ret[1],D7:o.ret[7],D30:o.ret[30],M1:o.m1,swk:o.swaps.slice(-28).reduce((a,b)=>a+b,0)/4,C:o.C[o.C.length-1],harm:o.harm});
+const opt={k:.7,seed:1};
+
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function niceMax(v){if(v<=0)return 1;const p=Math.pow(10,Math.floor(Math.log10(v)));const n=v/p;return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p}
+function line(id,a,b,o2){
+  const cv=$(id),dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;if(!W)return;
+  cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);
+  const ink=css('--ink'),muted=css('--muted'),ln=css('--line'),acc=css(o2.color||'--stamp');
+  const L=40,Rr=12,T=10,B=20,w=W-L-Rr,h=H-T-B,n=a.length;
+  const max=o2.max??niceMax(Math.max(...a,...(b||[0]),o2.min||0)*1.08);
+  const X=i=>L+(n<=1?0:i/(n-1))*w,Y=v=>T+h-(Math.min(v,max)/max)*h;
+  x.font='10px "IBM Plex Mono", ui-monospace, monospace';x.textBaseline='middle';
+  for(let i=0;i<=4;i++){const v=max*i/4,y=Y(v);x.strokeStyle=ln;x.lineWidth=1;x.beginPath();x.moveTo(L,y+.5);x.lineTo(L+w,y+.5);x.stroke();x.fillStyle=muted;x.textAlign='right';x.fillText(o2.fmt(v),L-6,y)}
+  x.textAlign='center';x.textBaseline='top';x.fillStyle=muted;(o2.xt||[0,Math.floor((n-1)/2),n-1]).forEach(i=>x.fillText(o2.xl(i),Math.min(Math.max(X(i),L+16),L+w-16),T+h+5));
+  if(b){x.setLineDash([4,4]);x.strokeStyle=muted;x.lineWidth=1.4;x.beginPath();b.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.stroke();x.setLineDash([])}
+  x.beginPath();a.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.lineTo(X(n-1),Y(0));x.lineTo(X(0),Y(0));x.closePath();x.globalAlpha=.12;x.fillStyle=acc;x.fill();x.globalAlpha=1;
+  x.beginPath();a.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.strokeStyle=acc;x.lineWidth=2;x.stroke();
+  x.fillStyle=acc;x.beginPath();x.arc(X(n-1),Y(a[n-1]),3.5,0,7);x.fill();
+  x.fillStyle=ink;x.textAlign='right';x.textBaseline='bottom';x.font='600 11px "IBM Plex Mono", ui-monospace, monospace';x.fillText(o2.fmt(a[n-1]),X(n-1)-6,Math.max(T+12,Y(a[n-1])-4));
+}
+
+/* ---- Road to 90%: layer-by-layer chart ---- */
+const STEPS=[['v0.1',V1,'Lonely'],['v0.2',V2x,'Circles'],['+ Ledger as money',{ledger:1},'Infrastructure'],['+ League',{ledger:1,league:1},'Infrastructure'],['+ Zones',{ledger:1,league:1,zones:1},'Spectacle'],['+ Hunts',{ledger:1,league:1,zones:1,hunts:1},'Spectacle'],['+ Drops = v0.3',{ledger:1,league:1,zones:1,hunts:1,drops:1},'Spectacle']];
+let wf=null;
+let baseM1=0;
+function computeWF(){baseM1=kpi(avgRun(PRESETS.base,opt)).M1;wf=STEPS.map(([n,f,g])=>{const base=n==='v0.1'?V1:{...V2x,...f};const k=kpi(avgRun(base,opt));return {n,g,...k}})}
+function drawWF(){
+  if(!wf)return;const cv=$('#ch-wf'),dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;if(!W)return;
+  cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);
+  const ink=css('--ink'),muted=css('--muted'),ln=css('--line'),stamp=css('--stamp'),ball=css('--ballpoint'),good=css('--good'),haz=css('--hazard');
+  const narrow=W<520,L=34,Rr=8,T=16,B=narrow?44:34,w=W-L-Rr,h=H-T-B,max=1;
+  const Y=v=>T+h-(v/max)*h;
+  x.font='10px "IBM Plex Mono", ui-monospace, monospace';x.textBaseline='middle';
+  for(let i=0;i<=4;i++){const v=i/4,y=Y(v);x.strokeStyle=ln;x.lineWidth=1;x.beginPath();x.moveTo(L,y+.5);x.lineTo(L+w,y+.5);x.stroke();x.fillStyle=muted;x.textAlign='right';x.fillText(Math.round(v*100)+'%',L-6,y)}
+  // published range band at D30
+  x.fillStyle=css('--good-soft');x.fillRect(L,Y(.10),w,Y(.04)-Y(.10));
+    // 90% target
+  x.setLineDash([5,4]);x.strokeStyle=stamp;x.lineWidth=1.5;x.beginPath();x.moveTo(L,Y(.9)+.5);x.lineTo(L+w,Y(.9)+.5);x.stroke();x.setLineDash([]);
+  x.fillStyle=stamp;x.textAlign='left';x.fillText('your target: 90%',L+6,Y(.9)-8);
+  const n=wf.length,slot=w/n,bw=Math.min(54,slot*.62);
+  wf.forEach((s,i)=>{const cx=L+slot*i+slot/2,prev=i>1?wf[i-1].D30:0;
+    const col=s.g==='Infrastructure'?good:s.g==='Spectacle'?stamp:s.n==='v0.2'?ball:muted;
+    if(i>=2){x.fillStyle=col;x.globalAlpha=.9;x.fillRect(cx-bw/2,Y(s.D30),bw,Y(prev)-Y(s.D30));x.globalAlpha=.25;x.fillRect(cx-bw/2,Y(prev),bw,Y(0)-Y(prev));x.globalAlpha=1;
+      x.strokeStyle=muted;x.setLineDash([2,3]);x.beginPath();x.moveTo(cx-slot+bw/2,Y(prev)+.5);x.lineTo(cx-bw/2,Y(prev)+.5);x.stroke();x.setLineDash([])}
+    else{x.fillStyle=col;x.fillRect(cx-bw/2,Y(s.D30),bw,Y(0)-Y(s.D30))}
+    // month-one marker
+    x.fillStyle=ink;x.beginPath();x.moveTo(cx-5,Y(s.M1));x.lineTo(cx+5,Y(s.M1));x.lineTo(cx,Y(s.M1)+6);x.closePath();x.fill();
+    x.fillStyle=ink;x.textAlign='center';x.textBaseline='bottom';x.font='600 11px "IBM Plex Mono", ui-monospace, monospace';x.fillText(pct(s.D30),cx,Y(s.D30)-3);
+    x.font='10px "IBM Plex Mono", ui-monospace, monospace';x.textBaseline='top';x.fillStyle=muted;
+    const lab=narrow?s.n.replace('+ ','+').replace(' = v0.3','').replace(' as money',''):s.n.replace('+ ','+').replace(' = v0.3','');
+    if(narrow){x.save();x.translate(cx,T+h+6);x.rotate(-.5);x.textAlign='right';x.fillText(lab,4,0);x.restore()}
+    else{x.fillText(lab,cx,T+h+6);if(s.n.includes('v0.3')){x.fillStyle=stamp;x.fillText('= v0.3',cx,T+h+18)}}
+  });
+  $('#wfnote').textContent='3-seed average';
+  const v3=wf[n-1],v2=wf[1];
+  const r=(l,v,p,cls)=>`<div class="rung ${cls||''}"><small>${l}</small><b>${v}</b><p>${p}</p></div>`;
+  $('#ladder').innerHTML=r('Day 30, v0.2',pct(v2.D30),'opened on exactly day 30')+r('Day 30, v0.3',pct(v3.D30),`${Math.round((v3.D30-v2.D30)*100)} points from five layers`,'hi')+r('Month one, v0.3',pct(v3.M1),'opened any day in days 23–30','hi')+r('Month one, plain app',pct(baseM1),'same loose measure, no hooks: compare to this, not WhatsApp');
+}
+
+/* ---- Ideas ---- */
+function ideas(){
+  const v3=kpi(avgRun(V3,opt)),cash=kpi(avgRun(PRE.cash,opt)),noz=kpi(avgRun({...V3,zones:0},opt)),noh=kpi(avgRun({...V3,hunts:0},opt)),nod=kpi(avgRun({...V3,drops:0},opt)),nocap=kpi(avgRun(PRE.nocap,opt));
+  const I=[
+   ['Random money drops','no','Out. Replaced by drops of real stuff that need three of you to claim.',
+    `<b>HQ Trivia</b> was exactly this: a daily cash prize. It peaked at more than 2.3 million concurrent players in February 2018. Then prizes split between too many winners and cheaters, games got repetitive, and by early 2020 the last prize was $5 shared among 523 people. It shut down after paying out about $6M of its $15M+ funding.<br><br>In a post-money world, cash drops are also <b>free issuance</b>, the mistake that sank the trueque clubs and Bunz.`,
+    `v0.3 with drops paid in favors:<br>favor confidence ${pct(v3.C)} → <b>${pct(cash.C)}</b><br>swaps/week ${fmt(v3.swk)} → <b>${fmt(cash.swk)}</b><br>day 30 ${pct(v3.D30)} → <b>${pct(cash.D30)}</b>`],
+   ['Treasure hunt constructions','mod','In, with one change: circles build hunts for other circles.',
+    `<b>Pokémon GO</b> peaked at about 45 million daily users in July 2016 and was down to about 30 million by late summer. Hunts designed by the company run out of novelty. Hunts built by players don't, because every circle is a new author. Each clue is a 10-second dare at a real spot, and the final box holds something from the builder's Market pool.`,
+    `Remove hunts from v0.3:<br>day 30 ${pct(v3.D30)} → <b>${pct(noh.D30)}</b><br>Small in the model. Hunts are recruitment and stories, not retention.`],
+   ['Record zones with cameras','yes','The best idea in the project. Zones are the stage the name was waiting for.',
+    `A Zone is a partner venue (a skatepark, a gym, a bar's back room, a community hall) with fixed cameras and staff. It solves three problems at once: <b>safety</b> (the insane stuff happens where someone is watching), <b>quality</b> (better footage, verified entries), and <b>gathering</b> (a weekly night out for the circle). The insanity ceiling rises from 6.5 to 8 <i>only</i> inside Zones. Zones also host the Market and League fixtures.`,
+    `Remove Zones from v0.3:<br>day 30 ${pct(v3.D30)} → <b>${pct(noz.D30)}</b><br>Remove the ceiling everywhere:<br>people hurt ${v3.harm.toFixed(0)} → <b>${fmt(nocap.harm)}</b>`],
+  ];
+  $('#ideasList').innerHTML=I.map(([t,s,v,ev,num])=>`<div class="idea"><div><h4>${t}<span class="st ${s}">${s==='no'?'NOT THIS':s==='mod'?'YES, CHANGED':'YES'}</span></h4><p><b>${v}</b></p><p class="ev">${ev}</p></div><div><div class="num">${num}</div></div></div>`).join('')+
+  `<div class="idea"><div><h4>What you didn’t suggest, and matters more<span class="st yes">ADDED</span></h4><p><b>The ledger as everyday money, and a League with weekly fixtures.</b></p><p class="ev">Neither is exciting. Both are the reason people can't leave: your shared expenses live in one, your teammates are waiting in the other.</p></div><div><div class="num">Remove the ledger from v0.3:<br>day 30 ${pct(v3.D30)} → <b>${pct(kpi(avgRun({...V3,ledger:0},opt)).D30)}</b><br>Remove the League:<br>day 30 ${pct(v3.D30)} → <b>${pct(kpi(avgRun({...V3,league:0},opt)).D30)}</b></div></div></div>`;
+}
+
+/* ---- Simulator tab ---- */
+const cfg={...V3};let cur=null,ref=null;
+function sync(){KEYS.forEach(k=>{$('#c-'+k).checked=!!cfg[k]});$('#s-k').value=opt.k;$('#o-k').textContent=(+opt.k).toFixed(2);$('#s-seed').value=opt.seed;$('#o-seed').textContent=opt.seed;
+  const m=Object.entries(PRE).find(([,p])=>KEYS.every(k=>!!p[k]===!!cfg[k]));document.querySelectorAll('#presets button').forEach(b=>b.classList.toggle('on',!!m&&b.dataset.preset===m[0]))}
+let rt;function run(){clearTimeout(rt);rt=setTimeout(()=>{ref=avgRun(V2x,opt);cur=avgRun(cfg,opt);drawSim()},30)}
+function drawSim(){if(!cur)return;const a=kpi(cur),r=kpi(ref);
+  line('#ch-ret',cur.ret,ref.ret,{fmt:pct,max:Math.max(.6,niceMax(Math.max(...cur.ret.slice(1))*1.1)),xt:[1,7,14,30],xl:i=>'D'+i});
+  line('#ch-dau',cur.dau,ref.dau,{fmt:fmt,xl:i=>'day '+(i+1),color:'--ballpoint'});
+  line('#ch-c',cur.C,ref.C,{fmt:pct,max:1,xl:i=>'day '+(i+1),color:'--good'});
+  line('#ch-harm',cur.harmD,ref.harmD,{fmt:fmt,min:10,xl:i=>'day '+(i+1)});
+  const tile=(l,v,[c,s])=>`<div class="stat"><small>${l}</small><b>${v}</b><span class="pill ${c}">${s}</span></div>`;
+  const d=(x,y,f,inv)=>{const z=x-y;const good=inv?z<=0:z>=0;return [good?'ok':'bad',(z>=0?'+':'−')+f(Math.abs(z))+' vs v0.2']};
+  $('#stats').innerHTML=tile('Day 1',pct(a.D1),d(a.D1,r.D1,v=>Math.round(v*100)+' pts'))+tile('Day 30',pct(a.D30),d(a.D30,r.D30,v=>Math.round(v*100)+' pts'))+tile('Month one',pct(a.M1),d(a.M1,r.M1,v=>Math.round(v*100)+' pts'))+
+    tile('Swaps per week',fmt(a.swk),d(a.swk,r.swk,fmt))+tile('Favor confidence',pct(a.C),a.C>.75?['ok','healthy']:a.C>.5?['warn','wobbling']:['bad','collapsing'])+tile('People hurt',fmt(a.harm),a.harm<10?['ok','in 120 days']:a.harm<50?['warn','in 120 days']:['bad','in 120 days']);
+  const s=[];
+  s.push(`Day-30 retention <b>${pct(a.D30)}</b> (v0.2: ${pct(r.D30)}); month one <b>${pct(a.M1)}</b>. ${a.D30>.5?'Above anything in the published social-app range. Read it as the optimistic end and stress-test with the slider.':''}`);
+  if(cfg.cashDrops)s.push(`Drops pay favors: confidence in favors fell to <b>${pct(a.C)}</b> and each drop is worth less as more people share it. HQ Trivia and the trueque clubs, in one toggle.`);
+  if(!cfg.cap)s.push(`No ceiling: <b>${fmt(a.harm)}</b> people hurt. A dense network escalates fast. This is the failure that would end the app, and possibly someone's life.`);
+  if(cfg.decay)s.push('Trust decay is on and the numbers go up again. The model counts opens, not how they feel. The diary says it feels like a trick, so it stays off.');
+  if(cfg.ledger&&cfg.league)s.push('Most of the gain comes from the two boring layers: the ledger people need, and the teammates who notice when they’re gone.');
+  $('#story').innerHTML=s.map(x=>`<li>${x}</li>`).join('');
+}
+$('#presets').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;Object.assign(cfg,PRE[b.dataset.preset]);sync();run()});
+KEYS.forEach(k=>$('#c-'+k).addEventListener('change',e=>{cfg[k]=e.target.checked?1:0;sync();run()}));
+$('#s-k').addEventListener('input',e=>{opt.k=+e.target.value;$('#o-k').textContent=opt.k.toFixed(2);wf=null;ideasDone=false;run()});
+$('#s-seed').addEventListener('input',e=>{opt.seed=+e.target.value;$('#o-seed').textContent=opt.seed;wf=null;ideasDone=false;run()});
+
+let ideasDone=false;
+function show(p){
+  document.querySelectorAll('.ptabs button').forEach(x=>{const on=x.dataset.p===p;x.setAttribute('aria-selected',on);$('#p-'+x.dataset.p).hidden=!on});
+  if(p==='road'){if(!wf)setTimeout(()=>{computeWF();drawWF()},30);else drawWF()}
+  if(p==='ideas'&&!ideasDone){ideasDone=true;$('#ideasList').innerHTML='<p class="mono">Running the experiments…</p>';setTimeout(ideas,30)}
+  if(p==='sim'){if(!cur)run();else drawSim()}
+  if(p==='next')drawNext();
+}
+document.querySelector('.ptabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)show(b.dataset.p)});
+const redraw=()=>{drawWF();drawSim();if(!$('#p-next').hidden){drawAdd();drawClutter()}};
+window.addEventListener('resize',()=>{clearTimeout(redraw.t);redraw.t=setTimeout(redraw,120)});
+const mq=matchMedia('(prefers-color-scheme: dark)');mq.addEventListener&&mq.addEventListener('change',redraw);
+new MutationObserver(redraw).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+/* ---- What to build next: the OPTIONS.md ideas, simulated ---- */
+const NEXT={"v3":{"base":{"D30":0.5863,"M1":0.9611,"C":0.851,"swk":227.5469,"harm":6.375,"joined":0.4287,"timid":0.5707},"add":{"pots":{"dD30":0.0462,"se":0.0074,"dTimid":0.0403,"dJoined":-0.0035,"dC":0.0049,"dHarm":-2.375,"minor":0,"dSwk":13.2031},"pledge":{"dD30":0.0484,"se":0.0088,"dTimid":0.049,"dJoined":0.001,"dC":0.0006,"dHarm":-1.6875,"minor":0,"dSwk":16.7812},"custody":{"dD30":0.051,"se":0.0064,"dTimid":0.0487,"dJoined":0.0015,"dC":-0.0036,"dHarm":-1.8125,"minor":0,"dSwk":15.7656},"custodyFail":{"dD30":0.0027,"se":0.0072,"dTimid":-0.0015,"dJoined":0.0138,"dC":-0.0035,"dHarm":-1.8125,"minor":0,"dSwk":-21.0469},"chapters":{"dD30":0.0447,"se":0.0054,"dTimid":0.0401,"dJoined":0.0585,"dC":-0.003,"dHarm":-0.5,"minor":0,"dSwk":46.9688},"homework":{"dD30":0.0288,"se":0.0065,"dTimid":0.0216,"dJoined":0.0044,"dC":-0.0025,"dHarm":-0.8125,"minor":0,"dSwk":9.0156},"shed":{"dD30":0.0071,"se":0.0076,"dTimid":0.0116,"dJoined":0.0002,"dC":0.0,"dHarm":-1.375,"minor":0,"dSwk":3.75},"combat":{"dD30":0.0113,"se":0.0068,"dTimid":0.003,"dJoined":0.0034,"dC":-0.0013,"dHarm":-1.25,"minor":8.625,"dSwk":8.0312},"duels":{"dD30":0.0095,"se":0.0076,"dTimid":-0.0099,"dJoined":-0.0012,"dC":0.0807,"dHarm":-1.75,"minor":0,"dSwk":17.6875},"missions":{"dD30":0.0353,"se":0.0064,"dTimid":0.0281,"dJoined":0.0726,"dC":-0.0013,"dHarm":-1,"minor":0,"dSwk":48.6094},"wanderers":{"dD30":0.0088,"se":0.0061,"dTimid":-0.0022,"dJoined":0.0043,"dC":0.0016,"dHarm":-0.9375,"minor":0,"dSwk":10.3594},"bounties":{"dD30":0.012,"se":0.0064,"dTimid":0.0083,"dJoined":-0.0012,"dC":-0.0035,"dHarm":-2.1875,"minor":0,"dSwk":11.6406},"timebank":{"dD30":0.0276,"se":0.0088,"dTimid":0.0395,"dJoined":-0.0022,"dC":-0.0025,"dHarm":-1.875,"minor":0,"dSwk":10.2656},"realFights":{"dD30":0.0158,"se":0.0093,"dTimid":0.012,"dJoined":0.0075,"dC":-0.0016,"dHarm":41.3125,"minor":0,"dSwk":0.2656},"payPrize":{"dD30":0.0043,"se":0.0062,"dTimid":0.0019,"dJoined":-0.0001,"dC":0.001,"dHarm":-1.5,"minor":0,"dSwk":1.2812},"cashOut":{"dD30":-0.0576,"se":0.0057,"dTimid":-0.0559,"dJoined":0.0187,"dC":-0.3487,"dHarm":-2.5,"minor":0,"dSwk":-85.3594}}},"v2":{"base":{"D30":0.2181},"add":{"pots":{"dD30":0.0412,"se":0.0057,"dTimid":0.0345,"dJoined":-0.0135,"dC":-0.0,"dHarm":0,"minor":0,"dSwk":15.6406},"pledge":{"dD30":0.0383,"se":0.0051,"dTimid":0.0345,"dJoined":-0.0134,"dC":-0.0028,"dHarm":0,"minor":0,"dSwk":18.3906},"custody":{"dD30":0.0448,"se":0.0053,"dTimid":0.0424,"dJoined":-0.006,"dC":-0.0038,"dHarm":0,"minor":0,"dSwk":19.8281},"custodyFail":{"dD30":0.0128,"se":0.0061,"dTimid":0.014,"dJoined":-0.0008,"dC":0.0077,"dHarm":0,"minor":0,"dSwk":-14.125},"chapters":{"dD30":-0.0011,"se":0.0042,"dTimid":0.005,"dJoined":0.0669,"dC":-0.0042,"dHarm":0,"minor":0,"dSwk":21},"homework":{"dD30":0.0322,"se":0.0046,"dTimid":0.0232,"dJoined":0.0057,"dC":0.002,"dHarm":0,"minor":0,"dSwk":13.7188},"shed":{"dD30":0.0045,"se":0.0045,"dTimid":0.0086,"dJoined":-0.0007,"dC":0.0111,"dHarm":0,"minor":0,"dSwk":2.1719},"combat":{"dD30":0,"se":0,"dTimid":0,"dJoined":0,"dC":0,"dHarm":0,"minor":0,"dSwk":0},"duels":{"dD30":0.0101,"se":0.0044,"dTimid":0.0052,"dJoined":-0.003,"dC":0.0734,"dHarm":0,"minor":0,"dSwk":3.1562},"missions":{"dD30":0.0176,"se":0.004,"dTimid":0.0201,"dJoined":0.0643,"dC":0.0014,"dHarm":0,"minor":0,"dSwk":19.8281},"wanderers":{"dD30":0.0104,"se":0.0053,"dTimid":0.0171,"dJoined":-0.0001,"dC":0.0005,"dHarm":0,"minor":0,"dSwk":3.4531},"bounties":{"dD30":0.0116,"se":0.0044,"dTimid":0.0107,"dJoined":-0.0011,"dC":-0.0039,"dHarm":0,"minor":0,"dSwk":3.8125},"timebank":{"dD30":0.0135,"se":0.004,"dTimid":0.0168,"dJoined":-0.0073,"dC":-0.003,"dHarm":0,"minor":0,"dSwk":6.0938},"realFights":{"dD30":0,"se":0,"dTimid":0,"dJoined":0,"dC":0,"dHarm":0,"minor":0,"dSwk":0},"payPrize":{"dD30":0,"se":0,"dTimid":0,"dJoined":0,"dC":0,"dHarm":0,"minor":0,"dSwk":0},"cashOut":{"dD30":-0.0353,"se":0.0051,"dTimid":-0.0297,"dJoined":0.0066,"dC":-0.4245,"dHarm":0,"minor":0,"dSwk":-40.75}}},"remove":{"pledge":{"loss":0.0307,"se":0.0059},"chapters":{"loss":0.0269,"se":0.0042},"missions":{"loss":0.0202,"se":0.0047},"homework":{"loss":0.0139,"se":0.0059},"wanderers":{"loss":0.0037,"se":0.0059},"timebank":{"loss":0.0122,"se":0.0036},"duels":{"loss":0.0113,"se":0.0048},"combat":{"loss":0.003,"se":0.005},"shed":{"loss":0.0054,"se":0.006},"bounties":{"loss":0.0018,"se":0.0034}},"v4":{"D30":0.7501,"M1":0.9841,"C":0.9238,"swk":375.0469,"harm":7.0625,"minor":11.8125,"joined":0.5518},"clutter":{"0":{"v0.3":0.5884,"top 3":0.6913,"top 5":0.7266,"all 10":0.7496,"top 3 + duels":0.691},"0.01":{"v0.3":0.5884,"top 3":0.6795,"top 5":0.7101,"all 10":0.7158,"top 3 + duels":0.6765},"0.02":{"v0.3":0.5884,"top 3":0.6665,"top 5":0.6714,"all 10":0.594,"top 3 + duels":0.6664},"0.03":{"v0.3":0.5884,"top 3":0.656,"top 5":0.6283,"all 10":0.4805,"top 3 + duels":0.6416}},"sens":[{"k":"chapters","top3":0.85,"rank":2.2},{"k":"pledge","top3":0.75,"rank":2.6},{"k":"pots","top3":0.65,"rank":3.1},{"k":"homework","top3":0.4,"rank":4.3},{"k":"missions","top3":0.25,"rank":4.8},{"k":"timebank","top3":0.05,"rank":7.0},{"k":"duels","top3":0,"rank":7.6},{"k":"wanderers","top3":0,"rank":8.2},{"k":"bounties","top3":0,"rank":8.3},{"k":"combat","top3":0,"rank":8.8},{"k":"shed","top3":0.05,"rank":8.9}]};
+const IDEAS=[['pledge','Pledge, then pay','money'],['pots','Pots, ledger only','money'],['custody','Partner holds the money','money'],['custodyFail','…and the partner fails','nogo'],
+ ['chapters','Chapters','fc'],['missions','Missions','fc'],['homework','Homework','fc'],['duels','Duels','fc'],['combat','Sanctioned combat','fc'],['shed','Shed','fc'],
+ ['wanderers','Wanderers','niche'],['timebank','Time-bank favors','niche'],['bounties','Bounties','niche'],
+ ['realFights','Real fights','nogo'],['payPrize','Pay-to-enter prizes','nogo'],['cashOut','Favor cash-out','nogo']];
+const CATC={money:'--good',fc:'--stamp',niche:'--ballpoint',nogo:'--hazard'};
+const JUDGE={pledge:['Low','M','build'],pots:['Low','M','build'],custody:['High: licences','XL','no'],custodyFail:['','','no'],chapters:['Low','M','build'],missions:['Medium: permits','M','build'],
+ homework:['Low','S','cheap'],duels:['Low','S','cheap'],combat:['Medium: waivers','M','later'],shed:['Low','S','later'],wanderers:['Low','S','later'],timebank:['Low','S','cheap'],bounties:['Low','S','later'],
+ realFights:['Very high','','no'],payPrize:['Very high: lottery','','no'],cashOut:['High: e-money','','no']};
+const VERD={build:'BUILD',cheap:'CHEAP ADD',later:'LATER',no:'NO'};
+let nextBase='v3',nextLive=null,nextBusy=false;
+const sgn=(v,f)=>(v>=0?'+':'−')+f(Math.abs(v));
+const pts=v=>sgn(v,x=>(x*100).toFixed(1));
+function drawAdd(){
+  const cv=$('#ch-add');if(!cv||!cv.clientWidth)return;const src=nextLive||NEXT[nextBase].add;
+  const rows=IDEAS.filter(i=>src[i[0]]).map(([k,l,c])=>({k,l,c,d:src[k].dD30,se:src[k].se})).sort((a,b)=>b.d-a.d);
+  const dpr=window.devicePixelRatio||1,W=cv.clientWidth,rh=24,T=22,B=22,H=T+B+rows.length*rh;cv.style.height=H+'px';
+  cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);
+  const ink=css('--ink'),muted=css('--muted'),ln=css('--line');
+  const narrow=W<520;x.font='600 12px "Instrument Sans", system-ui, sans-serif';const L=Math.min(narrow?150:190,12+Math.max(...rows.map(r=>x.measureText(r.l).width))),Rr=narrow?40:56,w=W-L-Rr;
+  const lo=Math.min(-.08,...rows.map(r=>r.d-2*r.se)),hi=Math.max(.08,...rows.map(r=>r.d+2*r.se)),X=v=>L+(v-lo)/(hi-lo)*w;
+  x.font='10px "IBM Plex Mono", ui-monospace, monospace';x.textBaseline='middle';x.textAlign='center';
+  const stp=narrow?.04:.02;for(let v=Math.ceil(lo/stp)*stp;v<=hi+1e-9;v+=stp){const xx=X(v);x.strokeStyle=ln;x.lineWidth=1;x.beginPath();x.moveTo(xx+.5,T-6);x.lineTo(xx+.5,H-B);x.stroke();x.fillStyle=muted;x.fillText((v>0?'+':'')+Math.round(v*100),xx,H-B+11)}
+  x.fillStyle=muted;x.textAlign='left';x.fillText((narrow?'day-30 points vs ':'points of day-30 retention vs ')+(nextLive||nextBase==='v3'?'v0.3':'v0.2'),L,9);
+  x.strokeStyle=ink;x.lineWidth=1.2;x.beginPath();x.moveTo(X(0)+.5,T-6);x.lineTo(X(0)+.5,H-B);x.stroke();
+  rows.forEach((r,i)=>{const y=T+i*rh+rh/2,col=css(CATC[r.c]);
+    x.fillStyle=col;x.globalAlpha=r.c==='nogo'?.55:.9;const a=X(Math.min(0,r.d)),b=X(Math.max(0,r.d));x.fillRect(a,y-7,Math.max(1,b-a),14);x.globalAlpha=1;
+    x.strokeStyle=ink;x.lineWidth=1;x.beginPath();x.moveTo(X(r.d-2*r.se),y+.5);x.lineTo(X(r.d+2*r.se),y+.5);x.moveTo(X(r.d-2*r.se)+.5,y-3);x.lineTo(X(r.d-2*r.se)+.5,y+4);x.moveTo(X(r.d+2*r.se)+.5,y-3);x.lineTo(X(r.d+2*r.se)+.5,y+4);x.stroke();
+    x.fillStyle=ink;x.textAlign='right';x.font=(JUDGE[r.k][2]==='build'?'600 ':'')+'12px "Instrument Sans", system-ui, sans-serif';x.fillText(r.l,L-8,y);
+    x.font='600 11px "IBM Plex Mono", ui-monospace, monospace';x.textAlign='left';x.fillText(pts(r.d),Math.max(X(r.d+2*r.se),X(0))+6,y)});
+  $('#addnote').textContent=nextLive?'live · 4 seeds · paired':'16 seeds · paired · whiskers ±2 SE';
+}
+function drawClutter(){
+  const cv=$('#ch-clut');if(!cv||!cv.clientWidth)return;const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
+  cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);
+  const ink=css('--ink'),muted=css('--muted'),ln=css('--line'),L=40,Rr=W<520?58:84,T=12,B=24,w=W-L-Rr,h=H-T-B;
+  const ks=Object.keys(NEXT.clutter).sort((a,b)=>a-b),lab=['none','low','medium','high'],lo=.4,hi=.8;
+  const X=i=>L+i/(ks.length-1)*w,Y=v=>T+h-(v-lo)/(hi-lo)*h;
+  x.font='10px "IBM Plex Mono", ui-monospace, monospace';x.textBaseline='middle';
+  for(let v=lo;v<=hi+1e-9;v+=.1){const y=Y(v);x.strokeStyle=ln;x.beginPath();x.moveTo(L,y+.5);x.lineTo(L+w,y+.5);x.stroke();x.fillStyle=muted;x.textAlign='right';x.fillText(Math.round(v*100)+'%',L-6,y)}
+  x.textAlign='center';x.textBaseline='top';ks.forEach((k,i)=>x.fillText(lab[i]||k,X(i),T+h+6));
+  const S=[['v0.3','--muted',1],['top 3','--good'],['top 5','--ballpoint'],['all 10','--stamp']];
+  const ends=[];
+  S.forEach(([n,c,dash])=>{const col=css(c);x.strokeStyle=col;x.lineWidth=2.2;if(dash)x.setLineDash([4,4]);x.beginPath();ks.forEach((k,i)=>{const v=NEXT.clutter[k][n];i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v))});x.stroke();x.setLineDash([]);
+    ks.forEach((k,i)=>{x.fillStyle=col;x.beginPath();x.arc(X(i),Y(NEXT.clutter[k][n]),3,0,7);x.fill()});ends.push([n,col,Y(NEXT.clutter[ks[ks.length-1]][n])])});
+  ends.sort((a,b)=>a[2]-b[2]);for(let i=1;i<ends.length;i++)if(ends[i][2]-ends[i-1][2]<12)ends[i][2]=ends[i-1][2]+12;
+  x.font='600 11px "IBM Plex Mono", ui-monospace, monospace';x.textAlign='left';x.textBaseline='middle';ends.forEach(([n,col,y])=>{x.fillStyle=col;x.fillText(n,L+w+8,y)});
+}
+function nextTable(){
+  const a=NEXT.v3.add,rows=IDEAS.filter(i=>a[i[0]]).map(i=>[...i,a[i[0]]]).sort((p,q)=>q[3].dD30-p[3].dD30);
+  const sens=Object.fromEntries(NEXT.sens.map(s=>[s.k,s.top3]));
+  $('#nextTable').innerHTML=`<table class="table"><thead><tr><th>Idea</th><th>Day 30</th><th>Timid third</th><th>Growth</th><th>Favor confidence</th><th>People hurt</th><th>Top 3 under ±50%</th><th>Legal load*</th><th>Build*</th><th>Verdict</th></tr></thead><tbody>`+
+   rows.map(([k,l,c,r])=>{const j=JUDGE[k];return `<tr><td><span class="cat" style="background:var(${CATC[c]})"></span>${l}</td><td class="n">${pts(r.dD30)}</td><td class="n">${pts(r.dTimid)}</td><td class="n">${pts(r.dJoined)}</td><td class="n">${pts(r.dC)}</td><td class="n">${k==='combat'?'+'+r.minor.toFixed(0)+' minor':k==='realFights'?'<b>'+sgn(r.dHarm,v=>v.toFixed(0))+'</b>':Math.abs(r.dHarm)<4?'≈ 0':sgn(r.dHarm,v=>v.toFixed(0))}</td><td class="n">${sens[k]!=null?Math.round(sens[k]*100)+'%':'–'}</td><td>${j[0]}</td><td class="n">${j[1]}</td><td class="v"><span class="tag ${j[2]}">${VERD[j[2]]}</span></td></tr>`}).join('')+`</tbody></table>`;
+}
+function nextRungs(){
+  const c=NEXT.clutter,k0=Object.keys(c).sort((a,b)=>a-b),med=c[k0[2]],none=c[k0[0]];
+  const r=(l,v,p,cls)=>`<div class="rung ${cls||''}"><small>${l}</small><b>${v}</b><p>${p}</p></div>`;
+  $('#nextRungs').innerHTML=r('Day 30, v0.3',pct(none['v0.3']),'where we are')+r('v0.3 + top 3',pct(none['top 3']),'Pledge pots, Chapters, Missions','hi')+r('v0.3 + all 10',pct(none['all 10']),'if extra features cost users nothing')+r('All 10, realistic',pct(med['all 10']),`with a medium cost per feature; top 3 holds at ${pct(med['top 3'])}`);
+}
+function drawNext(){nextRungs();drawAdd();drawClutter();nextTable()}
+function runLive(){if(nextBusy)return;nextBusy=true;const b=$('#liveBtn');b.disabled=true;
+  const seeds=[1,2,3,4].map(i=>i*7919),base=seeds.map(s=>simulate({...V3,groups:GROUPS,k:opt.k,seed:s})),res={},todo=IDEAS.map(i=>i[0]);let i=0;
+  const step=()=>{if(i>=todo.length){nextLive=res;nextBusy=false;b.disabled=false;b.textContent='Re-run live';$('#liveMsg').textContent='Live run done: same ideas, 4 new seeds. Ranks near the top should match the 16-seed table; small effects can swap.';drawAdd();return}
+    const k=todo[i],f=k==='custodyFail'?{custody:1,partnerFailDay:60}:{[k]:1};
+    const d=seeds.map((s,j)=>simulate({...V3,...f,groups:GROUPS,k:opt.k,seed:s}).ret[30]-base[j].ret[30]),mu=d.reduce((a,v)=>a+v,0)/d.length,se=Math.sqrt(d.reduce((a,v)=>a+(v-mu)**2,0)/(d.length-1)/d.length);
+    res[k]={dD30:mu,se};i++;$('#liveMsg').textContent=`Running ${i} of ${todo.length}…`;setTimeout(step,0)};
+  setTimeout(step,30)}
+$('#nextSwitch').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;nextBase=b.dataset.b;nextLive=null;document.querySelectorAll('#nextSwitch button').forEach(x=>x.classList.toggle('on',x===b));drawAdd()});
+$('#liveBtn').addEventListener('click',()=>{document.querySelectorAll('#nextSwitch button').forEach(x=>x.classList.toggle('on',x.dataset.b==='v3'));nextBase='v3';runLive()});
+
+sync();
+const startTab=['road','next','ideas','sim','week'].includes(location.hash.slice(1))?location.hash.slice(1):'road';
+show(startTab);
+})();
+</script>
