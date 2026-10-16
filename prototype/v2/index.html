@@ -1,0 +1,787 @@
+<title>INSANE</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: pawn-ticket / ledger world, same identity as v0.1. Phone left (sticky), research console right. Stacks on phones. */
+:root{
+  --paper:#ECEEE7; --card:#F9FAF6; --ink:#151D36; --muted:#596277; --line:#CDD2C8;
+  --stamp:#C8214B; --ballpoint:#2443C4; --hazard:#B98C00; --good:#1F7A4D;
+  --stamp-soft:rgba(200,33,75,.10); --ball-soft:rgba(36,67,196,.10); --haz-soft:rgba(217,164,0,.16); --good-soft:rgba(31,122,77,.13);
+  --screen:#F4F5F0; --bezel:#151D36;
+  --f-display:"Dela Gothic One","Arial Black",Impact,sans-serif;
+  --f-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0E1320; --card:#161D2D; --ink:#E5E8E0; --muted:#8C95A8; --line:#283149;
+  --stamp:#FF5A7E; --ballpoint:#8197FF; --hazard:#F2C53D; --good:#4CC38A;
+  --stamp-soft:rgba(255,90,126,.14); --ball-soft:rgba(129,151,255,.14); --haz-soft:rgba(242,197,61,.14); --good-soft:rgba(76,195,138,.14);
+  --screen:#111827; --bezel:#05070D; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0E1320; --card:#161D2D; --ink:#E5E8E0; --muted:#8C95A8; --line:#283149;
+  --stamp:#FF5A7E; --ballpoint:#8197FF; --hazard:#F2C53D; --good:#4CC38A;
+  --stamp-soft:rgba(255,90,126,.14); --ball-soft:rgba(129,151,255,.14); --haz-soft:rgba(242,197,61,.14); --good-soft:rgba(76,195,138,.14);
+  --screen:#111827; --bezel:#05070D; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--ballpoint);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto}
+.mono{font-family:var(--f-mono)}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* header */
+.top{padding-block:28px 22px;border-bottom:1.5px dashed var(--line);margin-bottom:24px}
+.brandrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.wordmark{font-family:var(--f-display);font-size:clamp(34px,6vw,56px);line-height:.9;color:var(--stamp);transform:rotate(-2deg);display:inline-block;border:3px solid var(--stamp);padding:6px 12px 2px;border-radius:6px}
+.ver{font-family:var(--f-display);font-size:18px;color:var(--ballpoint);border:2px solid var(--ballpoint);border-radius:4px;padding:2px 8px 0;transform:rotate(3deg)}
+.ticket{font-family:var(--f-mono);font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.top h1{font-weight:700;font-size:clamp(22px,3.2vw,34px);line-height:1.15;margin:18px 0 8px;max-width:24ch;text-wrap:balance}
+.top p{margin:0;max-width:66ch;color:var(--muted)}
+.top p b{color:var(--ink);font-weight:600}
+.top a{color:var(--ballpoint)}
+
+.grid{display:grid;grid-template-columns:380px minmax(0,1fr);gap:32px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+.phone-col{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px)}
+@media (max-width:900px){.phone-col{position:static;display:flex;flex-direction:column;align-items:center}}
+.phone-note{font-family:var(--f-mono);font-size:11.5px;color:var(--muted);margin-top:10px;text-align:center;letter-spacing:.03em}
+
+/* phone */
+.phone{width:100%;max-width:372px;height:760px;background:var(--bezel);border-radius:48px;padding:12px;box-shadow:0 30px 60px -30px rgba(10,15,35,.45)}
+.screen{position:relative;height:100%;background:var(--screen);border-radius:38px;overflow:hidden;display:flex;flex-direction:column}
+.status{display:flex;justify-content:space-between;align-items:center;padding:12px 26px 4px;font-family:var(--f-mono);font-size:11px;font-weight:600}
+.notch{width:96px;height:24px;background:var(--bezel);border-radius:14px}
+.hud{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:6px;padding:6px 14px 10px;border-bottom:1px solid var(--line)}
+.hud div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:5px 8px;min-width:0}
+.hud small{display:block;font-family:var(--f-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.hud b{font-family:var(--f-mono);font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.view{flex:1;overflow-y:auto;padding:12px 14px 86px;scrollbar-width:thin}
+.view h2{font-size:17px;margin:2px 0 8px;font-weight:700;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.view h2 span{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);font-weight:500;letter-spacing:.04em}
+.view h3{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:16px 0 6px;font-weight:500}
+.nav{position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border-top:1px solid var(--line);padding:6px 6px 18px}
+.nav button{background:none;border:0;padding:6px 0 2px;font-size:11px;font-weight:600;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px;position:relative}
+.nav button[aria-selected="true"]{color:var(--stamp)}
+.nav svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8}
+.badge{position:absolute;top:0;right:24%;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:var(--stamp);color:var(--card);font-size:10px;font-family:var(--f-mono);line-height:16px}
+.toast{position:absolute;left:14px;right:14px;bottom:78px;background:var(--ink);color:var(--paper);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.35;transform:translateY(12px);opacity:0;transition:.25s;pointer-events:none}
+.toast.on{transform:none;opacity:1}
+
+.dd{border-radius:16px;padding:14px;color:#fff;background:linear-gradient(160deg,#C8214B,#3B1640);position:relative;overflow:hidden;isolation:isolate}
+.dd::before{content:"";position:absolute;inset:0;z-index:-1;background:repeating-linear-gradient(-45deg,rgba(255,255,255,.06) 0 12px,transparent 12px 24px)}
+.dd .k{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.08em;opacity:.9}
+.dd .q{font-family:var(--f-display);font-size:21px;line-height:1.12;margin:6px 0 4px;text-wrap:balance}
+.dd .by{font-size:12.5px;opacity:.9}
+.dd .row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}
+.dd .btn{background:#fff;color:#3B1640;border-color:#fff}
+.faces{display:flex;gap:4px}
+.faces i{width:26px;height:26px;border-radius:50%;border:2px solid rgba(255,255,255,.85);display:grid;place-items:center;font-style:normal;font-size:10px;font-weight:700;font-family:var(--f-mono);background:rgba(255,255,255,.12)}
+.faces i.done{background:#fff;color:#3B1640}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.tiles div{aspect-ratio:3/4;max-width:100%;border-radius:10px;background:var(--g);color:#fff;font-size:10.5px;padding:6px;display:flex;flex-direction:column;justify-content:space-between;font-family:var(--f-mono)}
+.react{display:flex;gap:6px;margin-top:8px}
+.react button{flex:1;border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:7px;font-size:12.5px;font-weight:600}
+.react button.on{border-color:var(--stamp);color:var(--stamp);background:var(--stamp-soft)}
+
+.btn{border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:10px;padding:8px 12px;font-weight:600;font-size:13px}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.red{background:var(--stamp);border-color:var(--stamp);color:#fff}
+.btn.sm{padding:5px 9px;font-size:12px;border-radius:8px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.slip{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;position:relative}
+.slip .meta{display:flex;justify-content:space-between;gap:8px;font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}
+.slip p{margin:4px 0 0;font-size:13.5px;line-height:1.4}
+.slip .sub{font-size:12px;margin-top:4px;color:var(--muted)}
+.slip .sub b{color:var(--ink);font-weight:600}
+.slip.chain{border:1.5px dashed var(--stamp)}
+.slip.done{opacity:.6}
+.tag{display:inline-block;font-family:var(--f-mono);font-size:10px;padding:1px 6px;border-radius:10px;font-weight:600}
+.tag.ask{background:var(--ball-soft);color:var(--ballpoint)}
+.tag.offer{background:var(--good-soft);color:var(--good)}
+.tag.ins{background:var(--stamp-soft);color:var(--stamp)}
+.mkt{background:var(--card);border:1.5px solid var(--ink);border-radius:14px;padding:12px}
+.mkt .big{font-family:var(--f-display);font-size:26px;line-height:1}
+.mkt .where{font-size:13px;color:var(--muted);margin-top:4px}
+.kv{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.kv div{border:1px solid var(--line);border-radius:8px;padding:5px 7px}
+.kv small{display:block;font-family:var(--f-mono);font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.kv b{font-family:var(--f-mono);font-size:15px}
+.item{display:grid;grid-template-columns:1fr auto;gap:2px 8px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13.5px}
+.item small{grid-column:1/-1;font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}
+.item .val{font-family:var(--f-mono);font-size:12px}
+.plan{font-family:var(--f-mono);font-size:12px;border-left:2px solid var(--stamp);padding-left:10px;display:flex;flex-direction:column;gap:5px;margin-top:8px}
+.plan b{color:var(--stamp)}
+.members{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.members div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 8px;font-size:12.5px;min-width:0}
+.members small{display:block;font-family:var(--f-mono);font-size:10px;color:var(--muted)}
+.bal{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.balbar{position:relative;height:10px;border-radius:5px;background:linear-gradient(90deg,var(--stamp-soft),var(--line) 50%,var(--good-soft));margin:10px 0 4px}
+.balbar i{position:absolute;top:-4px;width:4px;height:18px;border-radius:2px;background:var(--ink);transform:translateX(-50%);transition:left .3s}
+.balax{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:10px;color:var(--muted)}
+.formula{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);margin-top:6px;line-height:1.45}
+
+/* console */
+.ptabs{display:flex;gap:4px;border-bottom:1.5px solid var(--ink);margin-bottom:18px;overflow-x:auto}
+.ptabs button{background:none;border:0;padding:10px 14px;font-weight:600;font-size:14px;color:var(--muted);border-radius:8px 8px 0 0;white-space:nowrap}
+.ptabs button[aria-selected="true"]{background:var(--ink);color:var(--paper)}
+.lead{max-width:70ch;color:var(--muted);margin:0 0 16px}
+.lead b{color:var(--ink)}
+.seg{display:inline-flex;border:1.5px solid var(--ink);border-radius:999px;overflow:hidden;margin-bottom:14px}
+.seg button{border:0;background:transparent;padding:6px 16px;font-weight:600;font-size:13px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.strip{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:14px;overflow-x:auto}
+.strip-row{display:grid;grid-template-columns:52px repeat(30,minmax(9px,1fr));gap:3px;align-items:end;min-width:420px}
+.strip-row+.strip-row{margin-top:10px}
+.strip-row .lab{font-family:var(--f-mono);font-size:11px;color:var(--muted);align-self:center}
+.strip-row button{border:0;padding:0;background:var(--line);border-radius:2px;min-height:3px;position:relative}
+.strip-row button.v1{background:var(--muted)}
+.strip-row button.v2{background:var(--ballpoint)}
+.strip-row button.key::after{content:"";position:absolute;left:50%;top:-7px;width:5px;height:5px;border-radius:50%;background:var(--stamp);transform:translateX(-50%)}
+.strip-row button.sel{outline:2px solid var(--stamp);outline-offset:1px}
+.strip-ax{display:grid;grid-template-columns:52px repeat(30,minmax(9px,1fr));gap:3px;font-family:var(--f-mono);font-size:9.5px;color:var(--muted);margin-top:4px;min-width:420px}
+.strip-ax span{text-align:center}
+.dtiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+@media (max-width:640px){.dtiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.entries{display:flex;flex-direction:column;border-top:1.5px solid var(--ink)}
+.entry{display:grid;grid-template-columns:70px minmax(0,1fr) 140px;gap:14px;padding:12px 0;border-bottom:1px dashed var(--line);align-items:start}
+@media (max-width:640px){.entry{grid-template-columns:56px minmax(0,1fr)}.entry .why{grid-column:2}}
+.entry .day{font-family:var(--f-mono);font-size:12px;font-weight:600}
+.entry .day small{display:block;color:var(--muted);font-weight:400}
+.entry p{margin:0;font-size:14px}
+.entry .why{font-family:var(--f-mono);font-size:11px;color:var(--ballpoint)}
+.entry.hot{background:var(--stamp-soft);border-radius:8px;padding-inline:8px}
+.entry.best p::before{content:"BEST ";font-family:var(--f-mono);font-size:10px;color:var(--good);font-weight:600}
+.entry.quit p::before{content:"QUIT ";font-family:var(--f-mono);font-size:10px;color:var(--stamp);font-weight:600}
+
+.presets{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.presets button{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600}
+.presets button.on{border-color:var(--stamp);color:var(--stamp);background:var(--stamp-soft)}
+.controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 18px;margin-bottom:14px}
+@media (max-width:760px){.controls{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.controls{grid-template-columns:minmax(0,1fr)}}
+.cgroup{min-width:0}
+.cgroup h4{margin:0 0 4px;font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:500}
+.chip{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13.5px;cursor:pointer}
+.chip input{accent-color:var(--stamp);width:15px;height:15px;margin:0;flex:none}
+.chip .v2t{font-family:var(--f-mono);font-size:9.5px;color:var(--ballpoint);border:1px solid var(--ballpoint);border-radius:4px;padding:0 4px;margin-left:auto;flex:none}
+.sliders{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin-bottom:16px;font-size:13px}
+.sliders label{display:flex;align-items:center;gap:8px}
+.sliders input[type=range]{accent-color:var(--ink);width:120px}
+.sliders output{font-family:var(--f-mono);min-width:3ch}
+.checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:16px}
+@media (max-width:640px){.checks{grid-template-columns:minmax(0,1fr)}}
+.check{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:grid;grid-template-columns:28px minmax(0,1fr);gap:8px;align-items:start;min-width:0}
+.check .mark{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;font-family:var(--f-mono)}
+.check.pass .mark{background:var(--good-soft);color:var(--good)}
+.check.fail .mark{background:var(--stamp-soft);color:var(--stamp)}
+.check b{font-size:13.5px}
+.check p{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:16px}
+@media (max-width:1100px){.stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:460px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0}
+.stat small{display:block;font-family:var(--f-mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.stat b{display:block;font-family:var(--f-mono);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:2px}
+.pill{display:inline-block;margin-top:4px;font-family:var(--f-mono);font-size:10px;padding:1px 7px;border-radius:10px;font-weight:600}
+.pill.ok{background:var(--good-soft);color:var(--good)}
+.pill.warn{background:var(--haz-soft);color:var(--hazard)}
+.pill.bad{background:var(--stamp-soft);color:var(--stamp)}
+.pill.ref{background:var(--ball-soft);color:var(--ballpoint)}
+.charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:640px){.charts{grid-template-columns:minmax(0,1fr)}}
+.chart{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px 8px;min-width:0}
+.chart h5{margin:0;font-size:13.5px;font-weight:600;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.chart h5 span{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);font-weight:500}
+.chart canvas{width:100%;height:160px;display:block}
+.reasons{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.rbar{display:grid;grid-template-columns:150px minmax(0,1fr) 34px;gap:8px;align-items:center;font-size:12.5px}
+.rbar .track{height:10px;background:var(--line);border-radius:5px;overflow:hidden}
+.rbar .track i{display:block;height:100%;background:var(--stamp)}
+.rbar .track i.calm{background:var(--muted)}
+.rbar output{font-family:var(--f-mono);font-size:11.5px;text-align:right}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-family:var(--f-mono);font-size:11px;color:var(--muted);margin:10px 0 0}
+.legend i{display:inline-block;width:16px;height:0;border-top:2px solid var(--stamp);vertical-align:middle;margin-right:5px}
+.legend i.ghost{border-top:2px dashed var(--muted)}
+.legend i.band{height:8px;border:0;background:var(--good-soft);outline:1px solid var(--good)}
+.story{margin-top:18px;background:var(--card);border:1.5px solid var(--ink);border-radius:14px;padding:14px 18px}
+.story h4{margin:0 0 6px;font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:500}
+.story ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch}
+.story li::marker{color:var(--stamp)}
+
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:20px}
+table{border-collapse:collapse;width:100%;min-width:680px;font-size:13.5px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:500}
+tr:last-child td{border-bottom:0}
+td b{font-weight:700}
+td .d{font-family:var(--f-mono);font-size:11.5px;color:var(--ballpoint);white-space:nowrap}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:760px){.two{grid-template-columns:minmax(0,1fr)}}
+.note{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;min-width:0}
+.note h4{margin:0 0 6px;font-size:15px}
+.note p,.note li{font-size:14px;margin:0}
+.note ul,.note ol{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px}
+.note.prompt{border:1.5px solid var(--ballpoint);grid-column:1/-1}
+.note.prompt ol li::marker{color:var(--ballpoint);font-family:var(--f-mono)}
+.note a{color:var(--ballpoint);word-break:break-word}
+.sec{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:500;margin:24px 0 8px}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}.balbar i{transition:none}}
+</style>
+
+<header class="top wrap">
+  <div class="brandrow">
+    <span class="wordmark">INSANE</span><span class="ver">v0.2</span>
+    <span class="ticket">Rebuilt after a 30-day diary study · no cash accepted</span>
+  </div>
+  <h1>I used v0.1 every day for a month. It didn't die of addiction. It died of loneliness.</h1>
+  <p>Playing a real user exposed what the first design ignored: <b>two friends is not a network</b>, <b>nobody has something to swap every day</b>, and <b>three separate handoffs always fail</b>. v0.2 rebuilds the app around friend circles, a daily shared dare, a favor board, and one weekly Market Day. The simulator is now checked against published retention benchmarks and two real barter-currency collapses before it compares anything. v0.1 is still in the repo under <span class="mono">prototype/v1/</span>.</p>
+</header>
+
+<main class="wrap grid">
+  <!-- ================= PHONE ================= -->
+  <section class="phone-col" aria-label="App prototype v0.2">
+    <div class="phone">
+      <div class="screen">
+        <div class="status"><span class="tnum" id="clock">19:24</span><span class="notch" aria-hidden="true"></span><span>5G ▮▮▮</span></div>
+        <div class="hud">
+          <div><small>Circle</small><b>4B &amp; co · 6</b></div>
+          <div><small>Reliability</small><b id="relV">94%</b></div>
+          <div><small>Favors</small><b id="favV">−1</b></div>
+        </div>
+        <div class="view" id="view"></div>
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+        <nav class="nav" role="tablist" aria-label="App sections">
+          <button role="tab" data-tab="today" aria-selected="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>Today<span class="badge" id="bToday">2</span></button>
+          <button role="tab" data-tab="market"><svg viewBox="0 0 24 24"><path d="M4 9l2-5h12l2 5M4 9h16v11H4zM9 20v-6h6v6"/></svg>Market</button>
+          <button role="tab" data-tab="circle"><svg viewBox="0 0 24 24"><circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3 19c1-3 3-4 5-4s4 1 5 4M11 19c1-3 3-4 5-4s4 1 5 4"/></svg>Circle</button>
+          <button role="tab" data-tab="ledger"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>Ledger</button>
+        </nav>
+      </div>
+    </div>
+    <div class="phone-note">v0.2 · day 9 in the life of a circle · tap anything</div>
+  </section>
+
+  <!-- ================= CONSOLE ================= -->
+  <section aria-label="Research console">
+    <div class="ptabs" role="tablist">
+      <button role="tab" data-p="diary" aria-selected="true">30-day diary</button>
+      <button role="tab" data-p="sim" aria-selected="false">Simulator</button>
+      <button role="tab" data-p="changes" aria-selected="false">What changed</button>
+      <button role="tab" data-p="method" aria-selected="false">Method &amp; sources</button>
+    </div>
+
+    <!-- DIARY -->
+    <div id="p-diary">
+      <p class="lead">One realistic user, 30 days, every day logged. <b>26, shares a flat, more stuff than cash, works 9–6, three friends willing to install.</b> Bar height is minutes in the app; red dots mark the days that mattered. Tap a bar to jump to that day.</p>
+      <div class="strip" id="strip"></div>
+      <div class="seg" role="group" aria-label="Diary version"><button id="dv1" aria-pressed="true">v0.1 diary</button><button id="dv2" aria-pressed="false">v0.2 diary</button></div>
+      <div class="dtiles" id="dtiles"></div>
+      <div class="entries" id="entries"></div>
+    </div>
+
+    <!-- SIM -->
+    <div id="p-sim" hidden>
+      <p class="lead">Real friend groups of 12 people. Some join on their own; the rest only join if a friend invites them. Each simulated day, every member decides whether to open the app, based on what they got last time, what is pulling at them, and what is annoying them. People who leave are counted by their main reason. <b>The dashed line is always v0.1</b>, so every change is measured against the original design.</p>
+      <div class="checks" id="checks"></div>
+      <div class="presets" id="presets">
+        <button data-preset="v1">v0.1</button>
+        <button data-preset="v2">v0.2</button>
+        <button data-preset="trueque">v0.2 + free welcome credits</button>
+        <button data-preset="base">No hooks (calibration)</button>
+      </div>
+      <div class="controls">
+        <div class="cgroup"><h4>Growth</h4>
+          <label class="chip"><input type="checkbox" id="c-circles">Circles unlock at 4 members<span class="v2t">v0.2</span></label>
+        </div>
+        <div class="cgroup"><h4>Daily reasons to open</h4>
+          <label class="chip"><input type="checkbox" id="c-daily">Daily Dare, one per circle<span class="v2t">v0.2</span></label>
+          <label class="chip"><input type="checkbox" id="c-circlePrompts">Circle writes the prompts<span class="v2t">v0.2</span></label>
+          <label class="chip"><input type="checkbox" id="c-board">Favor board<span class="v2t">v0.2</span></label>
+        </div>
+        <div class="cgroup"><h4>Swaps</h4>
+          <label class="chip"><input type="checkbox" id="c-market">Weekly Market Day, one table<span class="v2t">v0.2</span></label>
+        </div>
+        <div class="cgroup"><h4>Pressure</h4>
+          <label class="chip"><input type="checkbox" id="c-decay">Trust decay</label>
+          <label class="chip"><input type="checkbox" id="c-reminders">Debt reminders</label>
+          <label class="chip"><input type="checkbox" id="c-ladder">Escalation chains</label>
+          <label class="chip"><input type="checkbox" id="c-shortChains">2-hour chain window</label>
+        </div>
+        <div class="cgroup"><h4>Credit</h4>
+          <label class="chip"><input type="checkbox" id="c-sell">IOUs can be sold</label>
+          <label class="chip"><input type="checkbox" id="c-limit">Credit limit −5<span class="v2t">v0.2</span></label>
+          <label class="chip"><input type="checkbox" id="c-bonus">Free welcome credits</label>
+          <label class="chip"><input type="checkbox" id="c-jubilee">Monthly jubilee<span class="v2t">v0.2</span></label>
+        </div>
+        <div class="cgroup"><h4>Safety</h4>
+          <label class="chip"><input type="checkbox" id="c-cap">Insanity ceiling 6.5<span class="v2t">v0.2</span></label>
+          <label class="chip"><input type="checkbox" id="c-downrank">Danger down-ranking<span class="v2t">v0.2</span></label>
+        </div>
+      </div>
+      <div class="sliders">
+        <label for="s-groups">Friend groups <input type="range" id="s-groups" min="50" max="200" step="10" value="150"><output id="o-groups">150</output></label>
+        <label for="s-k">How much friends' activity is worth <input type="range" id="s-k" min="0.4" max="1" step="0.05" value="0.7"><output id="o-k">0.70</output></label>
+        <label for="s-seed">Seed <input type="range" id="s-seed" min="1" max="20" step="1" value="1"><output id="o-seed">1</output></label>
+      </div>
+      <div class="stats" id="stats"></div>
+      <div class="charts">
+        <div class="chart"><h5>Cohort retention <span>share opening on day N after joining</span></h5><canvas id="ch-ret" aria-label="Cohort retention chart"></canvas></div>
+        <div class="chart"><h5>Daily opens <span>whole network · 120 days</span></h5><canvas id="ch-dau" aria-label="Daily opens chart"></canvas></div>
+        <div class="chart"><h5>Favor confidence <span>share of favors honored when asked</span></h5><canvas id="ch-c" aria-label="Favor confidence chart"></canvas></div>
+        <div class="chart"><h5>Why people left <span id="h-quits"></span></h5><div class="reasons" id="reasons"></div></div>
+      </div>
+      <div class="legend"><span><i></i>this run</span><span><i class="ghost"></i>v0.1</span><span><i class="band"></i>published social-app range (D1 / D7 / D30)</span></div>
+      <div class="story"><h4>What happened in this run</h4><ul id="story"></ul></div>
+    </div>
+
+    <!-- CHANGES -->
+    <div id="p-changes" hidden>
+      <p class="lead">Every change in v0.2 traces back to a day in the diary where v0.1 broke. Nothing was added without a moment that demanded it. The last column puts the old v0.1 mechanic back into v0.2, one at a time, and shows what the simulator says happens (3-seed average).</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>v0.2 change</th><th>Diary moment it fixes</th><th>What it replaces</th><th>Simulator, with the old mechanic back</th></tr></thead>
+        <tbody id="changesBody"></tbody>
+      </table></div>
+      <div class="two">
+        <div class="note"><h4>Kept from v0.1</h4><ul>
+          <li>Dares as payment, with stakes people actually want. Day 4 was the best day of the v0.1 month.</li>
+          <li>Multi-person loop matching, now run in one batch per week.</li>
+          <li>The Insanity Index, now weekly per circle, scored on absurdity and creativity, with danger removing reward.</li>
+          <li>The monthly jubilee.</li>
+        </ul></div>
+        <div class="note" style="grid-column:1/-1;border:1.5px solid var(--stamp)"><h4>Where the simulator disagrees with the diary</h4><p>Putting Trust decay back into v0.2 <b>raises</b> simulated day-30 retention and swap volume. Once a circle is dense, loss aversion does exactly what it is designed to do: it gets people to open the app. The model counts opens; it does not count how it felt to open. In the diary, decay was the first thing that felt like a trick (day 2) and it locked the user out of the one feature they wanted (day 12). v0.2 leaves it out on purpose. The real-world test should settle it: run one circle with decay and two without, and compare day-14 posting against the “felt like a punishment” count.</p></div>
+        <div class="note"><h4>New risks v0.2 introduces</h4><ul>
+          <li><b>Daily Dare fatigue.</b> BeReal lost an estimated 60% of daily users within months of its peak. Circle-written prompts slow the decay; they do not stop it.</li>
+          <li><b>Peer pressure in a small circle.</b> Fewer strangers, more people whose opinion matters.</li>
+          <li><b>Market Day needs one city.</b> Long-distance friends only get favors.</li>
+          <li><b>Circles churn together.</b> If a circle dies, everyone in it leaves at once.</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- METHOD -->
+    <div id="p-method" hidden>
+      <p class="lead">This version follows a four-question method: say what a top professional would do that wasn't asked for, name the rawest material, name the methods, and say what other than the designer would show the result is right. Then rewrite the prompt to ask for exactly that.</p>
+      <div class="two">
+        <div class="note"><h4>1 · What a pro would do that wasn't asked</h4><ul>
+          <li>Find the atomic network: the smallest group where the app works on day one.</li>
+          <li>Check frequency. People have something to swap monthly; the app needs a daily reason.</li>
+          <li>Design the physical handoff, not just the match.</li>
+          <li>Pick a north-star metric that isn't DAU: completed exchanges per circle per week.</li>
+          <li>Test in a group chat before building, with pass/fail set in advance.</li>
+        </ul></div>
+        <div class="note"><h4>2 · The rawest material</h4><ul>
+          <li><b>Argentina's trueque clubs, 2001–02:</b> about 2.5 million people at the peak; new members got 50 free créditos; counterfeiting spread; collapse by the end of 2002.</li>
+          <li><b>Bunz BTZ, 2018–19:</b> 1,000 free tokens per user, 130M+ in circulation, 200+ Toronto shops; supply expanded, then abruptly scaled back in 2019.</li>
+          <li><b>Retention benchmarks:</b> social apps keep roughly 25–29% on D1, 9–16% on D7, 4–10% on D30.</li>
+          <li><b>BeReal:</b> 15–20M daily users in late 2022, about 6M by spring 2023.</li>
+          <li>A day-by-day diary of one user.</li>
+        </ul></div>
+        <div class="note"><h4>3 · Methods and tools</h4><ul>
+          <li>Diary study and cognitive walkthrough.</li>
+          <li>Fogg Behavior Model (B = MAP) for each daily action.</li>
+          <li>Cohort retention curves and the smile curve.</li>
+          <li>Atomic-network analysis for cold start.</li>
+          <li>Liquidity math and cycle matching (kidney exchange).</li>
+          <li>Mutual-credit rules: limits, no free issuance (WIR, LETS).</li>
+          <li>Agent-based model: calibrate, reproduce history, then compare; average over seeds.</li>
+        </ul></div>
+        <div class="note"><h4>4 · What shows it's right, other than us</h4><ul>
+          <li><b>Benchmarks:</b> the no-hooks version must land in the published range first. See the checks on the Simulator tab.</li>
+          <li><b>History:</b> free welcome credits must reproduce the trueque/Bunz collapse.</li>
+          <li><b>Real people:</b> a two-week concierge test with three friend circles, judged against thresholds set in advance.</li>
+          <li><b>A stranger's pre-mortem.</b></li>
+        </ul></div>
+        <div class="note prompt"><h4>The rewritten prompt</h4><ol>
+          <li><b>Be a real user.</b> Play one realistic person for 30 days on the current prototype. Log minutes, what triggered each open, what I got, what annoyed me, and the day I'd quit. Shorter runs for a performer, a trader, and a lurker.</li>
+          <li><b>Start from raw material:</b> post-mortems of the trueque clubs, Bunz BTZ and WIR; published D1/D7/D30 benchmarks; BeReal's rise and fall.</li>
+          <li><b>Use these methods:</b> diary study, B = MAP, cohort retention, atomic network, liquidity math, mutual-credit rules.</li>
+          <li><b>Make the simulator earn trust:</b> calibrate a no-hooks version to benchmarks, reproduce the trueque/Bunz collapse, and only then compare v0.1 with v0.2.</li>
+          <li><b>Redesign only what broke,</b> naming the diary moment for every change.</li>
+          <li><b>End with a two-week real-world test</b> with pass/fail thresholds set in advance. Say so plainly if it doesn't work.</li>
+        </ol></div>
+      </div>
+      <h3 class="sec">Two-week real-world test · pass if</h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Metric</th><th>Pass threshold</th></tr></thead>
+        <tbody>
+          <tr><td>Circle members who complete at least one swap or favor</td><td>≥ 60%</td></tr>
+          <tr><td>Members who post on day 14</td><td>≥ 25%</td></tr>
+          <tr><td>Loops cleared per circle per Market Day</td><td>≥ 3</td></tr>
+          <tr><td>Daily Dare participation in week 2 vs week 1</td><td>≥ 70%</td></tr>
+          <tr><td>Members who say a mechanic felt like a punishment</td><td>≤ 1 per circle</td></tr>
+        </tbody>
+      </table></div>
+      <h3 class="sec">Sources</h3>
+      <div class="note"><ul>
+        <li>Trueque: <a href="https://www.tiempoar.com.ar/ta_article/el-club-del-trueque-en-la-boca-un-simbolo-de-como-fue-sobrevivir-sin-plata/">Tiempo Argentino</a> · <a href="https://www.eumed.net/cursecon/ecolat/ar/2005/br-trueque.htm">Observatorio de la Economía Latinoamericana</a> · <a href="https://www.ambito.com/portada-principal/el-trueque-mueve-ya-1200-millones-anuales-el-pais-n3159776">Ámbito, Feb 2002</a></li>
+        <li>Bunz / BTZ: <a href="https://en.wikipedia.org/wiki/Bunz_Trading_Zone">Wikipedia</a> · <a href="https://cointelegraph.com/news/canadian-barter-platform-introduces-its-own-cryptocurrency">Cointelegraph</a> · <a href="https://www.blogto.com/tech/2019/09/bunz-btz-stores-reduced-toronto/">BlogTO</a> · <a href="https://www.acrc.hku.hk/Case/Detail/2204">HKU case study</a></li>
+        <li>Retention: <a href="https://phiture.com/mobilegrowthstack/managing-retention-rate-benchmarks-and-expectations/">Phiture</a> · <a href="https://trysonar.app/blog/app-user-retention-benchmarks-and-what-moves-it">Sonar (Adjust 2024 data)</a> · <a href="https://mwm.ai/glossary/retention">MWM</a></li>
+        <li>BeReal: <a href="https://petapixel.com/2023/02/22/bereal-may-be-on-the-out-users-have-nearly-halved-since-peak">PetaPixel</a> · <a href="https://platformer.news/how-bereal-missed-its-moment">Platformer</a></li>
+      </ul></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(()=>{
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ================================================================
+   PHONE v0.2
+   ================================================================ */
+const P={tab:'today',posted:false,react:null,skips:1,rel:94,market:false};
+const MEMBERS=[['You','pending'],['Maya','posted'],['Jules','posted'],['Dev','not yet'],['Pia','posted'],['Rin','posted']];
+let board=[
+ {id:1,t:'ask',who:'Pia',text:'Someone home tomorrow 10–12 to sign for a parcel?',pay:'1 favor'},
+ {id:2,t:'offer',who:'Jules',text:'20 minutes of bike-chain triage. Bring the bike.',pay:'1 favor'},
+ {id:3,t:'ask',who:'Rin',text:'Need a second opinion on a CV before Friday.',pay:'½ favor'},
+];
+let ious=[
+ {id:1,dir:'owe',who:'Dev',amt:2,why:'Sourdough Greg was worth more than the toaster'},
+ {id:2,dir:'owed',who:'Pia',amt:1,why:'You signed for her parcel last week'},
+];
+let listings=[{n:'Fixie bike, slightly cursed',v:'4.0'},{n:'2 hours of spreadsheet help',v:'1.5'},{n:'Toaster that only does one side',v:'0.5'}];
+function favNet(){return ious.reduce((a,x)=>a+(x.dir==='owed'?x.amt:-x.amt),0)}
+function toast(m){const t=$('#toast');t.innerHTML=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),3400)}
+function hud(){const f=favNet();$('#favV').textContent=(f>0?'+':f<0?'−':'')+Math.abs(f);$('#relV').textContent=P.rel+'%';
+  const n=(P.posted?0:1)+board.filter(b=>!b.done).length;$('#bToday').textContent=n;$('#bToday').hidden=!n}
+
+const V={
+today(){
+  const done=MEMBERS.filter(m=>m[0]!=='You'&&m[1]==='posted').length+(P.posted?1:0);
+  return `<h2>Today <span>Thu · day 9 of the circle</span></h2>
+  <div class="dd">
+    <div class="k">DAILY DARE · WRITTEN BY JULES · REVEAL AT 19:30</div>
+    <div class="q">Do your best impression of your landlord asking about “the noise.” 15 seconds.</div>
+    <div class="by">One prompt, whole circle, same time. Post to see everyone else’s.</div>
+    <div class="row"><div class="faces">${MEMBERS.map(m=>`<i class="${(m[0]==='You'?P.posted:m[1]==='posted')?'done':''}" title="${m[0]}">${m[0][0]}</i>`).join('')}</div>
+    ${P.posted?`<span class="mono" style="font-size:11px">${done} of 6 posted</span>`:`<button class="btn sm" id="post">Record 15 s</button>`}</div>
+  </div>
+  ${P.posted?`<div class="tiles">${['Maya','Jules','Pia','Rin','You'].map((n,i)=>`<div style="--g:${['linear-gradient(160deg,#C8214B,#3B1640)','linear-gradient(160deg,#2443C4,#101A44)','linear-gradient(160deg,#1F7A4D,#0C2A1D)','linear-gradient(160deg,#8A5A00,#2A1C05)','linear-gradient(160deg,#151D36,#3B1640)'][i]}"><span>${n}</span><span>0:15</span></div>`).join('')}<div style="--g:var(--line);color:var(--muted)"><span>Dev</span><span>pending</span></div></div>
+  <div class="react"><button data-r="laugh" class="${P.react==='laugh'?'on':''}">Laughed</button><button data-r="never" class="${P.react==='never'?'on':''}">I would never</button></div>
+  <div class="formula">One tap replaces v0.1’s four sliders. “I would never” feeds the weekly Insanity Index.</div>`:''}
+  <h3>Favor board · your circle</h3>
+  ${board.map(b=>`<div class="slip ${b.done?'done':''}"><div class="meta"><span><span class="tag ${b.t}">${b.t==='ask'?'ASK':'OFFER'}</span> ${b.who}</span><span>${b.pay}</span></div><p>${esc(b.text)}</p>
+    ${b.done?`<div class="sub">${b.t==='ask'?'You took this one.':'Booked.'}</div>`:`<div class="btns"><button class="btn sm" data-b="${b.id}">${b.t==='ask'?'I’ll do it':'Book it'}</button></div>`}</div>`).join('')}
+  <h3>In motion</h3>
+  <div class="slip chain"><div class="meta"><span>Chain from Dev · link 3 of ?</span><span>21 h left</span></div><p>Top “narrated a pigeon’s commute” (5.4). 24-hour window.</p>
+  <div class="btns"><button class="btn sm red" id="topit">Top it</button><button class="btn sm ghost" id="skip" ${P.skips?'':'disabled'}>Skip · ${P.skips} left this week</button></div></div>`;
+},
+market(){
+  return `<h2>Market <span>weekly · one table · all at once</span></h2>
+  <div class="mkt">
+    <div class="mono" style="font-size:10.5px;color:var(--muted);letter-spacing:.06em">NEXT MARKET DAY</div>
+    <div class="big">${P.market?'Cleared':'Sun 11:00'}</div>
+    <div class="where">Corner café on Elm St · pooled with 2 neighboring circles</div>
+    <div class="kv"><div><small>Items in pool</small><b>41</b></div><div><small>Your listings</small><b>${listings.length}</b></div><div><small>Likely loops</small><b>${P.market?'3':'2–3'}</b></div></div>
+    ${P.market?`<div class="plan"><span><b>11:05</b> hand the bike to Dev</span><span><b>11:10</b> Maya gives you a voucher for 3 guitar lessons</span><span><b>11:20</b> toaster to Ana (circle “Third Floor”)</span><span><b>11:25</b> Rin cuts your hair in exchange for 2 hrs of spreadsheet help</span></div>
+    <div class="formula">Every handoff at one table inside 40 minutes. If someone doesn’t show, their side of the loop doesn’t release.</div>`:
+    `<div class="btns"><button class="btn red" id="runMarket">Fast-forward to Sunday</button></div>
+    <div class="formula">Matching runs once over a full week of listings, so the pool is deep. The handoff is the hard part, so it all happens in one place at one time.</div>`}
+  </div>
+  <h3>Your listings · favor estimate</h3>
+  ${listings.map(i=>`<div class="item"><span>${esc(i.n)}</span><span class="val">≈ ${i.v} fv</span></div>`).join('')}
+  <div class="btns"><button class="btn ghost sm" id="addItem">List something</button></div>
+  <h3>Wanted in your circle</h3>
+  <div class="item"><span>A working camera</span><span class="val">Pia</span></div>
+  <div class="item"><span>Help moving a sofa</span><span class="val">Rin</span></div>`;
+},
+circle(){
+  return `<h2>4B &amp; co <span>6 members · market unlocked</span></h2>
+  <div class="members">${MEMBERS.map(([n,s])=>`<div>${n}<small>${n==='You'?(P.posted?'posted today':'not yet'):s==='posted'?'posted today':'quiet today'}</small></div>`).join('')}</div>
+  <div class="formula">Circles open the Market at 4 members. v0.1 had no minimum, so day one was empty.</div>
+  <h3>This week’s Insanity Index</h3>
+  <div class="slip"><div class="meta"><span>Maya</span><span><span class="tag ins">index 6.1</span></span></div><p>Proposed to a pigeon. On one knee. It said no.</p><div class="sub">23 “I would never” · 31 laughed · danger flags: 0</div></div>
+  <div class="slip"><div class="meta"><span>Rin</span><span><span class="tag ins">index 5.7</span></span></div><p>Let the group chat pick a haircut. No veto.</p><div class="sub">19 “I would never” · 28 laughed</div></div>
+  <div class="formula">Scored on absurdity and creativity, capped at 6.5. A danger flag removes reward. Friday is versus night against “Third Floor.”</div>`;
+},
+ledger(){
+  const f=favNet(),pos=((f+5)/10)*100;
+  return `<h2>Ledger <span>circle only · never sold</span></h2>
+  <div class="bal"><div style="display:flex;justify-content:space-between;font-size:13px"><b>Balance ${f>0?'+':''}${f} favors</b><span class="mono" style="font-size:11px;color:var(--muted)">limit −5</span></div>
+  <div class="balbar"><i style="left:${pos}%"></i></div><div class="balax"><span>−5</span><span>0</span><span>+5</span></div>
+  <div class="formula">At −5 you can’t take on more until you settle. No free credits, ever. Jubilee in 21 days clears IOUs of 2 or less that are older than 30 days.</div></div>
+  <h3>Open IOUs</h3>
+  ${ious.map(x=>`<div class="slip"><div class="meta"><span>${x.dir==='owe'?'You owe '+x.who:x.who+' owes you'}</span><span>${x.amt} favor${x.amt>1?'s':''}</span></div><p>${esc(x.why)}</p>
+    ${x.dir==='owe'?`<div class="btns"><button class="btn sm" data-settle="${x.id}">Settle with a board favor</button></div>`:`<div class="sub">Held by you. IOUs can’t leave the circle.</div>`}</div>`).join('')||'<div class="slip"><p>All square.</p></div>'}
+  <h3>Reliability · ${P.rel}%</h3>
+  <div class="slip"><p>Share of things you agreed to that you finished. It never decays while you’re away. v0.1’s Trust dropped every idle hour.</p></div>`;
+}};
+function render(){$('#view').innerHTML=V[P.tab]();document.querySelectorAll('.nav button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===P.tab));hud()}
+document.querySelector('.nav').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;P.tab=b.dataset.tab;$('#view').scrollTop=0;render()});
+$('#view').addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;const id=t.id,ds=t.dataset;
+  if(id==='post'){P.posted=true;toast('Posted. Five tiles unlocked. That took 15 seconds.');render();return}
+  if(ds.r){P.react=ds.r;toast(ds.r==='laugh'?'Logged a laugh.':'Logged. It counts toward Maya’s Insanity Index.');render();return}
+  if(ds.b){const b=board.find(x=>x.id==ds.b);b.done=true;if(b.t==='ask'){ious.push({id:Date.now(),dir:'owed',who:b.who,amt:b.pay.startsWith('½')?.5:1,why:b.text});toast(`${b.who} will owe you ${b.pay}. Small and real.`)}else{ious.push({id:Date.now(),dir:'owe',who:b.who,amt:1,why:b.text});toast(`Booked with ${b.who}. You’ll owe 1 favor.`)}render();return}
+  if(id==='topit'){toast('Camera opens. You have 21 hours. Your circle sees it first.');return}
+  if(id==='skip'){P.skips=0;toast('Skipped. The chain moves to Rin. No blame, no score change.');render();return}
+  if(id==='runMarket'){P.market=true;P.rel=Math.min(100,P.rel+1);toast('Market Day cleared 3 loops for you. All handoffs at one table.');render();return}
+  if(id==='addItem'){listings.push({n:'Framed photo of a stranger’s dog',v:'0.8'});toast('Listed. It sits in the pool until Sunday.');render();return}
+  if(ds.settle){const x=ious.find(i=>i.id==ds.settle);x.amt-=1;if(x.amt<=0)ious=ious.filter(i=>i!==x);toast(`Settled 1 favor with ${x.who} by fixing a bike chain.`);render();return}
+});
+render();
+
+/* ================================================================
+   DIARY
+   ================================================================ */
+const MIN1=[11,3,0,14,2,2,8,5,6,4,0,1,0,6,2,0,2,0,1,2,1,0,0,0,0,0,0,0,0,0];
+const MIN2=[14,6,5,4,3,4,8,3,4,0,3,5,4,9,2,3,4,0,3,4,8,3,0,4,3,3,2,9,0,3];
+const D1=[
+ [1,'Installed from a friend’s link. Listed four things. Matcher: <i>searching</i>. Only two friends are on the app, so there are no loops. Watched nine strangers’ dares. On the third rating I stopped moving the four sliders.','curiosity'],
+ [2,'Push: “Your Trust dropped to 68.” Opened only to make the number stop. Nothing I can do raises it. Turned notifications to dares only.','loss aversion'],
+ [3,'Didn’t open. Nothing of mine was in motion.','no prompt'],
+ [4,'Maya dared me to narrate my grocery run like a nature documentary, for three guitar lessons. A stake I actually want. 140 views.','friend + stake','best'],
+ [7,'First loop found: bike → Dev → Maya → guitar lessons. Dev is 40 minutes away, Maya works evenings. Three separate handoffs, arranged in another chat app.','excitement, then dread'],
+ [9,'Gave Dev the bike. Dev’s handoff to Maya fell through. I’m out a bike and the ledger says Dev owes me 4 favors. No escrow.','anxiety','hot'],
+ [10,'2:10 pm, at work: Chain #44, two hours to top 6.8. Can’t film at my desk. It broke at 4:10 with my name on it. Six people lost stakes.','panic','hot'],
+ [12,'Trust at 51. Below 50, loops stop matching me. The one feature I wanted is locked behind a score I lost by working.',''],
+ [14,'“Your IOU to Sam is now held by @kestrel_collects.” A stranger offers to settle it if I sing the anthem at a bus stop. This is the day I decided to leave.','anger','quit'],
+ [15,'Opened only for Maya’s pigeon video. Friends’ videos are the only good thing left.','friends'],
+ [21,'The guitar lesson with Maya happened, and it was lovely. Entirely outside the app.',''],
+ [22,'Stopped opening. Still installed, churned by any definition.',''],
+];
+const D2=[
+ [1,'Created a circle, “4B & co.” The Market is locked until four people join. Sent the link to the group chat; three joined that night.','setup'],
+ [2,'First Daily Dare at 19:30: “show us the worst thing in your fridge.” Five of six did it. Two minutes.','shared moment'],
+ [3,'Favor board: Pia needed someone to sign for a parcel. I was home. +1 favor. Small and real.','being useful'],
+ [5,'Jules wrote today’s prompt. Prompts written by the circle hit harder than generic ones.','friends'],
+ [7,'Market Day. A week of listings cleared at once with two neighboring circles: 3 loops for me, all handoffs at one table in 40 minutes. Got the guitar lessons.','event','best'],
+ [10,'Skipped. No penalty, nothing decayed. Came back the next day without guilt.',''],
+ [12,'Dev started a chain with a 24-hour window. Used my weekly skip. The chain carried on, nobody blamed me.','no pressure'],
+ [17,'I owe 3 favors. The ledger shows my −5 limit and suggests board asks I can do. Fixed Jules’s bike chain to settle one.','obligation, bounded'],
+ [19,'The Daily Dare is getting repetitive: same six faces. This is BeReal’s problem. Friday versus night with another circle helps.','fatigue','hot'],
+ [28,'Market 3. A fourth circle joined. Traded spreadsheet help for a haircut.','event'],
+ [30,'Jubilee cleared small old IOUs. One friend left the circle, so we’re at five; the Market still works through the federation. Still opening.','fresh start'],
+];
+let dv=1,selDay=null;
+function strip(){
+  const max=Math.max(...MIN1,...MIN2);const k1=new Set(D1.map(e=>e[0])),k2=new Set(D2.map(e=>e[0]));
+  const row=(lab,arr,cls,keys,v)=>`<div class="strip-row"><span class="lab">${lab}</span>${arr.map((m,i)=>`<button class="${m?cls:''} ${keys.has(i+1)?'key':''} ${dv===v&&selDay===i+1?'sel':''}" style="height:${Math.max(3,m/max*56)}px" data-v="${v}" data-day="${i+1}" aria-label="${lab} day ${i+1}: ${m} minutes"></button>`).join('')}</div>`;
+  $('#strip').innerHTML=row('v0.1',MIN1,'v1',k1,1)+row('v0.2',MIN2,'v2',k2,2)+`<div class="strip-ax"><span></span>${Array.from({length:30},(_,i)=>`<span>${(i+1)%5===0||i===0?i+1:''}</span>`).join('')}</div>`;
+}
+function diary(){
+  const m=dv===1?MIN1:MIN2,E=dv===1?D1:D2;
+  const opened=m.filter(x=>x>0).length,tot=m.reduce((a,b)=>a+b,0);
+  const t=(l,v,c,s)=>`<div class="stat"><small>${l}</small><b>${v}</b><span class="pill ${c}">${s}</span></div>`;
+  $('#dtiles').innerHTML=dv===1?
+    t('Days opened',opened+' / 30','bad','last open day 21')+t('Minutes',tot,'warn','≈ 3 per day')+t('Swaps done','0','bad','1 half-failed')+t('Decided to quit','Day 14','bad','IOU sold'):
+    t('Days opened',opened+' / 30','ok','still opening day 30')+t('Minutes',tot,'ok','+ 2 h offline')+t('Swaps done','6','ok','3 Market Days')+t('Decided to quit','—','ok','not yet');
+  $('#entries').innerHTML=E.map(([d,txt,why,flag])=>`<div class="entry ${flag||''}" id="e${dv}-${d}"><div class="day">Day ${d}<small>${m[d-1]} min</small></div><p>${txt}</p><div class="why">${why}</div></div>`).join('');
+  $('#dv1').setAttribute('aria-pressed',dv===1);$('#dv2').setAttribute('aria-pressed',dv===2);strip();
+}
+$('#dv1').onclick=()=>{dv=1;selDay=null;diary()};$('#dv2').onclick=()=>{dv=2;selDay=null;diary()};
+$('#strip').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;dv=+b.dataset.v;const day=+b.dataset.day;const E=dv===1?D1:D2;
+  const near=E.reduce((a,x)=>x[0]<=day?x:a,E[0]);selDay=day;diary();const el=document.getElementById(`e${dv}-${near[0]}`);if(el){el.scrollIntoView({block:'nearest',behavior:'smooth'});el.animate&&el.animate([{background:'var(--ball-soft)'},{background:'transparent'}],{duration:1200})}});
+diary();
+
+/* ================================================================
+   SIMULATOR (calibrated)
+   ================================================================ */
+const REASONS=['Nothing to do','Trust decay pressure','Blamed for a broken chain','IOU sold to a stranger','Debt stress','Hurt doing a dare','Swaps that fell through','Favors nobody would honor'];
+const KEYS=['circles','daily','circlePrompts','board','market','decay','reminders','ladder','shortChains','sell','limit','bonus','jubilee','cap','downrank'];
+const V1={circles:0,daily:0,circlePrompts:0,board:0,market:0,decay:1,reminders:1,ladder:1,shortChains:1,sell:1,limit:0,bonus:0,jubilee:0,cap:0,downrank:0};
+const V2={circles:1,daily:1,circlePrompts:1,board:1,market:1,decay:0,reminders:1,ladder:1,shortChains:0,sell:0,limit:1,bonus:0,jubilee:1,cap:1,downrank:1};
+const PRESETS={v1:V1,v2:V2,trueque:{...V2,bonus:1,limit:0},base:{...V1,decay:0,reminders:0,ladder:0,shortChains:0,sell:0}};
+const BENCH={1:[.25,.29],7:[.09,.16],30:[.04,.10]};
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const clamp=(x,a,b)=>x<a?a:x>b?b:x;
+
+function simulate(c){
+  const K=c.k,R=mulberry(c.seed),gauss=()=>{let u=0;while(!u)u=R();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*R())};
+  const G=c.groups,S=12,D=120,people=[];
+  for(let g=0;g<G;g++)for(let i=0;i<S;i++)people.push({id:people.length,g,joined:-1,on:false,s:clamp(.5+gauss()*.2,0,1),b:R(),r:.3+R()*.7,v:0,ann:new Float32Array(8),last:-99,opens:new Set(),owe:0,held:0,listed:0,unbacked:0});
+  const byG=g=>people.slice(g*S,g*S+S),pick=a=>a[Math.floor(R()*a.length)];
+  let debts=[],C=.9,norm=3,harm=0,pending=[];const reasons=new Array(8).fill(0);
+  const o={dau:[],C:[],swaps:[],atomic:[]};
+  const join=(p,d)=>{if(p.joined>=0)return;p.joined=d;p.on=true;p.last=d;p.v=.06;if(c.bonus)p.unbacked=5;
+    const fr=byG(p.g).filter(q=>q.joined<0),k=c.circles?3:(R()<.3?1:0);
+    for(let i=0;i<k&&i<fr.length;i++)if(R()<(c.circles?.45:.3))pending.push([pick(fr),d+1+Math.floor(R()*3)])};
+  for(let d=0;d<D;d++){
+    if(d<45){const n=Math.round(G*S*.0045);for(let i=0;i<n;i++)join(pick(people),d)}       // organic arrivals
+    pending=pending.filter(([p,t])=>{if(t===d){join(p,d);return false}return true});        // friends accepting invites
+    const af=new Array(G).fill(0);for(const p of people)if(p.on&&d-p.last<=3)af[p.g]++;       // active friends per group
+    for(const p of people){p.owe=0;p.held=0}for(const x of debts){people[x.d].owe++;people[x.h].held++}
+    let opens=0,swaps=0,dn=0,wS=0,wI=0,honor=0,tries=0;const market=c.market&&d%7===6;
+    for(const p of people){if(!p.on)continue;
+      const age=d-p.joined,f=Math.max(0,af[p.g]-(d-p.last<=3?1:0));
+      let pull=0;
+      if(c.decay)pull+=.08;
+      if(c.reminders)pull+=.1*Math.min(1,p.owe/2);
+      if(c.market&&d%7===5)pull+=.12;
+      if(market&&p.listed)pull+=.35;
+      const annoy=p.ann.reduce((a,b)=>a+b,0);
+      const prob=clamp(.015+.42*Math.exp(-age/1.4)+1.1*p.v+pull*(.4+.6*p.s)-.25*annoy,.005,.95);
+      let val=0;
+      if(R()<prob){opens++;p.opens.add(age);p.last=d;
+        if(c.circles&&f<3&&R()<.08){const fr=byG(p.g).filter(q=>q.joined<0);if(fr.length&&R()<.45)pending.push([pick(fr),d+1])}
+        val+=.12*Math.exp(-age/12);                                                            // strangers' feed: novelty wears off
+        if(R()<f/(f+3)*.5&&R()<.3+.6*p.b){val+=.3*K;                                          // a dare from a friend, accepted
+          let ins=clamp(norm+gauss()*1.1+(c.ladder?.9*p.b:0),0,10);if(c.cap)ins=Math.min(ins,6.5);
+          const w=c.downrank?(ins<=6?Math.pow(ins+.5,1.6):Math.pow(6.5,1.6)*Math.exp(-.9*(ins-6))):Math.pow(ins+.5,1.6);dn++;wS+=w;wI+=w*ins;
+          if(ins>7&&R()<.02*(ins-7)*(ins-7)){harm++;p.ann[5]+=1.5}
+          if(c.ladder&&R()<(c.shortChains?.12:.02))p.ann[2]+=.35}
+        if(c.daily&&f>0)val+=.28*K*(f/(f+2))*(c.circlePrompts?.55+.45*Math.exp(-age/30):Math.exp(-age/25));
+        if(c.board&&f>0&&R()<f/(f+4)*(.3+.7*C)){val+=.22*K;
+          if(R()<.3){const q=byG(p.g).filter(x=>x.on&&x!==p);if(q.length)debts.push({d:p.id,h:pick(q).id,t:d})}}
+        if(R()<.14)p.listed=1;
+        if(p.listed&&(c.market?market:true)){
+          const pool=(c.market?3:1)*(f+1)*1.5+(c.market?0:6),q=c.market?1-Math.exp(-pool/14):1-Math.exp(-pool/90);
+          if(R()<q){const uneven=R()<.45,accepted=!uneven||R()<C;if(!accepted)p.ann[7]+=.05;
+            if(R()<(c.market?.85:.45)&&accepted){swaps++;val+=.45*K;p.listed=0;
+              if(uneven&&!(c.limit&&p.owe>=5)){const fr=byG(p.g).filter(x=>x.on&&x!==p);if(fr.length)debts.push({d:p.id,h:pick(fr).id,t:d})}}
+            else p.ann[6]+=.12}
+          else if(!c.market)p.ann[6]+=.008}
+        if(p.held>0&&R()<.15){const x=debts.find(x=>x.h===p.id);if(x){const dbt=people[x.d];tries++;
+          if(dbt.on&&R()<.4+.5*dbt.r){honor++;debts.splice(debts.indexOf(x),1);val+=.1}else if(!dbt.on)debts.splice(debts.indexOf(x),1)}}
+        if(p.unbacked>0&&R()<.25){tries++;p.unbacked--;let unb=0;for(const q of people)if(q.on)unb+=q.unbacked;   // free credits nobody backs
+          if(R()<.85*C*Math.max(.1,1-unb/(4*Math.max(1,af[p.g])*G/10))){honor++;val+=.1;const q=byG(p.g).find(x=>x.on&&x!==p);if(q)q.ann[4]+=.06}else p.ann[7]+=.1}
+        if(p.owe>0&&R()<.3*p.r){const x=debts.find(x=>x.d===p.id);if(x){debts.splice(debts.indexOf(x),1);honor++;tries++}}
+      }
+      if(c.decay)p.ann[1]+=(1-p.s)*.012;
+      if(p.owe>2)p.ann[4]+=.02*(p.owe-2);
+      for(let k=0;k<8;k++)p.ann[k]*=.93;
+      if(p.last===d)p.v=p.v*.7+val*.3;
+      const a2=p.ann.reduce((a,b)=>a+b,0),aq=.06*Math.max(0,a2-.12),nq=d-p.last>14?.08:0;
+      if(R()<aq+nq){p.on=false;let best=0;if(R()<aq/(aq+nq)){let bv=-1;for(let k=1;k<8;k++)if(p.ann[k]>bv){bv=p.ann[k];best=k}}reasons[best]++}
+    }
+    if(c.sell&&debts.length){const act=[],cum=[];let t=0;for(const q of people)if(q.on){t+=Math.pow(q.held+1,1.8);act.push(q.id);cum.push(t)}
+      for(const x of debts)if(act.length&&R()<.05){const r=R()*t;let lo=0,hi=cum.length-1;while(lo<hi){const m=(lo+hi)>>1;if(cum[m]<r)lo=m+1;else hi=m}
+        if(act[lo]!==x.d&&people[act[lo]].g!==people[x.d].g){x.h=act[lo];people[x.d].ann[3]+=.3}}}
+    if(c.jubilee&&d>0&&d%30===0)debts=debts.filter(x=>d-x.t<30);
+    if(tries>0)C=C*.9+.1*(honor/tries);
+    if(dn>0)norm=clamp(norm+.12*(wI/wS-norm)+(c.ladder?.03:0),0,10);
+    let atomic=0;for(let g=0;g<G;g++)if(af[g]>=4)atomic++;
+    o.dau.push(opens);o.C.push(C);o.swaps.push(swaps);o.atomic.push(atomic/G);
+  }
+  const coh=people.filter(p=>p.joined>=0&&p.joined<=D-31),ret=[];
+  for(let k=0;k<=30;k++){let n=0;for(const p of coh)if(p.opens.has(k))n++;ret.push(n/Math.max(1,coh.length))}
+  return {...o,ret,reasons,harm,joined:people.filter(p=>p.joined>=0).length/people.length,ins:norm};
+}
+const SEEDS=3;
+function avgRun(flags,opt){
+  const runs=[];for(let i=0;i<SEEDS;i++)runs.push(simulate({...flags,groups:opt.groups,k:opt.k,seed:opt.seed*101+i*17}));
+  const mean=key=>runs[0][key].map((_,j)=>runs.reduce((a,r)=>a+r[key][j],0)/SEEDS);
+  const sc=key=>runs.reduce((a,r)=>a+r[key],0)/SEEDS;
+  return {ret:mean('ret'),dau:mean('dau'),C:mean('C'),swaps:mean('swaps'),atomic:mean('atomic'),reasons:mean('reasons'),harm:sc('harm'),joined:sc('joined'),ins:sc('ins')};
+}
+const kpi=o=>({D1:o.ret[1],D7:o.ret[7],D30:o.ret[30],swk:o.swaps.slice(-28).reduce((a,b)=>a+b,0)/4,atomic:o.atomic.slice(60).reduce((a,b)=>a+b,0)/60,C:o.C[o.C.length-1],dau:o.dau[o.dau.length-1]});
+
+const cfg={...V2},opt={groups:150,k:.7,seed:1};
+let cur=null,ref=null,refKey='',checks=null;
+function syncInputs(){
+  KEYS.forEach(k=>{$('#c-'+k).checked=!!cfg[k]});
+  $('#s-groups').value=opt.groups;$('#o-groups').textContent=opt.groups;$('#s-k').value=opt.k;$('#o-k').textContent=(+opt.k).toFixed(2);$('#s-seed').value=opt.seed;$('#o-seed').textContent=opt.seed;
+  const m=Object.entries(PRESETS).find(([,p])=>KEYS.every(k=>!!p[k]===!!cfg[k]));
+  document.querySelectorAll('#presets button').forEach(b=>b.classList.toggle('on',!!m&&b.dataset.preset===m[0]));
+}
+let runT;
+function run(){clearTimeout(runT);runT=setTimeout(()=>{
+  const key=JSON.stringify(opt);if(key!==refKey){ref=avgRun(V1,opt);refKey=key;checks=null}
+  cur=avgRun(cfg,opt);if(!checks)runChecks();draw();},30)}
+function runChecks(){
+  const b=kpi(avgRun(PRESETS.base,opt)),v2=kpi(avgRun(V2,opt)),tq=kpi(avgRun(PRESETS.trueque,opt));
+  const inBand=(v,d)=>v>=BENCH[d][0]-.02&&v<=BENCH[d][1]+.02;
+  const c1=inBand(b.D1,1)&&inBand(b.D7,7)&&inBand(b.D30,30);
+  const c2=tq.C<v2.C-.25&&tq.swk<v2.swk*.75;
+  checks={c1,c2,b,v2,tq};
+  const pct=v=>Math.round(v*100)+'%';
+  $('#checks').innerHTML=
+   `<div class="check ${c1?'pass':'fail'}"><span class="mark">${c1?'✓':'✕'}</span><div><b>Calibration: the no-hooks version matches published retention</b><p>D1 ${pct(b.D1)} · D7 ${pct(b.D7)} · D30 ${pct(b.D30)}, against social-app ranges of 25–29%, 9–16% and 4–10% (±2 pts).</p></div></div>`+
+   `<div class="check ${c2?'pass':'fail'}"><span class="mark">${c2?'✓':'✕'}</span><div><b>History: free credits reproduce the trueque and Bunz collapse</b><p>Favor confidence ${pct(v2.C)} → ${pct(tq.C)}; weekly swaps ${Math.round(v2.swk)} → ${Math.round(tq.swk)} when every newcomer gets 5 unbacked favors.</p></div></div>`;
+}
+$('#presets').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;Object.assign(cfg,PRESETS[b.dataset.preset]);syncInputs();run()});
+KEYS.forEach(k=>$('#c-'+k).addEventListener('change',e=>{cfg[k]=e.target.checked?1:0;syncInputs();run()}));
+$('#s-groups').addEventListener('input',e=>{opt.groups=+e.target.value;$('#o-groups').textContent=opt.groups;run()});
+$('#s-k').addEventListener('input',e=>{opt.k=+e.target.value;$('#o-k').textContent=opt.k.toFixed(2);run()});
+$('#s-seed').addEventListener('input',e=>{opt.seed=+e.target.value;$('#o-seed').textContent=opt.seed;run()});
+
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function niceMax(v){if(v<=0)return 1;const p=Math.pow(10,Math.floor(Math.log10(v)));const n=v/p;return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p}
+function chart(id,a,b,opt2){
+  const cv=$(id),dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;if(!W)return;
+  cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);
+  const ink=css('--ink'),muted=css('--muted'),line=css('--line'),acc=css(opt2.color||'--stamp'),good=css('--good'),goodS=css('--good-soft');
+  const L=40,Rr=12,T=10,B=20,w=W-L-Rr,h=H-T-B,n=a.length;
+  const max=opt2.max??niceMax(Math.max(...a,...(b||[0]))*1.08);
+  const X=i=>L+(n<=1?0:i/(n-1))*w,Y=v=>T+h-(Math.min(v,max)/max)*h;
+  x.font='10px "IBM Plex Mono", ui-monospace, monospace';x.textBaseline='middle';
+  for(let i=0;i<=4;i++){const v=max*i/4,y=Y(v);x.strokeStyle=line;x.lineWidth=1;x.beginPath();x.moveTo(L,y+.5);x.lineTo(L+w,y+.5);x.stroke();x.fillStyle=muted;x.textAlign='right';x.fillText(opt2.fmt(v),L-6,y)}
+  if(opt2.bench){for(const [d,[lo,hi]] of Object.entries(opt2.bench)){const cx=X(+d);x.fillStyle=goodS;x.fillRect(cx-5,Y(hi),10,Math.max(2,Y(lo)-Y(hi)));x.strokeStyle=good;x.lineWidth=1;x.strokeRect(cx-5+.5,Y(hi)+.5,9,Math.max(1,Y(lo)-Y(hi)-1))}}
+  x.textAlign='center';x.textBaseline='top';x.fillStyle=muted;
+  (opt2.xt||[0,Math.floor((n-1)/2),n-1]).forEach(i=>x.fillText(opt2.xl(i),Math.min(Math.max(X(i),L+16),L+w-16),T+h+5));
+  if(b){x.setLineDash([4,4]);x.strokeStyle=muted;x.lineWidth=1.4;x.beginPath();b.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.stroke();x.setLineDash([])}
+  x.beginPath();a.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.lineTo(X(n-1),Y(0));x.lineTo(X(0),Y(0));x.closePath();x.globalAlpha=.12;x.fillStyle=acc;x.fill();x.globalAlpha=1;
+  x.beginPath();a.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.strokeStyle=acc;x.lineWidth=2;x.stroke();
+  x.fillStyle=acc;x.beginPath();x.arc(X(n-1),Y(a[n-1]),3.5,0,7);x.fill();
+  x.fillStyle=ink;x.textAlign='right';x.textBaseline='bottom';x.font='600 11px "IBM Plex Mono", ui-monospace, monospace';x.fillText(opt2.fmt(a[n-1]),X(n-1)-6,Math.max(T+12,Y(a[n-1])-4));
+}
+const pct=v=>Math.round(v*100)+'%',fmt=n=>Math.round(n).toLocaleString('en-US');
+function draw(){
+  if(!cur||!ref)return;
+  const a=kpi(cur),r=kpi(ref);
+  chart('#ch-ret',cur.ret,ref.ret,{fmt:pct,max:Math.max(.4,niceMax(Math.max(...cur.ret.slice(1),...ref.ret.slice(1))*1.1)),bench:BENCH,xt:[1,7,14,30],xl:i=>'D'+i,color:'--stamp'});
+  chart('#ch-dau',cur.dau,ref.dau,{fmt:fmt,xl:i=>'day '+(i+1),color:'--ballpoint'});
+  chart('#ch-c',cur.C,ref.C,{fmt:pct,max:1,xl:i=>'day '+(i+1),color:'--good'});
+  const tot=cur.reasons.reduce((s,v)=>s+v,0);$('#h-quits').textContent=`${fmt(tot)} people left in 120 days`;
+  const order=cur.reasons.map((v,i)=>[v,i]).sort((p,q)=>q[0]-p[0]);const mx=Math.max(1,order[0][0]);
+  $('#reasons').innerHTML=order.map(([v,i])=>`<div class="rbar"><span>${REASONS[i]}</span><span class="track"><i class="${i===0?'calm':''}" style="width:${v/mx*100}%"></i></span><output>${tot?Math.round(v/tot*100):0}%</output></div>`).join('');
+  const band=(v,d)=>v<BENCH[d][0]?['warn','below range']:v>BENCH[d][1]?['ok','above range']:['ref','in range'];
+  const tile=(l,v,[c,s])=>`<div class="stat"><small>${l}</small><b>${v}</b><span class="pill ${c}">${s}</span></div>`;
+  const delta=(x,y,f)=>{const d=x-y;return [d>=0?'ok':'bad',(d>=0?'+':'−')+f(Math.abs(d))+' vs v0.1']};
+  $('#stats').innerHTML=tile('Day 1',pct(a.D1),band(a.D1,1))+tile('Day 7',pct(a.D7),band(a.D7,7))+tile('Day 30',pct(a.D30),band(a.D30,30))+
+    tile('Circles with 4+ active',pct(a.atomic),delta(a.atomic,r.atomic,v=>Math.round(v*100)+' pts'))+
+    tile('Swaps per week',fmt(a.swk),delta(a.swk,r.swk,fmt))+
+    tile('Favor confidence',pct(a.C),a.C>.75?['ok','healthy']:a.C>.5?['warn','wobbling']:['bad','collapsing']);
+  const s=[];
+  s.push(`<b>${pct(cur.joined)}</b> of everyone in the friend groups ever installed (v0.1: ${pct(ref.joined)}). ${cfg.circles?'Asking each newcomer to fill a circle turns one install into a group install.':'Without circles, most people join alone and stay alone.'}`);
+  s.push(`On average <b>${pct(a.atomic)}</b> of friend groups had four or more active members in the second half of the run. ${a.atomic<.05?'That is the cold-start problem from day 1 of the diary: almost nobody has enough friends on the app for anything to happen.':'That is where swaps, favors and daily dares start feeding each other.'}`);
+  const topR=order[0][1];s.push(`The most common reason to leave was <b>${REASONS[topR].toLowerCase()}</b> (${tot?Math.round(order[0][0]/tot*100):0}% of exits). ${topR===0?'Boredom beat every punishment mechanic.':''}`);
+  s.push(`Retention: D1 ${pct(a.D1)}, D7 ${pct(a.D7)}, D30 ${pct(a.D30)}. ${a.D30>a.D7?'D30 is higher than D7: friends arriving late make the app better for people who joined early. That is the smile curve.':''} ${a.D30>BENCH[30][1]?'Above the published social-app range, so treat it as the optimistic end. Drag the friend-value slider down to stress-test it.':''}`);
+  if(cfg.bonus)s.push(`Free welcome credits: confidence in favors fell to <b>${pct(a.C)}</b>. Newcomers arrive holding favors that nobody owes, someone in the circle has to honor them for nothing, and people start refusing favors as payment. Same shape as Argentina in 2002 and Bunz in 2019.`);
+  if(cfg.decay||cfg.shortChains||cfg.sell)s.push(`Punishment mechanics on (${[cfg.decay&&'trust decay',cfg.shortChains&&'2-hour chains',cfg.sell&&'sellable IOUs'].filter(Boolean).join(', ')}): they matter less than you would think, because in a thin network few people stay long enough to be punished.`);
+  $('#story').innerHTML=s.map(x=>`<li>${x}</li>`).join('');
+}
+window.addEventListener('resize',()=>{clearTimeout(draw.t);draw.t=setTimeout(draw,120)});
+const mq=matchMedia('(prefers-color-scheme: dark)');mq.addEventListener&&mq.addEventListener('change',draw);
+new MutationObserver(draw).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+/* ================================================================
+   CHANGES TABLE (ablations computed live)
+   ================================================================ */
+const CHANGES=[
+ ['Circles unlock at 4 members','Day 1: only two friends on the app, no loops','Open sign-up, no minimum',{circles:0}],
+ ['Weekly Market Day, one table','Days 7–9: three separate handoffs, loop half-failed','Continuous matching, handoffs arranged elsewhere',{market:0}],
+ ['Daily Dare, one prompt per circle','Days 3, 11, 13, 22+: nothing to do','Strangers’ feed as the daily reason',{daily:0}],
+ ['Favor board for small services','Day 21: the best exchange was a service, not an item','Goods-only swaps',{board:0}],
+ ['Reliability score that never decays','Days 2 and 12: opened only to stop a number falling','Trust that decays every idle hour',{decay:1}],
+ ['24-hour chains with a weekly skip','Day 10: blamed for a broken chain while at work','2-hour chain windows',{shortChains:1}],
+ ['IOUs stay in the circle, limit −5','Day 14: IOU sold to a stranger','Sellable IOUs, no limit',{sell:1,limit:0}],
+ ['No free credits, ever','Trueque 2002 and Bunz 2019 collapses','5 welcome favors per newcomer',{bonus:1,limit:0}],
+ ['One tap: “laughed” or “I would never”','Day 1: stopped moving the four sliders by the third video','Four rating sliders',null],
+];
+function changes(){
+  const base=kpi(avgRun(V2,opt));
+  $('#changesBody').innerHTML=CHANGES.map(([n,d,r,ov])=>{let sim='<span class="mono" style="color:var(--muted)">UI only · not in the model</span>';
+    if(ov){const o=kpi(avgRun({...V2,...ov},opt));sim=`<span class="mono">D30 ${pct(base.D30)} → <b>${pct(o.D30)}</b><br>swaps/wk ${fmt(base.swk)} → <b>${fmt(o.swk)}</b><br>confidence ${pct(base.C)} → <b>${pct(o.C)}</b></span>`}
+    return `<tr><td><b>${n}</b></td><td><span class="d">${d}</span></td><td>${r}</td><td>${sim}</td></tr>`}).join('');
+}
+
+/* console tabs */
+let changesDone=false;
+document.querySelector('.ptabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  document.querySelectorAll('.ptabs button').forEach(x=>{const on=x===b;x.setAttribute('aria-selected',on);$('#p-'+x.dataset.p).hidden=!on});
+  if(b.dataset.p==='sim'){if(!cur)run();else draw()}
+  if(b.dataset.p==='changes'&&!changesDone){changesDone=true;$('#changesBody').innerHTML='<tr><td colspan="4" class="mono">Running ablations…</td></tr>';setTimeout(changes,30)}
+});
+if(location.hash==='#sim')document.querySelector('.ptabs [data-p="sim"]').click();
+syncInputs();
+})();
+</script>

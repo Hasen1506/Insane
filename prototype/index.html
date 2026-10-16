@@ -4,12 +4,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
-/* Layout: pawn-ticket / ledger world, same identity as v0.1. Phone left (sticky), research console right. Stacks on phones. */
+/* Layout: same pawn-ticket identity. Phone left (sticky) now opens on a city map; console right argues the road to 90%. Stacks on phones. */
 :root{
   --paper:#ECEEE7; --card:#F9FAF6; --ink:#151D36; --muted:#596277; --line:#CDD2C8;
   --stamp:#C8214B; --ballpoint:#2443C4; --hazard:#B98C00; --good:#1F7A4D;
   --stamp-soft:rgba(200,33,75,.10); --ball-soft:rgba(36,67,196,.10); --haz-soft:rgba(217,164,0,.16); --good-soft:rgba(31,122,77,.13);
-  --screen:#F4F5F0; --bezel:#151D36;
+  --screen:#F4F5F0; --bezel:#151D36; --map:#E3E7DE; --road:#FBFCF8; --water:#C9D6E8; --park:#CFE0CC;
   --f-display:"Dela Gothic One","Arial Black",Impact,sans-serif;
   --f-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
@@ -18,12 +18,12 @@
   --paper:#0E1320; --card:#161D2D; --ink:#E5E8E0; --muted:#8C95A8; --line:#283149;
   --stamp:#FF5A7E; --ballpoint:#8197FF; --hazard:#F2C53D; --good:#4CC38A;
   --stamp-soft:rgba(255,90,126,.14); --ball-soft:rgba(129,151,255,.14); --haz-soft:rgba(242,197,61,.14); --good-soft:rgba(76,195,138,.14);
-  --screen:#111827; --bezel:#05070D; color-scheme:dark}}
+  --screen:#111827; --bezel:#05070D; --map:#1A2233; --road:#26304A; --water:#1E3150; --park:#1F3328; color-scheme:dark}}
 :root[data-theme="dark"]{
   --paper:#0E1320; --card:#161D2D; --ink:#E5E8E0; --muted:#8C95A8; --line:#283149;
   --stamp:#FF5A7E; --ballpoint:#8197FF; --hazard:#F2C53D; --good:#4CC38A;
   --stamp-soft:rgba(255,90,126,.14); --ball-soft:rgba(129,151,255,.14); --haz-soft:rgba(242,197,61,.14); --good-soft:rgba(76,195,138,.14);
-  --screen:#111827; --bezel:#05070D; color-scheme:dark}
+  --screen:#111827; --bezel:#05070D; --map:#1A2233; --road:#26304A; --water:#1E3150; --park:#1F3328; color-scheme:dark}
 
 *{box-sizing:border-box}
 body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;
@@ -33,18 +33,15 @@ button{cursor:pointer}
 :focus-visible{outline:2px solid var(--ballpoint);outline-offset:2px}
 .wrap{max-width:1240px;margin:0 auto}
 .mono{font-family:var(--f-mono)}
-.tnum{font-variant-numeric:tabular-nums}
 
-/* header */
 .top{padding-block:28px 22px;border-bottom:1.5px dashed var(--line);margin-bottom:24px}
 .brandrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .wordmark{font-family:var(--f-display);font-size:clamp(34px,6vw,56px);line-height:.9;color:var(--stamp);transform:rotate(-2deg);display:inline-block;border:3px solid var(--stamp);padding:6px 12px 2px;border-radius:6px}
 .ver{font-family:var(--f-display);font-size:18px;color:var(--ballpoint);border:2px solid var(--ballpoint);border-radius:4px;padding:2px 8px 0;transform:rotate(3deg)}
 .ticket{font-family:var(--f-mono);font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
-.top h1{font-weight:700;font-size:clamp(22px,3.2vw,34px);line-height:1.15;margin:18px 0 8px;max-width:24ch;text-wrap:balance}
-.top p{margin:0;max-width:66ch;color:var(--muted)}
+.top h1{font-weight:700;font-size:clamp(22px,3.2vw,34px);line-height:1.15;margin:18px 0 8px;max-width:26ch;text-wrap:balance}
+.top p{margin:0;max-width:68ch;color:var(--muted)}
 .top p b{color:var(--ink);font-weight:600}
-.top a{color:var(--ballpoint)}
 
 .grid{display:grid;grid-template-columns:380px minmax(0,1fr);gap:32px;align-items:start}
 @media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
@@ -52,12 +49,11 @@ button{cursor:pointer}
 @media (max-width:900px){.phone-col{position:static;display:flex;flex-direction:column;align-items:center}}
 .phone-note{font-family:var(--f-mono);font-size:11.5px;color:var(--muted);margin-top:10px;text-align:center;letter-spacing:.03em}
 
-/* phone */
 .phone{width:100%;max-width:372px;height:760px;background:var(--bezel);border-radius:48px;padding:12px;box-shadow:0 30px 60px -30px rgba(10,15,35,.45)}
 .screen{position:relative;height:100%;background:var(--screen);border-radius:38px;overflow:hidden;display:flex;flex-direction:column}
 .status{display:flex;justify-content:space-between;align-items:center;padding:12px 26px 4px;font-family:var(--f-mono);font-size:11px;font-weight:600}
 .notch{width:96px;height:24px;background:var(--bezel);border-radius:14px}
-.hud{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:6px;padding:6px 14px 10px;border-bottom:1px solid var(--line)}
+.hud{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:6px;padding:6px 14px 10px;border-bottom:1px solid var(--line)}
 .hud div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:5px 8px;min-width:0}
 .hud small{display:block;font-family:var(--f-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .hud b{font-family:var(--f-mono);font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
@@ -73,58 +69,58 @@ button{cursor:pointer}
 .toast{position:absolute;left:14px;right:14px;bottom:78px;background:var(--ink);color:var(--paper);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.35;transform:translateY(12px);opacity:0;transition:.25s;pointer-events:none}
 .toast.on{transform:none;opacity:1}
 
-.dd{border-radius:16px;padding:14px;color:#fff;background:linear-gradient(160deg,#C8214B,#3B1640);position:relative;overflow:hidden;isolation:isolate}
-.dd::before{content:"";position:absolute;inset:0;z-index:-1;background:repeating-linear-gradient(-45deg,rgba(255,255,255,.06) 0 12px,transparent 12px 24px)}
-.dd .k{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.08em;opacity:.9}
-.dd .q{font-family:var(--f-display);font-size:21px;line-height:1.12;margin:6px 0 4px;text-wrap:balance}
-.dd .by{font-size:12.5px;opacity:.9}
-.dd .row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}
-.dd .btn{background:#fff;color:#3B1640;border-color:#fff}
-.faces{display:flex;gap:4px}
-.faces i{width:26px;height:26px;border-radius:50%;border:2px solid rgba(255,255,255,.85);display:grid;place-items:center;font-style:normal;font-size:10px;font-weight:700;font-family:var(--f-mono);background:rgba(255,255,255,.12)}
-.faces i.done{background:#fff;color:#3B1640}
-.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
-.tiles div{aspect-ratio:3/4;max-width:100%;border-radius:10px;background:var(--g);color:#fff;font-size:10.5px;padding:6px;display:flex;flex-direction:column;justify-content:space-between;font-family:var(--f-mono)}
-.react{display:flex;gap:6px;margin-top:8px}
-.react button{flex:1;border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:7px;font-size:12.5px;font-weight:600}
-.react button.on{border-color:var(--stamp);color:var(--stamp);background:var(--stamp-soft)}
+.mapbox{border-radius:16px;overflow:hidden;border:1.5px solid var(--ink);background:var(--map)}
+.mapbox svg{display:block;width:100%;height:auto}
+.mapbox .road{stroke:var(--road);fill:none}
+.mapbox .water{fill:var(--water)}
+.mapbox .park{fill:var(--park)}
+.mapbox .lbl{font-family:var(--f-mono);font-size:8.5px;fill:var(--muted)}
+.mapbox .zl{font-family:var(--f-body);font-size:9.5px;font-weight:700;fill:var(--ink)}
+.mapbox .pin{cursor:pointer}
+.pulse{animation:pulse 1.6s ease-out infinite;transform-origin:center;transform-box:fill-box}
+@keyframes pulse{0%{opacity:.7;transform:scale(.6)}100%{opacity:0;transform:scale(1.8)}}
+.legendrow{display:flex;gap:10px;flex-wrap:wrap;font-family:var(--f-mono);font-size:10px;color:var(--muted);margin:6px 2px 0}
+.legendrow i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:-1px}
 
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;position:relative}
+.card .meta{display:flex;justify-content:space-between;gap:8px;font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}
+.card p{margin:4px 0 0;font-size:13.5px;line-height:1.4}
+.card .sub{font-size:12px;margin-top:4px;color:var(--muted)}
+.card .sub b{color:var(--ink);font-weight:600}
+.card.zone{border:1.5px solid var(--stamp)}
+.card.hunt{border:1.5px dashed var(--ballpoint)}
+.card.drop{border:1.5px solid var(--hazard)}
+.card.done{opacity:.6}
+.kind{font-family:var(--f-mono);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.kind.z{color:var(--stamp)}.kind.h{color:var(--ballpoint)}.kind.d{color:var(--hazard)}.kind.l{color:var(--good)}
+.clues{display:flex;gap:4px;margin-top:8px}
+.clues i{flex:1;height:6px;border-radius:3px;background:var(--line)}
+.clues i.on{background:var(--ballpoint)}
 .btn{border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:10px;padding:8px 12px;font-weight:600;font-size:13px}
 .btn.ghost{background:transparent;color:var(--ink)}
 .btn.red{background:var(--stamp);border-color:var(--stamp);color:#fff}
 .btn.sm{padding:5px 9px;font-size:12px;border-radius:8px}
 .btn:disabled{opacity:.4;cursor:not-allowed}
 .btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.slip{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;position:relative}
-.slip .meta{display:flex;justify-content:space-between;gap:8px;font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}
-.slip p{margin:4px 0 0;font-size:13.5px;line-height:1.4}
-.slip .sub{font-size:12px;margin-top:4px;color:var(--muted)}
-.slip .sub b{color:var(--ink);font-weight:600}
-.slip.chain{border:1.5px dashed var(--stamp)}
-.slip.done{opacity:.6}
-.tag{display:inline-block;font-family:var(--f-mono);font-size:10px;padding:1px 6px;border-radius:10px;font-weight:600}
-.tag.ask{background:var(--ball-soft);color:var(--ballpoint)}
-.tag.offer{background:var(--good-soft);color:var(--good)}
-.tag.ins{background:var(--stamp-soft);color:var(--stamp)}
-.mkt{background:var(--card);border:1.5px solid var(--ink);border-radius:14px;padding:12px}
-.mkt .big{font-family:var(--f-display);font-size:26px;line-height:1}
-.mkt .where{font-size:13px;color:var(--muted);margin-top:4px}
-.kv{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
-.kv div{border:1px solid var(--line);border-radius:8px;padding:5px 7px}
-.kv small{display:block;font-family:var(--f-mono);font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
-.kv b{font-family:var(--f-mono);font-size:15px}
-.item{display:grid;grid-template-columns:1fr auto;gap:2px 8px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13.5px}
-.item small{grid-column:1/-1;font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}
-.item .val{font-family:var(--f-mono);font-size:12px}
-.plan{font-family:var(--f-mono);font-size:12px;border-left:2px solid var(--stamp);padding-left:10px;display:flex;flex-direction:column;gap:5px;margin-top:8px}
-.plan b{color:var(--stamp)}
-.members{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.members div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 8px;font-size:12.5px;min-width:0}
-.members small{display:block;font-family:var(--f-mono);font-size:10px;color:var(--muted)}
-.bal{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
-.balbar{position:relative;height:10px;border-radius:5px;background:linear-gradient(90deg,var(--stamp-soft),var(--line) 50%,var(--good-soft));margin:10px 0 4px}
-.balbar i{position:absolute;top:-4px;width:4px;height:18px;border-radius:2px;background:var(--ink);transform:translateX(-50%);transition:left .3s}
-.balax{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:10px;color:var(--muted)}
+.dd{border-radius:14px;padding:12px 14px;color:#fff;background:linear-gradient(160deg,#C8214B,#3B1640)}
+.dd .k{font-family:var(--f-mono);font-size:10px;letter-spacing:.08em;opacity:.9}
+.dd .q{font-family:var(--f-display);font-size:18px;line-height:1.12;margin:5px 0 8px;text-wrap:balance}
+.dd .btn{background:#fff;color:#3B1640;border-color:#fff}
+.money{background:var(--card);border:1.5px solid var(--ink);border-radius:14px;padding:12px}
+.money .big{font-family:var(--f-display);font-size:28px;line-height:1}
+.tx{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px}
+.tx small{grid-column:1/-1;font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}
+.tx .amt{font-family:var(--f-mono);font-size:12.5px;font-weight:600}
+.tx .amt.neg{color:var(--stamp)}.tx .amt.pos{color:var(--good)}
+.table{width:100%;border-collapse:collapse;font-size:12.5px}
+.table th,.table td{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left}
+.table th{font-family:var(--f-mono);font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:500}
+.table td.n{font-family:var(--f-mono);text-align:right}
+.table tr.me td{font-weight:700;background:var(--stamp-soft)}
+.lineup{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.lineup button{border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:6px;font-size:12px;text-align:left}
+.lineup button.in{border-color:var(--good);background:var(--good-soft)}
+.lineup small{display:block;font-family:var(--f-mono);font-size:9.5px;color:var(--muted)}
 .formula{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);margin-top:6px;line-height:1.45}
 
 /* console */
@@ -133,33 +129,32 @@ button{cursor:pointer}
 .ptabs button[aria-selected="true"]{background:var(--ink);color:var(--paper)}
 .lead{max-width:70ch;color:var(--muted);margin:0 0 16px}
 .lead b{color:var(--ink)}
-.seg{display:inline-flex;border:1.5px solid var(--ink);border-radius:999px;overflow:hidden;margin-bottom:14px}
-.seg button{border:0;background:transparent;padding:6px 16px;font-weight:600;font-size:13px}
-.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
-.strip{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:14px;overflow-x:auto}
-.strip-row{display:grid;grid-template-columns:52px repeat(30,minmax(9px,1fr));gap:3px;align-items:end;min-width:420px}
-.strip-row+.strip-row{margin-top:10px}
-.strip-row .lab{font-family:var(--f-mono);font-size:11px;color:var(--muted);align-self:center}
-.strip-row button{border:0;padding:0;background:var(--line);border-radius:2px;min-height:3px;position:relative}
-.strip-row button.v1{background:var(--muted)}
-.strip-row button.v2{background:var(--ballpoint)}
-.strip-row button.key::after{content:"";position:absolute;left:50%;top:-7px;width:5px;height:5px;border-radius:50%;background:var(--stamp);transform:translateX(-50%)}
-.strip-row button.sel{outline:2px solid var(--stamp);outline-offset:1px}
-.strip-ax{display:grid;grid-template-columns:52px repeat(30,minmax(9px,1fr));gap:3px;font-family:var(--f-mono);font-size:9.5px;color:var(--muted);margin-top:4px;min-width:420px}
-.strip-ax span{text-align:center}
-.dtiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
-@media (max-width:640px){.dtiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.entries{display:flex;flex-direction:column;border-top:1.5px solid var(--ink)}
-.entry{display:grid;grid-template-columns:70px minmax(0,1fr) 140px;gap:14px;padding:12px 0;border-bottom:1px dashed var(--line);align-items:start}
-@media (max-width:640px){.entry{grid-template-columns:56px minmax(0,1fr)}.entry .why{grid-column:2}}
-.entry .day{font-family:var(--f-mono);font-size:12px;font-weight:600}
-.entry .day small{display:block;color:var(--muted);font-weight:400}
-.entry p{margin:0;font-size:14px}
-.entry .why{font-family:var(--f-mono);font-size:11px;color:var(--ballpoint)}
-.entry.hot{background:var(--stamp-soft);border-radius:8px;padding-inline:8px}
-.entry.best p::before{content:"BEST ";font-family:var(--f-mono);font-size:10px;color:var(--good);font-weight:600}
-.entry.quit p::before{content:"QUIT ";font-family:var(--f-mono);font-size:10px;color:var(--stamp);font-weight:600}
-
+.verdict{background:var(--card);border:1.5px solid var(--ink);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+.verdict h3{margin:0 0 6px;font-size:19px;line-height:1.25;text-wrap:balance}
+.verdict p{margin:0;max-width:72ch;font-size:14.5px}
+.verdict p+p{margin-top:8px}
+.chart{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px 10px;min-width:0;margin-bottom:14px}
+.chart h5{margin:0 0 2px;font-size:14px;font-weight:600;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.chart h5 span{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);font-weight:500}
+.chart canvas{width:100%;height:260px;display:block}
+.chart.small canvas{height:160px}
+.ladder{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}
+@media (max-width:760px){.ladder{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.rung{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0}
+.rung small{display:block;font-family:var(--f-mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.rung b{display:block;font-family:var(--f-mono);font-size:22px;font-weight:600;margin-top:2px}
+.rung p{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
+.rung.hi{border:1.5px solid var(--good)}
+.ideas{display:flex;flex-direction:column;gap:14px}
+.idea{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px}
+@media (max-width:760px){.idea{grid-template-columns:minmax(0,1fr)}}
+.idea h4{margin:0;font-size:17px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.idea .st{font-family:var(--f-mono);font-size:10.5px;padding:2px 8px;border-radius:10px;font-weight:600}
+.st.no{background:var(--stamp-soft);color:var(--stamp)}.st.yes{background:var(--good-soft);color:var(--good)}.st.mod{background:var(--haz-soft);color:var(--hazard)}
+.idea p{margin:6px 0 0;font-size:14px}
+.idea .ev{font-size:13px;color:var(--muted)}
+.idea .ev b{color:var(--ink)}
+.idea .num{font-family:var(--f-mono);font-size:12px;background:var(--paper);border-radius:8px;padding:8px 10px;margin-top:8px;line-height:1.6}
 .presets{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
 .presets button{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600}
 .presets button.on{border-color:var(--stamp);color:var(--stamp);background:var(--stamp-soft)}
@@ -170,261 +165,204 @@ button{cursor:pointer}
 .cgroup h4{margin:0 0 4px;font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:500}
 .chip{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13.5px;cursor:pointer}
 .chip input{accent-color:var(--stamp);width:15px;height:15px;margin:0;flex:none}
-.chip .v2t{font-family:var(--f-mono);font-size:9.5px;color:var(--ballpoint);border:1px solid var(--ballpoint);border-radius:4px;padding:0 4px;margin-left:auto;flex:none}
+.chip .vt{font-family:var(--f-mono);font-size:9.5px;border-radius:4px;padding:0 4px;margin-left:auto;flex:none;border:1px solid}
+.vt.v2{color:var(--ballpoint);border-color:var(--ballpoint)}.vt.v3{color:var(--stamp);border-color:var(--stamp)}
 .sliders{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin-bottom:16px;font-size:13px}
 .sliders label{display:flex;align-items:center;gap:8px}
 .sliders input[type=range]{accent-color:var(--ink);width:120px}
 .sliders output{font-family:var(--f-mono);min-width:3ch}
-.checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:16px}
-@media (max-width:640px){.checks{grid-template-columns:minmax(0,1fr)}}
-.check{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:grid;grid-template-columns:28px minmax(0,1fr);gap:8px;align-items:start;min-width:0}
-.check .mark{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;font-family:var(--f-mono)}
-.check.pass .mark{background:var(--good-soft);color:var(--good)}
-.check.fail .mark{background:var(--stamp-soft);color:var(--stamp)}
-.check b{font-size:13.5px}
-.check p{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
 .stats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:16px}
 @media (max-width:1100px){.stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:460px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0}
 .stat small{display:block;font-family:var(--f-mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
-.stat b{display:block;font-family:var(--f-mono);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:2px}
+.stat b{display:block;font-family:var(--f-mono);font-size:22px;font-weight:600;margin-top:2px}
 .pill{display:inline-block;margin-top:4px;font-family:var(--f-mono);font-size:10px;padding:1px 7px;border-radius:10px;font-weight:600}
-.pill.ok{background:var(--good-soft);color:var(--good)}
-.pill.warn{background:var(--haz-soft);color:var(--hazard)}
-.pill.bad{background:var(--stamp-soft);color:var(--stamp)}
-.pill.ref{background:var(--ball-soft);color:var(--ballpoint)}
+.pill.ok{background:var(--good-soft);color:var(--good)}.pill.warn{background:var(--haz-soft);color:var(--hazard)}.pill.bad{background:var(--stamp-soft);color:var(--stamp)}.pill.ref{background:var(--ball-soft);color:var(--ballpoint)}
 .charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 @media (max-width:640px){.charts{grid-template-columns:minmax(0,1fr)}}
-.chart{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px 8px;min-width:0}
-.chart h5{margin:0;font-size:13.5px;font-weight:600;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
-.chart h5 span{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);font-weight:500}
-.chart canvas{width:100%;height:160px;display:block}
-.reasons{display:flex;flex-direction:column;gap:6px;margin-top:8px}
-.rbar{display:grid;grid-template-columns:150px minmax(0,1fr) 34px;gap:8px;align-items:center;font-size:12.5px}
-.rbar .track{height:10px;background:var(--line);border-radius:5px;overflow:hidden}
-.rbar .track i{display:block;height:100%;background:var(--stamp)}
-.rbar .track i.calm{background:var(--muted)}
-.rbar output{font-family:var(--f-mono);font-size:11.5px;text-align:right}
+.charts .chart{margin-bottom:0}
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-family:var(--f-mono);font-size:11px;color:var(--muted);margin:10px 0 0}
 .legend i{display:inline-block;width:16px;height:0;border-top:2px solid var(--stamp);vertical-align:middle;margin-right:5px}
 .legend i.ghost{border-top:2px dashed var(--muted)}
-.legend i.band{height:8px;border:0;background:var(--good-soft);outline:1px solid var(--good)}
 .story{margin-top:18px;background:var(--card);border:1.5px solid var(--ink);border-radius:14px;padding:14px 18px}
 .story h4{margin:0 0 6px;font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:500}
 .story ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch}
 .story li::marker{color:var(--stamp)}
-
-.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:20px}
-table{border-collapse:collapse;width:100%;min-width:680px;font-size:13.5px}
-th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
-th{font-family:var(--f-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:500}
-tr:last-child td{border-bottom:0}
-td b{font-weight:700}
-td .d{font-family:var(--f-mono);font-size:11.5px;color:var(--ballpoint);white-space:nowrap}
+.week{display:flex;flex-direction:column;border-top:1.5px solid var(--ink)}
+.wd{display:grid;grid-template-columns:64px 110px minmax(0,1fr);gap:14px;padding:12px 0;border-bottom:1px dashed var(--line)}
+@media (max-width:640px){.wd{grid-template-columns:56px minmax(0,1fr)}.wd .what{grid-column:2}}
+.wd .day{font-family:var(--f-mono);font-weight:600;font-size:13px}
+.wd .day small{display:block;font-weight:400;color:var(--muted)}
+.wd .tag{font-family:var(--f-mono);font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.wd p{margin:0;font-size:14px}
 .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
 @media (max-width:760px){.two{grid-template-columns:minmax(0,1fr)}}
 .note{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;min-width:0}
 .note h4{margin:0 0 6px;font-size:15px}
 .note p,.note li{font-size:14px;margin:0}
-.note ul,.note ol{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px}
-.note.prompt{border:1.5px solid var(--ballpoint);grid-column:1/-1}
-.note.prompt ol li::marker{color:var(--ballpoint);font-family:var(--f-mono)}
+.note ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px}
 .note a{color:var(--ballpoint);word-break:break-word}
+.note.red{border:1.5px solid var(--stamp)}
 .sec{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:500;margin:24px 0 8px}
-@media (prefers-reduced-motion:reduce){.toast{transition:none}.balbar i{transition:none}}
+@media (prefers-reduced-motion:reduce){.pulse{animation:none}.toast{transition:none}}
 </style>
 
 <header class="top wrap">
   <div class="brandrow">
-    <span class="wordmark">INSANE</span><span class="ver">v0.2</span>
-    <span class="ticket">Rebuilt after a 30-day diary study · no cash accepted</span>
+    <span class="wordmark">INSANE</span><span class="ver">v0.3</span>
+    <span class="ticket">The city is the board · no cash accepted</span>
   </div>
-  <h1>I used v0.1 every day for a month. It didn't die of addiction. It died of loneliness.</h1>
-  <p>Playing a real user exposed what the first design ignored: <b>two friends is not a network</b>, <b>nobody has something to swap every day</b>, and <b>three separate handoffs always fail</b>. v0.2 rebuilds the app around friend circles, a daily shared dare, a favor board, and one weekly Market Day. The simulator is now checked against published retention benchmarks and two real barter-currency collapses before it compares anything. v0.1 is still in the repo under <span class="mono">prototype/v1/</span>.</p>
+  <h1>Hooks got us to 23%. To get to 90%, the app has to become the thing your friends can't leave.</h1>
+  <p>Only one kind of app keeps around 90% of its users: the one your people <b>talk and pay</b> through. So v0.3 does two things at once. The ledger becomes your circle's everyday money, which is the boring part that keeps people. And the city becomes the board, which is the part that earns the name: <b>Zones</b> where you can go big on camera with staff on site, <b>Hunts</b> that circles build for each other, <b>Drops</b> of real stuff, and a <b>League</b> where your circle has a fixture every week.</p>
 </header>
 
 <main class="wrap grid">
-  <!-- ================= PHONE ================= -->
-  <section class="phone-col" aria-label="App prototype v0.2">
+  <section class="phone-col" aria-label="App prototype v0.3">
     <div class="phone">
       <div class="screen">
-        <div class="status"><span class="tnum" id="clock">19:24</span><span class="notch" aria-hidden="true"></span><span>5G ▮▮▮</span></div>
+        <div class="status"><span id="clock">18:42</span><span class="notch" aria-hidden="true"></span><span>5G ▮▮▮</span></div>
         <div class="hud">
           <div><small>Circle</small><b>4B &amp; co · 6</b></div>
-          <div><small>Reliability</small><b id="relV">94%</b></div>
-          <div><small>Favors</small><b id="favV">−1</b></div>
+          <div><small>League</small><b>3rd · 14 pts</b></div>
+          <div><small>Balance</small><b id="balV">+1.5</b></div>
         </div>
         <div class="view" id="view"></div>
         <div class="toast" id="toast" role="status" aria-live="polite"></div>
         <nav class="nav" role="tablist" aria-label="App sections">
-          <button role="tab" data-tab="today" aria-selected="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>Today<span class="badge" id="bToday">2</span></button>
-          <button role="tab" data-tab="market"><svg viewBox="0 0 24 24"><path d="M4 9l2-5h12l2 5M4 9h16v11H4zM9 20v-6h6v6"/></svg>Market</button>
-          <button role="tab" data-tab="circle"><svg viewBox="0 0 24 24"><circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3 19c1-3 3-4 5-4s4 1 5 4M11 19c1-3 3-4 5-4s4 1 5 4"/></svg>Circle</button>
-          <button role="tab" data-tab="ledger"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>Ledger</button>
+          <button role="tab" data-tab="map" aria-selected="true"><svg viewBox="0 0 24 24"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg>City<span class="badge" id="bMap">1</span></button>
+          <button role="tab" data-tab="today"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>Today</button>
+          <button role="tab" data-tab="league"><svg viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 01-10 0zM12 14v4M8 20h8M7 6H4a3 3 0 003 4M17 6h3a3 3 0 01-3 4"/></svg>League</button>
+          <button role="tab" data-tab="ledger"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>Ledger<span class="badge" id="bLed">1</span></button>
         </nav>
       </div>
     </div>
-    <div class="phone-note">v0.2 · day 9 in the life of a circle · tap anything</div>
+    <div class="phone-note">v0.3 · Thursday, fixture day · tap the pins</div>
   </section>
 
-  <!-- ================= CONSOLE ================= -->
   <section aria-label="Research console">
     <div class="ptabs" role="tablist">
-      <button role="tab" data-p="diary" aria-selected="true">30-day diary</button>
+      <button role="tab" data-p="road" aria-selected="true">Road to 90%</button>
+      <button role="tab" data-p="ideas" aria-selected="false">Your ideas, tested</button>
       <button role="tab" data-p="sim" aria-selected="false">Simulator</button>
-      <button role="tab" data-p="changes" aria-selected="false">What changed</button>
-      <button role="tab" data-p="method" aria-selected="false">Method &amp; sources</button>
+      <button role="tab" data-p="week" aria-selected="false">A week on v0.3</button>
     </div>
 
-    <!-- DIARY -->
-    <div id="p-diary">
-      <p class="lead">One realistic user, 30 days, every day logged. <b>26, shares a flat, more stuff than cash, works 9–6, three friends willing to install.</b> Bar height is minutes in the app; red dots mark the days that mattered. Tap a bar to jump to that day.</p>
-      <div class="strip" id="strip"></div>
-      <div class="seg" role="group" aria-label="Diary version"><button id="dv1" aria-pressed="true">v0.1 diary</button><button id="dv2" aria-pressed="false">v0.2 diary</button></div>
-      <div class="dtiles" id="dtiles"></div>
-      <div class="entries" id="entries"></div>
+    <!-- ROAD -->
+    <div id="p-road">
+      <div class="verdict">
+        <h3>90% of people opening on exactly day 30 isn't something any app has. 90% still around in month one is, and only apps that are infrastructure get there.</h3>
+        <p>Typical social apps keep 4–10% of users on day 30. The one app reported near 90% month-one retention is WhatsApp, at about 86% (Sensor Tower, via a secondhand report). Nobody gets there with streaks or prizes. WhatsApp got there because leaving means losing the people you talk to.</p>
+        <p>So v0.3 adds two layers. <b>Infrastructure</b>: the ledger becomes the money your circle runs on, and the League gives your circle a fixture every week. <b>Spectacle</b>: Zones, Hunts and Drops get people out into the city together and make the app worth its name. The chart shows what each layer adds, one at a time, in the calibrated simulator.</p>
+        <p>Read the two numbers differently. <b>Day 30</b> is calibrated against published benchmarks. <b>Month one</b> (opened on any day from 23 to 30) is looser: a plain app with no hooks already scores about 39% on it. v0.3 clears 90% on month one; on day 30 it reaches the high 50s, well above every published social-app range, so treat it as the optimistic end.</p>
+      </div>
+      <div class="ladder" id="ladder"><div class="rung"><small>Simulator</small><b>…</b><p>running 21 simulations</p></div></div>
+      <div class="chart"><h5>Building v0.3 one layer at a time <span id="wfnote">day-30 retention · 3-seed average · running…</span></h5><canvas id="ch-wf" aria-label="Retention by layer chart"></canvas><div class="legend"><span><i class="band" style="display:inline-block;width:14px;height:8px;border:0;background:var(--good-soft);outline:1px solid var(--good);margin-right:5px"></i>typical social apps on day 30 (4–10%)</span><span>bars: day-30 retention</span><span>▼ month one (opened any day 23–30)</span><span style="color:var(--stamp)">- - your 90% target</span></div></div>
+      <div class="two">
+        <div class="note"><h4>What carries the number</h4><ul>
+          <li><b>The ledger as money</b> is the biggest single step. When your groceries, dinners and chores are settled in favors, you open the app for the same reason you open a banking app.</li>
+          <li><b>The League</b> works like a five-a-side team. Teammates notice when you're missing and pull you back, which is something no notification can do.</li>
+          <li><b>Zones</b> add a weekly night out with your circle, and give the feed fresh local content so it never goes stale.</li>
+        </ul></div>
+        <div class="note"><h4>What earns the name but not the number</h4><ul>
+          <li><b>Hunts and Drops</b> add only 1–3 points each in the model. They're the stories people tell, the reason a stranger installs, and the screenshot on the poster.</li>
+          <li>That split is normal. Pokémon GO's daily users fell by about a third within weeks of its peak, and HQ Trivia's prize-driven crowd evaporated. Spectacle recruits; obligation retains.</li>
+        </ul></div>
+        <div class="note red" style="grid-column:1/-1"><h4>The two things that would sink it</h4><ul>
+          <li><b>Removing the insanity ceiling.</b> In a network this dense, escalation runs away: the simulator injures about 690 people in 120 days without it, against about 5 with it. Zones allow a higher ceiling (8 instead of 6.5) <i>only</i> because staff, padding and fixed cameras are there.</li>
+          <li><b>Paying drops in favors.</b> That's free issuance, the same mistake as the trueque clubs and Bunz. Confidence in favors falls from 85% to about 50%.</li>
+        </ul></div>
+      </div>
+      <h3 class="sec">Sources</h3>
+      <div class="note"><ul>
+        <li>WhatsApp month-one retention (secondhand, unverified): <a href="https://www.producthunt.com/p/general/if-you-re-building-a-consumer-app-what-does-your-retention-look-like">Product Hunt, citing Sensor Tower</a></li>
+        <li>Retention benchmarks: <a href="https://phiture.com/mobilegrowthstack/managing-retention-rate-benchmarks-and-expectations/">Phiture</a> · <a href="https://www.braze.com/resources/articles/mobile-app-retention">Braze</a> · <a href="https://trysonar.app/blog/app-user-retention-benchmarks-and-what-moves-it">Sonar (Adjust data)</a></li>
+        <li>HQ Trivia: <a href="https://techcrunch.com/2020/02/14/hq-trivia-shuts-down">TechCrunch</a> · <a href="https://www.thedrum.com/news/hq-trivia-shuts-down-after-3-years">The Drum</a></li>
+        <li>Pokémon GO: <a href="https://www.digitaltrends.com/phones/pokemon-go-decline-player-numbers/">Digital Trends</a> · <a href="https://mcvuk.com/pokemon-go-has-lost-around-15m-daily-users/0171558">MCV</a></li>
+        <li>Streaks: <a href="https://www.businessofapps.com/news/duolingos-streak-feature-drives-record-17-million-daus">Business of Apps on Duolingo</a></li>
+        <li>Trueque and Bunz: see <span class="mono">docs/DEEPER.md</span></li>
+      </ul></div>
+    </div>
+
+    <!-- IDEAS -->
+    <div id="p-ideas" hidden>
+      <p class="lead">Your three ideas, checked against what happened when someone tried them for real and against the simulator. One is out, one is in with a change, and one is the best idea in the whole project.</p>
+      <div class="ideas" id="ideasList"></div>
     </div>
 
     <!-- SIM -->
     <div id="p-sim" hidden>
-      <p class="lead">Real friend groups of 12 people. Some join on their own; the rest only join if a friend invites them. Each simulated day, every member decides whether to open the app, based on what they got last time, what is pulling at them, and what is annoying them. People who leave are counted by their main reason. <b>The dashed line is always v0.1</b>, so every change is measured against the original design.</p>
-      <div class="checks" id="checks"></div>
+      <p class="lead">Same calibrated model as v0.2: friend groups of 12, invites, daily decisions to open or quit. v0.3 adds the five new layers. <b>The dashed line is v0.2</b>. The checks from v0.2 still hold: the no-hooks version matches published retention, and free credits still collapse confidence.</p>
       <div class="presets" id="presets">
-        <button data-preset="v1">v0.1</button>
         <button data-preset="v2">v0.2</button>
-        <button data-preset="trueque">v0.2 + free welcome credits</button>
-        <button data-preset="base">No hooks (calibration)</button>
+        <button data-preset="v3">v0.3</button>
+        <button data-preset="cash">v0.3 with cash drops</button>
+        <button data-preset="nocap">v0.3 with no ceiling</button>
+        <button data-preset="decay">v0.3 + trust decay</button>
       </div>
       <div class="controls">
-        <div class="cgroup"><h4>Growth</h4>
-          <label class="chip"><input type="checkbox" id="c-circles">Circles unlock at 4 members<span class="v2t">v0.2</span></label>
+        <div class="cgroup"><h4>Infrastructure</h4>
+          <label class="chip"><input type="checkbox" id="c-ledger">Ledger is the circle's money<span class="vt v3">v0.3</span></label>
+          <label class="chip"><input type="checkbox" id="c-league">League with weekly fixtures<span class="vt v3">v0.3</span></label>
+          <label class="chip"><input type="checkbox" id="c-circles">Circles unlock at 4<span class="vt v2">v0.2</span></label>
         </div>
-        <div class="cgroup"><h4>Daily reasons to open</h4>
-          <label class="chip"><input type="checkbox" id="c-daily">Daily Dare, one per circle<span class="v2t">v0.2</span></label>
-          <label class="chip"><input type="checkbox" id="c-circlePrompts">Circle writes the prompts<span class="v2t">v0.2</span></label>
-          <label class="chip"><input type="checkbox" id="c-board">Favor board<span class="v2t">v0.2</span></label>
+        <div class="cgroup"><h4>Spectacle</h4>
+          <label class="chip"><input type="checkbox" id="c-zones">Zones, weekly Zone Night<span class="vt v3">v0.3</span></label>
+          <label class="chip"><input type="checkbox" id="c-hunts">Hunts built by circles<span class="vt v3">v0.3</span></label>
+          <label class="chip"><input type="checkbox" id="c-drops">Drops of real stuff<span class="vt v3">v0.3</span></label>
+          <label class="chip"><input type="checkbox" id="c-cashDrops">Drops pay favors instead</label>
         </div>
-        <div class="cgroup"><h4>Swaps</h4>
-          <label class="chip"><input type="checkbox" id="c-market">Weekly Market Day, one table<span class="v2t">v0.2</span></label>
+        <div class="cgroup"><h4>Daily (v0.2)</h4>
+          <label class="chip"><input type="checkbox" id="c-daily">Daily Dare<span class="vt v2">v0.2</span></label>
+          <label class="chip"><input type="checkbox" id="c-board">Favor board<span class="vt v2">v0.2</span></label>
+          <label class="chip"><input type="checkbox" id="c-market">Weekly Market Day<span class="vt v2">v0.2</span></label>
         </div>
         <div class="cgroup"><h4>Pressure</h4>
           <label class="chip"><input type="checkbox" id="c-decay">Trust decay</label>
-          <label class="chip"><input type="checkbox" id="c-reminders">Debt reminders</label>
-          <label class="chip"><input type="checkbox" id="c-ladder">Escalation chains</label>
           <label class="chip"><input type="checkbox" id="c-shortChains">2-hour chain window</label>
-        </div>
-        <div class="cgroup"><h4>Credit</h4>
           <label class="chip"><input type="checkbox" id="c-sell">IOUs can be sold</label>
-          <label class="chip"><input type="checkbox" id="c-limit">Credit limit −5<span class="v2t">v0.2</span></label>
-          <label class="chip"><input type="checkbox" id="c-bonus">Free welcome credits</label>
-          <label class="chip"><input type="checkbox" id="c-jubilee">Monthly jubilee<span class="v2t">v0.2</span></label>
         </div>
         <div class="cgroup"><h4>Safety</h4>
-          <label class="chip"><input type="checkbox" id="c-cap">Insanity ceiling 6.5<span class="v2t">v0.2</span></label>
-          <label class="chip"><input type="checkbox" id="c-downrank">Danger down-ranking<span class="v2t">v0.2</span></label>
+          <label class="chip"><input type="checkbox" id="c-cap">Insanity ceiling (8 in Zones)<span class="vt v2">v0.2</span></label>
+          <label class="chip"><input type="checkbox" id="c-downrank">Danger down-ranking<span class="vt v2">v0.2</span></label>
+        </div>
+        <div class="cgroup"><h4>Credit</h4>
+          <label class="chip"><input type="checkbox" id="c-limit">Credit limit −5<span class="vt v2">v0.2</span></label>
+          <label class="chip"><input type="checkbox" id="c-bonus">Free welcome credits</label>
         </div>
       </div>
       <div class="sliders">
-        <label for="s-groups">Friend groups <input type="range" id="s-groups" min="50" max="200" step="10" value="150"><output id="o-groups">150</output></label>
         <label for="s-k">How much friends' activity is worth <input type="range" id="s-k" min="0.4" max="1" step="0.05" value="0.7"><output id="o-k">0.70</output></label>
         <label for="s-seed">Seed <input type="range" id="s-seed" min="1" max="20" step="1" value="1"><output id="o-seed">1</output></label>
       </div>
       <div class="stats" id="stats"></div>
       <div class="charts">
-        <div class="chart"><h5>Cohort retention <span>share opening on day N after joining</span></h5><canvas id="ch-ret" aria-label="Cohort retention chart"></canvas></div>
-        <div class="chart"><h5>Daily opens <span>whole network · 120 days</span></h5><canvas id="ch-dau" aria-label="Daily opens chart"></canvas></div>
-        <div class="chart"><h5>Favor confidence <span>share of favors honored when asked</span></h5><canvas id="ch-c" aria-label="Favor confidence chart"></canvas></div>
-        <div class="chart"><h5>Why people left <span id="h-quits"></span></h5><div class="reasons" id="reasons"></div></div>
+        <div class="chart small"><h5>Cohort retention <span>share opening on day N after joining</span></h5><canvas id="ch-ret" aria-label="Cohort retention chart"></canvas></div>
+        <div class="chart small"><h5>Daily opens <span>whole network · 120 days</span></h5><canvas id="ch-dau" aria-label="Daily opens chart"></canvas></div>
+        <div class="chart small"><h5>Favor confidence <span>share of favors honored</span></h5><canvas id="ch-c" aria-label="Favor confidence chart"></canvas></div>
+        <div class="chart small"><h5>People hurt <span>cumulative</span></h5><canvas id="ch-harm" aria-label="Harm chart"></canvas></div>
       </div>
-      <div class="legend"><span><i></i>this run</span><span><i class="ghost"></i>v0.1</span><span><i class="band"></i>published social-app range (D1 / D7 / D30)</span></div>
+      <div class="legend"><span><i></i>this run</span><span><i class="ghost"></i>v0.2</span></div>
       <div class="story"><h4>What happened in this run</h4><ul id="story"></ul></div>
     </div>
 
-    <!-- CHANGES -->
-    <div id="p-changes" hidden>
-      <p class="lead">Every change in v0.2 traces back to a day in the diary where v0.1 broke. Nothing was added without a moment that demanded it. The last column puts the old v0.1 mechanic back into v0.2, one at a time, and shows what the simulator says happens (3-seed average).</p>
-      <div class="tablewrap"><table>
-        <thead><tr><th>v0.2 change</th><th>Diary moment it fixes</th><th>What it replaces</th><th>Simulator, with the old mechanic back</th></tr></thead>
-        <tbody id="changesBody"></tbody>
-      </table></div>
-      <div class="two">
-        <div class="note"><h4>Kept from v0.1</h4><ul>
-          <li>Dares as payment, with stakes people actually want. Day 4 was the best day of the v0.1 month.</li>
-          <li>Multi-person loop matching, now run in one batch per week.</li>
-          <li>The Insanity Index, now weekly per circle, scored on absurdity and creativity, with danger removing reward.</li>
-          <li>The monthly jubilee.</li>
-        </ul></div>
-        <div class="note" style="grid-column:1/-1;border:1.5px solid var(--stamp)"><h4>Where the simulator disagrees with the diary</h4><p>Putting Trust decay back into v0.2 <b>raises</b> simulated day-30 retention and swap volume. Once a circle is dense, loss aversion does exactly what it is designed to do: it gets people to open the app. The model counts opens; it does not count how it felt to open. In the diary, decay was the first thing that felt like a trick (day 2) and it locked the user out of the one feature they wanted (day 12). v0.2 leaves it out on purpose. The real-world test should settle it: run one circle with decay and two without, and compare day-14 posting against the “felt like a punishment” count.</p></div>
-        <div class="note"><h4>New risks v0.2 introduces</h4><ul>
-          <li><b>Daily Dare fatigue.</b> BeReal lost an estimated 60% of daily users within months of its peak. Circle-written prompts slow the decay; they do not stop it.</li>
-          <li><b>Peer pressure in a small circle.</b> Fewer strangers, more people whose opinion matters.</li>
-          <li><b>Market Day needs one city.</b> Long-distance friends only get favors.</li>
-          <li><b>Circles churn together.</b> If a circle dies, everyone in it leaves at once.</li>
-        </ul></div>
+    <!-- WEEK -->
+    <div id="p-week" hidden>
+      <p class="lead">Same user as the v0.1 and v0.2 diaries, one week on v0.3. <b>Opened 7 of 7 days.</b> The difference isn't that each day is more exciting. Every day has something the circle needs from you.</p>
+      <div class="week">
+        <div class="wd"><div class="day">Mon<small>4 min</small></div><span class="tag" style="color:var(--good)">Ledger</span><p>Pia logged the week's groceries: six ways, I owe half a favor. Settled it by offering to cook Tuesday. That's how money works now.</p></div>
+        <div class="wd"><div class="day">Tue<small>6 min</small></div><span class="tag" style="color:var(--good)">Ledger · League</span><p>Cooked for four, so each eater owes me a quarter. Thursday's fixture is set: <b>4B &amp; co vs Third Floor</b> at Zone Night. We need four in the lineup. I tapped in.</p></div>
+        <div class="wd"><div class="day">Wed<small>11 min</small></div><span class="tag" style="color:var(--ballpoint)">Hunt</span><p>Third Floor's hunt, "The Lost Toaster": five clues across the neighborhood. Clue 2 needed a 10-second dare filmed at the bakery mural. Jules and I did three clues after work.</p></div>
+        <div class="wd"><div class="day">Thu<small>9 min + 2 h out</small></div><span class="tag" style="color:var(--stamp)">Zone · Fixture</span><p>Zone Night at The Loading Dock, a skatepark that partners with the app: staff, padded ramp, fixed cameras, ceiling 8. Our entry was a slow-motion action-movie fight with foam swords, scored 7.4. We won the fixture 3–2. <b>Best night of the month.</b></p></div>
+        <div class="wd"><div class="day">Fri<small>5 min</small></div><span class="tag" style="color:var(--hazard)">Drop</span><p>A bike shop dropped a refurbished bike at the river steps. Claiming it needed three of us there together within two hours. Maya, Rin and I made it. The bike goes into Sunday's Market pool.</p></div>
+        <div class="wd"><div class="day">Sat<small>2 min</small></div><span class="tag" style="color:var(--muted)">Quiet</span><p>Barely opened. Rin pinged the circle about Sunday. No streak, no decay, no guilt.</p></div>
+        <div class="wd"><div class="day">Sun<small>8 min + 1 h out</small></div><span class="tag" style="color:var(--ballpoint)">Market</span><p>Market at Zone 2. Four loops for me, including the drop bike going to someone in another circle for two hours of their help moving house.</p></div>
       </div>
-    </div>
-
-    <!-- METHOD -->
-    <div id="p-method" hidden>
-      <p class="lead">This version follows a four-question method: say what a top professional would do that wasn't asked for, name the rawest material, name the methods, and say what other than the designer would show the result is right. Then rewrite the prompt to ask for exactly that.</p>
+      <h3 class="sec">Who v0.3 is not for, and what keeps them anyway</h3>
       <div class="two">
-        <div class="note"><h4>1 · What a pro would do that wasn't asked</h4><ul>
-          <li>Find the atomic network: the smallest group where the app works on day one.</li>
-          <li>Check frequency. People have something to swap monthly; the app needs a daily reason.</li>
-          <li>Design the physical handoff, not just the match.</li>
-          <li>Pick a north-star metric that isn't DAU: completed exchanges per circle per week.</li>
-          <li>Test in a group chat before building, with pass/fail set in advance.</li>
-        </ul></div>
-        <div class="note"><h4>2 · The rawest material</h4><ul>
-          <li><b>Argentina's trueque clubs, 2001–02:</b> about 2.5 million people at the peak; new members got 50 free créditos; counterfeiting spread; collapse by the end of 2002.</li>
-          <li><b>Bunz BTZ, 2018–19:</b> 1,000 free tokens per user, 130M+ in circulation, 200+ Toronto shops; supply expanded, then abruptly scaled back in 2019.</li>
-          <li><b>Retention benchmarks:</b> social apps keep roughly 25–29% on D1, 9–16% on D7, 4–10% on D30.</li>
-          <li><b>BeReal:</b> 15–20M daily users in late 2022, about 6M by spring 2023.</li>
-          <li>A day-by-day diary of one user.</li>
-        </ul></div>
-        <div class="note"><h4>3 · Methods and tools</h4><ul>
-          <li>Diary study and cognitive walkthrough.</li>
-          <li>Fogg Behavior Model (B = MAP) for each daily action.</li>
-          <li>Cohort retention curves and the smile curve.</li>
-          <li>Atomic-network analysis for cold start.</li>
-          <li>Liquidity math and cycle matching (kidney exchange).</li>
-          <li>Mutual-credit rules: limits, no free issuance (WIR, LETS).</li>
-          <li>Agent-based model: calibrate, reproduce history, then compare; average over seeds.</li>
-        </ul></div>
-        <div class="note"><h4>4 · What shows it's right, other than us</h4><ul>
-          <li><b>Benchmarks:</b> the no-hooks version must land in the published range first. See the checks on the Simulator tab.</li>
-          <li><b>History:</b> free welcome credits must reproduce the trueque/Bunz collapse.</li>
-          <li><b>Real people:</b> a two-week concierge test with three friend circles, judged against thresholds set in advance.</li>
-          <li><b>A stranger's pre-mortem.</b></li>
-        </ul></div>
-        <div class="note prompt"><h4>The rewritten prompt</h4><ol>
-          <li><b>Be a real user.</b> Play one realistic person for 30 days on the current prototype. Log minutes, what triggered each open, what I got, what annoyed me, and the day I'd quit. Shorter runs for a performer, a trader, and a lurker.</li>
-          <li><b>Start from raw material:</b> post-mortems of the trueque clubs, Bunz BTZ and WIR; published D1/D7/D30 benchmarks; BeReal's rise and fall.</li>
-          <li><b>Use these methods:</b> diary study, B = MAP, cohort retention, atomic network, liquidity math, mutual-credit rules.</li>
-          <li><b>Make the simulator earn trust:</b> calibrate a no-hooks version to benchmarks, reproduce the trueque/Bunz collapse, and only then compare v0.1 with v0.2.</li>
-          <li><b>Redesign only what broke,</b> naming the diary moment for every change.</li>
-          <li><b>End with a two-week real-world test</b> with pass/fail thresholds set in advance. Say so plainly if it doesn't work.</li>
-        </ol></div>
+        <div class="note"><h4>The trader (41, parent)</h4><p>Won't go to Zone Night, won't hunt. Still opens most days, because the ledger settles the school-run rota and the favor board finds a babysitter. In v0.1 they quit on day 9.</p></div>
+        <div class="note"><h4>The performer (19, student)</h4><p>Lives at the Zones. The ceiling of 8 with staff present gives them somewhere to go big. In v0.1 the same person was escalating on the street with nobody watching.</p></div>
       </div>
-      <h3 class="sec">Two-week real-world test · pass if</h3>
-      <div class="tablewrap"><table>
-        <thead><tr><th>Metric</th><th>Pass threshold</th></tr></thead>
-        <tbody>
-          <tr><td>Circle members who complete at least one swap or favor</td><td>≥ 60%</td></tr>
-          <tr><td>Members who post on day 14</td><td>≥ 25%</td></tr>
-          <tr><td>Loops cleared per circle per Market Day</td><td>≥ 3</td></tr>
-          <tr><td>Daily Dare participation in week 2 vs week 1</td><td>≥ 70%</td></tr>
-          <tr><td>Members who say a mechanic felt like a punishment</td><td>≤ 1 per circle</td></tr>
-        </tbody>
-      </table></div>
-      <h3 class="sec">Sources</h3>
-      <div class="note"><ul>
-        <li>Trueque: <a href="https://www.tiempoar.com.ar/ta_article/el-club-del-trueque-en-la-boca-un-simbolo-de-como-fue-sobrevivir-sin-plata/">Tiempo Argentino</a> · <a href="https://www.eumed.net/cursecon/ecolat/ar/2005/br-trueque.htm">Observatorio de la Economía Latinoamericana</a> · <a href="https://www.ambito.com/portada-principal/el-trueque-mueve-ya-1200-millones-anuales-el-pais-n3159776">Ámbito, Feb 2002</a></li>
-        <li>Bunz / BTZ: <a href="https://en.wikipedia.org/wiki/Bunz_Trading_Zone">Wikipedia</a> · <a href="https://cointelegraph.com/news/canadian-barter-platform-introduces-its-own-cryptocurrency">Cointelegraph</a> · <a href="https://www.blogto.com/tech/2019/09/bunz-btz-stores-reduced-toronto/">BlogTO</a> · <a href="https://www.acrc.hku.hk/Case/Detail/2204">HKU case study</a></li>
-        <li>Retention: <a href="https://phiture.com/mobilegrowthstack/managing-retention-rate-benchmarks-and-expectations/">Phiture</a> · <a href="https://trysonar.app/blog/app-user-retention-benchmarks-and-what-moves-it">Sonar (Adjust 2024 data)</a> · <a href="https://mwm.ai/glossary/retention">MWM</a></li>
-        <li>BeReal: <a href="https://petapixel.com/2023/02/22/bereal-may-be-on-the-out-users-have-nearly-halved-since-peak">PetaPixel</a> · <a href="https://platformer.news/how-bereal-missed-its-moment">Platformer</a></li>
-      </ul></div>
     </div>
   </section>
 </main>
@@ -433,160 +371,87 @@ td .d{font-family:var(--f-mono);font-size:11.5px;color:var(--ballpoint);white-sp
 (()=>{
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pct=v=>Math.round(v*100)+'%',fmt=n=>Math.round(n).toLocaleString('en-US');
 
 /* ================================================================
-   PHONE v0.2
+   PHONE v0.3
    ================================================================ */
-const P={tab:'today',posted:false,react:null,skips:1,rel:94,market:false};
-const MEMBERS=[['You','pending'],['Maya','posted'],['Jules','posted'],['Dev','not yet'],['Pia','posted'],['Rin','posted']];
-let board=[
- {id:1,t:'ask',who:'Pia',text:'Someone home tomorrow 10–12 to sign for a parcel?',pay:'1 favor'},
- {id:2,t:'offer',who:'Jules',text:'20 minutes of bike-chain triage. Bring the bike.',pay:'1 favor'},
- {id:3,t:'ask',who:'Rin',text:'Need a second opinion on a CV before Friday.',pay:'½ favor'},
+const P={tab:'map',sel:'zone',lineup:{You:false,Maya:true,Jules:true,Dev:false,Pia:true,Rin:false},clues:2,claim:0,posted:false};
+let tx=[
+ {t:'Groceries for the week, split 6 ways',who:'Pia',amt:-.5,when:'Mon'},
+ {t:'Cooked dinner for 4',who:'You',amt:+.75,when:'Tue'},
+ {t:'Signed for Pia’s parcel',who:'You',amt:+1,when:'Wed'},
+ {t:'Borrowed Dev’s drill',who:'Dev',amt:-.25,when:'Wed'},
+ {t:'Won the Zone Night entry fee pot',who:'Circle',amt:+.5,when:'last Thu'},
 ];
-let ious=[
- {id:1,dir:'owe',who:'Dev',amt:2,why:'Sourdough Greg was worth more than the toaster'},
- {id:2,dir:'owed',who:'Pia',amt:1,why:'You signed for her parcel last week'},
-];
-let listings=[{n:'Fixie bike, slightly cursed',v:'4.0'},{n:'2 hours of spreadsheet help',v:'1.5'},{n:'Toaster that only does one side',v:'0.5'}];
-function favNet(){return ious.reduce((a,x)=>a+(x.dir==='owed'?x.amt:-x.amt),0)}
+const bal=()=>tx.reduce((a,x)=>a+x.amt,0);
 function toast(m){const t=$('#toast');t.innerHTML=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),3400)}
-function hud(){const f=favNet();$('#favV').textContent=(f>0?'+':f<0?'−':'')+Math.abs(f);$('#relV').textContent=P.rel+'%';
-  const n=(P.posted?0:1)+board.filter(b=>!b.done).length;$('#bToday').textContent=n;$('#bToday').hidden=!n}
-
+function hud(){const b=bal();$('#balV').textContent=(b>0?'+':b<0?'−':'')+Math.abs(b).toFixed(2).replace(/\.?0+$/,'');}
+const mapSVG=()=>`<svg viewBox="0 0 320 250" role="img" aria-label="City map with zones, a hunt route and a drop">
+  <rect width="320" height="250" fill="var(--map)"/>
+  <path class="water" d="M0 178 C70 160 120 200 190 186 S290 160 320 172 L320 214 C270 205 220 230 160 222 S60 205 0 222Z"/>
+  <rect class="park" x="214" y="28" width="78" height="54" rx="8"/>
+  <g class="road" stroke-width="7"><path d="M0 60H320"/><path d="M0 130H320"/><path d="M70 0V250"/><path d="M160 0V178"/><path d="M250 0V178"/></g>
+  <g class="road" stroke-width="3"><path d="M0 95H320"/><path d="M115 0V178"/><path d="M205 0V178"/><path d="M30 0V178"/></g>
+  <text class="lbl" x="232" y="58">Elm Park</text><text class="lbl" x="120" y="242">river steps</text><text class="lbl" x="76" y="56">Market St</text>
+  <path d="M95 112 L140 78 L188 104 L232 112 L270 150" fill="none" stroke="var(--ballpoint)" stroke-width="2" stroke-dasharray="5 4"/>
+  ${[[95,112],[140,78],[188,104],[232,112],[270,150]].map(([x,y],i)=>`<g class="pin" data-pin="hunt"><circle cx="${x}" cy="${y}" r="8" fill="${i<P.clues?'var(--ballpoint)':'var(--card)'}" stroke="var(--ballpoint)" stroke-width="2"/><text x="${x}" y="${y+3}" text-anchor="middle" style="font:700 8px var(--f-mono);fill:${i<P.clues?'#fff':'var(--ballpoint)'}">${i+1}</text></g>`).join('')}
+  <g class="pin" data-pin="zone"><circle cx="48" cy="34" r="15" fill="var(--stamp)"/><path d="M41 30h10v8H41zM51 32l5-3v10l-5-3" fill="#fff"/><text class="zl" x="48" y="62" text-anchor="middle">The Loading Dock</text></g>
+  <g class="pin" data-pin="market"><circle cx="205" cy="150" r="12" fill="var(--ink)"/><path d="M199 147l2-4h8l2 4zM199 147h12v7h-12z" fill="var(--paper)"/><text class="zl" x="205" y="172" text-anchor="middle">Zone 2 · Market</text></g>
+  <g class="pin" data-pin="drop"><circle class="pulse" cx="150" cy="206" r="14" fill="var(--hazard)"/><circle cx="150" cy="206" r="8" fill="var(--hazard)" stroke="var(--card)" stroke-width="2"/></g>
+</svg>`;
+const DETAIL={
+ zone:()=>`<div class="card zone"><div class="meta"><span class="kind z">Zone · tonight 20:00</span><span>ceiling 8</span></div><p><b>The Loading Dock</b>, a skatepark partner. Staff on site, padded ramp, three fixed cameras. Your fixture against Third Floor happens here.</p><div class="sub">Above 6.5 only happens in Zones. A danger flag still removes reward.</div><div class="btns"><button class="btn sm red" data-act="league">Set the lineup</button></div></div>`,
+ hunt:()=>`<div class="card hunt"><div class="meta"><span class="kind h">Hunt by Third Floor</span><span>${P.clues}/5 clues</span></div><p><b>The Lost Toaster.</b> Each clue is a 10-second dare filmed at the spot. The last pin opens a box with a real prize from their Market pool.</p><div class="clues">${[0,1,2,3,4].map(i=>`<i class="${i<P.clues?'on':''}"></i>`).join('')}</div><div class="btns"><button class="btn sm" data-act="clue" ${P.clues>=5?'disabled':''}>${P.clues>=5?'Box opened':'Film clue '+(P.clues+1)}</button></div></div>`,
+ drop:()=>`<div class="card drop"><div class="meta"><span class="kind d">Drop · 1 h 52 m left</span><span>${P.claim}/3 there</span></div><p><b>Refurbished bike</b> from Spoke &amp; Chain, at the river steps. Claim needs three of your circle in the same place. It’s real stuff from a shop that wants the foot traffic, never favors.</p><div class="btns"><button class="btn sm" data-act="claim" ${P.claim>=3?'disabled':''}>${P.claim>=3?'Claimed for the circle':'I’m here'}</button></div></div>`,
+ market:()=>`<div class="card"><div class="meta"><span class="kind l">Market · Sun 11:00</span><span>Zone 2</span></div><p>The weekly Market moved into a Zone. Same one-table handoffs as v0.2, with staff to hold items for no-shows.</p></div>`,
+};
 const V={
-today(){
-  const done=MEMBERS.filter(m=>m[0]!=='You'&&m[1]==='posted').length+(P.posted?1:0);
-  return `<h2>Today <span>Thu · day 9 of the circle</span></h2>
-  <div class="dd">
-    <div class="k">DAILY DARE · WRITTEN BY JULES · REVEAL AT 19:30</div>
-    <div class="q">Do your best impression of your landlord asking about “the noise.” 15 seconds.</div>
-    <div class="by">One prompt, whole circle, same time. Post to see everyone else’s.</div>
-    <div class="row"><div class="faces">${MEMBERS.map(m=>`<i class="${(m[0]==='You'?P.posted:m[1]==='posted')?'done':''}" title="${m[0]}">${m[0][0]}</i>`).join('')}</div>
-    ${P.posted?`<span class="mono" style="font-size:11px">${done} of 6 posted</span>`:`<button class="btn sm" id="post">Record 15 s</button>`}</div>
-  </div>
-  ${P.posted?`<div class="tiles">${['Maya','Jules','Pia','Rin','You'].map((n,i)=>`<div style="--g:${['linear-gradient(160deg,#C8214B,#3B1640)','linear-gradient(160deg,#2443C4,#101A44)','linear-gradient(160deg,#1F7A4D,#0C2A1D)','linear-gradient(160deg,#8A5A00,#2A1C05)','linear-gradient(160deg,#151D36,#3B1640)'][i]}"><span>${n}</span><span>0:15</span></div>`).join('')}<div style="--g:var(--line);color:var(--muted)"><span>Dev</span><span>pending</span></div></div>
-  <div class="react"><button data-r="laugh" class="${P.react==='laugh'?'on':''}">Laughed</button><button data-r="never" class="${P.react==='never'?'on':''}">I would never</button></div>
-  <div class="formula">One tap replaces v0.1’s four sliders. “I would never” feeds the weekly Insanity Index.</div>`:''}
-  <h3>Favor board · your circle</h3>
-  ${board.map(b=>`<div class="slip ${b.done?'done':''}"><div class="meta"><span><span class="tag ${b.t}">${b.t==='ask'?'ASK':'OFFER'}</span> ${b.who}</span><span>${b.pay}</span></div><p>${esc(b.text)}</p>
-    ${b.done?`<div class="sub">${b.t==='ask'?'You took this one.':'Booked.'}</div>`:`<div class="btns"><button class="btn sm" data-b="${b.id}">${b.t==='ask'?'I’ll do it':'Book it'}</button></div>`}</div>`).join('')}
-  <h3>In motion</h3>
-  <div class="slip chain"><div class="meta"><span>Chain from Dev · link 3 of ?</span><span>21 h left</span></div><p>Top “narrated a pigeon’s commute” (5.4). 24-hour window.</p>
-  <div class="btns"><button class="btn sm red" id="topit">Top it</button><button class="btn sm ghost" id="skip" ${P.skips?'':'disabled'}>Skip · ${P.skips} left this week</button></div></div>`;
-},
-market(){
-  return `<h2>Market <span>weekly · one table · all at once</span></h2>
-  <div class="mkt">
-    <div class="mono" style="font-size:10.5px;color:var(--muted);letter-spacing:.06em">NEXT MARKET DAY</div>
-    <div class="big">${P.market?'Cleared':'Sun 11:00'}</div>
-    <div class="where">Corner café on Elm St · pooled with 2 neighboring circles</div>
-    <div class="kv"><div><small>Items in pool</small><b>41</b></div><div><small>Your listings</small><b>${listings.length}</b></div><div><small>Likely loops</small><b>${P.market?'3':'2–3'}</b></div></div>
-    ${P.market?`<div class="plan"><span><b>11:05</b> hand the bike to Dev</span><span><b>11:10</b> Maya gives you a voucher for 3 guitar lessons</span><span><b>11:20</b> toaster to Ana (circle “Third Floor”)</span><span><b>11:25</b> Rin cuts your hair in exchange for 2 hrs of spreadsheet help</span></div>
-    <div class="formula">Every handoff at one table inside 40 minutes. If someone doesn’t show, their side of the loop doesn’t release.</div>`:
-    `<div class="btns"><button class="btn red" id="runMarket">Fast-forward to Sunday</button></div>
-    <div class="formula">Matching runs once over a full week of listings, so the pool is deep. The handoff is the hard part, so it all happens in one place at one time.</div>`}
-  </div>
-  <h3>Your listings · favor estimate</h3>
-  ${listings.map(i=>`<div class="item"><span>${esc(i.n)}</span><span class="val">≈ ${i.v} fv</span></div>`).join('')}
-  <div class="btns"><button class="btn ghost sm" id="addItem">List something</button></div>
-  <h3>Wanted in your circle</h3>
-  <div class="item"><span>A working camera</span><span class="val">Pia</span></div>
-  <div class="item"><span>Help moving a sofa</span><span class="val">Rin</span></div>`;
-},
-circle(){
-  return `<h2>4B &amp; co <span>6 members · market unlocked</span></h2>
-  <div class="members">${MEMBERS.map(([n,s])=>`<div>${n}<small>${n==='You'?(P.posted?'posted today':'not yet'):s==='posted'?'posted today':'quiet today'}</small></div>`).join('')}</div>
-  <div class="formula">Circles open the Market at 4 members. v0.1 had no minimum, so day one was empty.</div>
-  <h3>This week’s Insanity Index</h3>
-  <div class="slip"><div class="meta"><span>Maya</span><span><span class="tag ins">index 6.1</span></span></div><p>Proposed to a pigeon. On one knee. It said no.</p><div class="sub">23 “I would never” · 31 laughed · danger flags: 0</div></div>
-  <div class="slip"><div class="meta"><span>Rin</span><span><span class="tag ins">index 5.7</span></span></div><p>Let the group chat pick a haircut. No veto.</p><div class="sub">19 “I would never” · 28 laughed</div></div>
-  <div class="formula">Scored on absurdity and creativity, capped at 6.5. A danger flag removes reward. Friday is versus night against “Third Floor.”</div>`;
-},
-ledger(){
-  const f=favNet(),pos=((f+5)/10)*100;
-  return `<h2>Ledger <span>circle only · never sold</span></h2>
-  <div class="bal"><div style="display:flex;justify-content:space-between;font-size:13px"><b>Balance ${f>0?'+':''}${f} favors</b><span class="mono" style="font-size:11px;color:var(--muted)">limit −5</span></div>
-  <div class="balbar"><i style="left:${pos}%"></i></div><div class="balax"><span>−5</span><span>0</span><span>+5</span></div>
-  <div class="formula">At −5 you can’t take on more until you settle. No free credits, ever. Jubilee in 21 days clears IOUs of 2 or less that are older than 30 days.</div></div>
-  <h3>Open IOUs</h3>
-  ${ious.map(x=>`<div class="slip"><div class="meta"><span>${x.dir==='owe'?'You owe '+x.who:x.who+' owes you'}</span><span>${x.amt} favor${x.amt>1?'s':''}</span></div><p>${esc(x.why)}</p>
-    ${x.dir==='owe'?`<div class="btns"><button class="btn sm" data-settle="${x.id}">Settle with a board favor</button></div>`:`<div class="sub">Held by you. IOUs can’t leave the circle.</div>`}</div>`).join('')||'<div class="slip"><p>All square.</p></div>'}
-  <h3>Reliability · ${P.rel}%</h3>
-  <div class="slip"><p>Share of things you agreed to that you finished. It never decays while you’re away. v0.1’s Trust dropped every idle hour.</p></div>`;
-}};
-function render(){$('#view').innerHTML=V[P.tab]();document.querySelectorAll('.nav button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===P.tab));hud()}
+map(){return `<h2>City <span>4 live things near you</span></h2>
+  <div class="mapbox">${mapSVG()}</div>
+  <div class="legendrow"><span><i style="background:var(--stamp)"></i>Zone</span><span><i style="background:var(--ballpoint)"></i>Hunt</span><span><i style="background:var(--hazard)"></i>Drop</span><span><i style="background:var(--ink)"></i>Market</span></div>
+  <h3>Selected</h3>${DETAIL[P.sel]()}
+  <div class="formula">The map never shows where people are. Only places and things.</div>`},
+today(){return `<h2>Today <span>Thu · fixture day</span></h2>
+  <div class="dd"><div class="k">DAILY DARE · BY RIN</div><div class="q">Order your coffee in the voice of a movie trailer.</div>${P.posted?'<span class="mono" style="font-size:11px">Posted · 5 of 6</span>':'<button class="btn sm" data-act="post">Record 15 s</button>'}</div>
+  <h3>Needs you</h3>
+  <div class="card"><div class="meta"><span class="kind l">Ledger</span><span>from Pia</span></div><p>Groceries split six ways. Your share is ½ favor.</p><div class="btns"><button class="btn sm" data-act="settle">Settle by cooking Sat</button></div></div>
+  <div class="card zone"><div class="meta"><span class="kind z">Fixture · 20:00</span><span>${Object.values(P.lineup).filter(Boolean).length}/4 in lineup</span></div><p>4B &amp; co vs Third Floor at The Loading Dock.</p><div class="btns"><button class="btn sm red" data-act="league">Lineup</button></div></div>
+  <div class="card drop"><div class="meta"><span class="kind d">Drop</span><span>1 h 52 m</span></div><p>A bike at the river steps. Needs three of you.</p><div class="btns"><button class="btn sm ghost" data-act="seeDrop">Show on map</button></div></div>`},
+league(){const n=Object.values(P.lineup).filter(Boolean).length;return `<h2>League <span>Season 2 · week 6 of 8</span></h2>
+  <div class="card zone"><div class="meta"><span class="kind z">Tonight's fixture</span><span>${n}/4 needed</span></div><p><b>4B &amp; co vs Third Floor</b> · The Loading Dock, 20:00. Three rounds, judged by both circles and the Zone crowd.</p>
+  <div class="lineup">${Object.entries(P.lineup).map(([k,v])=>`<button data-lu="${k}" class="${v?'in':''}">${k}<small>${v?'in':'tap to join'}</small></button>`).join('')}</div>
+  <div class="formula">${n>=4?'Lineup complete. Teammates can see who showed up.':'If the lineup is short, the circle forfeits. Teammates get a nudge to ask you, not a notification from the app.'}</div></div>
+  <h3>Table</h3>
+  <table class="table"><thead><tr><th>#</th><th>Circle</th><th>P</th><th style="text-align:right">Pts</th></tr></thead><tbody>
+  ${[['Basement Kings',5,18],['Night Shift',5,15],['4B & co',5,14],['Third Floor',5,12],['Allotment 9',5,7],['The Cousins',5,4]].map((r,i)=>`<tr class="${r[0]==='4B & co'?'me':''}"><td>${i+1}</td><td>${esc(r[0])}</td><td>${r[1]}</td><td class="n">${r[2]}</td></tr>`).join('')}</tbody></table>
+  <div class="formula">Top two go up, bottom two go down. Insane Week in 12 days: every circle in the city, one weekend, Zone finals.</div>`},
+ledger(){const b=bal();return `<h2>Ledger <span>your circle's money</span></h2>
+  <div class="money"><div class="mono" style="font-size:10.5px;color:var(--muted);letter-spacing:.06em">YOUR BALANCE</div><div class="big">${b>0?'+':''}${b.toFixed(2).replace(/\.?0+$/,'')} favors</div><div class="formula">Limit −5 · stays in the circle · no free credits · jubilee in 21 days</div></div>
+  <h3>This week</h3>
+  ${tx.map(x=>`<div class="tx"><span>${esc(x.t)}</span><span class="amt ${x.amt<0?'neg':'pos'}">${x.amt>0?'+':'−'}${Math.abs(x.amt)}</span><small>${x.who} · ${x.when}</small></div>`).join('')}
+  <div class="formula">Groceries, dinners, chores, borrowed tools. When money stops meaning anything, this is where the day-to-day lives.</div>`},
+};
+function render(){$('#view').innerHTML=V[P.tab]();document.querySelectorAll('.nav button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===P.tab));hud();
+  $('#bMap').textContent=P.claim>=3?'':'1';$('#bMap').hidden=P.claim>=3}
 document.querySelector('.nav').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;P.tab=b.dataset.tab;$('#view').scrollTop=0;render()});
-$('#view').addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;const id=t.id,ds=t.dataset;
-  if(id==='post'){P.posted=true;toast('Posted. Five tiles unlocked. That took 15 seconds.');render();return}
-  if(ds.r){P.react=ds.r;toast(ds.r==='laugh'?'Logged a laugh.':'Logged. It counts toward Maya’s Insanity Index.');render();return}
-  if(ds.b){const b=board.find(x=>x.id==ds.b);b.done=true;if(b.t==='ask'){ious.push({id:Date.now(),dir:'owed',who:b.who,amt:b.pay.startsWith('½')?.5:1,why:b.text});toast(`${b.who} will owe you ${b.pay}. Small and real.`)}else{ious.push({id:Date.now(),dir:'owe',who:b.who,amt:1,why:b.text});toast(`Booked with ${b.who}. You’ll owe 1 favor.`)}render();return}
-  if(id==='topit'){toast('Camera opens. You have 21 hours. Your circle sees it first.');return}
-  if(id==='skip'){P.skips=0;toast('Skipped. The chain moves to Rin. No blame, no score change.');render();return}
-  if(id==='runMarket'){P.market=true;P.rel=Math.min(100,P.rel+1);toast('Market Day cleared 3 loops for you. All handoffs at one table.');render();return}
-  if(id==='addItem'){listings.push({n:'Framed photo of a stranger’s dog',v:'0.8'});toast('Listed. It sits in the pool until Sunday.');render();return}
-  if(ds.settle){const x=ious.find(i=>i.id==ds.settle);x.amt-=1;if(x.amt<=0)ious=ious.filter(i=>i!==x);toast(`Settled 1 favor with ${x.who} by fixing a bike chain.`);render();return}
+$('#view').addEventListener('click',e=>{
+  const pin=e.target.closest('[data-pin]');if(pin){P.sel=pin.dataset.pin;render();return}
+  const t=e.target.closest('button');if(!t)return;const a=t.dataset.act;
+  if(t.dataset.lu){const k=t.dataset.lu;P.lineup[k]=!P.lineup[k];render();if(k==='You'&&P.lineup.You)toast('You’re in. Four of six: the fixture is on.');return}
+  if(a==='league'){P.tab='league';render();return}
+  if(a==='clue'){P.clues++;render();toast(P.clues>=5?'Box opened: a Polaroid camera from Third Floor’s pool.':`Clue ${P.clues} filmed. Next pin unlocked.`);return}
+  if(a==='claim'){P.claim=Math.min(3,P.claim+(P.claim===0?1:1));if(P.claim<3)toast(`${P.claim} of 3 there. Maya is 6 minutes away.`);else{tx.unshift({t:'Claimed a drop for the circle: bike',who:'Circle',amt:0,when:'now'});toast('Claimed. The bike goes into Sunday’s Market pool.')}render();return}
+  if(a==='post'){P.posted=true;render();toast('Posted. Five tiles unlocked.');return}
+  if(a==='settle'){tx.unshift({t:'Will cook Saturday for Pia’s groceries',who:'You',amt:+.5,when:'now'});render();toast('Settled. Pia sees it right away.');return}
+  if(a==='seeDrop'){P.tab='map';P.sel='drop';render();return}
 });
 render();
 
 /* ================================================================
-   DIARY
-   ================================================================ */
-const MIN1=[11,3,0,14,2,2,8,5,6,4,0,1,0,6,2,0,2,0,1,2,1,0,0,0,0,0,0,0,0,0];
-const MIN2=[14,6,5,4,3,4,8,3,4,0,3,5,4,9,2,3,4,0,3,4,8,3,0,4,3,3,2,9,0,3];
-const D1=[
- [1,'Installed from a friend’s link. Listed four things. Matcher: <i>searching</i>. Only two friends are on the app, so there are no loops. Watched nine strangers’ dares. On the third rating I stopped moving the four sliders.','curiosity'],
- [2,'Push: “Your Trust dropped to 68.” Opened only to make the number stop. Nothing I can do raises it. Turned notifications to dares only.','loss aversion'],
- [3,'Didn’t open. Nothing of mine was in motion.','no prompt'],
- [4,'Maya dared me to narrate my grocery run like a nature documentary, for three guitar lessons. A stake I actually want. 140 views.','friend + stake','best'],
- [7,'First loop found: bike → Dev → Maya → guitar lessons. Dev is 40 minutes away, Maya works evenings. Three separate handoffs, arranged in another chat app.','excitement, then dread'],
- [9,'Gave Dev the bike. Dev’s handoff to Maya fell through. I’m out a bike and the ledger says Dev owes me 4 favors. No escrow.','anxiety','hot'],
- [10,'2:10 pm, at work: Chain #44, two hours to top 6.8. Can’t film at my desk. It broke at 4:10 with my name on it. Six people lost stakes.','panic','hot'],
- [12,'Trust at 51. Below 50, loops stop matching me. The one feature I wanted is locked behind a score I lost by working.',''],
- [14,'“Your IOU to Sam is now held by @kestrel_collects.” A stranger offers to settle it if I sing the anthem at a bus stop. This is the day I decided to leave.','anger','quit'],
- [15,'Opened only for Maya’s pigeon video. Friends’ videos are the only good thing left.','friends'],
- [21,'The guitar lesson with Maya happened, and it was lovely. Entirely outside the app.',''],
- [22,'Stopped opening. Still installed, churned by any definition.',''],
-];
-const D2=[
- [1,'Created a circle, “4B & co.” The Market is locked until four people join. Sent the link to the group chat; three joined that night.','setup'],
- [2,'First Daily Dare at 19:30: “show us the worst thing in your fridge.” Five of six did it. Two minutes.','shared moment'],
- [3,'Favor board: Pia needed someone to sign for a parcel. I was home. +1 favor. Small and real.','being useful'],
- [5,'Jules wrote today’s prompt. Prompts written by the circle hit harder than generic ones.','friends'],
- [7,'Market Day. A week of listings cleared at once with two neighboring circles: 3 loops for me, all handoffs at one table in 40 minutes. Got the guitar lessons.','event','best'],
- [10,'Skipped. No penalty, nothing decayed. Came back the next day without guilt.',''],
- [12,'Dev started a chain with a 24-hour window. Used my weekly skip. The chain carried on, nobody blamed me.','no pressure'],
- [17,'I owe 3 favors. The ledger shows my −5 limit and suggests board asks I can do. Fixed Jules’s bike chain to settle one.','obligation, bounded'],
- [19,'The Daily Dare is getting repetitive: same six faces. This is BeReal’s problem. Friday versus night with another circle helps.','fatigue','hot'],
- [28,'Market 3. A fourth circle joined. Traded spreadsheet help for a haircut.','event'],
- [30,'Jubilee cleared small old IOUs. One friend left the circle, so we’re at five; the Market still works through the federation. Still opening.','fresh start'],
-];
-let dv=1,selDay=null;
-function strip(){
-  const max=Math.max(...MIN1,...MIN2);const k1=new Set(D1.map(e=>e[0])),k2=new Set(D2.map(e=>e[0]));
-  const row=(lab,arr,cls,keys,v)=>`<div class="strip-row"><span class="lab">${lab}</span>${arr.map((m,i)=>`<button class="${m?cls:''} ${keys.has(i+1)?'key':''} ${dv===v&&selDay===i+1?'sel':''}" style="height:${Math.max(3,m/max*56)}px" data-v="${v}" data-day="${i+1}" aria-label="${lab} day ${i+1}: ${m} minutes"></button>`).join('')}</div>`;
-  $('#strip').innerHTML=row('v0.1',MIN1,'v1',k1,1)+row('v0.2',MIN2,'v2',k2,2)+`<div class="strip-ax"><span></span>${Array.from({length:30},(_,i)=>`<span>${(i+1)%5===0||i===0?i+1:''}</span>`).join('')}</div>`;
-}
-function diary(){
-  const m=dv===1?MIN1:MIN2,E=dv===1?D1:D2;
-  const opened=m.filter(x=>x>0).length,tot=m.reduce((a,b)=>a+b,0);
-  const t=(l,v,c,s)=>`<div class="stat"><small>${l}</small><b>${v}</b><span class="pill ${c}">${s}</span></div>`;
-  $('#dtiles').innerHTML=dv===1?
-    t('Days opened',opened+' / 30','bad','last open day 21')+t('Minutes',tot,'warn','≈ 3 per day')+t('Swaps done','0','bad','1 half-failed')+t('Decided to quit','Day 14','bad','IOU sold'):
-    t('Days opened',opened+' / 30','ok','still opening day 30')+t('Minutes',tot,'ok','+ 2 h offline')+t('Swaps done','6','ok','3 Market Days')+t('Decided to quit','—','ok','not yet');
-  $('#entries').innerHTML=E.map(([d,txt,why,flag])=>`<div class="entry ${flag||''}" id="e${dv}-${d}"><div class="day">Day ${d}<small>${m[d-1]} min</small></div><p>${txt}</p><div class="why">${why}</div></div>`).join('');
-  $('#dv1').setAttribute('aria-pressed',dv===1);$('#dv2').setAttribute('aria-pressed',dv===2);strip();
-}
-$('#dv1').onclick=()=>{dv=1;selDay=null;diary()};$('#dv2').onclick=()=>{dv=2;selDay=null;diary()};
-$('#strip').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;dv=+b.dataset.v;const day=+b.dataset.day;const E=dv===1?D1:D2;
-  const near=E.reduce((a,x)=>x[0]<=day?x:a,E[0]);selDay=day;diary();const el=document.getElementById(`e${dv}-${near[0]}`);if(el){el.scrollIntoView({block:'nearest',behavior:'smooth'});el.animate&&el.animate([{background:'var(--ball-soft)'},{background:'transparent'}],{duration:1200})}});
-diary();
-
-/* ================================================================
-   SIMULATOR (calibrated)
+   SIMULATOR (v0.2 engine + v0.3 layers)
    ================================================================ */
 const REASONS=['Nothing to do','Trust decay pressure','Blamed for a broken chain','IOU sold to a stranger','Debt stress','Hurt doing a dare','Swaps that fell through','Favors nobody would honor'];
-const KEYS=['circles','daily','circlePrompts','board','market','decay','reminders','ladder','shortChains','sell','limit','bonus','jubilee','cap','downrank'];
 const V1={circles:0,daily:0,circlePrompts:0,board:0,market:0,decay:1,reminders:1,ladder:1,shortChains:1,sell:1,limit:0,bonus:0,jubilee:0,cap:0,downrank:0};
 const V2={circles:1,daily:1,circlePrompts:1,board:1,market:1,decay:0,reminders:1,ladder:1,shortChains:0,sell:0,limit:1,bonus:0,jubilee:1,cap:1,downrank:1};
 const PRESETS={v1:V1,v2:V2,trueque:{...V2,bonus:1,limit:0},base:{...V1,decay:0,reminders:0,ladder:0,shortChains:0,sell:0}};
@@ -600,7 +465,7 @@ function simulate(c){
   for(let g=0;g<G;g++)for(let i=0;i<S;i++)people.push({id:people.length,g,joined:-1,on:false,s:clamp(.5+gauss()*.2,0,1),b:R(),r:.3+R()*.7,v:0,ann:new Float32Array(8),last:-99,opens:new Set(),owe:0,held:0,listed:0,unbacked:0});
   const byG=g=>people.slice(g*S,g*S+S),pick=a=>a[Math.floor(R()*a.length)];
   let debts=[],C=.9,norm=3,harm=0,pending=[];const reasons=new Array(8).fill(0);
-  const o={dau:[],C:[],swaps:[],atomic:[]};
+  const o={dau:[],C:[],swaps:[],atomic:[],harmD:[]};let atomicShare=0;
   const join=(p,d)=>{if(p.joined>=0)return;p.joined=d;p.on=true;p.last=d;p.v=.06;if(c.bonus)p.unbacked=5;
     const fr=byG(p.g).filter(q=>q.joined<0),k=c.circles?3:(R()<.3?1:0);
     for(let i=0;i<k&&i<fr.length;i++)if(R()<(c.circles?.45:.3))pending.push([pick(fr),d+1+Math.floor(R()*3)])};
@@ -610,6 +475,9 @@ function simulate(c){
     const af=new Array(G).fill(0);for(const p of people)if(p.on&&d-p.last<=3)af[p.g]++;       // active friends per group
     for(const p of people){p.owe=0;p.held=0}for(const x of debts){people[x.d].owe++;people[x.h].held++}
     let opens=0,swaps=0,dn=0,wS=0,wI=0,honor=0,tries=0;const market=c.market&&d%7===6;
+    const dropG=new Array(G);for(let g=0;g<G;g++)dropG[g]=c.drops&&R()<.08;
+    let activeTotal=0;for(const q of people)if(q.on)activeTotal++;
+    const zoneNight=c.zones&&d%7===4,fixture=c.league&&d%7===2,hunts=Math.min(1,atomicShare*4);
     for(const p of people){if(!p.on)continue;
       const age=d-p.joined,f=Math.max(0,af[p.g]-(d-p.last<=3?1:0));
       let pull=0;
@@ -617,12 +485,18 @@ function simulate(c){
       if(c.reminders)pull+=.1*Math.min(1,p.owe/2);
       if(c.market&&d%7===5)pull+=.12;
       if(market&&p.listed)pull+=.35;
+      if(fixture&&f>=3)pull+=.2;
+      if(zoneNight&&f>=1)pull+=.15;
+      if(c.ledger&&f>0)pull+=.12*Math.min(1,f/4);
+      if(dropG[p.g])pull+=.15;
+      if(c.league&&f>=3&&d-p.last>2&&R()<.25)pull+=.5;      // teammates pull you back
+      if(age===14)p.dense=f>=3;
       const annoy=p.ann.reduce((a,b)=>a+b,0);
       const prob=clamp(.015+.42*Math.exp(-age/1.4)+1.1*p.v+pull*(.4+.6*p.s)-.25*annoy,.005,.95);
       let val=0;
       if(R()<prob){opens++;p.opens.add(age);p.last=d;
         if(c.circles&&f<3&&R()<.08){const fr=byG(p.g).filter(q=>q.joined<0);if(fr.length&&R()<.45)pending.push([pick(fr),d+1])}
-        val+=.12*Math.exp(-age/12);                                                            // strangers' feed: novelty wears off
+        val+=Math.max(.12*Math.exp(-age/12),c.zones?.05:0);                                                            // strangers' feed: novelty wears off
         if(R()<f/(f+3)*.5&&R()<.3+.6*p.b){val+=.3*K;                                          // a dare from a friend, accepted
           let ins=clamp(norm+gauss()*1.1+(c.ladder?.9*p.b:0),0,10);if(c.cap)ins=Math.min(ins,6.5);
           const w=c.downrank?(ins<=6?Math.pow(ins+.5,1.6):Math.pow(6.5,1.6)*Math.exp(-.9*(ins-6))):Math.pow(ins+.5,1.6);dn++;wS+=w;wI+=w*ins;
@@ -631,6 +505,12 @@ function simulate(c){
         if(c.daily&&f>0)val+=.28*K*(f/(f+2))*(c.circlePrompts?.55+.45*Math.exp(-age/30):Math.exp(-age/25));
         if(c.board&&f>0&&R()<f/(f+4)*(.3+.7*C)){val+=.22*K;
           if(R()<.3){const q=byG(p.g).filter(x=>x.on&&x!==p);if(q.length)debts.push({d:p.id,h:pick(q).id,t:d})}}
+        if(c.ledger&&f>0&&R()<(1-Math.exp(-f/3))*.6)val+=.22*K;                  // settle a shared expense
+        if(zoneNight&&f>=1&&R()<.3+.4*p.b){val+=.4*K;                             // zone night: supervised, filmed, louder
+          const zi=clamp(norm+1.5+gauss(),0,c.cap?8:10);if(zi>7&&R()<.02*(zi-7)*(zi-7)*.15){harm++;p.ann[5]+=1.5}}
+        if(c.hunts&&f>=2&&R()<.14*hunts){val+=.35*K}                             // hunt built by another circle
+        if(c.hunts&&f>=2&&R()<.03)val+=.15*K;                                     // build one for others
+        if(dropG[p.g]&&f>=2&&R()<.6){if(c.cashDrops){val+=.3*K/(1+activeTotal/500);p.unbacked+=2}else val+=.3*K}
         if(R()<.14)p.listed=1;
         if(p.listed&&(c.market?market:true)){
           const pool=(c.market?3:1)*(f+1)*1.5+(c.market?0:6),q=c.market?1-Math.exp(-pool/14):1-Math.exp(-pool/90);
@@ -649,7 +529,8 @@ function simulate(c){
       if(p.owe>2)p.ann[4]+=.02*(p.owe-2);
       for(let k=0;k<8;k++)p.ann[k]*=.93;
       if(p.last===d)p.v=p.v*.7+val*.3;
-      const a2=p.ann.reduce((a,b)=>a+b,0),aq=.06*Math.max(0,a2-.12),nq=d-p.last>14?.08:0;
+      let aqm=1,nqm=1;if(c.league&&f>=3){aqm=.6;nqm=.4}if(c.ledger&&f>=2&&p.owe+p.held>0){aqm*=.8;nqm*=.6}
+      const a2=p.ann.reduce((a,b)=>a+b,0),aq=.06*Math.max(0,a2-.12)*aqm,nq=(d-p.last>14?.08:0)*nqm;
       if(R()<aq+nq){p.on=false;let best=0;if(R()<aq/(aq+nq)){let bv=-1;for(let k=1;k<8;k++)if(p.ann[k]>bv){bv=p.ann[k];best=k}}reasons[best]++}
     }
     if(c.sell&&debts.length){const act=[],cum=[];let t=0;for(const q of people)if(q.on){t+=Math.pow(q.held+1,1.8);act.push(q.id);cum.push(t)}
@@ -659,129 +540,144 @@ function simulate(c){
     if(tries>0)C=C*.9+.1*(honor/tries);
     if(dn>0)norm=clamp(norm+.12*(wI/wS-norm)+(c.ladder?.03:0),0,10);
     let atomic=0;for(let g=0;g<G;g++)if(af[g]>=4)atomic++;
-    o.dau.push(opens);o.C.push(C);o.swaps.push(swaps);o.atomic.push(atomic/G);
+    atomicShare=atomic/G;o.dau.push(opens);o.C.push(C);o.swaps.push(swaps);o.atomic.push(atomic/G);o.harmD.push(harm);
   }
   const coh=people.filter(p=>p.joined>=0&&p.joined<=D-31),ret=[];
   for(let k=0;k<=30;k++){let n=0;for(const p of coh)if(p.opens.has(k))n++;ret.push(n/Math.max(1,coh.length))}
-  return {...o,ret,reasons,harm,joined:people.filter(p=>p.joined>=0).length/people.length,ins:norm};
+  const m1=n=>{let k=0;for(const p of n){for(let a=23;a<=30;a++)if(p.opens.has(a)){k++;break}}return k/Math.max(1,n.length)};
+  const dense=coh.filter(p=>p.dense);
+  return {...o,ret,reasons,harm,joined:people.filter(p=>p.joined>=0).length/people.length,ins:norm,m1:m1(coh),m1d:m1(dense),denseShare:dense.length/Math.max(1,coh.length)};
 }
-const SEEDS=3;
-function avgRun(flags,opt){
-  const runs=[];for(let i=0;i<SEEDS;i++)runs.push(simulate({...flags,groups:opt.groups,k:opt.k,seed:opt.seed*101+i*17}));
-  const mean=key=>runs[0][key].map((_,j)=>runs.reduce((a,r)=>a+r[key][j],0)/SEEDS);
-  const sc=key=>runs.reduce((a,r)=>a+r[key],0)/SEEDS;
-  return {ret:mean('ret'),dau:mean('dau'),C:mean('C'),swaps:mean('swaps'),atomic:mean('atomic'),reasons:mean('reasons'),harm:sc('harm'),joined:sc('joined'),ins:sc('ins')};
-}
-const kpi=o=>({D1:o.ret[1],D7:o.ret[7],D30:o.ret[30],swk:o.swaps.slice(-28).reduce((a,b)=>a+b,0)/4,atomic:o.atomic.slice(60).reduce((a,b)=>a+b,0)/60,C:o.C[o.C.length-1],dau:o.dau[o.dau.length-1]});
-
-const cfg={...V2},opt={groups:150,k:.7,seed:1};
-let cur=null,ref=null,refKey='',checks=null;
-function syncInputs(){
-  KEYS.forEach(k=>{$('#c-'+k).checked=!!cfg[k]});
-  $('#s-groups').value=opt.groups;$('#o-groups').textContent=opt.groups;$('#s-k').value=opt.k;$('#o-k').textContent=(+opt.k).toFixed(2);$('#s-seed').value=opt.seed;$('#o-seed').textContent=opt.seed;
-  const m=Object.entries(PRESETS).find(([,p])=>KEYS.every(k=>!!p[k]===!!cfg[k]));
-  document.querySelectorAll('#presets button').forEach(b=>b.classList.toggle('on',!!m&&b.dataset.preset===m[0]));
-}
-let runT;
-function run(){clearTimeout(runT);runT=setTimeout(()=>{
-  const key=JSON.stringify(opt);if(key!==refKey){ref=avgRun(V1,opt);refKey=key;checks=null}
-  cur=avgRun(cfg,opt);if(!checks)runChecks();draw();},30)}
-function runChecks(){
-  const b=kpi(avgRun(PRESETS.base,opt)),v2=kpi(avgRun(V2,opt)),tq=kpi(avgRun(PRESETS.trueque,opt));
-  const inBand=(v,d)=>v>=BENCH[d][0]-.02&&v<=BENCH[d][1]+.02;
-  const c1=inBand(b.D1,1)&&inBand(b.D7,7)&&inBand(b.D30,30);
-  const c2=tq.C<v2.C-.25&&tq.swk<v2.swk*.75;
-  checks={c1,c2,b,v2,tq};
-  const pct=v=>Math.round(v*100)+'%';
-  $('#checks').innerHTML=
-   `<div class="check ${c1?'pass':'fail'}"><span class="mark">${c1?'✓':'✕'}</span><div><b>Calibration: the no-hooks version matches published retention</b><p>D1 ${pct(b.D1)} · D7 ${pct(b.D7)} · D30 ${pct(b.D30)}, against social-app ranges of 25–29%, 9–16% and 4–10% (±2 pts).</p></div></div>`+
-   `<div class="check ${c2?'pass':'fail'}"><span class="mark">${c2?'✓':'✕'}</span><div><b>History: free credits reproduce the trueque and Bunz collapse</b><p>Favor confidence ${pct(v2.C)} → ${pct(tq.C)}; weekly swaps ${Math.round(v2.swk)} → ${Math.round(tq.swk)} when every newcomer gets 5 unbacked favors.</p></div></div>`;
-}
-$('#presets').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;Object.assign(cfg,PRESETS[b.dataset.preset]);syncInputs();run()});
-KEYS.forEach(k=>$('#c-'+k).addEventListener('change',e=>{cfg[k]=e.target.checked?1:0;syncInputs();run()}));
-$('#s-groups').addEventListener('input',e=>{opt.groups=+e.target.value;$('#o-groups').textContent=opt.groups;run()});
-$('#s-k').addEventListener('input',e=>{opt.k=+e.target.value;$('#o-k').textContent=opt.k.toFixed(2);run()});
-$('#s-seed').addEventListener('input',e=>{opt.seed=+e.target.value;$('#o-seed').textContent=opt.seed;run()});
+const V3={...V2,ledger:1,league:1,zones:1,hunts:1,drops:1,cashDrops:0};
+const V2x={...V2,ledger:0,league:0,zones:0,hunts:0,drops:0,cashDrops:0};
+const PRE={v2:V2x,v3:V3,cash:{...V3,cashDrops:1},nocap:{...V3,cap:0,downrank:0},decay:{...V3,decay:1}};
+const KEYS=['ledger','league','circles','zones','hunts','drops','cashDrops','daily','board','market','decay','shortChains','sell','cap','downrank','limit','bonus'];
+const SEEDS=3,GROUPS=150;
+const cache=new Map();
+function avgRun(flags,o){const key=JSON.stringify([flags,o]);if(cache.has(key))return cache.get(key);
+  const runs=[];for(let i=0;i<SEEDS;i++)runs.push(simulate({...V2x,...flags,groups:GROUPS,k:o.k,seed:o.seed*101+i*17}));
+  const mean=k=>runs[0][k].map((_,j)=>runs.reduce((a,r)=>a+r[k][j],0)/SEEDS),sc=k=>runs.reduce((a,r)=>a+r[k],0)/SEEDS;
+  const out={ret:mean('ret'),dau:mean('dau'),C:mean('C'),swaps:mean('swaps'),harmD:mean('harmD'),m1:sc('m1'),harm:sc('harm'),joined:sc('joined'),dense:sc('denseShare')};
+  cache.set(key,out);return out}
+const kpi=o=>({D1:o.ret[1],D7:o.ret[7],D30:o.ret[30],M1:o.m1,swk:o.swaps.slice(-28).reduce((a,b)=>a+b,0)/4,C:o.C[o.C.length-1],harm:o.harm});
+const opt={k:.7,seed:1};
 
 const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 function niceMax(v){if(v<=0)return 1;const p=Math.pow(10,Math.floor(Math.log10(v)));const n=v/p;return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p}
-function chart(id,a,b,opt2){
+function line(id,a,b,o2){
   const cv=$(id),dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;if(!W)return;
   cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);
-  const ink=css('--ink'),muted=css('--muted'),line=css('--line'),acc=css(opt2.color||'--stamp'),good=css('--good'),goodS=css('--good-soft');
+  const ink=css('--ink'),muted=css('--muted'),ln=css('--line'),acc=css(o2.color||'--stamp');
   const L=40,Rr=12,T=10,B=20,w=W-L-Rr,h=H-T-B,n=a.length;
-  const max=opt2.max??niceMax(Math.max(...a,...(b||[0]))*1.08);
+  const max=o2.max??niceMax(Math.max(...a,...(b||[0]),o2.min||0)*1.08);
   const X=i=>L+(n<=1?0:i/(n-1))*w,Y=v=>T+h-(Math.min(v,max)/max)*h;
   x.font='10px "IBM Plex Mono", ui-monospace, monospace';x.textBaseline='middle';
-  for(let i=0;i<=4;i++){const v=max*i/4,y=Y(v);x.strokeStyle=line;x.lineWidth=1;x.beginPath();x.moveTo(L,y+.5);x.lineTo(L+w,y+.5);x.stroke();x.fillStyle=muted;x.textAlign='right';x.fillText(opt2.fmt(v),L-6,y)}
-  if(opt2.bench){for(const [d,[lo,hi]] of Object.entries(opt2.bench)){const cx=X(+d);x.fillStyle=goodS;x.fillRect(cx-5,Y(hi),10,Math.max(2,Y(lo)-Y(hi)));x.strokeStyle=good;x.lineWidth=1;x.strokeRect(cx-5+.5,Y(hi)+.5,9,Math.max(1,Y(lo)-Y(hi)-1))}}
-  x.textAlign='center';x.textBaseline='top';x.fillStyle=muted;
-  (opt2.xt||[0,Math.floor((n-1)/2),n-1]).forEach(i=>x.fillText(opt2.xl(i),Math.min(Math.max(X(i),L+16),L+w-16),T+h+5));
+  for(let i=0;i<=4;i++){const v=max*i/4,y=Y(v);x.strokeStyle=ln;x.lineWidth=1;x.beginPath();x.moveTo(L,y+.5);x.lineTo(L+w,y+.5);x.stroke();x.fillStyle=muted;x.textAlign='right';x.fillText(o2.fmt(v),L-6,y)}
+  x.textAlign='center';x.textBaseline='top';x.fillStyle=muted;(o2.xt||[0,Math.floor((n-1)/2),n-1]).forEach(i=>x.fillText(o2.xl(i),Math.min(Math.max(X(i),L+16),L+w-16),T+h+5));
   if(b){x.setLineDash([4,4]);x.strokeStyle=muted;x.lineWidth=1.4;x.beginPath();b.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.stroke();x.setLineDash([])}
   x.beginPath();a.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.lineTo(X(n-1),Y(0));x.lineTo(X(0),Y(0));x.closePath();x.globalAlpha=.12;x.fillStyle=acc;x.fill();x.globalAlpha=1;
   x.beginPath();a.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.strokeStyle=acc;x.lineWidth=2;x.stroke();
   x.fillStyle=acc;x.beginPath();x.arc(X(n-1),Y(a[n-1]),3.5,0,7);x.fill();
-  x.fillStyle=ink;x.textAlign='right';x.textBaseline='bottom';x.font='600 11px "IBM Plex Mono", ui-monospace, monospace';x.fillText(opt2.fmt(a[n-1]),X(n-1)-6,Math.max(T+12,Y(a[n-1])-4));
+  x.fillStyle=ink;x.textAlign='right';x.textBaseline='bottom';x.font='600 11px "IBM Plex Mono", ui-monospace, monospace';x.fillText(o2.fmt(a[n-1]),X(n-1)-6,Math.max(T+12,Y(a[n-1])-4));
 }
-const pct=v=>Math.round(v*100)+'%',fmt=n=>Math.round(n).toLocaleString('en-US');
-function draw(){
-  if(!cur||!ref)return;
-  const a=kpi(cur),r=kpi(ref);
-  chart('#ch-ret',cur.ret,ref.ret,{fmt:pct,max:Math.max(.4,niceMax(Math.max(...cur.ret.slice(1),...ref.ret.slice(1))*1.1)),bench:BENCH,xt:[1,7,14,30],xl:i=>'D'+i,color:'--stamp'});
-  chart('#ch-dau',cur.dau,ref.dau,{fmt:fmt,xl:i=>'day '+(i+1),color:'--ballpoint'});
-  chart('#ch-c',cur.C,ref.C,{fmt:pct,max:1,xl:i=>'day '+(i+1),color:'--good'});
-  const tot=cur.reasons.reduce((s,v)=>s+v,0);$('#h-quits').textContent=`${fmt(tot)} people left in 120 days`;
-  const order=cur.reasons.map((v,i)=>[v,i]).sort((p,q)=>q[0]-p[0]);const mx=Math.max(1,order[0][0]);
-  $('#reasons').innerHTML=order.map(([v,i])=>`<div class="rbar"><span>${REASONS[i]}</span><span class="track"><i class="${i===0?'calm':''}" style="width:${v/mx*100}%"></i></span><output>${tot?Math.round(v/tot*100):0}%</output></div>`).join('');
-  const band=(v,d)=>v<BENCH[d][0]?['warn','below range']:v>BENCH[d][1]?['ok','above range']:['ref','in range'];
+
+/* ---- Road to 90%: layer-by-layer chart ---- */
+const STEPS=[['v0.1',V1,'Lonely'],['v0.2',V2x,'Circles'],['+ Ledger as money',{ledger:1},'Infrastructure'],['+ League',{ledger:1,league:1},'Infrastructure'],['+ Zones',{ledger:1,league:1,zones:1},'Spectacle'],['+ Hunts',{ledger:1,league:1,zones:1,hunts:1},'Spectacle'],['+ Drops = v0.3',{ledger:1,league:1,zones:1,hunts:1,drops:1},'Spectacle']];
+let wf=null;
+let baseM1=0;
+function computeWF(){baseM1=kpi(avgRun(PRESETS.base,opt)).M1;wf=STEPS.map(([n,f,g])=>{const base=n==='v0.1'?V1:{...V2x,...f};const k=kpi(avgRun(base,opt));return {n,g,...k}})}
+function drawWF(){
+  if(!wf)return;const cv=$('#ch-wf'),dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;if(!W)return;
+  cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);
+  const ink=css('--ink'),muted=css('--muted'),ln=css('--line'),stamp=css('--stamp'),ball=css('--ballpoint'),good=css('--good'),haz=css('--hazard');
+  const narrow=W<520,L=34,Rr=8,T=16,B=narrow?44:34,w=W-L-Rr,h=H-T-B,max=1;
+  const Y=v=>T+h-(v/max)*h;
+  x.font='10px "IBM Plex Mono", ui-monospace, monospace';x.textBaseline='middle';
+  for(let i=0;i<=4;i++){const v=i/4,y=Y(v);x.strokeStyle=ln;x.lineWidth=1;x.beginPath();x.moveTo(L,y+.5);x.lineTo(L+w,y+.5);x.stroke();x.fillStyle=muted;x.textAlign='right';x.fillText(Math.round(v*100)+'%',L-6,y)}
+  // published range band at D30
+  x.fillStyle=css('--good-soft');x.fillRect(L,Y(.10),w,Y(.04)-Y(.10));
+    // 90% target
+  x.setLineDash([5,4]);x.strokeStyle=stamp;x.lineWidth=1.5;x.beginPath();x.moveTo(L,Y(.9)+.5);x.lineTo(L+w,Y(.9)+.5);x.stroke();x.setLineDash([]);
+  x.fillStyle=stamp;x.textAlign='left';x.fillText('your target: 90%',L+6,Y(.9)-8);
+  const n=wf.length,slot=w/n,bw=Math.min(54,slot*.62);
+  wf.forEach((s,i)=>{const cx=L+slot*i+slot/2,prev=i>1?wf[i-1].D30:0;
+    const col=s.g==='Infrastructure'?good:s.g==='Spectacle'?stamp:s.n==='v0.2'?ball:muted;
+    if(i>=2){x.fillStyle=col;x.globalAlpha=.9;x.fillRect(cx-bw/2,Y(s.D30),bw,Y(prev)-Y(s.D30));x.globalAlpha=.25;x.fillRect(cx-bw/2,Y(prev),bw,Y(0)-Y(prev));x.globalAlpha=1;
+      x.strokeStyle=muted;x.setLineDash([2,3]);x.beginPath();x.moveTo(cx-slot+bw/2,Y(prev)+.5);x.lineTo(cx-bw/2,Y(prev)+.5);x.stroke();x.setLineDash([])}
+    else{x.fillStyle=col;x.fillRect(cx-bw/2,Y(s.D30),bw,Y(0)-Y(s.D30))}
+    // month-one marker
+    x.fillStyle=ink;x.beginPath();x.moveTo(cx-5,Y(s.M1));x.lineTo(cx+5,Y(s.M1));x.lineTo(cx,Y(s.M1)+6);x.closePath();x.fill();
+    x.fillStyle=ink;x.textAlign='center';x.textBaseline='bottom';x.font='600 11px "IBM Plex Mono", ui-monospace, monospace';x.fillText(pct(s.D30),cx,Y(s.D30)-3);
+    x.font='10px "IBM Plex Mono", ui-monospace, monospace';x.textBaseline='top';x.fillStyle=muted;
+    const lab=narrow?s.n.replace('+ ','+').replace(' = v0.3','').replace(' as money',''):s.n.replace('+ ','+').replace(' = v0.3','');
+    if(narrow){x.save();x.translate(cx,T+h+6);x.rotate(-.5);x.textAlign='right';x.fillText(lab,4,0);x.restore()}
+    else{x.fillText(lab,cx,T+h+6);if(s.n.includes('v0.3')){x.fillStyle=stamp;x.fillText('= v0.3',cx,T+h+18)}}
+  });
+  $('#wfnote').textContent='3-seed average';
+  const v3=wf[n-1],v2=wf[1];
+  const r=(l,v,p,cls)=>`<div class="rung ${cls||''}"><small>${l}</small><b>${v}</b><p>${p}</p></div>`;
+  $('#ladder').innerHTML=r('Day 30, v0.2',pct(v2.D30),'opened on exactly day 30')+r('Day 30, v0.3',pct(v3.D30),`${Math.round((v3.D30-v2.D30)*100)} points from five layers`,'hi')+r('Month one, v0.3',pct(v3.M1),'opened any day in days 23–30','hi')+r('Month one, plain app',pct(baseM1),'same loose measure, no hooks: compare to this, not WhatsApp');
+}
+
+/* ---- Ideas ---- */
+function ideas(){
+  const v3=kpi(avgRun(V3,opt)),cash=kpi(avgRun(PRE.cash,opt)),noz=kpi(avgRun({...V3,zones:0},opt)),noh=kpi(avgRun({...V3,hunts:0},opt)),nod=kpi(avgRun({...V3,drops:0},opt)),nocap=kpi(avgRun(PRE.nocap,opt));
+  const I=[
+   ['Random money drops','no','Out. Replaced by drops of real stuff that need three of you to claim.',
+    `<b>HQ Trivia</b> was exactly this: a daily cash prize. It peaked at more than 2.3 million concurrent players in February 2018. Then prizes split between too many winners and cheaters, games got repetitive, and by early 2020 the last prize was $5 shared among 523 people. It shut down after paying out about $6M of its $15M+ funding.<br><br>In a post-money world, cash drops are also <b>free issuance</b>, the mistake that sank the trueque clubs and Bunz.`,
+    `v0.3 with drops paid in favors:<br>favor confidence ${pct(v3.C)} → <b>${pct(cash.C)}</b><br>swaps/week ${fmt(v3.swk)} → <b>${fmt(cash.swk)}</b><br>day 30 ${pct(v3.D30)} → <b>${pct(cash.D30)}</b>`],
+   ['Treasure hunt constructions','mod','In, with one change: circles build hunts for other circles.',
+    `<b>Pokémon GO</b> peaked at about 45 million daily users in July 2016 and was down to about 30 million by late summer. Hunts designed by the company run out of novelty. Hunts built by players don't, because every circle is a new author. Each clue is a 10-second dare at a real spot, and the final box holds something from the builder's Market pool.`,
+    `Remove hunts from v0.3:<br>day 30 ${pct(v3.D30)} → <b>${pct(noh.D30)}</b><br>Small in the model. Hunts are recruitment and stories, not retention.`],
+   ['Record zones with cameras','yes','The best idea in the project. Zones are the stage the name was waiting for.',
+    `A Zone is a partner venue (a skatepark, a gym, a bar's back room, a community hall) with fixed cameras and staff. It solves three problems at once: <b>safety</b> (the insane stuff happens where someone is watching), <b>quality</b> (better footage, verified entries), and <b>gathering</b> (a weekly night out for the circle). The insanity ceiling rises from 6.5 to 8 <i>only</i> inside Zones. Zones also host the Market and League fixtures.`,
+    `Remove Zones from v0.3:<br>day 30 ${pct(v3.D30)} → <b>${pct(noz.D30)}</b><br>Remove the ceiling everywhere:<br>people hurt ${v3.harm.toFixed(0)} → <b>${fmt(nocap.harm)}</b>`],
+  ];
+  $('#ideasList').innerHTML=I.map(([t,s,v,ev,num])=>`<div class="idea"><div><h4>${t}<span class="st ${s}">${s==='no'?'NOT THIS':s==='mod'?'YES, CHANGED':'YES'}</span></h4><p><b>${v}</b></p><p class="ev">${ev}</p></div><div><div class="num">${num}</div></div></div>`).join('')+
+  `<div class="idea"><div><h4>What you didn’t suggest, and matters more<span class="st yes">ADDED</span></h4><p><b>The ledger as everyday money, and a League with weekly fixtures.</b></p><p class="ev">Neither is exciting. Both are the reason people can't leave: your shared expenses live in one, your teammates are waiting in the other.</p></div><div><div class="num">Remove the ledger from v0.3:<br>day 30 ${pct(v3.D30)} → <b>${pct(kpi(avgRun({...V3,ledger:0},opt)).D30)}</b><br>Remove the League:<br>day 30 ${pct(v3.D30)} → <b>${pct(kpi(avgRun({...V3,league:0},opt)).D30)}</b></div></div></div>`;
+}
+
+/* ---- Simulator tab ---- */
+const cfg={...V3};let cur=null,ref=null;
+function sync(){KEYS.forEach(k=>{$('#c-'+k).checked=!!cfg[k]});$('#s-k').value=opt.k;$('#o-k').textContent=(+opt.k).toFixed(2);$('#s-seed').value=opt.seed;$('#o-seed').textContent=opt.seed;
+  const m=Object.entries(PRE).find(([,p])=>KEYS.every(k=>!!p[k]===!!cfg[k]));document.querySelectorAll('#presets button').forEach(b=>b.classList.toggle('on',!!m&&b.dataset.preset===m[0]))}
+let rt;function run(){clearTimeout(rt);rt=setTimeout(()=>{ref=avgRun(V2x,opt);cur=avgRun(cfg,opt);drawSim()},30)}
+function drawSim(){if(!cur)return;const a=kpi(cur),r=kpi(ref);
+  line('#ch-ret',cur.ret,ref.ret,{fmt:pct,max:Math.max(.6,niceMax(Math.max(...cur.ret.slice(1))*1.1)),xt:[1,7,14,30],xl:i=>'D'+i});
+  line('#ch-dau',cur.dau,ref.dau,{fmt:fmt,xl:i=>'day '+(i+1),color:'--ballpoint'});
+  line('#ch-c',cur.C,ref.C,{fmt:pct,max:1,xl:i=>'day '+(i+1),color:'--good'});
+  line('#ch-harm',cur.harmD,ref.harmD,{fmt:fmt,min:10,xl:i=>'day '+(i+1)});
   const tile=(l,v,[c,s])=>`<div class="stat"><small>${l}</small><b>${v}</b><span class="pill ${c}">${s}</span></div>`;
-  const delta=(x,y,f)=>{const d=x-y;return [d>=0?'ok':'bad',(d>=0?'+':'−')+f(Math.abs(d))+' vs v0.1']};
-  $('#stats').innerHTML=tile('Day 1',pct(a.D1),band(a.D1,1))+tile('Day 7',pct(a.D7),band(a.D7,7))+tile('Day 30',pct(a.D30),band(a.D30,30))+
-    tile('Circles with 4+ active',pct(a.atomic),delta(a.atomic,r.atomic,v=>Math.round(v*100)+' pts'))+
-    tile('Swaps per week',fmt(a.swk),delta(a.swk,r.swk,fmt))+
-    tile('Favor confidence',pct(a.C),a.C>.75?['ok','healthy']:a.C>.5?['warn','wobbling']:['bad','collapsing']);
+  const d=(x,y,f,inv)=>{const z=x-y;const good=inv?z<=0:z>=0;return [good?'ok':'bad',(z>=0?'+':'−')+f(Math.abs(z))+' vs v0.2']};
+  $('#stats').innerHTML=tile('Day 1',pct(a.D1),d(a.D1,r.D1,v=>Math.round(v*100)+' pts'))+tile('Day 30',pct(a.D30),d(a.D30,r.D30,v=>Math.round(v*100)+' pts'))+tile('Month one',pct(a.M1),d(a.M1,r.M1,v=>Math.round(v*100)+' pts'))+
+    tile('Swaps per week',fmt(a.swk),d(a.swk,r.swk,fmt))+tile('Favor confidence',pct(a.C),a.C>.75?['ok','healthy']:a.C>.5?['warn','wobbling']:['bad','collapsing'])+tile('People hurt',fmt(a.harm),a.harm<10?['ok','in 120 days']:a.harm<50?['warn','in 120 days']:['bad','in 120 days']);
   const s=[];
-  s.push(`<b>${pct(cur.joined)}</b> of everyone in the friend groups ever installed (v0.1: ${pct(ref.joined)}). ${cfg.circles?'Asking each newcomer to fill a circle turns one install into a group install.':'Without circles, most people join alone and stay alone.'}`);
-  s.push(`On average <b>${pct(a.atomic)}</b> of friend groups had four or more active members in the second half of the run. ${a.atomic<.05?'That is the cold-start problem from day 1 of the diary: almost nobody has enough friends on the app for anything to happen.':'That is where swaps, favors and daily dares start feeding each other.'}`);
-  const topR=order[0][1];s.push(`The most common reason to leave was <b>${REASONS[topR].toLowerCase()}</b> (${tot?Math.round(order[0][0]/tot*100):0}% of exits). ${topR===0?'Boredom beat every punishment mechanic.':''}`);
-  s.push(`Retention: D1 ${pct(a.D1)}, D7 ${pct(a.D7)}, D30 ${pct(a.D30)}. ${a.D30>a.D7?'D30 is higher than D7: friends arriving late make the app better for people who joined early. That is the smile curve.':''} ${a.D30>BENCH[30][1]?'Above the published social-app range, so treat it as the optimistic end. Drag the friend-value slider down to stress-test it.':''}`);
-  if(cfg.bonus)s.push(`Free welcome credits: confidence in favors fell to <b>${pct(a.C)}</b>. Newcomers arrive holding favors that nobody owes, someone in the circle has to honor them for nothing, and people start refusing favors as payment. Same shape as Argentina in 2002 and Bunz in 2019.`);
-  if(cfg.decay||cfg.shortChains||cfg.sell)s.push(`Punishment mechanics on (${[cfg.decay&&'trust decay',cfg.shortChains&&'2-hour chains',cfg.sell&&'sellable IOUs'].filter(Boolean).join(', ')}): they matter less than you would think, because in a thin network few people stay long enough to be punished.`);
+  s.push(`Day-30 retention <b>${pct(a.D30)}</b> (v0.2: ${pct(r.D30)}); month one <b>${pct(a.M1)}</b>. ${a.D30>.5?'Above anything in the published social-app range. Read it as the optimistic end and stress-test with the slider.':''}`);
+  if(cfg.cashDrops)s.push(`Drops pay favors: confidence in favors fell to <b>${pct(a.C)}</b> and each drop is worth less as more people share it. HQ Trivia and the trueque clubs, in one toggle.`);
+  if(!cfg.cap)s.push(`No ceiling: <b>${fmt(a.harm)}</b> people hurt. A dense network escalates fast. This is the failure that would end the app, and possibly someone's life.`);
+  if(cfg.decay)s.push('Trust decay is on and the numbers go up again. The model counts opens, not how they feel. The diary says it feels like a trick, so it stays off.');
+  if(cfg.ledger&&cfg.league)s.push('Most of the gain comes from the two boring layers: the ledger people need, and the teammates who notice when they’re gone.');
   $('#story').innerHTML=s.map(x=>`<li>${x}</li>`).join('');
 }
-window.addEventListener('resize',()=>{clearTimeout(draw.t);draw.t=setTimeout(draw,120)});
-const mq=matchMedia('(prefers-color-scheme: dark)');mq.addEventListener&&mq.addEventListener('change',draw);
-new MutationObserver(draw).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+$('#presets').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;Object.assign(cfg,PRE[b.dataset.preset]);sync();run()});
+KEYS.forEach(k=>$('#c-'+k).addEventListener('change',e=>{cfg[k]=e.target.checked?1:0;sync();run()}));
+$('#s-k').addEventListener('input',e=>{opt.k=+e.target.value;$('#o-k').textContent=opt.k.toFixed(2);wf=null;ideasDone=false;run()});
+$('#s-seed').addEventListener('input',e=>{opt.seed=+e.target.value;$('#o-seed').textContent=opt.seed;wf=null;ideasDone=false;run()});
 
-/* ================================================================
-   CHANGES TABLE (ablations computed live)
-   ================================================================ */
-const CHANGES=[
- ['Circles unlock at 4 members','Day 1: only two friends on the app, no loops','Open sign-up, no minimum',{circles:0}],
- ['Weekly Market Day, one table','Days 7–9: three separate handoffs, loop half-failed','Continuous matching, handoffs arranged elsewhere',{market:0}],
- ['Daily Dare, one prompt per circle','Days 3, 11, 13, 22+: nothing to do','Strangers’ feed as the daily reason',{daily:0}],
- ['Favor board for small services','Day 21: the best exchange was a service, not an item','Goods-only swaps',{board:0}],
- ['Reliability score that never decays','Days 2 and 12: opened only to stop a number falling','Trust that decays every idle hour',{decay:1}],
- ['24-hour chains with a weekly skip','Day 10: blamed for a broken chain while at work','2-hour chain windows',{shortChains:1}],
- ['IOUs stay in the circle, limit −5','Day 14: IOU sold to a stranger','Sellable IOUs, no limit',{sell:1,limit:0}],
- ['No free credits, ever','Trueque 2002 and Bunz 2019 collapses','5 welcome favors per newcomer',{bonus:1,limit:0}],
- ['One tap: “laughed” or “I would never”','Day 1: stopped moving the four sliders by the third video','Four rating sliders',null],
-];
-function changes(){
-  const base=kpi(avgRun(V2,opt));
-  $('#changesBody').innerHTML=CHANGES.map(([n,d,r,ov])=>{let sim='<span class="mono" style="color:var(--muted)">UI only · not in the model</span>';
-    if(ov){const o=kpi(avgRun({...V2,...ov},opt));sim=`<span class="mono">D30 ${pct(base.D30)} → <b>${pct(o.D30)}</b><br>swaps/wk ${fmt(base.swk)} → <b>${fmt(o.swk)}</b><br>confidence ${pct(base.C)} → <b>${pct(o.C)}</b></span>`}
-    return `<tr><td><b>${n}</b></td><td><span class="d">${d}</span></td><td>${r}</td><td>${sim}</td></tr>`}).join('');
+let ideasDone=false;
+function show(p){
+  document.querySelectorAll('.ptabs button').forEach(x=>{const on=x.dataset.p===p;x.setAttribute('aria-selected',on);$('#p-'+x.dataset.p).hidden=!on});
+  if(p==='road'){if(!wf)setTimeout(()=>{computeWF();drawWF()},30);else drawWF()}
+  if(p==='ideas'&&!ideasDone){ideasDone=true;$('#ideasList').innerHTML='<p class="mono">Running the experiments…</p>';setTimeout(ideas,30)}
+  if(p==='sim'){if(!cur)run();else drawSim()}
 }
-
-/* console tabs */
-let changesDone=false;
-document.querySelector('.ptabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
-  document.querySelectorAll('.ptabs button').forEach(x=>{const on=x===b;x.setAttribute('aria-selected',on);$('#p-'+x.dataset.p).hidden=!on});
-  if(b.dataset.p==='sim'){if(!cur)run();else draw()}
-  if(b.dataset.p==='changes'&&!changesDone){changesDone=true;$('#changesBody').innerHTML='<tr><td colspan="4" class="mono">Running ablations…</td></tr>';setTimeout(changes,30)}
-});
-if(location.hash==='#sim')document.querySelector('.ptabs [data-p="sim"]').click();
-syncInputs();
+document.querySelector('.ptabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)show(b.dataset.p)});
+const redraw=()=>{drawWF();drawSim()};
+window.addEventListener('resize',()=>{clearTimeout(redraw.t);redraw.t=setTimeout(redraw,120)});
+const mq=matchMedia('(prefers-color-scheme: dark)');mq.addEventListener&&mq.addEventListener('change',redraw);
+new MutationObserver(redraw).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+sync();
+const startTab=['road','ideas','sim','week'].includes(location.hash.slice(1))?location.hash.slice(1):'road';
+show(startTab);
 })();
 </script>

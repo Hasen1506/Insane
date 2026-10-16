@@ -10,6 +10,8 @@ The interactive prototype and simulator are in [`prototype/index.html`](../proto
 
 ---
 
+> **v0.3** (city layer: ledger as money, League, Zones, Hunts, Drops) is described in [`V03.md`](V03.md).
+
 ## 0. What changed in v0.2
 
 v0.2 came out of a 30-day diary study ([`DIARY.md`](DIARY.md)) and a rebuilt simulator, following the method in [`DEEPER.md`](DEEPER.md). The main finding: **v0.1 didn't die of addiction. It died of loneliness, logistics, and mechanics that felt like punishments.** The v0.1 simulator below assumed everyone's friends were already on the app, so it never saw the cold-start problem.
