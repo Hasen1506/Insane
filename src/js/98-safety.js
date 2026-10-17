@@ -123,7 +123,7 @@ SHEETS["circle-admin"]=(sh,close)=>{
 
 /* ---------- unsafe dares (C88) ---------- */
 const dareFlagged=d=>!!d&&(d.flags||[]).includes(S.uid);
-const flagBtn=v=>`<button class="link flag" data-act="dare-flag" data-v="${esc(v)}" aria-label="Flag this dare as not safe">⚑ Not safe</button>`;
+const flagBtn=v=>`<button class="link flag" style="color:inherit;opacity:.9;margin-left:6px" data-act="dare-flag" data-v="${esc(v)}" aria-label="Flag this dare as not safe">⚑ Not safe</button>`;
 
 /* ---------- the owner's queue (C89) ---------- */
 SHEETS["mod"]=(sh,close)=>{
