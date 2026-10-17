@@ -173,8 +173,11 @@ async function exportHtml(){
 function safetyNotice(){let n=null;try{n=sessionStorage.getItem('insane_notice')}catch(e){}if(!n)return '';try{sessionStorage.removeItem('insane_notice')}catch(e){}
   return `<div class="card stamp" role="status"><p style="margin:0">${n==='deleted'?'<b>Your account is deleted.</b> Everything of yours is gone from INSANE, and you’re signed out. A confirmation is on its way to your email.':'<b>You were signed out.</b> Sign in again to carry on.'}</p></div>`}
 const signedOutWith=n=>{try{sessionStorage.setItem('insane_notice',n)}catch(e){}location.reload()};
+// Go dark, Midnight and every countdown run on the server's clock, so a phone set to the wrong day can't
+// end dark early or stay dark (C61). Small differences are network noise and are ignored.
+function setSkew(serverNow){if(!(+serverNow>0))return;const d=+serverNow-Date.now();CLOCK_SKEW=Math.abs(d)>5000?d:0}
 // A session revoked from another device: the page notices within a minute and goes to sign-in.
-setInterval(async()=>{if(S.backend!=='server'||S.mode!=='live'||document.hidden)return;try{const h=await fetch('/api/hello',{credentials:'same-origin'}).then(r=>r.json());if(h&&h.insane&&!h.signedIn)signedOutWith('revoked')}catch(e){}},60000);
+setInterval(async()=>{if(S.backend!=='server'||S.mode!=='live'||document.hidden)return;try{const h=await fetch('/api/hello',{credentials:'same-origin'}).then(r=>r.json());if(h&&h.insane&&!h.signedIn)signedOutWith('revoked');else if(h&&h.now)setSkew(h.now)}catch(e){}},60000);
 
 /* ---------- actions ---------- */
 ACT["block"]=async(d,el,a)=>{const on=d.on!=='0',nm=nameOf(d.v);if(await W(()=>setBlock(d.v,on),on?`Blocked ${nm}. They aren’t told.`:`Unblocked ${nm}.`)){if(on)closeSheet();render()}};

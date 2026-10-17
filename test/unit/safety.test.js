@@ -17,5 +17,9 @@ module.exports = async function (t) {
   const refuse = ['Run across the road at rush hour', 'Drink a beer in one go', 'Climb the water tank', 'Kiss a stranger', 'Bet ₹500 you can do it', 'Set fire to a newspaper', 'Steal a spoon from the café', 'Prank call the police'];
   const pass = ['Order your coffee in the voice of a movie trailer', 'Compliment a stranger’s shoes, and mean it', 'Pay someone a compliment', 'Take five photos of doors', 'Sing on the street corner'];
   t.ok('the dare screen refuses traffic, alcohol, heights, strangers’ bodies, money, fire, the law', refuse.every(d => N.unsafeDare(d)), refuse.filter(d => !N.unsafeDare(d)).join(' | '));
+  { const app = require(path.join(ROOT, 'test', 'lib', 'load.js')).loadV09(), real = Date.UTC(2026, 9, 17, 12);
+    const res = [-864e5, 864e5, 14 * 864e5, 1500].map(off => { app.setNow(real + off); app.run(`setSkew(${real})`); const n = app.run('now()'), left = app.run(`left(${real + 3600e3}-now())`); return [Math.abs(n - real) < (Math.abs(off) > 5000 ? 50 : 2000), left]; });
+    t.ok('C61 with the phone a day behind, a day ahead or a fortnight ahead, now() is the server’s and a 1 h dark shows 1h 00m', res.slice(0, 3).every(([a, l]) => a && /^(1h 00m|59:5\d)$/.test(l)) && res[3][0], JSON.stringify(res)); }
   t.ok('the dare screen lets ordinary dares through', pass.every(d => !N.unsafeDare(d)), pass.filter(d => N.unsafeDare(d)).map(d => d + ': ' + N.unsafeDare(d)).join(' | '));
 };
+// C61: Go dark's countdown runs on the server's clock when the phone's is a day off either way.

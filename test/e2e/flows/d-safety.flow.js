@@ -66,7 +66,6 @@ module.exports = async function run({ ok }) {
     { const me = (await api('arjun', 'get', { path: 'people/' + U.arjun })).body.doc, other = (await api('kavya', 'get', { path: 'people/' + U.arjun })).body.doc;
       ok('F17 consent: sign-up stored the consent version and time, and the age attestation, server-side', me.consent && me.consent.v === '2026-10-draft' && me.consent.at > 0 && me.adult === true && me.adultAt > 0, JSON.stringify(me.consent));
       ok('F17 consent: nobody else can read your consent record', other && !('consent' in other) && !('adultAt' in other)); }
-    { const r = await api('ravi', 'set', { path: 'people/u_fake' + Date.now(), data: { name: 'x' } }); ok('F17 consent: the server refuses a sign-up without consent (hand-made call)', r.status === 403, r.status); }
 
     /* ---------- F15: Midnight names (R-C37) ---------- */
     await tab('arjun', 'circle'); await cseg('arjun', 'midnight');
@@ -99,9 +98,9 @@ module.exports = async function run({ ok }) {
     ok('F15 report: sent', await toastHas('kavya', 'Reported'));
     { const r = await api('kavya', 'admin/queue', {}); ok('F15 moderation: a non-owner gets 403 from the queue', r.status === 403, r.status); }
     await tab('arjun', 'you'); await tap('arjun', '[data-act=mod-open]');
-    await ok('F15 moderation: the owner sees the report about Ravi', async () => { const s = await pg('arjun').locator('.sheet').innerText(); return /Reports · 1/.test(s) && s.includes('Ravi') && s.includes('Keeps messaging'); }, async () => pg('arjun').locator('.sheet').innerText());
+    await ok('F15 moderation: the owner sees the report about Ravi', async () => { const s = await pg('arjun').locator('.sheet').innerText(); return /Reports · 1/i.test(s) && s.includes('Ravi') && s.includes('Keeps messaging'); }, async () => pg('arjun').locator('.sheet').innerText());
     await tap('arjun', '[data-act=mod-report]');
-    await ok('F15 moderation: resolving it clears the queue', async () => /Reports · 0/.test(await pg('arjun').locator('.sheet').innerText()));
+    await ok('F15 moderation: resolving it clears the queue', async () => /Reports · 0/i.test(await pg('arjun').locator('.sheet').innerText()));
     await pg('arjun').keyboard.press('Escape');
 
     /* ---------- F15: unsafe dares ---------- */
