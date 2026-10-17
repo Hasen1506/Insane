@@ -133,7 +133,7 @@ ${sec('Journeys', journeys, j => esc((j.read && j.read.what) || j.text || ''))}
       if (db.prepare('SELECT uid FROM users WHERE email=?').get(email)) throw new Refuse('failed_precondition', 'That email already has an INSANE account.');
       if (limited('chg:' + u.uid, 4, 10 * MIN)) throw new Refuse('resource_exhausted', 'Too many codes. Wait a few minutes.');
       const code = String(crypto.randomInt(100000, 1000000));
-      const text = `Your INSANE code to change your email is ${code}\n\nIt works for 10 minutes. If you didn’t ask for it, ignore this email.\n\n${PUBLIC_URL}`;
+      const text = `Your INSANE code is ${code}\n\nUse it to make this your sign-in email. It works for 10 minutes. If you didn’t ask for it, ignore this email.\n\n${PUBLIC_URL}`;
       db.prepare('INSERT INTO otps(email,hash,exp,tries,sent) VALUES(?,?,?,0,?) ON CONFLICT(email) DO UPDATE SET hash=excluded.hash,exp=excluded.exp,tries=0,sent=excluded.sent')
         .run(email, sha('chg|' + u.uid + '|' + email + code), Date.now() + 10 * MIN, JSON.stringify(DEV ? { to: email, subject: 'Change your INSANE email: ' + code, text, at: Date.now() } : { at: Date.now() }));
       return sendMail(email, 'Change your INSANE email: ' + code, text).then(how => ({ body: { ok: true, how } }));

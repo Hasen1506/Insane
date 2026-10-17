@@ -6,6 +6,7 @@
 const fs = require('fs'), path = require('path');
 const BR = require('../lib/browser'), E = require('../lib/e2e'), GD = require('../lib/golden');
 const { v08Dir } = require('../lib/load');
+const SCREENS = require('../diff/allowed.json').screens || {};
 
 const T0 = Date.UTC(2026, 9, 12, 3, 30); // Mon 12 Oct 2026, 09:00 in Chennai
 const PROFILE = process.env.GOLDEN_PROFILE || 'Pixel 7';
@@ -53,9 +54,13 @@ module.exports = async function (t) {
     const helper = await browser.newPage();
     for (let i = 0; i < v09.out.length; i++) {
       const a = v08.out[i], b = v09.out[i];
-      t.ok(`${b.name}: DOM identical to v0.8`, a.dom === b.dom, a.dom === b.dom ? '' : GD.lineDiff(a.dom, b.dom));
-      const r = await GD.pixelDiff(helper, a.img, b.img);
-      t.ok(`${b.name}: pixels match v0.8 (${(r * 100).toFixed(3)}% differ, tolerance 0.1%)`, r <= 0.001);
+      const why = SCREENS[b.name]; // a documented, intentional change since v0.8 (test/diff/allowed.json "screens")
+      if (why) t.ok(`${b.name}: differs from v0.8 on purpose (${why})`, a.dom !== b.dom, 'listed as changed, but it is identical to v0.8: take it off the list');
+      else {
+        t.ok(`${b.name}: DOM identical to v0.8`, a.dom === b.dom, a.dom === b.dom ? '' : GD.lineDiff(a.dom, b.dom));
+        const r = await GD.pixelDiff(helper, a.img, b.img);
+        t.ok(`${b.name}: pixels match v0.8 (${(r * 100).toFixed(3)}% differ, tolerance 0.1%)`, r <= 0.001);
+      }
       const g = GD.matchDom(`ws0/${PROFILE.replace(/\s/g, '')}/${b.name}`, b.dom); t.ok(`${b.name}: DOM golden ${g.created ? 'written' : 'matches'}`, g.ok, g.diff);
       const p = await GD.matchPixels(helper, `ws0/${PROFILE.replace(/\s/g, '')}/${b.name}`, b.img); t.ok(`${b.name}: pixel golden ${p.created ? 'written' : 'matches (' + (p.ratio * 100).toFixed(3) + '%)'}`, p.ok);
     }

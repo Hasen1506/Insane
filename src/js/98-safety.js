@@ -170,7 +170,8 @@ async function exportHtml(){
   return r;
 }
 // After the account is deleted or this device signed out somewhere else, the sign-in screen says so.
-function safetyNotice(){let n=null;try{n=sessionStorage.getItem('insane_notice')}catch(e){}if(!n)return '';try{sessionStorage.removeItem('insane_notice')}catch(e){}
+const SIGNED_OUT=(()=>{let n=null;try{n=sessionStorage.getItem('insane_notice');sessionStorage.removeItem('insane_notice')}catch(e){}return n})(); // read once, kept for this page
+function safetyNotice(){const n=SIGNED_OUT;if(!n)return '';
   return `<div class="card stamp" role="status"><p style="margin:0">${n==='deleted'?'<b>Your account is deleted.</b> Everything of yours is gone from INSANE, and you’re signed out. A confirmation is on its way to your email.':'<b>You were signed out.</b> Sign in again to carry on.'}</p></div>`}
 const signedOutWith=n=>{try{sessionStorage.setItem('insane_notice',n)}catch(e){}location.reload()};
 // Go dark, Midnight and every countdown run on the server's clock, so a phone set to the wrong day can't
