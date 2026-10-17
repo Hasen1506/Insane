@@ -6,6 +6,9 @@
 const fs = require('fs'), path = require('path');
 const BR = require('../lib/browser'), E = require('../lib/e2e'), GD = require('../lib/golden');
 const { v08Dir } = require('../lib/load');
+// screens a workstream changed on purpose: test/diff/changes/<ws>.json "screens" {name: why}; held to their v0.9 goldens only
+const CHDIR = path.join(__dirname, '..', 'diff', 'changes');
+const CHANGED = Object.assign({}, ...(fs.existsSync(CHDIR) ? fs.readdirSync(CHDIR).filter(f => f.endsWith('.json')).map(f => JSON.parse(fs.readFileSync(path.join(CHDIR, f), 'utf8')).screens || {}) : []));
 
 const T0 = Date.UTC(2026, 9, 12, 3, 30); // Mon 12 Oct 2026, 09:00 in Chennai
 const PROFILE = process.env.GOLDEN_PROFILE || 'Pixel 7';
@@ -53,9 +56,12 @@ module.exports = async function (t) {
     const helper = await browser.newPage();
     for (let i = 0; i < v09.out.length; i++) {
       const a = v08.out[i], b = v09.out[i];
-      t.ok(`${b.name}: DOM identical to v0.8`, a.dom === b.dom, a.dom === b.dom ? '' : GD.lineDiff(a.dom, b.dom));
-      const r = await GD.pixelDiff(helper, a.img, b.img);
-      t.ok(`${b.name}: pixels match v0.8 (${(r * 100).toFixed(3)}% differ, tolerance 0.1%)`, r <= 0.001);
+      if (CHANGED[b.name]) t.ok(`${b.name}: differs from v0.8 on purpose (${CHANGED[b.name]})`, a.dom !== b.dom, 'listed as changed but identical to v0.8');
+      else {
+        t.ok(`${b.name}: DOM identical to v0.8`, a.dom === b.dom, a.dom === b.dom ? '' : GD.lineDiff(a.dom, b.dom));
+        const r = await GD.pixelDiff(helper, a.img, b.img);
+        t.ok(`${b.name}: pixels match v0.8 (${(r * 100).toFixed(3)}% differ, tolerance 0.1%)`, r <= 0.001);
+      }
       const g = GD.matchDom(`ws0/${PROFILE.replace(/\s/g, '')}/${b.name}`, b.dom); t.ok(`${b.name}: DOM golden ${g.created ? 'written' : 'matches'}`, g.ok, g.diff);
       const p = await GD.matchPixels(helper, `ws0/${PROFILE.replace(/\s/g, '')}/${b.name}`, b.img); t.ok(`${b.name}: pixel golden ${p.created ? 'written' : 'matches (' + (p.ratio * 100).toFixed(3) + '%)'}`, p.ok);
     }

@@ -47,6 +47,14 @@
 .pp b{display:block;font-family:var(--f-body);font-size:12px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pp.paid,.pp.pledged{border-color:var(--good);background:var(--good-soft)}.pp.topay,.pp.checking{border-color:var(--haz);background:var(--haz-soft)}.pp.out{opacity:.55}
 .potbtn{cursor:pointer}
+/* v0.9 WS-G ledger: the balance and what you owe read first, in both themes; sign in words, not only colour */
+.bal.pos .bigh,.owe .pos{color:var(--good)}.bal.neg .bigh,.owe .neg,.due{color:var(--stamp)}
+.bl{margin:0;font-size:14.5px;font-weight:600}
+.ex summary{cursor:pointer;color:var(--ball);font-size:13.5px;padding:8px 0 0;min-height:32px}.ex p{font-size:13.5px;color:var(--muted);margin:4px 0 0;line-height:1.45}
+.owe{margin-top:12px;border-color:var(--stamp)}.owe .tot{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:16px;margin:4px 0 6px}.owe .tot b{font-family:var(--f-mono)}
+.tx small{font-size:12px}.tx.me{font-weight:700}.pp{font-size:11px;color:var(--ink)}
+a.btn{display:inline-flex;align-items:center;text-decoration:none}.btn.upi{min-height:48px;font-size:15px}
+.upiqr{display:none;width:150px;margin-top:8px}@media (hover:hover) and (pointer:fine){.upiqr{display:block}}
 .safe{background:var(--good-soft);border-radius:12px;padding:9px 11px;font-size:13px;margin:12px 0 4px;line-height:1.4}
 .lock{font-size:13px;background:var(--haz-soft);border-radius:10px;padding:8px 10px;margin:10px 0}
 .brief{background:var(--ink);color:var(--paper);border-radius:10px;padding:8px 10px;margin-top:8px;font-size:13px;line-height:1.4}

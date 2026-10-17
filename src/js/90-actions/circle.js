@@ -33,5 +33,6 @@ ACT["pledge"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
   {const t=S.threads.find(x=>x.id===d.v);const v=!(t.pledges||{})[uid];const c=potCur(t);if(await W(()=>db.doc(`circles/${me.circle}/threads/${t.id}`).update({pledges:{[uid]:v}}))){if(v){logMine('Pledged '+c+t.per+' to '+t.title);if(t.mode!=='split'&&nIn(t)+1===(t.min||2))celebrate('GOAL MET',t.title+': '+(nIn(t)+1)+' of '+t.min+'. Everyone now pays '+nameOf(t.by)+' directly.');else toast(t.mode==='split'?'You’re in. Pay '+nameOf(t.by)+' '+c+t.per+' when you can.':'Pledged '+c+t.per+'. '+(nIn(t)+1)+' of '+t.min+'. Nothing is charged unless it goes ahead.')}else toast('Pledge taken back. Nothing was charged, so there’s nothing to refund.')}return}
 };
 ACT["pay-save"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+  {const t=S.threads.find(x=>x.id===d.v);if(t&&t.by!==uid)return;if(t&&potCur(t)==='₹'){const v=(F.upi??t.upi??'').trim();if(v&&!VPA.test(v)){toast('That UPI ID doesn’t look right. It’s like yourname@bank.');return}if(await W(()=>db.doc(`circles/${me.circle}/threads/${d.v}`).update({upi:v}),'Saved.')){F.upi=undefined;closeSheet()}return}}
   await W(()=>db.doc(`circles/${me.circle}/threads/${d.v}`).update({pay:(F.pay||'').trim().slice(0,80)}),'Saved.');closeSheet();return;
 };

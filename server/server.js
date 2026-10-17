@@ -134,6 +134,8 @@ function beforeWrite(op, p, data, u) {
     if (data.paid) { const pd = {}; for (const [k, v] of Object.entries(data.paid)) { if (v === 'wait' && k === u.uid) pd[k] = 'wait'; else if (v === true && old.by === u.uid) pd[k] = true; } data.paid = pd; }
     if (data.via) data.via = { [u.uid]: String(data.via[u.uid] || '').slice(0, 20) };
     if ('closed' in data && old.by !== u.uid) delete data.closed;
+    if (old.by !== u.uid) { delete data.upi; delete data.pay; } // WS-G: only the organiser says where the money goes
+    else if ('upi' in data) data.upi = /^[a-z0-9][a-z0-9._-]{1,63}@[a-z][a-z0-9]{1,31}$/i.test(String(data.upi)) ? String(data.upi) : '';
     return data;
   }
   // Favors: you ask for yourself, you say you'll help as yourself, and only the person helped logs the hours.

@@ -1,0 +1,45 @@
+main#app role=main
+  header.top role=banner
+    span.mark "INSANE"
+    button.bell role=button act="sheet" v="activity" aria-label="What’s new"
+      svg
+    span.where "Third Floor Chennai · 4 km² square"
+      span.live.demo
+      br
+    button.me-btn role=button act="tab" v="you" aria-label="You: profile, journeys, settings" "M"
+  div.banner "Nothing leaves this browser. Open the shared link signed in to play with other people."
+    b "Demo on this device."
+  div#v
+    h1.v role=heading "Ledger"
+    p.lede "Favors in hours, pots in money. Everything inside Third Floor."
+    div.seg role=tablist
+      button.on role=tab act="lseg" v="favors" "Favors"
+      button role=tab act="lseg" v="pots" "Pots"
+    div.meta "YOUR BALANCE"
+    div.bigh "+2 h"
+    p.bl "The circle owes you 2 h of help. Limit −5 h."
+    summary "How favors work"
+    p "1 favor = 1 hour of someone’s time, in 15-minute steps. Everyone’s hour is worth the same. + means people owe you time, − means you owe it. It stays in the circle and can’t be bought or cashed out."
+    button.btn.s role=button act="fv-form" v="ask" "Ask a favor"
+    button.btn.s.ghost role=button act="fv-form" v="log" "Someone helped me"
+    div.eyebrow "Your favors"
+    span "Carried the gas cylinder up"
+    span.amt.pos "+2 h"
+    small "You → Arjun · just now"
+    div.eyebrow "The circle"
+    span "Arjun"
+    span.amt.neg "−2 h owes"
+    span "You"
+    span.amt.pos "+2 h owed"
+    p.formula "Money never goes in here. Groceries and trips are pots; favors are only time and effort, so nobody has to guess what a favor is worth."
+  nav.tabs role=navigation aria-label="Sections"
+    button role=button act="tab" v="today" aria-current="false" "Home"
+      svg
+    button role=button act="tab" v="circle" aria-current="false" "Circle"
+      svg
+    button.plus role=button act="make" aria-label="Make something"
+      span "+"
+    button role=button act="tab" v="city" aria-current="false" "City"
+      svg
+    button.on role=button act="tab" v="ledger" aria-current="page" "Ledger"
+      svg
