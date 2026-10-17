@@ -43,6 +43,12 @@ async function screens(browser, file) {
   return { out, errors };
 }
 
+// WS-E changed two things these screens show, on purpose (docs/WS-E.md): the Decode clue (C91: city packs,
+// so Chennai gets a Chennai puzzle) and the starter daily dare (C92: a no-repeat cycle). Against v0.8 those
+// lines are compared as placeholders, and their screens get a looser pixel bound; everything else is exact.
+const WSE = new Set(['home', 'tab-city']);
+const wse = dom => dom.replace(/(act="sheet" v="decode"\n\s+div\.meta "Decode · week \d+"\n\s+h3 role=heading )"[^\n]*"/g, '$1"<this week’s Decode clue>"')
+  .replace(/(div\.k "DAILY DARE · FROM THE STARTER JAR · )\d+\/10"\n(\s+div\.q )"[^\n]*"/g, '$1<level>/10"\n$2"<today’s starter dare>"');
 module.exports = async function (t) {
   const browser = await BR.launch();
   try {
@@ -53,9 +59,10 @@ module.exports = async function (t) {
     const helper = await browser.newPage();
     for (let i = 0; i < v09.out.length; i++) {
       const a = v08.out[i], b = v09.out[i];
-      t.ok(`${b.name}: DOM identical to v0.8`, a.dom === b.dom, a.dom === b.dom ? '' : GD.lineDiff(a.dom, b.dom));
-      const r = await GD.pixelDiff(helper, a.img, b.img);
-      t.ok(`${b.name}: pixels match v0.8 (${(r * 100).toFixed(3)}% differ, tolerance 0.1%)`, r <= 0.001);
+      const da = WSE.has(b.name) ? wse(a.dom) : a.dom, db = WSE.has(b.name) ? wse(b.dom) : b.dom;
+      t.ok(`${b.name}: DOM identical to v0.8${WSE.has(b.name) ? ' (but the Decode clue and starter dare, WS-E)' : ''}`, da === db, da === db ? '' : GD.lineDiff(da, db));
+      const r = await GD.pixelDiff(helper, a.img, b.img), tol = WSE.has(b.name) ? 0.05 : 0.001;
+      t.ok(`${b.name}: pixels match v0.8 (${(r * 100).toFixed(3)}% differ, tolerance ${tol * 100}%${WSE.has(b.name) ? ', new text' : ''})`, r <= tol);
       const g = GD.matchDom(`ws0/${PROFILE.replace(/\s/g, '')}/${b.name}`, b.dom); t.ok(`${b.name}: DOM golden ${g.created ? 'written' : 'matches'}`, g.ok, g.diff);
       const p = await GD.matchPixels(helper, `ws0/${PROFILE.replace(/\s/g, '')}/${b.name}`, b.img); t.ok(`${b.name}: pixel golden ${p.created ? 'written' : 'matches (' + (p.ratio * 100).toFixed(3) + '%)'}`, p.ok);
     }

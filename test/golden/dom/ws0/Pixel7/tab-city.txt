@@ -38,7 +38,7 @@ main#app role=main
       button role=tab act="sseg" v="league" "League"
     button.card.ball role=button act="sheet" v="decode"
       div.meta "Decode · week 42"
-      h3 role=heading "Change one letter at a time: COLD → ? → ? → WARD → WARM. What’s the third word?"
+      h3 role=heading "Read every other letter, starting with the first: MYAPRFGBATZQHXI"
       div.meta "0 solved in Chennai · answer out in"
         span "6d 14h"
     canvas name="Map of drops near you"
