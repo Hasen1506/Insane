@@ -14,7 +14,9 @@
     "test:quick": "node test/run.js build unit pbt diff",
     "test:e2e": "node test/run.js e2e:local e2e:server",
     "golden:update": "GOLDEN_UPDATE=1 node test/run.js golden",
-    "start": "node server/server.js"
+    "start": "node --disable-warning=ExperimentalWarning server/server.js",
+    "backup": "node server/backup.js backup",
+    "restore": "node server/backup.js restore"
   },
   "devDependencies": {
     "playwright-core": "^1.64.1"

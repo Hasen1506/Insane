@@ -6,8 +6,8 @@
 // as served by server/server.js. WS-0 port: only the plumbing changed (paths, browser, external hosts,
 // server start) and v0.8's fixed waits are gone: a check that depends on something arriving (an SSE push,
 // the server's 20 s sweep) polls for it (E.until), and every tap waits for its act() to finish and draw.
-// The two 21 s sweep waits are now polls that end as soon as the sweep has run; POST /api/dev/tick
-// (PLAN-V09 §5.0, WS-I/J) would make them instant, but that is a server change, out of scope for WS-0.
+// The two 21 s sweep waits are gone: after moving the clock the test calls POST /api/dev/tick (PLAN-V09 §5.0,
+// WS-I), which runs the server's sweep at once, and the checks then poll only for the push to land.
 // Run: node test/e2e/legacy-server.js
 //   SERVER_PORT (default 8791). SERVER_URL=http://localhost:8099 attaches to a running DEV server instead,
 //   which must be fresh (empty DB) and started with OWNER_EMAIL=alice@example.com for the owner checks.
@@ -58,6 +58,8 @@ async function setClock(t) {
   await fetch(B + '/api/dev/clock', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ offset: t - Date.now() }) });
   for (const k in PEOPLE) { const p = PEOPLE[k].page; if (p && !p.isClosed()) await p.evaluate(off => { window.__clockOff = off; try { sessionStorage.setItem('__clockOff', String(off)); } catch (e) { } }, t - Date.now()).catch(() => { }); }
 }
+// Run the server's sweep now (Midnight release, drop reminders, clip expiry) instead of waiting up to 20 s for it.
+const tick = () => fetch(B + '/api/dev/tick', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' }).then(r => r.json());
 const at = (day, h, m = 0) => T0 + day * DAY + (h - 9) * HOUR + m * MIN; // h in UTC
 
 // ---- helpers that act like a person: tap, type, read the screen
@@ -386,8 +388,8 @@ async function circleCode(who) { return evalIn(who, () => S.circle && S.circle.c
   log('Yui', 'Checked in at Kenji’s record-bar offer. After it closed she ran the draw: it spun through the circles and landed on Koenji Six, with how to check it.');
 
   /* ===== Day 3, Thursday: the drop ===== */
-  await setClock(at(3, 16, 50)); // the server's sweep (every 20 s) sends "opens in 15 min": the check below polls for it
-  { await ok('15 minutes before, people within their distance get a notification', async () => (await evalIn('erin', () => S.priv.inbox?.items || [])).some(i => /Ler Devagar opens in 15 min/.test(i.title)), async () => JSON.stringify((await evalIn('erin', () => S.priv.inbox?.items || [])).slice(0, 2)), 45000);
+  await setClock(at(3, 16, 50)); await tick(); // the sweep sends "opens in 15 min"; the check below polls only for the push
+  { await ok('15 minutes before, people within their distance get a notification', async () => (await evalIn('erin', () => S.priv.inbox?.items || [])).some(i => /Ler Devagar opens in 15 min/.test(i.title)), async () => JSON.stringify((await evalIn('erin', () => S.priv.inbox?.items || [])).slice(0, 2)));
     const kinbox = await evalIn('kenji', () => S.priv.inbox?.items || []); ok('…and people in Tokyo don’t', !kinbox.some(i => /Ler Devagar/.test(i.title))); }
   await setClock(at(3, 17, 10));
   await tab('bob', 'city'); await tap('bob', '[data-act=sseg][data-v=map]'); await tap('bob', '.drop:has-text("Ler Devagar")');
@@ -432,10 +434,10 @@ async function circleCode(who) { return evalIn(who, () => S.circle && S.circle.c
   { const cid = await evalIn('alice', () => S.me.circle); const r = await api('alice', 'query', { col: `circles/${cid}/midnight` });
     ok('before midnight the server sends no text, and no author is stored', r.body.docs.length === 1 && r.body.docs[0].data.text === null && !('by' in r.body.docs[0].data));
     const s2 = await api('bob', 'query', { col: `circles/${cid}/sealed` }); ok('sealed text stays on the server until it opens', s2.body.docs[0].data.text === null && s2.body.docs[0].data.by); }
-  await setClock(at(5, 0, 5)); // the sweep releases Midnight within 20 s: the check below polls for it
-  { const cid = await evalIn('alice', () => S.me.circle); await ok('after midnight (Lisbon) the text is out', async () => { const r = await api('alice', 'query', { col: `circles/${cid}/midnight` }); return r.body.docs[0].data.text && r.body.docs[0].data.text.includes('boiler'); }, '', 45000); }
+  await setClock(at(5, 0, 5)); await tick(); // the sweep releases Midnight now
+  { const cid = await evalIn('alice', () => S.me.circle); await ok('after midnight (Lisbon) the text is out', async () => { const r = await api('alice', 'query', { col: `circles/${cid}/midnight` }); return r.body.docs[0].data.text && r.body.docs[0].data.text.includes('boiler'); }); }
   { const pl = async () => (await (await fetch(B + '/api/dev/pushlog')).json()).log; // the sweep that releases it sends the push: poll for it
-    await ok('Midnight goes out at 00:00, held for quiet hours (Alice’s are 23:00–08:00)', async () => (await pl()).some(l => l.title === 'Midnight' && l.held === 'quiet'), async () => JSON.stringify((await pl()).filter(l => l.title === 'Midnight').slice(0, 2)), 45000); }
+    await ok('Midnight goes out at 00:00, held for quiet hours (Alice’s are 23:00–08:00)', async () => (await pl()).some(l => l.title === 'Midnight' && l.held === 'quiet'), async () => JSON.stringify((await pl()).filter(l => l.title === 'Midnight').slice(0, 2))); }
   log('Bob', 'Wrote an unsigned Midnight message. Until midnight the server sent nobody its text, and it never stored who wrote it. At 00:00 it went out; the notification was held because everyone was in quiet hours.');
 
   /* ===== Day 5, Saturday: a trail and the Mission ===== */

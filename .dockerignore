@@ -1,0 +1,15 @@
+.git
+.v08
+node_modules
+test
+docs
+prototype
+src
+tools/livetest
+tools/ws0
+tools/build_geo.py
+server/*.db
+server/*.db-*
+server/backups
+server/test
+app/test
