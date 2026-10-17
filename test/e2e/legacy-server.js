@@ -253,7 +253,11 @@ async function circleCode(who) { return evalIn(who, () => S.circle && S.circle.c
   { const r = await api('bob', 'get', { path: `data/users/${(await evalIn('alice', () => S.uid))}/loc` });
     ok('privacy: Bob can’t read Alice’s exact pin, even asking the server directly', r.status === 403, r.status);
     const a = await api('bob', 'get', { path: 'people/' + (await evalIn('alice', () => S.uid)) });
-    ok('privacy: Alice’s public profile has a 1 km² square, no coordinates', a.body.doc.cell.s === 1 && !('lat' in a.body.doc) && !('loc' in a.body.doc));
+    // v0.9 (WS-C, C44): circle-mates get your square only once you opt in ("Show my square to my circle")
+    const aid = await evalIn('alice', () => S.uid);
+    const off = a.body.doc; await api('alice', 'update', { path: 'people/' + aid, data: { showSquare: true } });
+    const on = (await api('bob', 'get', { path: 'people/' + aid })).body.doc; await api('alice', 'update', { path: 'people/' + aid, data: { showSquare: false } });
+    ok('privacy: Alice’s public profile has a 1 km² square, no coordinates', !('cell' in off) && on.cell.s === 1 && !('lat' in on) && !('loc' in on) && !('lat' in off), JSON.stringify({ off: off.cell, on: on.cell }));
     const own = await api('alice', 'get', { path: `data/users/${(await evalIn('alice', () => S.uid))}/loc` });
     ok('privacy: Alice can read her own pin', own.status === 200 && Math.abs(own.body.doc.lat - 38.7139) < 1e-3);
     const b = await api('alice', 'get', { path: `data/users/${(await evalIn('bob', () => S.uid))}/loc` });

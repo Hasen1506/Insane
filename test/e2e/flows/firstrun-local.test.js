@@ -51,7 +51,7 @@ async function run(t, browser, srv, profile) {
   const prev = await p.locator('.hprev').innerText();
   t.ok(P('C19 the preview shows the handle, never the name'), prev.includes(h1) && !prev.includes('Meera'), prev);
   t.ok(P('C19 the handle is explained as public'), (await L.text(p)).includes('Strangers in the City see this, never your name'));
-  t.ok(P('C20 the name has a live counter'), (await p.locator('#ob-name-n').innerText()) === '19/24');
+  t.ok(P('C20 the name has a live counter'), (await p.locator('#ob-name-n').innerText()) === '19/40');
   await L.tap(p, '[data-act="ob-next"]');
 
   // C16 reload mid-onboarding: step and draft survive
