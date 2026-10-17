@@ -80,10 +80,14 @@ module.exports = async function (t) {
   const actNames = [...v08.slice(v08.indexOf('async function act(')).matchAll(/case '([^']+)':/g)].map(m => m[1]);
   const sheetFn = v08.slice(v08.indexOf('function sheetBody('), v08.indexOf('function sealOpts('));
   const sheetNames = [...sheetFn.matchAll(/case '([^']+)':/g)].map(m => m[1]);
+  // v0.9 workstreams add names; each lists its additions in test/diff/new-names/<ws>.json ({acts, sheets}),
+  // one file per workstream so parallel branches don't collide. Nothing else may appear or go missing.
+  const ND = require('path').join(__dirname, 'new-names'), added = { acts: [], sheets: [] };
+  for (const f of require('fs').existsSync(ND) ? require('fs').readdirSync(ND).filter(f => f.endsWith('.json')) : []) { const j = JSON.parse(require('fs').readFileSync(require('path').join(ND, f), 'utf8')); added.acts.push(...(j.acts || [])); added.sheets.push(...(j.sheets || [])); }
   for (const [n, a] of Object.entries(h.sides).slice(1)) {
     const acts = Object.keys(a.run('ACT')).sort(), sheets = Object.keys(a.run('SHEETS')).sort();
-    t.ok(`${n}: ACT registry has exactly v0.8's ${actNames.length} action names`, JSON.stringify(acts) === JSON.stringify([...actNames].sort()), acts.length);
-    t.ok(`${n}: SHEETS registry has exactly v0.8's ${sheetNames.length} sheets`, JSON.stringify(sheets) === JSON.stringify([...sheetNames].sort()), sheets.length);
+    t.ok(`${n}: ACT registry has v0.8's ${actNames.length} action names + ${added.acts.length} listed additions`, JSON.stringify(acts) === JSON.stringify([...actNames, ...added.acts].sort()), acts.filter(x => !actNames.includes(x) && !added.acts.includes(x)).concat(actNames.filter(x => !acts.includes(x)).map(x => '-' + x)).join(','));
+    t.ok(`${n}: SHEETS registry has v0.8's ${sheetNames.length} sheets + ${added.sheets.length} listed additions`, JSON.stringify(sheets) === JSON.stringify([...sheetNames, ...added.sheets].sort()), sheets.length);
   }
   // sheets render the same HTML for the same state (the switch → registry change, checked end to end)
   const bad = [];

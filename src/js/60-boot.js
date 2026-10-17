@@ -1,6 +1,6 @@
 /* ---------- boot ---------- */
 async function boot(){
-  draw();
+  routeBoot();draw();
   let db=null,user=null;
   try{if(window.claude&&typeof claude.use==='function'){[db,user]=await Promise.all([claude.use('db'),claude.use('user')]);[downloads,roomCap]=await Promise.all([claude.use('downloads').catch(()=>null),claude.use('room').catch(()=>null)])}}catch(e){}
   let uid=null;if(user){try{uid=await user.id()}catch(e){}}
@@ -10,9 +10,11 @@ async function boot(){
     try{const w=await user.can('data.write');if(w===false)S.ui.readonly=true}catch(e){}
     try{const m=await user.me();S.realName=m.name||''}catch(e){}
   }else{
-    const hello=await fetch('/api/hello',{credentials:'same-origin'}).then(r=>r.ok?r.json():null).catch(()=>null);
+    const hello=await fetch('/api/hello',{credentials:'same-origin'}).then(r=>r.ok?r.json():null).catch(()=>undefined);
+    // No network, but the service worker served the page: this is the server version, cold-started offline (C07).
+    if(hello===undefined&&typeof navigator!=='undefined'&&navigator.serviceWorker&&navigator.serviceWorker.controller){S.backend='server';S.mode='offline';render();return}
     if(hello&&hello.insane){
-      S.backend='server';S.hello=hello;MAPCFG.tiles=hello.tiles;MAPCFG.attr=hello.attr;
+      S.backend='server';S.hello=hello;MAPCFG.tiles=hello.tiles;MAPCFG.attr=hello.attr;railFor();swInit();
       if(!hello.signedIn){S.mode='signin';render();loadPlaces();return}
       S.mode='live';S.db=RemoteDB();S.uid=hello.uid;S.isOwner=hello.isOwner;S.email=hello.email;
     }else{S.mode='demo';S.backend='local';S.db=LocalDB();S.uid=localUid();S.isOwner=!/[?&]as=/.test(location.search)||/[?&]as=alice\b/.test(location.search)}

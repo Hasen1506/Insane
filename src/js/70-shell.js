@@ -13,14 +13,20 @@ function draw(){
   if(fid){const el=document.getElementById(fid);if(el&&el!==document.activeElement){el.focus({preventScroll:true});try{if(ss!=null)el.setSelectionRange(ss,se)}catch(e){}}}
   if(stick&&nearBottom&&$('.chat'))scrollTo(0,document.body.scrollHeight);stick=false;
   tick();
+  // C06: a new kind of screen (sign-in -> onboarding -> the app) starts at the top, not where the last one was scrolled.
+  const k=viewKind();if(k!==lastK){if(lastK)scrollTo(0,0);lastK=k}
+  routeSync();
 }
+let lastK='';
+function viewKind(){return S.mode==='offline'?'offline':S.mode==='signin'?'signin':(S.mode==='boot'||S.me===undefined)?'boot':S.me===null?'onboarding':!S.me.cell?'relocate':'app'}
 function view(){
-  if(S.mode==='signin')return signin();
+  if(S.mode==='offline')return offlineShell();
+  if(S.mode==='signin')return signin()+updateBar();
   if(S.mode==='boot'||S.me===undefined)return `<div class="boot"><span class="mark">INSANE</span><span class="pulse">Signing you in…</span></div>`;
   if(S.me===null)return onboarding();
   if(!S.me.cell)return relocate();
   const t=S.ui.tab;
-  return header()+`<div id="v">${t==='today'?vToday():t==='circle'?vCircle():t==='city'?vCity():t==='ledger'?vLedger():vYou()}</div>`+nav();
+  return header()+`<div id="v">${t==='today'?vToday():t==='circle'?vCircle():t==='city'?vCity():t==='ledger'?vLedger():vYou()}</div>`+nav()+updateBar();
 }
 function relocate(){return `<div style="padding-top:18px"><span class="mark">INSANE</span><h1 class="v">Set your place again</h1><p class="lede">INSANE now works anywhere on Earth, down to the street. Pick your spot, how exact to be, and how far you’d go for a drop.</p>${picker('home')}<div class="btns"><button class="btn wide" data-act="loc-save" ${lpState('home').lat==null?'disabled':''}>Save my place</button></div></div>`}
 function signin(){
@@ -37,7 +43,7 @@ function header(){
   const where=`${esc(c?c.name:'No circle yet')}<br>${esc(me.cityName||'')} · ${esc(cellText(me.cell))}`;
   return `<header class="top"><span class="mark">INSANE</span><button class="bell" data-act="sheet" data-v="activity" aria-label="What’s new${n?': '+n:''}">${ICON.bell}${n&&!calmNow()?`<span class="cnt">${n>9?'9+':n}</span>`:''}</button><span class="where"><span class="live ${S.mode==='demo'?'demo':''}" aria-hidden="true"></span>${where}</span><button class="me-btn ${S.ui.tab==='you'?'on':''}" data-act="tab" data-v="you" aria-label="You: profile, journeys, settings">${esc(initials(me.name))}</button></header>`+
    (S.mode==='demo'?`<div class="banner"><b>Demo on this device.</b> Nothing leaves this browser. Open the shared link signed in to play with other people.</div>`:'')+
-   (S.offline?`<div class="banner"><b>Reconnecting…</b> Changes will show when you’re back online.</div>`:'')+
+   offlineBanner()+a2hsCard()+
    (S.ui.readonly?`<div class="banner"><b>Look-only access.</b> To post, check in or join a circle, ask the owner to invite you by email as an Editor.</div>`:'');
 }
 const ICON={
@@ -62,3 +68,12 @@ function badges(){if(calmNow())return {};const seen=S.priv.seen||{};const midNew
   const u=S.uid;const led=S.favors.some(f=>(f.status==='done'&&f.asker===u)||(f.status==='claimed'&&f.doer===u))||pots().some(p=>!p.closed&&(potState(p,u)==='to pay'||(p.by===u&&Object.values(p.paid||{}).includes('wait'))));
   return {circle:unreadThreads().length>0||midNew,city:S.posts.some(p=>p.at>(seen.feed||0)&&p.by!==S.uid)&&S.ui.tab!=='city',ledger:led&&S.ui.tab!=='ledger'}}
 
+
+// The rail beside the app on wide screens (C107). Its build notes are about the claude.ai artifact, so they
+// stay only there (and in the local demo, which is that same file opened on its own). The server version
+// shows a short About panel on its development server and no rail in production.
+function railFor(){
+  const r=$('.rail');if(!r||S.backend==='claude'||S.backend==='local')return;
+  if(!(S.hello&&S.hello.dev)){r.remove();document.documentElement.classList.add('norail');return}
+  r.innerHTML=`<h2>INSANE <span style="font-family:var(--f-mono);font-size:12px;color:var(--muted)">v0.9</span></h2><p>Plans, favors, pacts and dares for the few people you actually see.</p><h3>About</h3><p>Start a circle, or join one with a code or an invite link. Whatever needs you shows first on Home.</p><h3>Help</h3><p>Questions or something wrong? Ask whoever invited you, or the person who runs this server.</p><p class="meta">Development server: sign-in codes are printed in the server log.</p>`;
+}
