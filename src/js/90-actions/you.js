@@ -7,16 +7,26 @@ ACT["loc-save"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
   {const st=lpState('home');if(st.lat==null)return;if(await W(()=>saveHome(st),'Saved. Welcome back.')){S.ui.loc=null;wire2();render()}return}
 };
 ACT["lp-pick"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
-  {const st=lpState(d.k);lpSet(st,d.lat,d.lon,'search',d.label,+d.z||13);return}
+  {const st=lpState(d.k);lpSet(st,d.lat,d.lon,d.src||'search',d.label,+d.z||13);return}
 };
 ACT["lp-gps"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
   gps(lpState(d.k));return;
 };
+/* v0.8 had a "Paste a maps link" button; the search box takes links and coordinates now (C65). These stay for old callers. */
 ACT["lp-paste"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
-  {const st=lpState(d.k);st.pasting=!st.pasting;render();setTimeout(()=>{const i=$('#lp-p-'+d.k);if(i)i.focus()},50);return}
+  {const i=$('#lp-q-'+d.k);if(i)i.focus();return}
 };
 ACT["lp-use"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
-  {const st=lpState(d.k);const ll=parseLL(st.paste);if(!ll){st.err='No coordinates in that. Paste a full maps link (not a short goo.gl one) or numbers like 38.7139, -9.1394.';render();return}st.pasting=false;st.paste='';lpSet(st,ll[0],ll[1],'link','from your link',15);return}
+  {const st=lpState(d.k);const ll=parseLL(st.paste||st.q);if(!ll){st.err='No coordinates in that. Paste a full maps link (not a short goo.gl one) or numbers like 13.0827, 80.2707.';render();return}st.paste='';lpSet(st,ll[0],ll[1],'link','',15);return}
+};
+ACT["lp-view"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+  {const st=lpState(d.k||'home');st.view=d.v==='others'?'others':'you';render();return}
+};
+ACT["lp-more"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+  {const st=lpState(d.k);st.more=true;render();return}
+};
+ACT["lp-world"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+  {await loadPlaces();render();return}
 };
 ACT["lp-prec"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
   {const st=lpState('home');st.prec=d.v;render();return}

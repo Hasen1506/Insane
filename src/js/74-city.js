@@ -1,7 +1,7 @@
 /* ---------- City ---------- */
 function vCity(){
   const seg=S.ui.sseg;
-  let out=`<h1 class="v">${esc(S.me.cityName)}</h1><p class="lede">Drops within ${S.me.radius||5} km, Missions, trails, the Decode, the feed, and calls from other circles.</p>
+  let out=`<h1 class="v">${esc(S.me.cityName)}</h1><p class="meta" style="margin-top:2px">Drops, Missions and trails within ${S.me.radius||5} km · the feed · calls · league</p>
   <div class="seg" role="tablist">${[['map','Map'],['feed','Feed'],['calls','Calls'],['league','League']].map(([k,n])=>`<button role="tab" data-act="sseg" data-v="${k}" class="${seg===k?'on':''}" aria-selected="${seg===k}">${n}</button>`).join('')}</div>`;
   if(seg==='map')out+=cityMap();else if(seg==='feed')out+=cityFeed();else if(seg==='calls')out+=cityCalls()+callsExtra();else out+=cityLeague();
   return out;
@@ -14,35 +14,47 @@ function decodeCard(compact){
   if(compact)return `<button class="card ball" style="text-align:left;width:100%" data-act="sheet" data-v="decode"><div class="meta" style="color:var(--ball)">Decode · week ${weekNum()}</div><h3>${esc(cl.q)}</h3>${info}${status?`<p style="font-size:14px">${status}</p>`:''}</button>`;
   return {st,cl,mine,status,info};
 }
+/* ---------- City, map first (C43, C44): the map at the top, List / Map toggle, distance chips, clusters ---------- */
+// The distance filter: any of the chips up to your own radius (your radius is the ceiling: P11).
+const cityR=()=>{const R=S.me.radius||5;const v=S.ui.cityR;return v&&v<=R?v:R};
+const cityView=()=>S.ui.cityView||(()=>{try{return localStorage.getItem('insane.cityView')||'map'}catch(e){return 'map'}})();
+function cityDrops(){const r=cityR(),t=now();return nearDrops().filter(d=>d._km<=r&&d.end>t-6*HOUR).sort((a,b)=>a._km-b._km||a.start-b.start)}
 function cityMap(){
-  const t=now(),R=S.me.radius||5;const near=nearDrops().filter(d=>d.end>t-6*HOUR).sort((a,b)=>a.start-b.start);
+  const t=now(),R=S.me.radius||5,r=cityR(),view=cityView();const near=cityDrops();
   const further=S.drops.filter(d=>d.end>t&&isFinite(d.lat)&&!near.includes(d)).length;
-  return `<div style="margin-top:12px">${decodeCard(true)}</div>
-   <div class="mapslot tall" data-map="city"></div><div class="legendrow"><span><i style="background:var(--stamp)"></i>You</span><span><i style="background:var(--ink)"></i>Drops</span><span><i style="background:var(--good)"></i>Missions</span><span><i style="background:var(--ball)"></i>Trails · circle</span></div><p class="meta" style="margin:4px 2px 0">Dashed ring: ${R} km. Tap a stamp to open it. <button class="link" data-act="sheet" data-v="profile">Change distance</button></p>
+  const chips=RADII.filter(x=>x<=R);if(!chips.includes(R))chips.push(R);
+  const ms=S.missions.filter(m=>m.when>t-2*DAY).sort((a,b)=>a.when-b.when),ts=S.trails.filter(x=>x.end>t-DAY).sort((a,b)=>a.start-b.start);
+  return `<div class="citybar"><div class="ctog" role="group" aria-label="Show as"><button data-act="city-view" data-v="map" class="${view==='map'?'on':''}" aria-pressed="${view==='map'}">Map</button><button data-act="city-view" data-v="list" class="${view==='list'?'on':''}" aria-pressed="${view==='list'}">List</button></div>
+   <div class="chips mapchips" role="group" aria-label="How far">${chips.map(x=>`<button class="chip ${x===r?'on':''}" data-act="city-r" data-v="${x}" aria-pressed="${x===r}">${x} km</button>`).join('')}</div></div>
+   ${view==='map'?`<div class="mapslot city" data-map="city"></div><div class="maplegend"><span><i class="sq"></i>Your square</span><span><i style="background:var(--paper)"></i>Drop</span><span><i style="background:rgba(31,122,77,.3);border-color:var(--good)"></i>Mission area</span><span><i style="background:var(--ball);border-color:var(--ball)"></i>Trail</span></div>`:''}
    <div class="eyebrow">Drops near you<button data-act="sheet" data-v="host">+ Host a drop</button></div>
-   <div class="stack">${near.length?near.map(dropRow).join(''):`<div class="card dash"><p class="meta">No drops within ${R} km yet. Shops, stalls, clubs and circles can host one: a swap box, a counter dare, an offer for whoever turns up, or a two-key that only opens when two circles arrive together.</p></div>`}</div>
-   ${further?`<p class="meta" style="margin-top:8px">${further} more drop${further>1?'s':''} within ${G} km, further than your ${R} km. <button class="link" data-act="sheet" data-v="profile">Widen it</button></p>`:''}
+   <div class="stack">${near.length?near.map(dropRow).join(''):`<div class="card dash"><p class="meta">No drops within ${r} km yet. Shops, stalls, clubs and circles can host one: a swap box, a counter dare, an offer for whoever turns up, or a two-key that only opens when two circles arrive together.</p></div>`}</div>
+   ${further?`<p class="meta" style="margin-top:8px">${further} more drop${further>1?'s':''} within ${G} km, further than ${r} km. ${r<R?`<button class="link" data-act="city-r" data-v="${R}">Show up to ${R} km</button>`:`<button class="link" data-act="sheet" data-v="profile">Widen it</button>`}</p>`:''}
    <div class="eyebrow">Missions<button data-act="sheet" data-v="propose">+ Propose</button></div>
-   <div class="stack">${(()=>{const ms=S.missions.filter(m=>m.when>t-2*DAY).sort((a,b)=>a.when-b.when);return ms.length?ms.map(missionCard).join(''):'<div class="card dash"><p class="meta">No Missions in '+esc(S.me.cityName)+' yet. A Mission is a harmless bit of public theatre: forty people freezing mid-step in a square for a minute. A circle that has met in person proposes one; three other circles confirm it.</p></div>'})()}</div>
+   <div class="stack">${ms.length?ms.map(missionCard).join(''):'<div class="card dash"><p class="meta">No Missions in '+esc(S.me.cityName)+' yet. A Mission is a harmless bit of public theatre: forty people freezing mid-step in a square for a minute. A circle that has met in person proposes one; three other circles confirm it.</p></div>'}</div>
    <div class="eyebrow">Trails<button data-act="sheet" data-v="trail-new">+ Make a trail</button></div>
-   <div class="stack">${(()=>{const ts=S.trails.filter(x=>x.end>t-DAY).sort((a,b)=>a.start-b.start);return ts.length?ts.map(trailRow).join(''):'<div class="card dash"><p class="meta">No trails yet. A trail is 3 to 6 stops your circle likes, walked in any order inside a window, with a 10-second dare at each.</p></div>'})()}</div>
-   <p class="formula">The map never shows people, only squares. Missions show an area until two hours before.</p>`;
+   <div class="stack">${ts.length?ts.map(trailRow).join(''):'<div class="card dash"><p class="meta">No trails yet. A trail is 3 to 6 stops your circle likes, walked in any order inside a window, with a 10-second dare at each.</p></div>'}</div>
+   <div style="margin-top:14px">${decodeCard(true)}</div>
+   <p class="formula">The map never shows people, only your own square. Missions show an area until two hours before.</p>`;
 }
-MAPSPEC.city=()=>{const ref=myRef();if(!ref)return null;const R=S.me.radius||5;return {home:ref,zoom:fitZoom(ref[0],R),follow:true,v:S.me.cell.id+'|'+R,label:'Map of drops near you',
-  items:()=>{const it=[{type:'radius',ll:ref,km:R},{type:'cell',b:S.me.cell.b,style:'me'}];
-    for(const m of S.members)if(m.id!==S.uid&&m.cell)it.push({type:'dot',ll:[m.cell.lat,m.cell.lon],label:m.name,color:hereNow().includes(m.id)?'var(--good)':undefined});
-    for(const d of nearDrops())if(d.end>now()-6*HOUR)it.push({type:'stamp',ll:[d.lat,d.lon],text:DK[d.kind]?.s||'?',hot:dropPhase(d)==='open',pick:true,drop:d.id});
-    for(const m of S.missions)if(m.area&&m.when>now()-2*HOUR){it.push({type:'area',ll:[m.area.lat,m.area.lon],km:.35});it.push({type:'stamp',ll:[m.area.lat,m.area.lon],text:'MSN',pick:true,ms:m.id})}
-    for(const tr of S.trails)if(tr.end>now()&&(tr.stops||[]).length){it.push({type:'line',pts:tr.stops.map(x=>[x.lat,x.lon])});it.push({type:'stamp',ll:[tr.stops[0].lat,tr.stops[0].lon],text:'TRL',pick:true,tr:tr.id,hot:now()>=tr.start})}
+// What the City map draws. Never people (C44): no member is plotted, not even as a square; your own place is your
+// square (or, if you chose Exact, your pin, which only this phone has).
+function myMapMark(){const me=S.me;const l=S.priv.loc;if(me.prec==='exact'&&l&&isFinite(l.lat))return {type:'pin',ll:[l.lat,l.lon]};return me.cell?{type:'cell',b:me.cell.b,style:'me'}:null}
+MAPSPEC.city=()=>{const ref=myRef();if(!ref)return null;const r=cityR();return {home:ref,zoom:fitZoom(ref[0],r),follow:true,coop:true,v:S.me.cell.id+'|'+r,label:`Map of drops, Missions and trails within ${r} km. Your square is in the middle.`,
+  items:()=>{const it=[{type:'radius',ll:ref,km:r}];const mk=myMapMark();if(mk)it.push(mk);
+    for(const d of cityDrops())it.push({type:'stamp',ll:[d.lat,d.lon],text:DK[d.kind]?.s||'?',hot:dropPhase(d)==='open',pick:true,cluster:true,drop:d.id});
+    for(const m of S.missions)if(m.area&&m.when>now()-2*HOUR){const pin=m.pin&&isFinite(m.pin.lat)&&msSpot(m)?m.pin:null;if(pin)it.push({type:'stamp',ll:[pin.lat,pin.lon],text:'MSN',pick:true,cluster:true,ms:m.id});else{it.push({type:'area',ll:[m.area.lat,m.area.lon],km:.35});it.push({type:'stamp',ll:[m.area.lat,m.area.lon],text:'MSN',pick:true,cluster:true,ms:m.id})}}
+    for(const tr of S.trails)if(tr.end>now()&&(tr.stops||[]).length){it.push({type:'line',pts:tr.stops.map(x=>[x.lat,x.lon])});it.push({type:'stamp',ll:[tr.stops[0].lat,tr.stops[0].lon],text:'TRL',pick:true,cluster:true,tr:tr.id,hot:now()>=tr.start})}
     return it},
   onPick:it=>{if(it.drop)openSheet('drop',{id:it.drop});else if(it.ms)openSheet('mission',{id:it.ms});else if(it.tr)openSheet('trail',{id:it.tr})}}};
-MAPSPEC.mission=()=>{const m=S.missions.find(x=>x.id===(S.ui.sheet&&S.ui.sheet.id));if(!m||!m.area)return null;const ref=myRef();return {home:[m.area.lat,m.area.lon],zoom:15,follow:true,v:m.id,label:'Mission area',items:()=>[{type:'area',ll:[m.area.lat,m.area.lon],km:.35},ref?{type:'dot',ll:ref,label:'You'}:null].filter(Boolean)}};
+// Missions: a 350 m circle nudged off the spot until T-2h; then, for people who said yes, the exact pin (the server strips it for everyone else).
+MAPSPEC.mission=()=>{const m=S.missions.find(x=>x.id===(S.ui.sheet&&S.ui.sheet.id));if(!m||!m.area)return null;const pin=m.pin&&isFinite(m.pin.lat)&&msSpot(m)?m.pin:null;const c=pin?[pin.lat,pin.lon]:[m.area.lat,m.area.lon];
+  return {home:c,zoom:15,follow:true,v:m.id+(pin?'p':''),label:pin?'Mission: the exact spot':'Mission area, 350 m across',items:()=>[pin?{type:'pin',ll:c}:{type:'area',ll:c,km:.35},myMapMark()].filter(Boolean)}};
+// Trails: numbered stops on a dashed path; a stop you stamped is filled.
 MAPSPEC.trail=()=>{const tr=S.trails.find(x=>x.id===(S.ui.sheet&&S.ui.sheet.id));if(!tr||!(tr.stops||[]).length)return null;const pts=tr.stops.map(x=>[x.lat,x.lon]);const c=[pts.reduce((a,p)=>a+p[0],0)/pts.length,pts.reduce((a,p)=>a+p[1],0)/pts.length];const span=Math.max(.3,...pts.map(p=>distKm(c,p)));
   return {home:c,zoom:fitZoom(c[0],span*2.2),follow:true,v:tr.id,label:'Trail map',items:()=>[{type:'line',pts},...tr.stops.map((x,i)=>({type:'stamp',ll:[x.lat,x.lon],text:String(i+1),hot:!!(myStamp(tr)?.stops||{})[i]}))]}};
-MAPSPEC.drop=()=>{const d=S.drops.find(x=>x.id===(S.ui.sheet&&S.ui.sheet.id));if(!d||!isFinite(d.lat))return null;const ref=myRef();return {home:[d.lat,d.lon],zoom:15,follow:true,v:d.id,label:'Where the drop is',
-  items:()=>[ref?{type:'dot',ll:ref,label:'You'}:null,{type:'pin',ll:[d.lat,d.lon]}].filter(Boolean)}};
-// Zoom so a ring of r km is about 140 px across the middle of the map.
-const fitZoom=(lat,r)=>Math.max(3,Math.min(16,Math.log2(156543.03*Math.cos(rad(lat))/(r*1000/140))));
+MAPSPEC.drop=()=>{const d=S.drops.find(x=>x.id===(S.ui.sheet&&S.ui.sheet.id));if(!d||!isFinite(d.lat))return null;return {home:[d.lat,d.lon],zoom:15,follow:true,v:d.id,label:'Where the drop is',
+  items:()=>[myMapMark(),{type:'pin',ll:[d.lat,d.lon]}].filter(Boolean)}};
 function nearDrops(){const ref=myRef();if(!ref)return [];const R=S.me.radius||5;return S.drops.filter(d=>isFinite(d.lat)).map(d=>Object.assign(d,{_km:distKm(ref,[d.lat,d.lon])})).filter(d=>d._km<=R)}
 function dropRow(d){const ph=dropPhase(d);const k=DK[d.kind]||DK.offer;const km=d._km!=null?d._km:myRef()&&isFinite(d.lat)?distKm(myRef(),[d.lat,d.lon]):null;
   const w=ph==='soon'?`${when(d.start)} · opens in <span data-until="${d.start}">${left(d.start-now())}</span>`:ph==='open'?`Open now · <span data-until="${d.end}">${left(d.end-now())}</span> left`:'Over · '+when(d.end);
@@ -86,7 +98,7 @@ function missionCard(m){const t=now(),mine=m.cid===S.me.circle,live=msLive(m),in
   const past=m.when<t;const myV=(m.verdict||{})[S.uid];
   return `<div class="card" style="border-color:var(--good)"><div class="km"><span class="kind m">${mine?'Your circle’s Mission':'Proposed by '+esc(m.cname)} · ${esc(when(m.when))}</span><span class="meta">${ni} in</span></div>
   <p><b>${esc(m.title)}.</b> ${esc(m.desc)}</p>
-  <div class="trust"><span>${esc(m.cname)}: hosted ${rec.hosted}, flagged ${rec.bad}</span><span>3 Reliability staked</span><span>${live?'live: '+nc_+' circles confirmed':nc_+' of 3 circles confirmed'}</span><span>${msSpot(m)?'spot: '+esc(msSpot(m)):'area only until 2 h before'}</span></div>
+  <div class="trust"><span>${esc(m.cname)}: hosted ${rec.hosted}, flagged ${rec.bad}</span><span>3 Reliability staked</span><span>${live?'live: '+nc_+' circles confirmed':nc_+' of 3 circles confirmed'}</span>${msSpot(m)?'<span>spot: '+esc(msSpot(m))+'</span>':m.when-2*HOUR>t?`<span class="cdchip">${in_?'spot revealed in':'spot goes to yes-sayers in'} <span data-until="${m.when-2*HOUR}">${left(m.when-2*HOUR-t)}</span></span>`:'<span>area only</span>'}</div>
   ${in_&&msRole(m)?`<div class="brief"><small>YOUR BRIEFING · ONLY YOU SEE THIS ONE</small>${esc(msRole(m))}</div>`:''}
   <div class="btns">${past?(in_&&myV===undefined?`<span class="meta" style="align-self:center">Did it happen as described?</span><button class="btn s" data-act="ms-verdict" data-v="${m.id}" data-x="y">Yes</button><button class="btn s ghost" data-act="ms-verdict" data-v="${m.id}" data-x="n">No</button>`:`<span class="meta">${myV===undefined?'Over.':'You said '+(myV?'it happened.':'it didn’t.')}</span>`)
     :`${!mine&&verified()&&!(m.confirms||{})[S.me.circle]&&S.me.circle?`<button class="btn s" data-act="ms-confirm" data-v="${m.id}">Confirm for ${esc(S.circle?.name||'us')}</button>`:''}${in_?`<button class="btn s ghost" data-act="ms-out" data-v="${m.id}">Can’t make it</button>`:`<button class="btn s ${live?'':'ghost'}" data-act="ms-in" data-v="${m.id}">I’m in</button>`}<button class="btn s ghost" data-act="sheet" data-v="mission" data-id="${m.id}">Map</button>`}</div></div>`}

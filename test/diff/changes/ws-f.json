@@ -1,0 +1,21 @@
+{
+  "_": "WS-F (map and location): registry names added on purpose, and sheets whose HTML changed on purpose.",
+  "newActions": {
+    "lp-view": "C66 picker: You see / Others see preview",
+    "lp-more": "C67 picker: show the collapsed street hits",
+    "lp-world": "C81 picker (local mode): search every country, loads the whole-world list on demand",
+    "city-view": "C43 City: List / Map toggle",
+    "city-r": "C43 City: distance chips",
+    "ms-step": "C51 Mission wizard: What / Where / When",
+    "tr-step": "C51 trail wizard: What / Where / When"
+  },
+  "newSheets": {},
+  "changedSheets": {
+    "host": "C65-C67 the shared picker (one Use my location, grouped search)",
+    "propose": "C51 3-step wizard + the shared picker",
+    "trail-new": "C51 3-step wizard + the shared picker",
+    "trail": "trail stamping within 60 m, said plainly",
+    "mission": "Mission map: area until T-2h, then the pin for yes-sayers",
+    "profile": "C64-C66 the shared picker in Edit profile"
+  }
+}

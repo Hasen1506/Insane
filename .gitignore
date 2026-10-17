@@ -6,3 +6,5 @@ app/test/shots/
 node_modules/
 test/out/
 .v08/
+app/data/basemap.pmtiles
+/node_modules

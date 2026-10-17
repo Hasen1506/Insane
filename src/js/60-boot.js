@@ -12,13 +12,13 @@ async function boot(){
   }else{
     const hello=await fetch('/api/hello',{credentials:'same-origin'}).then(r=>r.ok?r.json():null).catch(()=>null);
     if(hello&&hello.insane){
-      S.backend='server';S.hello=hello;MAPCFG.tiles=hello.tiles;MAPCFG.attr=hello.attr;
-      if(!hello.signedIn){S.mode='signin';render();loadPlaces();return}
+      S.backend='server';S.hello=hello;setTiles(hello);
+      if(!hello.signedIn){S.mode='signin';render();placesBoot();return}
       S.mode='live';S.db=RemoteDB();S.uid=hello.uid;S.isOwner=hello.isOwner;S.email=hello.email;
     }else{S.mode='demo';S.backend='local';S.db=LocalDB();S.uid=localUid();S.isOwner=!/[?&]as=/.test(location.search)||/[?&]as=alice\b/.test(location.search)}
   }
   const hm=/^#([mc])([A-Za-z0-9]{6})$/.exec(location.hash);if(hm){S.deep={kind:hm[1],code:hm[2].toUpperCase()};try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}}
-  wire();render();loadPlaces();checkPush();
+  wire();render();placesBoot();checkPush();
 }
 async function signOut(){try{await fetch('/api/auth/logout',{method:'POST',credentials:'same-origin'})}catch(e){}location.reload()}
 // What a QR code or shared link opens: this app, with a meeting or invite code after the #.

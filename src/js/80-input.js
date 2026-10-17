@@ -15,7 +15,7 @@ document.addEventListener('input',e=>{
   if(el.dataset.f){F[el.dataset.f]=el.type==='checkbox'?el.checked:el.value;if(el.dataset.read==='sheet'){const b=document.getElementById('read-sheet');if(b)b.innerHTML=readCard(readUrge(F.jlane||'need',el.value))}return}
   if(el.dataset.rung!=null)F['rung'+el.dataset.rung]=el.value;
   if(el.dataset.si){S.ui.si[el.dataset.si]=el.value;return}
-  if(el.dataset.lp){const st=lpState(el.dataset.lp);st[el.dataset.lpf]=el.value;if(el.dataset.lpf==='q'){if(!GEO.places)loadPlaces();remoteSearch(st);render()}return}
+  if(el.dataset.lp){const st=lpState(el.dataset.lp);st[el.dataset.lpf]=el.value;if(el.dataset.lpf==='q'){if(S.backend!=='server'&&!GEO.places&&!GEO.ixLoading)placesBoot();remoteSearch(st);render()}return}
 });
 document.addEventListener('change',e=>{const el=e.target;
   if(el.dataset.clip&&el.files&&el.files[0]){shrinkPhoto(el.files[0]).then(u=>{F.clipImg=u;render()}).catch(()=>toast('That file isn’t a photo INSANE can read.'));return}
@@ -31,6 +31,6 @@ document.addEventListener('click',e=>{
 addEventListener('hashchange',()=>{const hm=/^#([mc])([A-Za-z0-9]{6})$/.exec(location.hash);if(!hm)return;S.deep={kind:hm[1],code:hm[2].toUpperCase()};try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}if(S.me)handleDeep();else render()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&S.ui.sheet){S.ui.sheet=null;wire2();render()}if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('potbtn')){e.preventDefault();e.target.click()}});
 
-function openSheet(t,extra){S.ui.sheet=Object.assign({t},extra||{});if(t==='decode')mark('decodeOpen');if(t==='activity')setTimeout(()=>setSeen('act'),1200);if(t==='host'||t==='propose'||t==='trail-new')S.ui.dloc=null;if(t==='profile')S.ui.loc=null;if(t==='fvdone')F.fvh2=null;if(t==='proof'){F.clipImg='';F.prnote=''}if(t==='clip'){const c=S.clips.find(x=>x.id===extra?.id);if(c&&c.by!==S.uid&&!(c.seen||{})[S.uid])S.db.doc(`circles/${S.me.circle}/clips/${c.id}`).update({seen:{[S.uid]:true}}).catch(()=>{})}wire2();render();setTimeout(()=>{const i=$('.sheet input:not([type=checkbox]):not([type=file]),.sheet textarea');if(i&&!/drop|meet|decode|activity|host|make|invite|clip|mission|trail|propose|proof/.test(t))i.focus()},60)}
+function openSheet(t,extra){S.ui.sheet=Object.assign({t},extra||{});if(t==='decode')mark('decodeOpen');if(t==='activity')setTimeout(()=>setSeen('act'),1200);if(t==='host'||t==='propose'||t==='trail-new')S.ui.dloc=null;if(t==='propose')F.msStep=1;if(t==='trail-new')F.trStep=1;if(t==='profile')S.ui.loc=null;if(t==='fvdone')F.fvh2=null;if(t==='proof'){F.clipImg='';F.prnote=''}if(t==='clip'){const c=S.clips.find(x=>x.id===extra?.id);if(c&&c.by!==S.uid&&!(c.seen||{})[S.uid])S.db.doc(`circles/${S.me.circle}/clips/${c.id}`).update({seen:{[S.uid]:true}}).catch(()=>{})}wire2();render();setTimeout(()=>{const i=$('.sheet input:not([type=checkbox]):not([type=file]),.sheet textarea');if(i&&!/drop|meet|decode|activity|host|make|invite|clip|mission|trail|propose|proof/.test(t))i.focus()},60)}
 function closeSheet(){S.ui.sheet=null;wire2();render()}
 

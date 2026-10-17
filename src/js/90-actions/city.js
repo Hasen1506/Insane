@@ -25,6 +25,20 @@ ACT["answer"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
   {const c=S.calls.find(x=>x.id===d.v);if(c.answered){toast('Someone got there first.');return}const rref=db.collection('rooms').doc();
     if(await W(async()=>{await rref.set({circles:[c.circle,me.circle],names:{[c.circle]:c.cname,[me.circle]:S.circle?.name||''},title:c.ask.slice(0,40),ask:c.ask,at:now(),closesAt:now()+3*DAY,callId:c.id});await db.doc('calls/'+c.id).update({answered:{circle:me.circle,name:S.circle?.name||''},answeredAt:now(),room:rref.id})},'Room open with '+c.cname+' for 3 days.')){logMine('Answered '+c.cname+'’s call');S.ui.tab='circle';S.ui.open={type:'room',id:rref.id};wire2();render()}return}
 };
+/* City map (WS-F): List / Map, and the distance filter */
+ACT["city-view"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+  {const v=d.v==='list'?'list':'map';S.ui.cityView=v;try{localStorage.setItem('insane.cityView',v)}catch(e){}render();return}
+};
+ACT["city-r"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+  {S.ui.cityR=+d.v||null;render();return}
+};
+/* the Mission and trail wizards (C51) */
+ACT["ms-step"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+  {const n=+d.v,cur=F.msStep||1;if(n>cur){if(cur===1&&(!(F.mstitle||'').trim()||!(F.msdesc||'').trim())){toast('Name it and say what happens.');return}if(cur===2&&lpState('drop').lat==null){toast('Put the area on the map.');return}}F.msStep=n;render();return}
+};
+ACT["tr-step"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+  {const n=+d.v,cur=F.trStep||1;if(n>cur){if(cur===1&&!(F.trtitle||'').trim()){toast('Name the trail.');return}if(cur===2&&(F.trstops||[]).length<3){toast('Add at least 3 stops.');return}}F.trStep=n;render();return}
+};
 /* Missions */
 ACT["ms-create"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
   {if(!verified()){toast('Only circles that have met in person can propose.');return}const title=(F.mstitle||'').trim(),desc=(F.msdesc||'').trim();const loc=lpState('drop');if(!title||!desc){toast('Name it and say what happens.');return}if(loc.lat==null){toast('Put the area on the map.');return}
@@ -32,7 +46,7 @@ ACT["ms-create"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
     const roles=(F.msroles||'').split('\n').map(x=>x.trim()).filter(Boolean).slice(0,12).map(x=>x.slice(0,120));
     const r_=crypto.getRandomValues(new Uint32Array(2));const ang=r_[0]/2**32*2*Math.PI,off=.05+r_[1]/2**32*.12;const area={lat:+(loc.lat+off*Math.cos(ang)/KM_LAT).toFixed(4),lon:+(loc.lon+off*Math.sin(ang)/(KM_LAT*Math.cos(rad(loc.lat)))).toFixed(4)};
     const ref=db.collection('missions').doc();
-    if(await W(()=>ref.set({city:me.city,cid:me.circle,cname:S.circle?.name||'',by:uid,title:title.slice(0,40),desc:desc.slice(0,240),roles,spot:(F.msspot||'').trim().slice(0,80),area,when:w,at:now(),confirms:{},ins:{[uid]:{circle:me.circle,cname:S.circle?.name||''}},verdict:{}}),'Sent to '+me.cityName+'. It goes live when three other circles confirm.')){Object.assign(F,{mstitle:'',msdesc:'',msroles:'',msspot:''});S.ui.dloc=null;S.ui.sheet={t:'mission',id:ref.id};wire2();render();logMine('Proposed a Mission: '+title)}return}
+    if(await W(()=>ref.set({city:me.city,cid:me.circle,cname:S.circle?.name||'',by:uid,title:title.slice(0,40),desc:desc.slice(0,240),roles,spot:(F.msspot||'').trim().slice(0,80),area,...(S.backend==='server'?{pin:{lat:+loc.lat.toFixed(5),lon:+loc.lon.toFixed(5)}}:{}),when:w,at:now(),confirms:{},ins:{[uid]:{circle:me.circle,cname:S.circle?.name||''}},verdict:{}}),'Sent to '+me.cityName+'. It goes live when three other circles confirm.')){Object.assign(F,{mstitle:'',msdesc:'',msroles:'',msspot:'',msStep:1});S.ui.dloc=null;S.ui.sheet={t:'mission',id:ref.id};wire2();render();logMine('Proposed a Mission: '+title)}return}
 };
 ACT["ms-confirm"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
   {const m=S.missions.find(x=>x.id===d.v);if(await W(()=>db.doc('missions/'+m.id).update({confirms:{[me.circle]:S.circle?.name||''}}))){const n=Object.keys(Object.assign({},m.confirms,{[me.circle]:1})).filter(c=>c!==m.cid).length;if(n===3)celebrate('LIVE',m.title+' is live.');else toast('Confirmed for '+(S.circle?.name||'your circle')+'. '+n+' of 3.');logMine('Confirmed the Mission '+m.title)}return}
@@ -58,7 +72,7 @@ ACT["tr-rm"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
 };
 ACT["tr-create"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
   {const title=(F.trtitle||'').trim(),stops=F.trstops||[];if(!title){toast('Name the trail.');return}if(stops.length<3){toast('Add at least 3 stops.');return}const day=F.trdate||today();const start=new Date(day+'T'+(F.trfrom||'12:00')).getTime(),end=new Date(day+'T'+(F.trto||'14:00')).getTime();if(!(end>start)){toast('The end has to be after the start.');return}if(end<now()){toast('That window has passed.');return}
-    const ref=db.collection('trails').doc();if(await W(()=>ref.set({city:me.city,cid:me.circle,cname:S.circle?.name||'',by:uid,title:title.slice(0,40),stops,start,end,at:now()}),'Trail published.')){Object.assign(F,{trtitle:'',trstops:[]});S.ui.sheet={t:'trail',id:ref.id};wire2();render();logMine('Made a trail: '+title)}return}
+    const ref=db.collection('trails').doc();if(await W(()=>ref.set({city:me.city,cid:me.circle,cname:S.circle?.name||'',by:uid,title:title.slice(0,40),stops,start,end,at:now()}),'Trail published.')){Object.assign(F,{trtitle:'',trstops:[],trStep:1});S.ui.sheet={t:'trail',id:ref.id};wire2();render();logMine('Made a trail: '+title)}return}
 };
 ACT["tr-stamp"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
   {const tr=S.trails.find(x=>x.id===d.v);const i=+d.i;const st=tr.stops[i];let how='word';
@@ -66,7 +80,7 @@ ACT["tr-stamp"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
     const perm=await (navigator.permissions?.query({name:'geolocation'}).then(r=>r.state).catch(()=>'')??'');
     if(perm!=='denied'&&navigator.geolocation)toast('Checking where you are…');
     const pos=perm==='denied'?null:await new Promise(ok=>{if(!navigator.geolocation)return ok(null);const t=setTimeout(()=>ok(null),8000);try{navigator.geolocation.getCurrentPosition(p=>{clearTimeout(t);ok(p)},()=>{clearTimeout(t);ok(null)},{enableHighAccuracy:true,timeout:8000,maximumAge:30000})}catch(e){clearTimeout(t);ok(null)}});
-    if(pos){const km=distKm([pos.coords.latitude,pos.coords.longitude],[st.lat,st.lon]);if(km>.15){toast(`Your phone says you’re ${fmtKm(km)} from ${st.name}. Get within 150 m.`);return}how='gps'}
+    if(pos){const km=distKm([pos.coords.latitude,pos.coords.longitude],[st.lat,st.lon]),acc=pos.coords.accuracy||0;if(km>.06+Math.min(.04,acc/1000)){toast(`Your phone says you’re ${fmtKm(km)} from ${st.name}${acc?` (GPS ±${Math.round(acc)} m)`:''}. Get within 60 m.`);return}how='gps'}
     const s0=myStamp(tr);const stops=Object.assign({},s0?.stops||{},{[i]:{at:now(),how}});const done=Object.keys(stops).length>=tr.stops.length;
     if(await W(()=>db.doc('stamps/'+tr.id+'_'+uid).set({trail:tr.id,uid,name:pubName(),circle:me.circle,cname:S.circle?.name||'',city:me.city,week:weekKey(),stops,done:done?now():null}))){if(done){celebrate('TRAIL DONE','All '+tr.stops.length+' stops. '+(S.circle?.name||'Your circle')+' is in the draw.');logMine('Finished '+tr.title)}else celebrate(String(i+1),'Stamped '+st.name+(how==='word'?', on your word: this page can’t read your location.':'.'))}return}
 };

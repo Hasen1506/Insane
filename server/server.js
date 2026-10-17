@@ -16,8 +16,20 @@ const DEV = ENV.DEV === '1';
 const OWNER = (ENV.OWNER_EMAIL || '').trim().toLowerCase();
 const PUBLIC_URL = (ENV.PUBLIC_URL || `http://localhost:${PORT}`).replace(/\/$/, '');
 const SECURE = PUBLIC_URL.startsWith('https://');
-const TILE_URL = ENV.TILE_URL || 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
-const TILE_ATTR = ENV.TILE_ATTR || '© OpenStreetMap contributors';
+// Map tiles (C69, WS-F). tile.openstreetmap.org is never the default: its policy forbids app-scale use.
+//   TILE_URL   an XYZ raster template (https://…/{z}/{x}/{y}.png, e.g. Stadia or MapTiler with your key),
+//              a .pmtiles URL (Protomaps vector basemap, self-hosted: same origin or R2 with CORS + Range),
+//              or "none" for the bundled world map only.
+//   Default: /data/basemap.pmtiles, served from TILE_FILE (default app/data/basemap.pmtiles) if that file exists, else "none".
+//   TILE_KIND  xyz | pmtiles | none (guessed from TILE_URL); TILE_URL_DARK an optional dark XYZ template;
+//   TILE_ATTR  the attribution line; TILE_MAXZ the deepest zoom the source has.
+const geo = require('./geo');
+const TILE_FILE = ENV.TILE_FILE ? path.resolve(ENV.TILE_FILE) : path.join(ROOT, 'data', 'basemap.pmtiles'); // e.g. a Render disk
+const TILE_URL = ENV.TILE_URL || (fs.existsSync(TILE_FILE) ? '/data/basemap.pmtiles' : 'none');
+const TILE_KIND = ENV.TILE_KIND || (TILE_URL === 'none' ? 'none' : /\.pmtiles(\?|$)/.test(TILE_URL) ? 'pmtiles' : 'xyz');
+const TILE_ATTR = ENV.TILE_ATTR || (TILE_KIND === 'pmtiles' ? '© OpenStreetMap contributors · Protomaps' : TILE_KIND === 'none' ? '' : '© OpenStreetMap contributors');
+const TILE_DARK = ENV.TILE_URL_DARK || '';
+const TILE_MAXZ = +ENV.TILE_MAXZ || (TILE_KIND === 'pmtiles' ? 15 : 19);
 
 let clockOffset = 0; // only moved by the dev clock, for tests that run a fortnight in minutes
 const now = () => Date.now() + clockOffset;
@@ -227,7 +239,7 @@ function readFilter(p, d, u) {
   const s = p.split('/');
   if (s[0] === 'missions' && d.by !== u.uid) {
     const me = getDoc('people/' + u.uid) || {}, host = me.circle && me.circle === d.cid, inn = !!(d.ins || {})[u.uid];
-    if (!host && !(inn && now() >= d.when - 2 * 3600e3)) d = { ...d, spot: '' };
+    if (!host && !(inn && now() >= d.when - 2 * 3600e3)) d = { ...d, spot: '', pin: null }; // the exact spot (text and pin) only to yes-sayers from T-2h (WS-F)
     if (!host && !inn) d = { ...d, roles: [] };
   }
   if (s[0] === 'drops' && d.host !== u.uid) { d = { ...d }; delete d.code; }
@@ -407,15 +419,27 @@ async function geocode(qs) {
 }
 
 /* ---------- http ---------- */
-const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json', '.tsv': 'text/tab-separated-values; charset=utf-8', '.svg': 'image/svg+xml', '.webmanifest': 'application/manifest+json', '.png': 'image/png' };
+const TYPES = { '.pmtiles': 'application/octet-stream', '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json', '.tsv': 'text/tab-separated-values; charset=utf-8', '.svg': 'image/svg+xml', '.webmanifest': 'application/manifest+json', '.png': 'image/png' };
 const gzCache = new Map();
 function sendFile(req, res, file) {
   fs.stat(file, (err, st) => {
     if (err || !st.isFile()) { res.writeHead(404); return res.end('Not found'); }
     const ext = path.extname(file), type = TYPES[ext] || 'application/octet-stream';
     const etag = `"${st.size}-${st.mtimeMs}"`;
-    const h = { 'content-type': type, etag, 'cache-control': ext === '.html' || file.endsWith('sw.js') ? 'no-cache' : 'public, max-age=86400', 'x-content-type-options': 'nosniff' };
+    // content-hashed files (data/places/<key>.<hash>.tsv) never change: cache them for a year (C81)
+    const immutable = /\.[0-9a-f]{10}\.tsv$/.test(file);
+    const h = { 'content-type': type, etag, 'cache-control': ext === '.html' || file.endsWith('sw.js') || file.endsWith('index.json') ? 'no-cache' : immutable ? 'public, max-age=31536000, immutable' : 'public, max-age=86400', 'x-content-type-options': 'nosniff' };
     if (req.headers['if-none-match'] === etag) { res.writeHead(304, h); return res.end(); }
+    // PMTiles are read by byte range, one directory or tile at a time
+    const rg = ext === '.pmtiles' && /^bytes=(\d+)-(\d*)$/.exec(req.headers.range || '');
+    if (ext === '.pmtiles') h['accept-ranges'] = 'bytes';
+    if (rg) {
+      const a = +rg[1], b = Math.min(st.size - 1, rg[2] ? +rg[2] : st.size - 1);
+      if (a > b) { res.writeHead(416, { 'content-range': `bytes */${st.size}` }); return res.end(); }
+      res.writeHead(206, { ...h, 'content-range': `bytes ${a}-${b}/${st.size}`, 'content-length': b - a + 1 });
+      if (req.method === 'HEAD') return res.end();
+      return fs.createReadStream(file, { start: a, end: b }).pipe(res);
+    }
     if (/gzip/.test(req.headers['accept-encoding'] || '') && /\.(html|js|json|tsv|svg)$/.test(ext)) {
       let g = gzCache.get(file);
       if (!g || g.etag !== etag) { g = { etag, buf: zlib.gzipSync(fs.readFileSync(file)) }; gzCache.set(file, g); }
@@ -436,7 +460,7 @@ const cookie = (v, age) => `insane_s=${v}; Path=/; HttpOnly; SameSite=Lax; Max-A
 
 async function api(req, res, url) {
   const u = userFromReq(req), r = url.pathname.slice(5);
-  if (req.method === 'GET' && r === 'hello') return json(res, 200, { insane: true, version: '0.8', signedIn: !!u, uid: u?.uid || null, email: u?.email || null, isOwner: isOwner(u), tiles: TILE_URL, attr: TILE_ATTR, vapid: vapidPublic, dev: DEV, now: now() });
+  if (req.method === 'GET' && r === 'hello') return json(res, 200, { insane: true, version: '0.8', signedIn: !!u, uid: u?.uid || null, email: u?.email || null, isOwner: isOwner(u), tiles: TILE_URL, attr: TILE_ATTR, tileKind: TILE_KIND, tileDark: TILE_DARK, tileMaxZ: TILE_MAXZ, vapid: vapidPublic, dev: DEV, now: now() });
   if (req.method === 'GET' && r === 'stream') {
     if (!u) return json(res, 401, { code: 'unauthenticated' });
     const cid = url.searchParams.get('cid') || rid();
@@ -455,6 +479,16 @@ async function api(req, res, url) {
     if (qs.length < 3) return json(res, 200, { results: [] });
     if (limited('geo:' + u.uid, 20, MIN)) return json(res, 429, { code: 'resource_exhausted' });
     try { return json(res, 200, { results: await geocode(qs) }); } catch (e) { return json(res, 502, { code: 'unavailable', message: 'Place search is down. Try a town name or tap the map.' }); }
+  }
+  // Place search and areas (C81): server mode never sends the town list to phones. Open to signed-out pages
+  // (the picker can run before sign-in), rate-limited per address.
+  if (req.method === 'GET' && (r === 'places' || r === 'place' || r === 'place/guess')) {
+    if (limited('places:' + (u ? u.uid : req.socket.remoteAddress), 120, MIN)) return json(res, 429, { code: 'resource_exhausted' });
+    if (r === 'places') return json(res, 200, { results: geo.search(url.searchParams.get('q') || '', +url.searchParams.get('n') || 8) });
+    if (r === 'place/guess') return json(res, 200, geo.guess(url.searchParams.get('tz') || '', req.headers['cf-ipcountry'] || req.headers['x-vercel-ip-country'] || ''));
+    const lat = +url.searchParams.get('lat'), lon = +url.searchParams.get('lon');
+    if (!isFinite(lat) || !isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) return json(res, 400, { code: 'invalid_argument' });
+    return json(res, 200, geo.info(lat, lon));
   }
   if (req.method === 'GET' && r === 'notes/latest') {
     if (!u) return json(res, 401, { code: 'unauthenticated' });
@@ -537,6 +571,7 @@ const server = http.createServer(async (req, res) => {
     if (url.pathname === '/favicon.ico') { res.writeHead(204); return res.end(); }
     if (url.pathname === '/sw.js') return sendFile(req, res, path.join(__dirname, 'public', 'sw.js'));
     if (url.pathname === '/manifest.webmanifest' || url.pathname === '/icon.svg') return sendFile(req, res, path.join(__dirname, 'public', url.pathname.slice(1)));
+    if (url.pathname === '/data/basemap.pmtiles') return sendFile(req, res, TILE_FILE);
     const f = path.normalize(path.join(ROOT, decodeURIComponent(url.pathname)));
     if (!f.startsWith(path.join(ROOT, 'data') + path.sep)) { res.writeHead(404); return res.end('Not found'); }
     return sendFile(req, res, f);
@@ -545,4 +580,5 @@ const server = http.createServer(async (req, res) => {
     console.error(e); return json(res, 500, { code: 'internal', message: 'Something broke on the server.' });
   }
 });
+setImmediate(() => { try { geo.load(); } catch (e) { console.error('places:', e.message); } }); // parse the town list before the first search
 server.listen(PORT, () => console.log(`INSANE on ${PUBLIC_URL} (port ${PORT})${DEV ? ' [dev: codes in /api/dev/outbox, movable clock]' : ''}`));

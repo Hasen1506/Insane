@@ -44,7 +44,7 @@ function onboarding(){
 const obLabel=r=>!r?'Start':r.kind==='Pact'||r.kind==='Ladder'?'Start the '+r.kind.toLowerCase():r.kind==='Midnight'?'Save it for Midnight':r.kind==='Dare'?'Take the dare':r.kind.startsWith('Plan')?'Make it a plan':'Start';
 async function finishOnboarding(mode){
   const o=S.ui.ob,st=lpState('home');if(S.deep&&S.deep.kind==='c')S.deep=null;
-  const f=homeFields(st);const how=o.how||'skip';const withMind=mode!=='skip'&&(o.mind||'').trim();
+  await lpReady(st);const f=homeFields(st);const how=o.how||'skip';const withMind=mode!=='skip'&&(o.mind||'').trim();
   const ok=await W(async()=>{
     await S.db.doc('people/'+S.uid).set(Object.assign({name:o.name.trim().slice(0,24),handle:(o.handle||'').trim().toUpperCase().slice(0,16)||null,circle:null,joined:now(),seen:now(),quiet:{from:23,to:8},tz:tzName()},f));
     if(st.prec==='exact')await S.db.doc(`data/users/${S.uid}/loc`).set({lat:+st.lat.toFixed(6),lon:+st.lon.toFixed(6),src:st.src,acc:st.acc||null,at:now()});
