@@ -23,7 +23,7 @@ async function boot(){
 async function signOut(){try{await fetch('/api/auth/logout',{method:'POST',credentials:'same-origin'})}catch(e){}location.reload()}
 // What a QR code or shared link opens: this app, with a meeting or invite code after the #.
 function appLink(){if(S.backend==='server')return location.origin+'/';if(S.backend==='claude')return 'https://claude.ai/artifact/JHNbWPyCrwVVVHbxbhxf4g';return location.href.split('#')[0]}
-function qrSvg(text){try{if(typeof qrcode!=='function')return '';const q=qrcode(0,'M');q.addData(text);q.make();return q.createSvgTag({cellSize:5,margin:2,scalable:true})}catch(e){return ''}}
+function qrSvg(text){try{return QR.svg(text)}catch(e){return ''}}
 async function handleDeep(){
   const dl=S.deep;if(!dl||!S.me)return;S.deep=null;
   if(dl.kind==='m'){F.pairin=dl.code;await act('pair',{},null)}
