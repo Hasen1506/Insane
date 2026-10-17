@@ -4,7 +4,10 @@ const S={mode:'boot',db:null,uid:null,user:null,canWrite:true,isOwner:false,real
   solves:[],drops:[],checkins:[],posts:[],calls:[],rooms:[],met:[],people:{},dropIns:[],
   favors:[],dares:[],daily:{},clips:[],cheers:[],mole:null,moleLast:null,votes:[],missions:[],trails:[],stamps:[],
   ui:{tab:'today',cseg:'chat',sseg:'map',open:null,sheet:null,f:{},ob:{step:0,zone:4,cq:''},zoneFilter:null,confirm:null,readonly:false}};
-let downloads=null,roomCap=null;
+let downloads=null,roomCap=null;S.cnames={};
+// C36: up to the server's MAX_CIRCLES circles (3 unless it says otherwise; 3 in demo mode). me.circle is the one on screen.
+const maxCircles=()=>Math.max(1,+(S.hello&&S.hello.maxCircles)||3);
+const myCircles=()=>{const m=S.me||{},cs=Array.isArray(m.circles)?m.circles.filter(Boolean):[];return m.circle&&!cs.includes(m.circle)?[m.circle,...cs]:cs};
 try{const t=localStorage.getItem('insane_tab');if(t)S.ui.tab=t}catch(e){}
 const F=S.ui.f;
 
@@ -12,8 +15,8 @@ const F=S.ui.f;
 const SUBS={};
 function want(group,key,make,fn){
   if(SUBS[group]&&SUBS[group].key===key)return;drop(group);if(!key)return;
-  let u=()=>{};try{u=make().onSnapshot(fn,e=>{console.warn('sub',group,e&&e.code);if(e&&e.code==='revoked')toast('Access to this app changed. Reload to continue.')})}catch(e){console.warn(group,e)}
-  SUBS[group]={key,u};
+  // a late snapshot from a subscription that was swapped out (another circle) is dropped, never drawn
+  const g=SUBS[group]={key,u:()=>{}};try{g.u=make().onSnapshot(x=>{if(SUBS[group]===g)fn(x)},e=>{console.warn('sub',group,e&&e.code);if(e&&e.code==='revoked')toast('Access to this app changed. Reload to continue.')})}catch(e){console.warn(group,e)}
 }
 function drop(group){if(SUBS[group]){SUBS[group].u();delete SUBS[group]}}
 const docs=snap=>snap.docs.map(d=>Object.assign({id:d.id},d.data()));
@@ -27,10 +30,13 @@ function wire(){
 function wire2(){
   const db=S.db,me=S.me,uid=S.uid;
   const cid=me&&me.circle,city=me&&me.city,wk=weekKey();
-  want('circle',cid,()=>db.doc('circles/'+cid),s=>{S.circle=s.exists?Object.assign({id:cid},s.data()):null;syncVerified();render()});
+  if(cid!==S.cid){if(S.cid!==undefined&&S.ui.open&&S.ui.open.type!=='dm')S.ui.open=null;S.cid=cid;
+    Object.assign(S,{circle:null,threads:[],members:[],progress:{},midnight:[],sealed:[],rooms:[],favors:[],dares:[],daily:{},clips:[],cheers:[],mole:null,moleLast:null,votes:[]})}
+  for(const id of myCircles())if(!(id in S.cnames)){S.cnames[id]='';db.doc('circles/'+id).get().then(x=>{S.cnames[id]=x.exists&&x.data().name||'';render()}).catch(()=>{})}
+  want('circle',cid,()=>db.doc('circles/'+cid),s=>{S.circle=s.exists?Object.assign({id:cid},s.data()):null;if(S.circle)S.cnames[cid]=S.circle.name;syncVerified();render()});
   want('threads',cid,()=>db.collection(`circles/${cid}/threads`),s=>{S.threads=docs(s);render()});
   want('progress',cid,()=>db.collection(`circles/${cid}/progress`),s=>{S.progress={};for(const d of s.docs)S.progress[d.id]=d.data();render()});
-  want('members',cid,()=>db.collection('people').where('circle','==',cid),s=>{S.members=docs(s);for(const m of S.members)S.people[m.id]=m;syncVerified();render()});
+  want('members',cid,()=>db.collection('people').where('circles','array-contains',cid),s=>{S.members=docs(s);for(const m of S.members)S.people[m.id]=m;syncVerified();render()});
   want('midnight',cid,()=>db.collection(`circles/${cid}/midnight`),s=>{S.midnight=docs(s);render()});
   want('sealed',cid,()=>db.collection(`circles/${cid}/sealed`),s=>{S.sealed=docs(s);render()});
   want('rooms',cid,()=>db.collection('rooms').where('circles','array-contains',cid),s=>{S.rooms=docs(s);render()});

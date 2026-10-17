@@ -29,5 +29,5 @@ function qrSvg(text){try{return QR.svg(text)}catch(e){return ''}}
 async function handleDeep(){
   const dl=S.deep;if(!dl||!S.me)return;S.deep=null;
   if(dl.kind==='m'){F.pairin=dl.code;await act('pair',{},null)}
-  else if(dl.kind==='c'){if(!S.me.circle){await joinCircle(dl.code)}else toast('You’re already in a circle. Leave it first to join '+dl.code+'.')}
+  else if(dl.kind==='c')await joinCircle(dl.code)
 }
