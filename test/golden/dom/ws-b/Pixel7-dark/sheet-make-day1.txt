@@ -1,0 +1,120 @@
+aside.rail role=complementary aria-label="How this build works"
+  h2 role=heading "INSANE"
+    span "v0.8"
+  p "The barter-and-dare app for the five people you actually see. This is the working build, not the mock-up: everything you do here is saved and shared with everyone you invite."
+  h3 role=heading "What's real here"
+  b.y "Real"
+  span "Places anywhere on Earth: 69,818 towns, a world map with roads, a pin you can drop to the metre."
+  b.y "Real"
+  span "Privacy you choose: an exact pin only you can read, or a 1, 4 or 9 km² square. Drops only show within the distance you set."
+  b.y "Real"
+  span "Sign-in, circles, threads, plans, journeys, feed, calls, Decode, drops, QR meeting codes. Live between everyone invited."
+  b.y "Real"
+  span "v0.6’s game, back: favors in hours with a −5 h limit, pots with who’s paid, the daily dare and the jar, photo clips gone in 24 h, cheers, the Mole, Missions with a hidden spot, trails stamped by GPS."
+  b.y "Real"
+  span "Draws worked out in the open from who turned up. Door codes kept only as a slow hash."
+  b.p "Limit"
+  span "claude.ai pages can't load street tiles, read GPS or send notifications. The INSANE server version (same app) does all three, and checks codes and answers itself."
+  h3 role=heading "Playing with friends"
+  p "Invite each person by email from the Share menu. Anyone who can only view can look around but can't post."
+main#app role=main
+  header.top role=banner
+    span.mark "INSANE"
+    button.bell role=button act="sheet" v="activity" aria-label="What’s new"
+      svg
+    span.where "Third Floor Chennai · 4 km² square"
+      span.live.demo
+      br
+    button.me-btn role=button act="tab" v="you" aria-label="You: profile, journeys, settings" "M"
+  div.banner "Nothing leaves this browser. Open the shared link signed in to play with other people."
+    b "Demo on this device."
+  div#v
+    h1.v role=heading "Monday"
+    p.lede "· Chennai"
+      b "2 things today"
+    span.tag.need "Need"
+    span.meta "Pact"
+    h3 role=heading "Walk 30 minutes"
+    svg
+    div.meta "0 of 7 this week · every day"
+    i.t
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    p.meta "If you miss: my circle picks a dare from the jar"
+    button.btn.s role=button act="tick" v="j_u3eu3sdmbb" "Done today"
+    button.card.ball role=button act="sheet" v="decode"
+      div.meta "Decode · week 42"
+      h3 role=heading "Change one letter at a time: COLD → ? → ? → WARD → WARM. What’s the third word?"
+      div.meta "0 solved in Chennai · answer out in"
+        span "6d 14h"
+    div.k "DAILY DARE · FROM THE STARTER JAR · 2/10"
+      button.qi.new role=button act="gloss" v="daily" aria-label="What’s Daily dare?"
+        span "?"
+    div.q "Compliment a stranger’s shoes, and mean it"
+    button.btn.s role=button act="sheet" v="proof" "I did it"
+    button.btn.s.ghost role=button act="sheet" v="dare" "Add to the jar"
+    h3 role=heading "No drops within 5 km yet"
+    p.meta "Run a shop, a stall or a club night? Host one: a swap box, a dare at the counter, an offer for whoever turns up."
+    button.btn.s.ghost role=button act="sheet" v="host" "Host a drop"
+    p.formula "One list. Whatever needs you today is here; everything else waits in Circle, City and Ledger."
+  nav.tabs role=navigation aria-label="Sections"
+    button.on role=button act="tab" v="today" aria-current="page" "Home"
+      svg
+    button role=button act="tab" v="circle" aria-current="false" "Circle"
+      svg
+    button.plus role=button act="make" aria-label="Make something"
+      span "+"
+    button role=button act="tab" v="city" aria-current="false" "City"
+      svg
+    button role=button act="tab" v="ledger" aria-current="false" "Ledger"
+      svg
+div#layer
+  div.sheet-bg act="sheet-bg"
+    div.sheet role=dialog
+      div.grab
+      h2 role=heading "Make something"
+      div.eyebrow "With your circle"
+      button.sh-i role=button act="mk" v="plan"
+        span.ic "🗓️"
+        span.grow "Plan something"
+          small "Everyone taps in or out"
+      div.eyebrow "For you"
+      button.sh-i role=button act="mk" v="check"
+        span.ic "✅"
+        span.grow "Check in on a pact"
+          small "Your ticks for today"
+      button.sh-i role=button act="mk" v="dark"
+        span.ic "🌑"
+        span.grow "Go dark for a while"
+          small "1 to 24 hours, alone or with the circle"
+      button.sh-i role=button act="mk" v="addj"
+        span.ic "💭"
+        span.grow "Add a need, want or urge"
+          small "Say it in your own words"
+      div.eyebrow "In the city"
+      button.sh-i role=button act="mk" v="meet"
+        span.ic "📱"
+        span.grow "Meet someone"
+          small "Scan each other’s phones"
+      p.meta.mk-more "10 more unlock as your circle grows."
+        button.link role=button act="sheet" v="help" "How unlocks work"
+      button.btn.ghost role=button act="sheet" v="help" "Help"
+      button.btn.ghost role=button act="sheet-close" "Close"

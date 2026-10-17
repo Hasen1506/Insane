@@ -74,7 +74,7 @@ module.exports = async function (t) {
     const helper = await browser.newPage();
     const runs = [];
     for (const profile of ['Pixel 7', 'iPhone 13']) for (const scheme of ['light', 'dark']) runs.push([profile, scheme]);
-    const res = await Promise.all(runs.map(([p, s]) => shots(browser, p, s)));
+    const res = []; for (let i = 0; i < runs.length; i += 2) res.push(...await Promise.all(runs.slice(i, i + 2).map(([p, s]) => shots(browser, p, s)))); // two at a time: memory on small CI boxes
     for (let i = 0; i < runs.length; i++) {
       const [profile, scheme] = runs[i], { out, errors } = res[i], P = `${profile} ${scheme}: `, dir = `ws-b/${profile.replace(/\s/g, '')}-${scheme}`;
       t.ok(P + 'drove all 11 first-run screens, no script errors', out.length === 11 && !errors.length, out.map(s => s.name).join(',') + ' ' + errors.join(' | '));

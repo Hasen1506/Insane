@@ -32,10 +32,13 @@ main#app role=main
   label.f role=label "I need to…"
     small "keep doing · this month"
   input#ob-mind.in-t role=textbox placeholder="run three times a week" value="run 3 times a week"
-  button role=button act="ob-ex" v="run 3 times a week" "run 3 times a week"
+  button role=button act="ob-ex" v="walk 30 minutes every day" "walk 30 minutes every day"
   button role=button act="ob-ex" v="call home every Sunday" "call home every Sunday"
-  button role=button act="ob-ex" v="be in bed by 1 every night" "be in bed by 1 every night"
+  button role=button act="ob-ex" v="be in bed by 12 every night" "be in bed by 12 every night"
   button role=button act="ob-ex" v="read 10 pages a day" "read 10 pages a day"
+  div#ob-chip.obchip
+    span.chip.on "Pact"
+    span "Run · 3 a week · if I miss: i cook for the circle"
   div#read-mind
     div.rk "How INSANE reads it"
     span "Becomes"

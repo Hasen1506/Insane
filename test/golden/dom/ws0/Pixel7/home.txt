@@ -66,6 +66,8 @@ main#app role=main
       div.meta "0 solved in Chennai · answer out in"
         span "6d 14h"
     div.k "DAILY DARE · FROM THE STARTER JAR · 2/10"
+      button.qi.new role=button act="gloss" v="daily" aria-label="What’s Daily dare?"
+        span "?"
     div.q "Compliment a stranger’s shoes, and mean it"
     button.btn.s role=button act="sheet" v="proof" "I did it"
     button.btn.s.ghost role=button act="sheet" v="dare" "Add to the jar"
