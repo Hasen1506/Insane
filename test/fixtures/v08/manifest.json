@@ -1,0 +1,40 @@
+{
+  "made": "by test/fixtures/v08/make.js against the v0.8 server at fac3720",
+  "total": 32,
+  "counts": {
+    "calls": 1,
+    "circles": 2,
+    "circles/*/cheers": 1,
+    "circles/*/daily": 1,
+    "circles/*/dares": 1,
+    "circles/*/favors": 2,
+    "circles/*/midnight": 1,
+    "circles/*/moles": 1,
+    "circles/*/molevotes": 1,
+    "circles/*/sealed": 1,
+    "circles/*/threads": 2,
+    "circles/*/threads/general/msgs": 1,
+    "circles/*/threads/t_plan1/msgs": 1,
+    "codes": 2,
+    "data/users/u_FjsIXcRYTfnbm8": 1,
+    "data/users/u_PTfKBBXTYtpF8D": 1,
+    "data/users/u__WAMNDD1FNxFK5": 2,
+    "drops": 1,
+    "ev": 1,
+    "pair": 1,
+    "people": 5,
+    "posts": 1,
+    "solves": 1
+  },
+  "uids": {
+    "arjun": "u_FjsIXcRYTfnbm8",
+    "kavya": "u_PTfKBBXTYtpF8D",
+    "ravi": "u_uzI_cNHki5dix4",
+    "meera": "u_AOkVhyJ5C8npXx",
+    "dev": "u__WAMNDD1FNxFK5"
+  },
+  "circles": {
+    "arjun": "c_mylapore01",
+    "ravi": "c_ravi000001"
+  }
+}
