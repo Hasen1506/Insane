@@ -7,9 +7,9 @@ function vCity(){
   return out;
 }
 function decodeCard(compact){
-  const st=decodeState(S.solves),cl=CLUES[clueIdx()];const mine=S.solves.find(s=>s.uid===S.uid);
+  const st=decodeState(S.solves),cl=decodeClue();const mine=S.solves.find(s=>s.uid===S.uid);
   const circ=S.me.circle&&S.solves.find(s=>s.circle===S.me.circle);
-  let status=mine?`<b>Solved, ${ordinal(S.solves.indexOf(mine)+1)} in ${esc(S.me.cityName)}</b> · ${decPts(S.solves.indexOf(mine)+1,mine.hints)} points`:st.revealed?`The answer was <b>${ANS[clueIdx()]}</b>`:circ?`${esc(nameOf(circ.uid))} solved it for your circle. You can still solve it yourself.`:'';
+  let status=mine?`<b>Solved, ${ordinal(S.solves.indexOf(mine)+1)} in ${esc(S.me.cityName)}</b> · ${decPts(S.solves.indexOf(mine)+1,mine.hints)} points`:st.revealed?(cl.answer?`The answer was <b>${esc(cl.answer)}</b>`:'The answer is out.'):circ?`${esc(nameOf(circ.uid))} solved it for your circle. You can still solve it yourself.`:'';
   const info=`<div class="meta">${st.n} solved in ${esc(S.me.cityName)} · ${st.revealed?'answer is out':`answer out in <span data-until="${st.reveal}">${left(st.reveal-now())}</span>`}</div>`;
   if(compact)return `<button class="card ball" style="text-align:left;width:100%" data-act="sheet" data-v="decode"><div class="meta" style="color:var(--ball)">Decode · week ${weekNum()}</div><h3>${esc(cl.q)}</h3>${info}${status?`<p style="font-size:14px">${status}</p>`:''}</button>`;
   return {st,cl,mine,status,info};

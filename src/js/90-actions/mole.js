@@ -1,8 +1,8 @@
 /* the Mole */
 ACT["mole-claim"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
   {const wk=weekKey();const ref=db.doc(`circles/${me.circle}/moles/${wk}`);const x=await ref.get().catch(()=>null);if(x&&x.exists){toast('Someone got there first. Watch them.');return}
-    const pool=[...MOLE_TASKS.keys()].map(i=>[crypto.getRandomValues(new Uint32Array(1))[0],i]).sort((a,b)=>a[0]-b[0]).slice(0,3).map(p=>p[1]);
-    if(await W(async()=>{await db.doc(`data/users/${uid}/mole`).set({week:wk,tasks:pool,prog:[0,0,0],at:now()});await ref.set({at:now(),n:3})})){celebrate('MOLE','You’re the Mole. Only you can see your tasks.');logMine('Became the Mole for week '+weekNum())}return}
+    const {pick:pool,used}=moleDraw(); // WS-E: three you haven't had, until you've had them all
+    if(await W(async()=>{await db.doc(`data/users/${uid}/mole`).set({week:wk,tasks:pool,prog:[0,0,0],at:now()});await ref.set({at:now(),n:3});await db.doc(`data/users/${uid}/molehist`).set({used,at:now()}).catch(()=>{})})){celebrate('MOLE','You’re the Mole. Only you can see your tasks.');logMine('Became the Mole for week '+weekNum())}return}
 };
 ACT["mole-step"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
   {const m=myMole();if(!m)return;const i=+d.i;const prog=m.prog.slice();prog[i]=(prog[i]||0)+1;if(await W(()=>db.doc(`data/users/${uid}/mole`).update({prog}))){if(moleDone(Object.assign({},m,{prog}))===3)celebrate('3 OF 3','All three done. Act normal until Sunday.');else sfx()}return}

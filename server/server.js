@@ -49,6 +49,9 @@ const kv = {
 };
 const sha = s => crypto.createHash('sha256').update(String(s)).digest('hex');
 const rid = (n = 16) => crypto.randomBytes(n).toString('base64url').slice(0, n);
+// WS-E: puzzle packs, dares, Mole tasks and seed drops (server/content.js). The schedule's secret comes from
+// SEED (tests) or CONTENT_SECRET, else one made once and kept in the DB, so nobody can work out next week.
+const CONTENT = require('./content')({ db, now: () => now(), secret: ENV.SEED || ENV.CONTENT_SECRET || kv.get('content:secret') || (s => (kv.set('content:secret', s), s))(rid(32)) });
 
 /* ---------- rules: the same ones the artifact enforces ---------- */
 const isOwner = u => !!u && !!OWNER && u.email === OWNER;
@@ -70,8 +73,19 @@ const merge = (a, b) => { for (const k in b) { const v = b[k]; if (v && typeof v
 class Refuse extends Error { constructor(code, msg) { super(msg); this.code = code; } }
 
 /* ---------- the checks a page can't be trusted with ---------- */
-const ANS = ['WATERLOO', 'MARKET', 'CARD', 'MUSEUM', 'BRIDGE', 'STATION', 'GARDEN', 'TOWER'];
-const weekIdx = wk => (+String(wk).split('W')[1]) % ANS.length;
+// Decode (WS-E, C48): the answer is checked here against the city's puzzle for that week; the page never has it.
+const solvesIn = (city, week) => q.kids.all('solves').filter(r => { const d = JSON.parse(r.data); return d.city === city && d.week === week; }).length;
+function solveDoc(u, data) {
+  const me = getDoc('people/' + u.uid) || {}, week = String(data.week || '');
+  const r = CONTENT.checkSolve(me, week, data.answer, solvesIn(me.city, week));
+  if (!r.ok) throw new Refuse(r.code, r.message);
+  const c = me.circle ? getDoc('circles/' + me.circle) : null;
+  return { week, city: me.city, uid: u.uid, name: String(data.name || me.handle || me.name || 'Someone').slice(0, 24), circle: me.circle || null, cname: c ? String(c.name || '').slice(0, 28) : null, at: now(), hints: r.hints };
+}
+// Drops (WS-E, C50): commit-reveal. The server picks the draw seed when the drop is made and publishes only
+// its hash; the seed itself is kept aside and goes into the drop when it closes, so nobody (host included)
+// can know the winner while people are still deciding whether to turn up, and anyone can check it after.
+const dropSeed = id => kv.get('dropseed:' + id);
 function beforeWrite(op, p, data, u) {
   const s = p.split('/'), old = getDoc(p);
   if (s[0] === 'checkins' && s.length === 2) {
@@ -83,16 +97,16 @@ function beforeWrite(op, p, data, u) {
     const t = now();
     if (t < drop.start || t > drop.end) throw new Refuse('failed_precondition', 'This drop isn’t open right now.');
     if (String(data.code || '').toUpperCase() !== String(drop.code).toUpperCase()) throw new Refuse('failed_precondition', 'wrong_code');
-    delete data.code; data.at = t; data.uid = u.uid; data.verified = 'server';
+    if (s[1] !== data.drop + '_' + u.uid) throw new Refuse('permission_denied', 'One check-in each, under your own name.');
+    const me = getDoc('people/' + u.uid) || {}; // the draw is among circles, so the circle is the one you're in, not the one you say
+    delete data.code; data.at = t; data.uid = u.uid; data.verified = 'server'; data.circle = me.circle || null;
     return data;
   }
   if (s[0] === 'solves' && s.length === 2) {
     if (op === 'delete') throw new Refuse('permission_denied', 'Solves stay.');
-    if (!s[1].endsWith('_' + u.uid) || old) throw new Refuse('permission_denied', 'One solve each.');
-    const a = String(data.answer || '').toUpperCase().replace(/[^A-Z]/g, '');
-    if (a !== ANS[weekIdx(data.week)]) throw new Refuse('failed_precondition', 'wrong_answer');
-    delete data.answer; data.at = now(); data.uid = u.uid;
-    return data;
+    if (!s[1].endsWith('_' + u.uid) || old || op !== 'set') throw new Refuse('permission_denied', 'One solve each.');
+    if (s[1] !== String(data.week || '') + '_' + u.uid) throw new Refuse('invalid_argument', 'A solve is filed under its week.');
+    return solveDoc(u, data);
   }
   if (s[0] === 'met' && s.length === 2) {
     if (op !== 'set') throw new Refuse('permission_denied', 'Meetings are only made by code.');
@@ -104,9 +118,15 @@ function beforeWrite(op, p, data, u) {
     return data;
   }
   if (s[0] === 'drops' && s.length === 2) {
-    if (op === 'set' && (!old || old.host === u.uid)) { data.host = u.uid; return data; }
     if (op === 'delete') { if (old && old.host !== u.uid && !isOwner(u)) throw new Refuse('permission_denied', 'Only the host can cancel a drop.'); return data; }
     if (old && old.host !== u.uid) { const keep = {}; for (const k of ['item', 'swaps']) if (k in data) keep[k] = data[k]; return keep; }
+    data = { ...data }; delete data.seed; delete data.seedHash; delete data.hostCircle; // the server's, never the host's
+    if (op === 'set' && !old) {
+      const seed = crypto.randomBytes(16).toString('hex'); kv.set('dropseed:' + s[1], seed);
+      data.seedHash = sha(seed); data.host = u.uid; data.hostCircle = (getDoc('people/' + u.uid) || {}).circle || null;
+      return data;
+    }
+    if (op === 'set') { data.host = u.uid; for (const k of ['seed', 'seedHash', 'hostCircle']) if (k in old) data[k] = old[k]; return data; } // re-saving can't re-roll
     return data;
   }
   if (s[0] === 'posts' && s.length === 2 && old && old.by !== u.uid && !isOwner(u)) {
@@ -158,8 +178,8 @@ function beforeWrite(op, p, data, u) {
     if (op === 'delete') throw new Refuse('permission_denied', 'The Mole stays.');
     if (op === 'set') { if (old) throw new Refuse('permission_denied', 'Someone got there first.'); kv.set('mole:' + p, u.uid); return { at: now(), n: 3 }; }
     if (kv.get('mole:' + p) !== u.uid || !data.revealed) throw new Refuse('permission_denied', 'Only the Mole can reveal the Mole.');
-    const m = getDoc(`data/users/${u.uid}/mole`) || {}; const N = [3, 1, 1, 1, 3, 1, 1, 1];
-    const done = (m.tasks || []).filter((t, i) => ((m.prog || [])[i] || 0) >= N[t]).length;
+    const m = getDoc(`data/users/${u.uid}/mole`) || {};
+    const done = (m.tasks || []).filter((t, i) => ((m.prog || [])[i] || 0) >= CONTENT.moleN(t)).length;
     return { revealed: { uid: u.uid, done, at: now() } };
   }
   if (s[0] === 'circles' && s[2] === 'molevotes' && s.length === 4) {
@@ -231,6 +251,7 @@ function readFilter(p, d, u) {
     if (!host && !inn) d = { ...d, roles: [] };
   }
   if (s[0] === 'drops' && d.host !== u.uid) { d = { ...d }; delete d.code; }
+  if (s[0] === 'drops' && d.seedHash && !d.seed && now() >= d.end) { const seed = dropSeed(s[1]); if (seed) d = { ...d, seed }; }
   if (s[0] === 'pair' && s[1] !== u.uid) { d = { ...d }; delete d.code; }
   if (s[0] === 'circles' && s[2] === 'midnight' && d.releaseAt > now()) d = { ...d, text: null };
   if (s[0] === 'circles' && s[2] === 'sealed' && d.openAt > now()) d = { ...d, text: null };
@@ -381,6 +402,12 @@ function sweep() {
   for (const c of q.kids.all('circles')) for (const r of q.kids.all(c.path + '/clips')) if (JSON.parse(r.data).exp < t) { q.del.run(r.path); gone.push(r.path); }
   if (gone.length) touched(gone);
   const people = q.kids.all('people').map(r => ({ id: r.path.split('/')[1], d: JSON.parse(r.data) }));
+  const revealed = [];
+  for (const row of q.kids.all('drops')) { // a closed drop's draw seed goes into the drop itself, so every open view gets it
+    const d = JSON.parse(row.data); if (!d.seedHash || d.seed || d.end > t) continue;
+    const seed = dropSeed(row.path.split('/')[1]); if (seed) { putDoc(row.path, { ...d, seed }); revealed.push(row.path); }
+  }
+  if (revealed.length) touched(revealed);
   for (const row of q.kids.all('drops')) {
     const d = JSON.parse(row.data), soon = d.start - 15 * MIN;
     if (soon > from && soon <= t) for (const x of people) {
@@ -463,6 +490,15 @@ async function api(req, res, url) {
   }
   if (DEV && req.method === 'GET' && r === 'dev/outbox') { const row = db.prepare('SELECT sent FROM otps WHERE email=?').get((url.searchParams.get('email') || '').toLowerCase()); return json(res, 200, { mail: row ? JSON.parse(row.sent) : null }); }
   if (DEV && req.method === 'GET' && r === 'dev/pushlog') return json(res, 200, { log: pushLog });
+  // DEV only, for tests: this week's answer for a city (what the legacy e2e used to read out of the page)
+  if (DEV && req.method === 'GET' && r === 'dev/decode') { const city = url.searchParams.get('city') || '', week = url.searchParams.get('week') || ''; const p = CONTENT.puzzleFor(city, week); return json(res, 200, { city, week, id: p && p.id, answer: p && p.a }); }
+  if (req.method === 'GET' && r === 'decode') {
+    if (!u) return json(res, 401, { code: 'unauthenticated' });
+    const me = getDoc('people/' + u.uid) || {}, week = String(url.searchParams.get('week') || '');
+    return json(res, 200, CONTENT.decodeView(me, week, solvesIn(me.city, week)));
+  }
+  if (req.method === 'GET' && r === 'content') { if (!u) return json(res, 401, { code: 'unauthenticated' }); return json(res, 200, CONTENT.publicLists()); }
+  if (req.method === 'GET' && r === 'admin/content') { if (!isOwner(u)) return json(res, 403, { code: 'permission_denied', message: 'Owner only.' }); return json(res, 200, CONTENT.admin.list()); }
   if (req.method !== 'POST') return json(res, 405, { code: 'invalid_argument' });
   const b = await body(req);
   if (r === 'auth/start') {
@@ -509,6 +545,24 @@ async function api(req, res, url) {
     const sub = { spec, last: null }; c.subs.set(b.sub, sub); pushSub(c, b.sub, sub, true);
     return json(res, 200, { ok: true });
   }
+  if (r === 'decode/solve') {
+    const p = 'solves/' + String(b.week || '') + '_' + u.uid;
+    if (!validPath(p, true)) throw new Refuse('invalid_argument', 'Bad week.');
+    if (getDoc(p)) throw new Refuse('permission_denied', 'One solve each.');
+    if (limited('dec:' + u.uid, 30, 10 * MIN)) throw new Refuse('resource_exhausted', 'Too many tries. Give it a few minutes.');
+    const d = solveDoc(u, b); putDoc(p, d); touched([p]);
+    return json(res, 200, { ok: true, rank: solvesIn(d.city, d.week), hints: d.hints });
+  }
+  if (r.startsWith('admin/content/')) {
+    if (!isOwner(u)) throw new Refuse('permission_denied', 'Owner only.');
+    const a = r.slice(14), A = CONTENT.admin;
+    if (a === 'check') return json(res, 200, A.check(b.kind, b.item || {}));
+    if (a === 'save') { const x = A.save(b.kind, b.item || {}); if (x.ok && b.kind === 'drop' && b.publish) x.published = publishDrop(x.item, u); return json(res, x.ok ? 200 : 400, x); }
+    if (a === 'remove') return json(res, 200, A.remove(b.kind, b.id));
+    if (a === 'restore') return json(res, 200, A.restore(b.kind, b.id));
+    if (a === 'preview') return json(res, 200, { city: b.city, weeks: A.preview(String(b.city || ''), b.n) });
+    return json(res, 404, { code: 'not_found' });
+  }
   if (r === 'unsub') { const c = clients.get(b.cid); if (c && c.uid === u.uid) c.subs.delete(b.sub); return json(res, 200, { ok: true }); }
   if (r === 'get') { if (!validPath(b.path, true)) throw new Refuse('invalid_argument', 'Bad path.'); return json(res, 200, { doc: readDoc(b.path, u) }); }
   if (r === 'query') { if (!validPath(b.col, false)) throw new Refuse('invalid_argument', 'Bad path.'); return json(res, 200, { docs: runQuery(b, u) }); }
@@ -529,11 +583,45 @@ async function api(req, res, url) {
   return json(res, 404, { code: 'not_found' });
 }
 
+// A seed drop from /admin/content becomes a real drop, hosted by the owner, with the same commit-reveal draw.
+function publishDrop(it, u) {
+  const p = 'drops/' + it.id, old = getDoc(p);
+  if (old) return { id: it.id, already: true };
+  const code = Array.from(crypto.randomBytes(6), x => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[x % 32]).join('');
+  const r = x => Math.round(x * 1e6) / 1e6;
+  const gOf = (lat, lon, s = 25) => { const iy = Math.floor(lat * 111.32 / s), latC = (iy * s / 111.32 + (iy + 1) * s / 111.32) / 2, kl = 111.32 * Math.max(.05, Math.cos(latC * Math.PI / 180)); return s + ':' + iy + ':' + Math.floor(lon * kl / s); }; // = the page's gOf (10-places.js cellOf)
+  const data = beforeWrite('set', p, { city: it.city, lat: r(it.lat), lon: r(it.lon), g: gOf(it.lat, it.lon), venue: String(it.venue).slice(0, 40), addr: String(it.addr || '').slice(0, 80), kind: it.kind, prize: String(it.prize).slice(0, 60), dare: it.kind === 'dare' ? String(it.dare || '').slice(0, 80) : '', item: it.kind === 'swap' ? String(it.prize).slice(0, 60) : '', swaps: [], start: it.start, end: it.start + it.len * MIN, hostName: 'INSANE', code, at: now(), seeded: true }, u);
+  putDoc(p, data); touched([p]);
+  return { id: it.id, code };
+}
+// The page the server hands out has no local Decode pack at all (not even hashed): in server mode the
+// clue comes from /api/decode and the answer stays here. The pasteable app/index.html keeps its sealed
+// pack for claude.ai and local mode (C86).
+const LOCAL_PACK = /\/\*@decode-local\*\/[\s\S]*?\/\*@end-decode-local\*\//;
+let indexCache = null;
+function sendIndex(req, res) {
+  const file = path.join(ROOT, 'index.html');
+  fs.stat(file, (err, st) => {
+    if (err) { res.writeHead(404); return res.end('Not found'); }
+    const key = st.size + '-' + st.mtimeMs;
+    if (!indexCache || indexCache.key !== key) {
+      const html = fs.readFileSync(file, 'utf8').replace(LOCAL_PACK, 'const DECODE_LOCAL=null;');
+      const buf = Buffer.from(html); indexCache = { key, buf, gz: zlib.gzipSync(buf), etag: '"' + sha(html).slice(0, 20) + '"' };
+    }
+    const h = { 'content-type': 'text/html; charset=utf-8', etag: indexCache.etag, 'cache-control': 'no-cache', 'x-content-type-options': 'nosniff' };
+    if (req.headers['if-none-match'] === indexCache.etag) { res.writeHead(304, h); return res.end(); }
+    const gz = /gzip/.test(req.headers['accept-encoding'] || ''), b = gz ? indexCache.gz : indexCache.buf;
+    res.writeHead(200, { ...h, ...(gz ? { 'content-encoding': 'gzip' } : {}), 'content-length': b.length });
+    res.end(req.method === 'HEAD' ? undefined : b);
+  });
+}
+
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://x');
   try {
     if (url.pathname.startsWith('/api/')) return await api(req, res, url);
-    if (url.pathname === '/' || url.pathname === '/index.html') return sendFile(req, res, path.join(ROOT, 'index.html'));
+    if (url.pathname === '/' || url.pathname === '/index.html') return sendIndex(req, res);
+    if (url.pathname === '/admin/content') return sendFile(req, res, path.join(__dirname, 'admin', 'content.html')); // owner tool; its API checks the owner
     if (url.pathname === '/favicon.ico') { res.writeHead(204); return res.end(); }
     if (url.pathname === '/sw.js') return sendFile(req, res, path.join(__dirname, 'public', 'sw.js'));
     if (url.pathname === '/manifest.webmanifest' || url.pathname === '/icon.svg') return sendFile(req, res, path.join(__dirname, 'public', url.pathname.slice(1)));
