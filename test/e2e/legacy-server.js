@@ -58,6 +58,10 @@ async function setClock(t) {
   NOW = t;
   await fetch(B + '/api/dev/clock', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ offset: t - Date.now() }) });
   for (const k in PEOPLE) { const p = PEOPLE[k].page; if (p && !p.isClosed()) await p.evaluate(off => { window.__clockOff = off; try { sessionStorage.setItem('__clockOff', String(off)); } catch (e) { } }, t - Date.now()).catch(() => { }); }
+  // The page's C61 skew check (/api/hello every 60 s) can land between the server's jump and this page's, and
+  // then reads the test's day jump as a phone clock that is hours off, until its next check. Real clocks don't
+  // jump, so once server and phones agree again, clear any skew measured mid-jump.
+  for (const k in PEOPLE) { const p = PEOPLE[k].page; if (p && !p.isClosed()) await p.evaluate(() => { try { if (typeof CLOCK_SKEW !== 'undefined') CLOCK_SKEW = 0; } catch (e) { } }).catch(() => { }); }
 }
 // Run the server's sweep now (Midnight release, drop reminders, clip expiry) instead of waiting up to 20 s for it.
 const tick = () => fetch(B + '/api/dev/tick', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' }).then(r => r.json());
