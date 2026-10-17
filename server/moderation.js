@@ -20,6 +20,7 @@ module.exports = function moderation(ctx) {
   // int-1: a person can be in up to MAX_CIRCLES circles (WS-I, people/{uid}.circles); `circle` is the primary one.
   // Every membership and read check below goes through circlesOfDoc, so it holds for each circle, not just the primary.
   const circlesOfDoc = d => { const cs = Array.isArray(d && d.circles) ? d.circles.filter(x => typeof x === 'string' && x) : []; return d && d.circle && !cs.includes(d.circle) ? [d.circle, ...cs] : cs; };
+  const MAX_CIRCLES = () => Math.max(1, +process.env.MAX_CIRCLES || 3); // the same cap as server/rules/people.js
   const circleOf = uid => person(uid).circle || null; // the primary circle: defaults only (reports, the admin route's cid)
   const circlesOf = uid => circlesOfDoc(person(uid));
   const isMember = (uid, cid) => !!uid && !!cid && (circlesOf(uid).includes(cid) || ((getDoc('circles/' + cid) || {}).members || []).includes(uid));
@@ -294,8 +295,12 @@ module.exports = function moderation(ctx) {
         const who = String(b.uid || ''), at = (c.removed || {})[who];
         if (!at) throw new Refuse('failed_precondition', 'They weren’t removed.');
         const rem = { ...c.removed }; delete rem[who]; const n = { ...c, removed: rem };
-        const back = now() - at <= UNDO_MS && !circlesOf(who).length && (getDoc('people/' + who)); // v0.8 rule kept: only if they're in no circle now
-        if (back) { n.members = [...new Set([...(n.members || []), who])]; const pp = getDoc('people/' + who); pp.circle = cid; pp.circles = [cid]; putDoc('people/' + who, pp); }
+        // int-1 multi-circle: within the 24 h undo they come straight back if they still have room for one more circle
+        // (MAX_CIRCLES, as server/rules/people.js) and this one isn't full; their other circles and primary are kept.
+        // v0.8's rule ("only if they're in no circle now") is the MAX_CIRCLES=1 case. Otherwise they may rejoin themselves.
+        const pp = getDoc('people/' + who), mine = pp ? circlesOfDoc(pp) : [];
+        const back = !!pp && now() - at <= UNDO_MS && !mine.includes(cid) && mine.length < MAX_CIRCLES() && membersOf(cid).filter(m => m.id !== who).length < 8;
+        if (back) { n.members = [...new Set([...(n.members || []), who])]; const cs = [...mine, cid]; putDoc('people/' + who, { ...pp, circles: cs, circle: pp.circle && mine.includes(pp.circle) ? pp.circle : cs[0] }); }
         putDoc('circles/' + cid, n); audit(u.uid, 'unremove', cid, who); touched(['circles/' + cid, 'people/' + who]); refreshUser(who);
         return { ok: true, back: !!back };
       }
