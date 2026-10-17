@@ -1,7 +1,7 @@
 /* ---------- the + sheet ---------- */
 // The + sheet is grouped and gated by unlocks: MAKE_ITEM, MAKE_GROUPS and makeSheetV09() are in 96-unlock.js.
 function makeSheet(){return makeSheetV09()}
-function inviteSheet(){const c=S.circle;if(!c)return '';return `<h2>Bring someone in</h2><p class="meta">They scan this with their phone camera, or type the code. Circles stop at 8.</p><div class="panel" style="text-align:center"><div class="qr big-qr">${qrSvg(appLink()+'#c'+c.code)}</div><div class="big">${esc(c.code)}</div><div class="btns" style="justify-content:center"><button class="btn s ghost" data-act="copy" data-v="${esc(appLink()+'#c'+c.code)}">Copy invite link</button></div></div><p class="meta">Next time you’re together, scan each other’s phones (Meet someone). Two of you meeting in person unlocks posting in the City.</p><div class="btns"><button class="btn ghost wide" data-act="sheet-close">Close</button></div>`}
+function inviteSheet(){const c=S.circle;if(!c)return '';return `<h2>Bring someone in</h2><p class="meta">Send the link, or let them scan this with their phone camera. Circles stop at 8.</p><div class="panel" style="text-align:center"><div class="qr big-qr">${qrSvg(inviteUrl(c))}</div><div class="big code">${esc(c.code)}</div>${shareRow(c)}</div><p class="meta">Next time you’re together, scan each other’s phones (Meet someone). Two of you meeting in person unlocks posting in the City.</p><div class="btns"><button class="btn ghost wide" data-act="sheet-close">Close</button></div>`}
 
 /* photos for dares and rungs: shrunk on the phone to about 50 KB, kept 24 hours */
 function shrinkPhoto(file){return new Promise((ok,bad)=>{const url=URL.createObjectURL(file),img=new Image();

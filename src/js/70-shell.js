@@ -34,7 +34,7 @@ function relocate(){return `<div style="padding-top:18px"><span class="mark">INS
 function header(){
   const me=S.me,c=S.circle,n=activity().filter(a=>a.fresh).length;
   const where=`${esc(c?c.name:'No circle yet')}<br>${esc(me.cityName||'')} · ${esc(cellText(me.cell))}`;
-  return `<header class="top"><span class="mark">INSANE</span><button class="bell" data-act="sheet" data-v="activity" aria-label="What’s new${n?': '+n:''}">${ICON.bell}${n&&!calmNow()?`<span class="cnt">${n>9?'9+':n}</span>`:''}</button><span class="where"><span class="live ${S.mode==='demo'?'demo':''}" aria-hidden="true"></span>${where}</span><button class="me-btn ${S.ui.tab==='you'?'on':''}" data-act="tab" data-v="you" aria-label="You: profile, journeys, settings">${esc(initials(me.name))}</button></header>`+
+  return `<header class="top"><span class="mark">INSANE</span><button class="bell" data-act="sheet" data-v="activity" aria-label="What’s new${n?': '+n:''}">${ICON.bell}${n&&!calmNow()?`<span class="cnt">${n>9?'9+':n}</span>`:''}</button>${c?`<button class="where" data-act="sheet" data-v="circles" aria-label="${esc(c.name)}: your circles">`:'<span class="where">'}<span class="live ${S.mode==='demo'?'demo':''}" aria-hidden="true"></span>${where}${c?'</button>':'</span>'}<button class="me-btn ${S.ui.tab==='you'?'on':''}" data-act="tab" data-v="you" aria-label="You: profile, journeys, settings">${esc(initials(me.name))}</button></header>`+
    (S.mode==='demo'?`<div class="banner"><b>Demo on this device.</b> Nothing leaves this browser. Open the shared link signed in to play with other people.</div>`:'')+
    offlineBanner()+a2hsCard()+
    (S.ui.readonly?`<div class="banner"><b>Look-only access.</b> To post, check in or join a circle, ask the owner to invite you by email as an Editor.</div>`:'');
@@ -53,13 +53,15 @@ function nav(){
 }
 function unreadThreads(){
   const seen=S.priv.seen||{};const out=[];
-  for(const t of S.threads)if(t.last&&t.last.by!==S.uid&&t.last.at>(seen['t:'+t.id]||0)&&!t.muted)out.push({type:'thread',id:t.id,title:t.title,last:t.last});
-  for(const r of S.rooms)if(r.last&&r.last.by!==S.uid&&r.last.at>(seen['r:'+r.id]||0)&&r.closesAt>now())out.push({type:'room',id:r.id,title:roomTitle(r),last:r.last});
+  const j=S.me.joined||0;for(const t of S.threads)if(t.last&&t.last.by!==S.uid&&t.last.at>(seen['t:'+t.id]||j)&&!t.muted)out.push({type:'thread',id:t.id,title:t.title,last:t.last});
+  for(const r of S.rooms)if(r.last&&r.last.by!==S.uid&&r.last.at>(seen['r:'+r.id]||j)&&r.closesAt>now())out.push({type:'room',id:r.id,title:roomTitle(r),last:r.last});
   return out;
 }
-function badges(){if(calmNow())return {};const seen=S.priv.seen||{};const midNew=S.midnight.some(m=>m.releaseAt<=now()&&m.releaseAt>(seen.midnight||0));
+// C34: a dot means something new since you last looked, and never anything from before you joined, so a
+// brand-new person sees none.
+function badges(){if(calmNow())return {};const seen=S.priv.seen||{};const midNew=S.midnight.some(m=>m.releaseAt<=now()&&m.releaseAt>(seen.midnight||S.me.joined||0));
   const u=S.uid;const led=S.favors.some(f=>(f.status==='done'&&f.asker===u)||(f.status==='claimed'&&f.doer===u))||pots().some(p=>!p.closed&&(potState(p,u)==='to pay'||(p.by===u&&Object.values(p.paid||{}).includes('wait'))));
-  return {circle:unreadThreads().length>0||midNew,city:S.posts.some(p=>p.at>(seen.feed||0)&&p.by!==S.uid)&&S.ui.tab!=='city',ledger:led&&S.ui.tab!=='ledger'}}
+  return {circle:unreadThreads().length>0||midNew,city:S.posts.some(p=>p.at>(seen.feed||S.me.joined||0)&&p.by!==S.uid)&&S.ui.tab!=='city',ledger:led&&S.ui.tab!=='ledger'}}
 
 
 // The rail beside the app on wide screens (C107). Its build notes are about the claude.ai artifact, so they

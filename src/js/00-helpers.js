@@ -23,3 +23,6 @@ const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 function when(t){const d=new Date(t),td=dayStart(now()),dd=dayStart(t);const hm=d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});if(dd===td)return 'Today '+hm;if(dd===td+DAY)return 'Tomorrow '+hm;if(dd===td-DAY)return 'Yesterday '+hm;return DOW[d.getDay()]+' '+d.getDate()+' '+d.toLocaleString([],{month:'short'})+', '+hm}
 const ordinal=n=>n+(['th','st','nd','rd'][(n%100-20)%10]||['th','st','nd','rd'][n%100]||'th');
 
+// C20: cut to n UTF-16 units, whole graphemes only (emoji, Tamil, Arabic), at a word when one is in the second half. Same rule as server/text.js.
+const SEG=typeof Intl!=='undefined'&&Intl.Segmenter?new Intl.Segmenter():null;
+function clip(s,n){s=String(s??'').trim();if(s.length<=n)return s;let o='';for(const c of SEG?Array.from(SEG.segment(s),x=>x.segment):Array.from(s)){if(o.length+c.length>n)break;o+=c}const w=o.lastIndexOf(' ');return (w>n/2&&!/\s/.test(s[o.length])?o.slice(0,w):o).trim()}
