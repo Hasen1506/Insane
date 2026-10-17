@@ -123,7 +123,9 @@ class MapView{
   full(on){this.el.classList.toggle('full',on);this.el.querySelector('[data-z="full"]').setAttribute('aria-pressed',on);this.el.querySelector('[data-z="full"]').setAttribute('aria-label',on?'Close full-screen map':'Full-screen map');
     document.body.classList.toggle('mapfull',on);this.touch();if(on){this.esc=e=>{if(e.key==='Escape'){e.stopPropagation();this.full(false)}};addEventListener('keydown',this.esc,true)}else if(this.esc){removeEventListener('keydown',this.esc,true);this.esc=null}this.baseKey='';this.redraw()}
   recenter(){if(this.spec.home){this.center=this.spec.home.slice();this.z=this.spec.zoom||13;this.redraw()}}
-  set(spec){const first=!this.spec.home;const moved=spec.home&&(!this.spec.home||spec.home[0]!==this.spec.home[0]||spec.home[1]!==this.spec.home[1]||(spec.zoom!=null&&spec.zoom!==this.spec.zoom&&spec.v!==this.spec.v));this.spec=spec;this.coop=!!spec.coop;this.touch();if(first||(moved&&spec.follow)){this.center=spec.home?spec.home.slice():[20,0];this.z=spec.zoom??(spec.home?13:2)}this.cv.setAttribute('aria-label',spec.label||'Map');this.redraw()}
+  set(spec){const first=!this.spec.home;const moved=spec.home&&(!this.spec.home||spec.home[0]!==this.spec.home[0]||spec.home[1]!==this.spec.home[1]||(spec.zoom!=null&&spec.zoom!==this.spec.zoom&&spec.v!==this.spec.v));this.spec=spec;this.coop=!!spec.coop;this.touch();if(first||(moved&&spec.follow)){this.center=spec.home?spec.home.slice():[20,0];this.z=spec.zoom??(spec.home?13:2)}this.cv.setAttribute('aria-label',spec.label||'Map');
+    // every app render re-sets each map's spec; repaint only if what it draws actually changed
+    const sig=JSON.stringify([this.center,this.z,spec.v,(spec.items?spec.items():[]).map(i=>[i.type,i.ll,i.b,i.km,i.text,i.hot,i.label,i.style,i.m,i.pts&&i.pts.length])]);if(sig===this.sig&&!first&&!moved)return;this.sig=sig;this.redraw()}
   S(){return 256*2**this.z}
   toPx(lat,lon){const S=this.S(),c=mUnit(...this.center),u=mUnit(lat,lon);return [(u[0]-c[0])*S+this.w/2,(u[1]-c[1])*S+this.h/2]}
   fromPx(x,y){const S=this.S(),c=mUnit(...this.center);return mInv(c[0]+(x-this.w/2)/S,c[1]+(y-this.h/2)/S)}

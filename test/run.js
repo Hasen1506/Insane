@@ -6,6 +6,7 @@
 //   diff        test/diff/*.test.js       v0.8 (fac3720) vs v0.9 on seeded inputs (DIFF_RUNS)
 //   e2e:local   test/e2e/legacy-local.js  v0.8's 83 local-mode checks against the built file
 //   e2e:server  test/e2e/legacy-server.js v0.8's 92 server checks against the built file
+//   e2e:map     test/e2e/map.js           WS-F: place picker (search, GPS, links, privacy preview) and the City map, Pixel 7
 //   golden      test/golden/*.test.js     DOM + pixel goldens (GOLDEN_UPDATE=1 rewrites)
 // In-process suites export `async t => { t.ok(name, cond, extra) }`. Script suites are run as child
 // processes and pass when they exit 0. Time budgets (PLAN-V09 §5.0) are reported per suite; set
@@ -23,6 +24,7 @@ const SUITES = {
   diff: { budget: 10, dir: 'test/diff' },
   'e2e:local': { budget: 60, script: ['test/e2e/legacy-local.js'], legacy: true },
   'e2e:server': { budget: 90, script: ['test/e2e/legacy-server.js'], legacy: true },
+  'e2e:map': { budget: 60, script: ['test/e2e/map.js'] }, // WS-F: picker and City map on Pixel 7, both modes
   golden: { budget: 30, dir: 'test/golden' },
 };
 
