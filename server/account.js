@@ -20,7 +20,7 @@ function scrub(v, uid) {
   if (v && typeof v === 'object') {
     const o = {};
     for (const [k, x] of Object.entries(v)) if (k !== uid && !k.includes(uid)) o[k] = scrub(x, uid);
-    if (o.by === FORMER && 'name' in o) o.name = 'Former member';
+    if (o.by === FORMER && 'name' in o && 'text' in o) o.name = 'Former member'; // a message or a thread's last line
     return o;
   }
   if (v === uid) return FORMER;
@@ -78,7 +78,7 @@ module.exports = function account(ctx, mod) {
     touched([...gone, ...changed]);
     endStreams(c => c.uid === uid);
     // DPDP: confirm the erasure to the address it was for.
-    sendMail(email, 'Your INSANE account is deleted', `Your INSANE account and everything in it were deleted on ${new Date(now()).toUTCString()}.\n\nYour profile, private space, posts, progress, memberships, sessions and notification subscriptions are gone. Messages you sent in group threads stay there, signed “Former member”, so other people’s conversations still make sense.\n\nIf you didn’t ask for this, reply to this email.\n\n${PUBLIC_URL}`).then(how => { if (DEV) ctx.kv.set('outbox:' + email, { to: email, subject: 'Your INSANE account is deleted', at: Date.now(), how }); }).catch(e => console.warn('erasure mail', e.message));
+    sendMail(email, 'Your INSANE account is deleted', `Your INSANE account and everything in it were deleted on ${new Date(now()).toUTCString()}.\n\nYour profile, private space, posts, progress, memberships, sessions and notification subscriptions are gone. Messages you sent in group threads stay there, signed “Former member”, so other people’s conversations still make sense.\n\nIf you didn’t ask for this, reply to this email.\n\n${PUBLIC_URL}`).catch(e => console.warn('erasure mail', e.message));
     return { gone: gone.length, anonymised: changed.length };
   }
 

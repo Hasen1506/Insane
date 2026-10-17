@@ -1,16 +1,10 @@
 // The real server's rules, in this process: server/server.js required (it doesn't listen when required)
-// on a temp DB. Writes go through the same doWrite() as POST /api/set|update|delete, minus the rate limit,
+// on an in-memory DB. Writes go through the same doWrite() as POST /api/set|update|delete, minus the rate limit,
 // so property tests can run thousands of cases in seconds. One server per process, shared by every suite file.
 'use strict';
-const path = require('path'), os = require('os'), fs = require('fs');
-if (!process.env.INSANE_INPROC_DB) {
-  process.env.INSANE_INPROC_DB = path.join(os.tmpdir(), `insane-inproc-${process.pid}.db`);
-  for (const s of ['', '-wal', '-shm']) fs.rmSync(process.env.INSANE_INPROC_DB + s, { force: true });
-  process.on('exit', () => { for (const s of ['', '-wal', '-shm']) try { fs.rmSync(process.env.INSANE_INPROC_DB + s, { force: true }); } catch (e) { } });
-}
 const OWNER = 'owner@insane.test';
 const saved = { DB_FILE: process.env.DB_FILE, OWNER_EMAIL: process.env.OWNER_EMAIL, DEV: process.env.DEV };
-process.env.DB_FILE = process.env.INSANE_INPROC_DB; process.env.OWNER_EMAIL = OWNER; process.env.DEV = '1';
+process.env.DB_FILE = ':memory:'; process.env.OWNER_EMAIL = OWNER; process.env.DEV = '1'; // nothing touches the disk
 const origLog = console.log; console.log = (...a) => { if (!/^\[mail\]/.test(String(a[0]))) origLog(...a); }; // DEV mail goes to stdout
 const S = require('../../server/server.js');
 for (const k in saved) if (saved[k] === undefined) delete process.env[k]; else process.env[k] = saved[k];
@@ -33,11 +27,11 @@ const owner = () => { const r = S.db.prepare('SELECT uid,email FROM users WHERE 
 function wr(op, p, data, u) { try { S.doWrite(op, { path: p, data }, u, false); return { ok: true }; } catch (e) { if (e instanceof S.Refuse) return { code: e.code, message: e.message, reason: e.reason }; throw e; } }
 function get(p, u) { try { return { doc: S.readDoc(p, u) }; } catch (e) { if (e instanceof S.Refuse) return { code: e.code }; throw e; } }
 function query(col, u, where) { try { return { docs: S.runQuery({ col, where: where || [] }, u) }; } catch (e) { if (e instanceof S.Refuse) return { code: e.code }; throw e; } }
-async function route(r, b, u) {
-  try {
-    if (r.startsWith('account/')) { const o = await S.ACC.route(r, b || {}, u, { headers: {} }); return o ? { ok: true, ...o.body, headers: o.headers } : { code: 'not_found' }; }
-    const o = S.SAFE.route(r, b || {}, u); return o ? { ok: true, ...o } : { code: 'not_found' };
-  } catch (e) { if (e instanceof S.Refuse) return { code: e.code, message: e.message, reason: e.reason }; throw e; }
+// Routes in server/moderation.js answer synchronously; account/* routes return a Promise.
+function route(r, b, u) {
+  const refused = e => { if (e instanceof S.Refuse) return { code: e.code, message: e.message, reason: e.reason }; throw e; };
+  if (r.startsWith('account/')) return (async () => { try { const o = await S.ACC.route(r, b || {}, u, { headers: {} }); return o ? { ok: true, ...o.body, headers: o.headers } : { code: 'not_found' }; } catch (e) { return refused(e); } })();
+  try { const o = S.SAFE.route(r, b || {}, u); return o ? { ok: true, ...o } : { code: 'not_found' }; } catch (e) { return refused(e); }
 }
 // A signed-up person (age + consent, as onboarding writes it), optionally in a circle.
 function person(name, extra = {}, email) {

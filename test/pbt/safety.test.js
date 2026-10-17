@@ -42,9 +42,10 @@ function variant(r, w) {
 }
 const sentence = (r, inside) => { const out = []; const n = r.int(0, 8), at = r.int(0, n); for (let i = 0; i <= n; i++) out.push(i === at ? inside : r.pick(FILLER)); return out.join(r.pick([' ', ' ', ', ', '! ', '… '])) + r.pick(['', '.', '!', '?']); };
 const pair = (a, b) => [a.uid, b.uid].sort().join('__');
+let WHY = ''; const fail = w => { WHY = w; return false; }; // which check failed, for the report
 
 module.exports = async function (t) {
-  const report = async (name, res) => { res = await res; t.ok(`${name} (${res.runs} cases, seed ${res.seed})`, res.ok, res.message || ''); };
+  const report = async (name, res) => { WHY = ''; res = await res; t.ok(`${name} (${res.runs} cases, seed ${res.seed})`, res.ok, (WHY ? WHY + ': ' : '') + (res.message || '')); };
 
   /* ---------- P07: names never get through Midnight ---------- */
   await report('P07 any token of another member’s name, in any variant or script, is refused on write', prop('P07 write', gen(r => {
@@ -195,15 +196,15 @@ module.exports = async function (t) {
     }
     const D = ppl[c.who % c.k];
     const res = await I.route('account/delete', { confirm: 'DELETE' }, D);
-    if (!res.ok || !/Max-Age=0/.test(res.headers['set-cookie'])) return false;
-    if (I.allDocs().some(d => d.path.includes(D.uid) || d.data.includes(D.uid))) return false;
-    for (const tb of ['sessions', 'users', 'push']) if (I.S.db.prepare(`SELECT COUNT(*) n FROM ${tb} WHERE uid=?`).get(D.uid).n) return false;
-    if (I.S.db.prepare('SELECT COUNT(*) n FROM kv WHERE v LIKE ?').get('%' + D.uid + '%').n) return false;
+    if (!res.ok || !/Max-Age=0/.test(res.headers['set-cookie'])) return fail('delete refused ' + JSON.stringify(res));
+    { const left = I.allDocs().filter(d => d.path.includes(D.uid) || d.data.includes(D.uid)); if (left.length) return fail('still references the uid: ' + JSON.stringify(left).slice(0, 300)); }
+    for (const tb of ['sessions', 'users', 'push']) if (I.S.db.prepare(`SELECT COUNT(*) n FROM ${tb} WHERE uid=?`).get(D.uid).n) return fail('row left in ' + tb);
+    if (I.S.db.prepare('SELECT COUNT(*) n FROM kv WHERE v LIKE ?').get('%' + D.uid + '%').n) return fail('kv');
     const c2 = I.S.getDoc('circles/' + cid);
-    if (c2 && !(c2.members || []).every(u => ppl.some(p => p.uid === u && p !== D))) return false;
-    if (c2 && !ppl.some(p => p !== D && p.uid === (c2.owner || c2.by))) return false; // ownership passed on
+    if (c2 && !(c2.members || []).every(u => ppl.some(p => p.uid === u && p !== D))) return fail('members ' + JSON.stringify(c2.members));
+    if (c2 && !ppl.some(p => p !== D && p.uid === (c2.owner || c2.by))) return fail('owner ' + JSON.stringify(c2)); // ownership passed on
     const bal = {}; for (const r of I.S.q.kids.all(`circles/${cid}/favors`)) { const f = JSON.parse(r.data); if (f.status !== 'logged') continue; bal[f.doer] = (bal[f.doer] || 0) + f.h; bal[f.asker] = (bal[f.asker] || 0) - f.h; }
-    return Math.abs(Object.values(bal).reduce((a, b) => a + b, 0)) < 1e-9;
+    return Math.abs(Object.values(bal).reduce((a, b) => a + b, 0)) < 1e-9 || fail('hours ' + JSON.stringify(bal));
   }, { runs: RUNS(.3) }));
 
   /* ---------- unsafe dares: the screen lets the starter jar through ---------- */
