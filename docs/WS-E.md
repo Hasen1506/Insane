@@ -94,3 +94,16 @@ There are 72 puzzles. Chennai, Bengaluru, Mumbai and Delhi have 12 each; Hyderab
   - the owner adds next week's puzzle in `/admin/content`, the schedule shows it, and a week later Meera's Home has it;
   - a member gets "owner only".
 - `test/regression/content.test.js`: R-C48, R-C50, R-C86, R-C91 and R-C92.
+
+## Results (17 Oct 2026, shared 2-core box under heavy load)
+
+| Suite | Result |
+|---|---|
+| `npm run test:quick` | build 1/1, unit 77/77, pbt 55/55, diff 46/46, regression 8/8 |
+| `e2e:decode` | 17/17 |
+| `e2e:local` | 83/83 |
+| `e2e:server` | 91/92 |
+| `golden` | 39/48 |
+
+- **e2e:server.** The one failure is V08-S14, "sign-in under 4 s". It's a timing check: two of eleven sign-ins took 4.0 and 4.3 s under load. Nothing functional failed.
+- **golden.** The 9 failures are stored pixel goldens of screens WS-E doesn't touch. They fail the same way at the base commit `888f1fd`, because the Chromium in the sandbox changed. Every v0.8-vs-v0.9 comparison and every DOM golden passes.
