@@ -101,7 +101,7 @@ async function adminCall(r,b){if(S.backend!=='server')throw {code:'unavailable',
 SHEETS["person"]=(sh,close)=>{
   const id=sh.id,p=S.people[id]||person(id)||{name:'Someone'},blk=isBlocked(id),f=S.ui.rep||{};
   const inCircle=S.members.some(m=>m.id===id),own=isCircleOwner()&&inCircle&&id!==S.uid;
-  let out=`<h2><bdi>${esc(p.name||'Someone')}</bdi></h2>${p.handle?`<p class="meta">${esc(p.handle)}</p>`:''}`;
+  let out=`<h2><bdi>${esc(bidi(p.name||'Someone'))}</bdi></h2>${p.handle?`<p class="meta">${esc(p.handle)}</p>`:''}`;
   if(id===S.uid)return out+`<p class="meta">That’s you.</p>${close}`;
   out+=`<div class="card"><h3 style="margin-top:0">${blk?'Blocked':'Block'}</h3><p class="meta" style="margin-top:0">${blk?'You don’t see each other’s posts, messages, dares or presence, and they can’t message, dare or cheer you. They aren’t told.':'You stop seeing each other’s posts, messages, dares and presence. They can’t message, dare or cheer you. They aren’t told.'}</p><div class="btns"><button class="btn s ${blk?'ghost':'red'}" data-act="block" data-v="${esc(id)}" data-on="${blk?'0':'1'}">${blk?'Unblock':'Block '+esc(bidi(p.name||'them'))}</button></div></div>`;
   out+=`<div class="card"><h3 style="margin-top:0">Report</h3><p class="meta" style="margin-top:0">Goes to whoever runs this INSANE. They aren’t told who reported them.</p><div class="chips">${REPORT_CATS.map(([k,n])=>`<button class="chip ${f.cat===k?'on':''}" data-act="rep-cat" data-v="${k}">${n}</button>`).join('')}</div>
@@ -137,7 +137,7 @@ SHEETS["mod"]=(sh,close)=>{
   ${it('Flagged posts',qd.posts,x=>`<div class="card"><div class="meta">${esc(bidi(x.name))} · ${x.flags} report${x.flags>1?'s':''}</div><p style="margin:4px 0">${esc(x.text)}</p><div class="btns">${btn('mod-act',x.path+'|remove','Remove','red')}${btn('mod-act',x.path+'|clear','Keep it')}</div></div>`)}
   ${it('Flagged dares',qd.dares,x=>`<div class="card"><div class="meta">${x.flags} flag${x.flags>1?'s':''}${x.pulled?' · pulled from the jar':''}</div><p style="margin:4px 0">${esc(x.text)}</p><div class="btns">${btn('mod-act',x.path+'|remove','Remove','red')}${btn('mod-act',x.path+'|clear','Put it back')}</div></div>`)}
   ${it('Midnight removals',qd.midnight,x=>`<div class="card"><div class="meta">${x.removed?'removed':x.flags+' flags'} · ${esc(when(x.at))}</div><p style="margin:4px 0">${esc(x.text||'(text removed)')}</p>${x.removed?'':`<div class="btns">${btn('mod-act',x.path+'|remove','Remove','red')}</div>`}</div>`)}
-  ${it('Missions',qd.missions,x=>`<div class="card"><div class="meta">${esc(x.cname)} · ${esc(when(x.when))}${x.bad?' · '+x.bad+' said it was off':''}</div><p style="margin:4px 0">${esc(x.title)}</p><div class="btns">${btn('mod-act',x.path+'|remove','Take it down','red')}</div></div>`)}${close}`;
+  ${it('Missions',qd.missions,x=>`<div class="card"><div class="meta">${esc(bidi(x.cname))} · ${esc(when(x.when))}${x.bad?' · '+x.bad+' said it was off':''}</div><p style="margin:4px 0">${esc(x.title)}</p><div class="btns">${btn('mod-act',x.path+'|remove','Take it down','red')}</div></div>`)}${close}`;
 };
 async function loadModq(){try{S.modq=await S.db.call('admin/queue',{})}catch(e){S.modq={error:e.message||'Couldn’t load it.'}}render()}
 

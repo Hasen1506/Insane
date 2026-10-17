@@ -33,7 +33,7 @@ SHEETS["trail-new"]=(sh,close)=>{
 };
 SHEETS["trail"]=(sh,close)=>{
   {const tr=S.trails.find(x=>x.id===sh.id);if(!tr)return `<p>This trail has gone.</p>${close}`;const st=myStamp(tr),t=now(),open=t>=tr.start&&t<tr.end;const fin=S.stamps.filter(x=>x.trail===tr.id&&x.done);const w=t>=tr.end?drawWinner(tr,fin):null;
-    return `<div class="meta"><span class="tag k">Trail</span>by ${esc(tr.cname)} · ${esc(when(tr.start))} to ${esc(new Date(tr.end).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}))}</div><h2>${esc(tr.title)}</h2><div class="mapslot short" data-map="trail"></div>
+    return `<div class="meta"><span class="tag k">Trail</span>by ${esc(bidi(tr.cname))} · ${esc(when(tr.start))} to ${esc(new Date(tr.end).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}))}</div><h2>${esc(tr.title)}</h2><div class="mapslot short" data-map="trail"></div>
     <ol class="tasks">${tr.stops.map((x,i)=>{const got=st&&(st.stops||{})[i];return `<li class="${got?'done':''}"><span><b>${i+1}. ${esc(x.name)}</b>${x.dare?`<br><span class="meta">Dare: ${esc(x.dare)}</span>`:''}</span>${got?`<b>${got.how==='gps'?'stamped':'on your word'}</b>`:open&&S.me.circle?`<button class="btn s" data-act="tr-stamp" data-v="${tr.id}" data-i="${i}">Stamp</button>`:''}</li>`}).join('')}</ol>
     <p class="meta">${open?'No clock between stops: walking pace wins the same as running. Stamping checks your phone’s location: you need to be within 60 m of the stop. Where the page can’t read your location, the stamp is <b>on your word</b> and marked that way for everyone.':t<tr.start?'Opens '+esc(when(tr.start))+'.':'Over.'}</p>
     <p class="meta">${fin.length} finished${fin.length?': '+esc([...new Set(fin.map(f=>f.cname))].join(', ')):''}.</p>
