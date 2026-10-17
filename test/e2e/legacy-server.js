@@ -56,7 +56,7 @@ let server, browser;
 async function setClock(t) {
   NOW = t;
   await fetch(B + '/api/dev/clock', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ offset: t - Date.now() }) });
-  for (const k in PEOPLE) { const p = PEOPLE[k].page; if (p) await p.clock.setSystemTime(t).catch(() => { }); }
+  for (const k in PEOPLE) { const p = PEOPLE[k].page; if (p && !p.isClosed()) await p.evaluate(off => { window.__clockOff = off; try { sessionStorage.setItem('__clockOff', String(off)); } catch (e) { } }, t - Date.now()).catch(() => { }); }
 }
 const at = (day, h, m = 0) => T0 + day * DAY + (h - 9) * HOUR + m * MIN; // h in UTC
 
@@ -65,7 +65,7 @@ const at = (day, h, m = 0) => T0 + day * DAY + (h - 9) * HOUR + m * MIN; // h in
 // trail pulses its stamp every frame (v0.8 behaviour), so a few Lisbon phones on the City tab used to
 // starve a 2-core machine until taps timed out. Like phones in pockets, the people the test isn't using
 // draw at 4 frames a second: rAF is paced by the harness (init script below) for every page but the one
-// in front. Timers, SSE and the app itself are untouched.
+// in front, and every map repaints at most 8 times a second. Timers, SSE and the app's code are untouched.
 let FRONT = null;
 async function front(who) {
   const p = PEOPLE[who].page;
@@ -115,10 +115,33 @@ async function open(who) {
       const raf = window.requestAnimationFrame.bind(window), caf = window.cancelAnimationFrame.bind(window), T = new Map(); let n = 0;
       window.requestAnimationFrame = cb => { if (!window.__bg) return raf(cb); const id = -(++n); T.set(id, setTimeout(() => { T.delete(id); cb(performance.now()); }, 250)); return id; };
       window.cancelAnimationFrame = id => { if (T.has(id)) { clearTimeout(T.get(id)); T.delete(id); } else caf(id); };
+      // The pulse repaints the whole vector map every frame, even in the window in front; on a software-
+      // rendered 2-core box that alone made taps time out. Maps repaint at most 8 times a second here.
+      // (MapView is a top-level class in the app's script, so it is reachable by name, not via window.)
+      try {
+        const R = MapView.prototype.redraw;
+        MapView.prototype.redraw = function () {
+          if (this.__t) return; const due = (this.__last || 0) + 125 - performance.now();
+          if (due <= 0) { this.__last = performance.now(); return R.call(this); }
+          this.__t = setTimeout(() => { this.__t = 0; this.__last = performance.now(); R.call(this); }, due);
+        };
+      } catch (e) { }
     });
   });
+  // The phone's clock: Date reads real time plus an offset that setClock moves (kept in sessionStorage so it
+  // survives a reload or a deep link). v0.8 used Playwright's fake clock, which also fakes every timer and
+  // rAF; across eleven windows that fake timer loop was a large share of the CPU. Timers here stay real.
+  await P.ctx.addInitScript(off0 => {
+    let o = off0; try { const v = sessionStorage.getItem('__clockOff'); if (v != null) o = +v; } catch (e) { }
+    window.__clockOff = o;
+    const R = Date;
+    class D extends R { constructor(...a) { if (a.length) super(...a); else super(R.now() + window.__clockOff); } static now() { return R.now() + window.__clockOff; } }
+    window.Date = D;
+  }, NOW - Date.now());
+  if (process.env.DEBUG) await P.ctx.addInitScript(() => { window.__prof = { draw: 0, paint: 0, long: 0, longN: 0 }; try { new PerformanceObserver(l => { for (const e of l.getEntries()) { __prof.long += e.duration; __prof.longN++; } }).observe({ entryTypes: ['longtask'] }); } catch (e) { }
+    addEventListener('DOMContentLoaded', () => { const d = window.draw; window.draw = function () { __prof.draw++; return d.apply(this, arguments); }; try { const pp = MapView.prototype.paint; MapView.prototype.paint = function () { __prof.paint++; return pp.apply(this, arguments); }; } catch (e) { } }); });
   P.page = await P.ctx.newPage();
-  await P.page.clock.install({ time: NOW });
+
   P.page.on('pageerror', e => errors.push(who + ': ' + e.message));
   P.page.on('console', m => { if (m.type() === 'error' && !/favicon|Failed to load resource/.test(m.text())) errors.push(who + ': ' + m.text()); });
   await P.page.goto(B + (P.deep || ''));
@@ -553,7 +576,7 @@ async function circleCode(who) { return evalIn(who, () => S.circle && S.circle.c
   process.exit(pass === results.length ? 0 : 1);
 })().catch(async e => {
   console.error(e);
-  if (process.env.DEBUG) for (const [k, P] of Object.entries(PEOPLE)) if (P.page) { try { const t = Date.now(); const st = await P.page.evaluate(() => { const b = document.querySelector('[data-act=sseg][data-v=map]'); const r = b && b.getBoundingClientRect(); const top = r && document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); return JSON.stringify({ acts: window.__acts, sheet: S.ui.sheet, top: top && top.outerHTML.slice(0, 120), r }); }); console.log('DEBUG', k, Date.now() - t, 'ms', st); } catch (x) { console.log('DEBUG', k, x.message.slice(0, 200)); } }
+  if (process.env.DEBUG) for (const [k, P] of Object.entries(PEOPLE)) if (P.page) { try { const a0 = await P.page.evaluate(() => JSON.stringify(__prof)); const t0 = Date.now(); await E.until(() => Date.now() - t0 > 2000, { every: 500 }); console.log('PROF', k, a0, '->', await P.page.evaluate(() => JSON.stringify(__prof))); } catch (x) { } try { const t = Date.now(); const st = await P.page.evaluate(() => { const b = document.querySelector('[data-act=sseg][data-v=map]'); const r = b && b.getBoundingClientRect(); const top = r && document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); return JSON.stringify({ acts: window.__acts, sheet: S.ui.sheet, top: top && top.outerHTML.slice(0, 120), r }); }); console.log('DEBUG', k, Date.now() - t, 'ms', st); } catch (x) { console.log('DEBUG', k, x.message.slice(0, 200)); } }
   for (const [k, P] of Object.entries(PEOPLE)) if (P.page) { try { console.log('---', k, (await P.page.locator('#app').innerText()).slice(0, 500).replace(/\s+/g, ' ')); await P.page.screenshot({ path: path.join(OUT, 'crash-' + k + '.png') }); } catch (x) { } }
   console.log('ERRORS', errors.join(' | ')); if (server) await server.close(); process.exit(2);
 });
