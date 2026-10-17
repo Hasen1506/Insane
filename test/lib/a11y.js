@@ -134,8 +134,13 @@ function pageAudit(kitSrc, opts) {
   for (let n; (n = tw.nextNode());) {
     const v = n.textContent; if (!RTL.test(v)) continue; const el = n.parentElement; if (!el || hidden(el) || !visible(el)) continue;
     const i = v.search(RTL), iso = v.lastIndexOf('\u2068', i) > v.lastIndexOf('\u2069', i);
-    let ok = iso || !!el.closest('bdi,[dir],input,textarea');
-    for (let e = el; !ok && e && e !== scope.parentElement; e = e.parentElement) ok = /isolate|plaintext/.test(cs(e).unicodeBidi);
+    // isolated by an inline ancestor (bdi, dir=, unicode-bidi isolate), or the block starts with it and holds nothing else
+    let ok = iso || !!el.closest('input,textarea');
+    for (let e = el; !ok && e; e = e.parentElement) {
+      const st = cs(e);
+      if (/^inline/.test(st.display) || st.display === 'contents') { ok = e.tagName === 'BDI' || e.hasAttribute('dir') || /isolate|plaintext/.test(st.unicodeBidi); continue; }
+      ok = e.textContent.trim() === v.trim() && RTL.test(v.trim()[0]); break; // the name starts its own block: a chip, a title
+    }
     if (!ok) out.bidi.push(`${desc(el)} "${v.trim().slice(0, 28)}"`);
   }
   out.anims = document.getAnimations().filter(a => a.playState === 'running').length;

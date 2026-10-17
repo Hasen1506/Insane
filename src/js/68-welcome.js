@@ -19,7 +19,7 @@ function loadInvite(code){
     :S.db.doc('codes/'+code).get().then(x=>x.exists?S.db.doc('circles/'+x.data().cid).get():null).then(async c=>{if(!c||!c.exists)return {none:true};const d=c.data();let by='';try{const p=await S.db.doc('people/'+d.by).get();by=p.exists?String(p.data().name||'').split(' ')[0]:''}catch(e){}return {name:d.name,count:(d.members||[]).length,by,max:8}});
   get.then(j=>{INV=Object.assign({code},!j?{state:'err'}:j.none?{state:'none'}:{state:'ok',name:String(j.name||''),count:+j.count||0,by:String(j.by||''),max:+j.max||8});render()}).catch(()=>{INV={code,state:'err'};render()});
 }
-const invLine=()=>INV.state==='ok'?`${INV.by?`<b>${esc(INV.by)}</b> invited you to `:'You’re invited to '}<b>${esc(INV.name)}</b> <span class="cnt-of">(${INV.count} of ${INV.max})</span>`:'';
+const invLine=()=>INV.state==='ok'?`${INV.by?`<b>${esc(INV.by)}</b> invited you to `:'You’re invited to '}<b>${esc(bidi(INV.name))}</b> <span class="cnt-of">(${INV.count} of ${INV.max})</span>`:'';
 
 // What to show before sign-in or onboarding, or '' to go straight on.
 function welcomeGate(){
@@ -37,8 +37,8 @@ function welcomeView(code){
     if(inv.state==='loading'||inv.state==null)return top+`<p class="lede" style="margin-top:28px">Opening your invite…</p></div>`;
     if(inv.state==='ok')return top+`<div class="card stamp inv"><div class="meta">INVITE · CODE ${esc(code)}</div><p class="inv-l">${invLine()}</p></div>
       <h1 class="v">Plans, dares and favours with the people you actually see.</h1>
-      <p class="lede">A circle is 3 to 8 friends. You’ll be in ${esc(inv.name)} in under two minutes.</p>
-      <div class="btns"><button class="btn wide" data-act="wel-go" data-v="join">Join ${esc(inv.name)}</button></div>
+      <p class="lede">A circle is 3 to 8 friends. You’ll be in ${esc(bidi(inv.name))} in under two minutes.</p>
+      <div class="btns"><button class="btn wide" data-act="wel-go" data-v="join">Join ${esc(bidi(inv.name))}</button></div>
       <p class="wel-alt"><button class="link" data-act="wel-intro">What’s INSANE?</button></p></div>`;
     return top+`<h1 class="v">That invite didn’t open</h1><p class="lede">${inv.state==='none'?`No circle has the code <b>${esc(code)}</b>. Check it with whoever sent it.`:'We couldn’t reach INSANE just now. Check your connection.'}</p>
       <div class="btns"><button class="btn wide" data-act="wel-go">Get started anyway</button></div></div>`;

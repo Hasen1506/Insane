@@ -79,7 +79,7 @@ async function run(browser, scheme) {
   for (const n of names) {
     await a.evaluate(n => { try { S.toast = null; openSheet(n); } catch (e) { S.ui.sheet = null; render(); } }, n);
     await E.idle(a);
-    const ok = await a.evaluate(() => { const s = document.querySelector('.sheet'); return !!s && s.innerText.replace(/\s*Close\s*$/, '').trim().length > 12; });
+    const ok = await E.until(() => a.evaluate(() => { const s = document.querySelector('.sheet'); return !!s && s.innerText.replace(/\s*Close\s*$/, '').trim().length > 12; }), { timeout: 1500, what: 'sheet ' + n }).catch(() => false);
     if (ok) await shot(a, 'sheet-' + n);
     await a.evaluate(() => { S.ui.sheet = null; render(); }); await E.idle(a);
   }
@@ -105,7 +105,7 @@ module.exports = async function (t) {
     for (const scheme of ['light', 'dark']) {
       const { screens, errors, members } = await run(browser, scheme), P = `Pixel 7 ${scheme}: `;
       t.ok(P + 'Meera and Kavya (RTL name) are both in the circle', members.includes(KAVYA) && members.length === 2, members.join(','));
-      t.ok(P + `drove ${screens.length} screens without script errors`, screens.length >= 30 && !errors.length, screens.length + ' ' + errors.join(' | '));
+      t.ok(P + `drove ${screens.length} screens without script errors`, screens.length >= 50 && !errors.length, screens.length + ' ' + errors.join(' | '));
       const sum = { contrast: 0, targets: 0, names: 0, fonts: 0, cards: 0, bidi: 0, anims: 0, hscroll: 0 };
       for (const s of screens) {
         report[`${scheme}/${s.name}`] = s.r;

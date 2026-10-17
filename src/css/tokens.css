@@ -16,5 +16,5 @@
 @media (prefers-color-scheme:dark){:root{
   --paper:#0E1320;--card:#20283B;--ink:#E5E8E0;--muted:#9DA6B8;--line:#3A4566;
   --stamp:#FF7A96;--ball:#97AAFF;--haz:#F2C53D;--good:#4CC38A;--ons:#0E1320;
-  --stamp-soft:rgba(255,122,150,.14);--ball-soft:rgba(151,170,255,.14);--haz-soft:rgba(242,197,61,.14);--good-soft:rgba(76,195,138,.14);
+  --stamp-soft:rgba(255,122,150,.14);--ball-soft:rgba(151,170,255,.14);--haz-soft:rgba(242,197,61,.12);--good-soft:rgba(76,195,138,.14);
   --cell:#1A2233;--cell2:#2A3550;--sea:#0A1524;--shadow:none;color-scheme:dark}}

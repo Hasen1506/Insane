@@ -22,7 +22,7 @@ function balance(u=S.uid){let b=0;for(const f of S.favors)if(f.status==='logged'
 /* ---------- Ledger ---------- */
 function vLedger(){
   const seg=S.ui.lseg||'favors';
-  let out=`<h1 class="v">Ledger</h1><p class="lede">Favors in hours, pots in money. Everything inside ${esc(S.circle?.name||'your circle')}.</p>
+  let out=`<h1 class="v">Ledger</h1><p class="lede">Favors in hours, pots in money. Everything inside ${esc(bidi(S.circle?.name||'your circle'))}.</p>
   <div class="seg" role="tablist">${[['favors','Favors'],['pots','Pots']].map(([k,n])=>`<button role="tab" data-act="lseg" data-v="${k}" class="${seg===k?'on':''}" aria-selected="${seg===k}">${n}</button>`).join('')}</div>`;
   if(!S.me.circle)return out+soloLedger();
   out+=segHelp(seg);const lk=seg==='favors'?'favor':'pot';if(!isOpen(lk))return out+lockPanel(lk); // WS-B unlock hook
@@ -35,7 +35,7 @@ function ledgerFavors(){
   out+=`<div class="btns">${F.fvForm?'':`<button class="btn s" data-act="fv-form" data-v="ask">Ask a favor</button><button class="btn s ghost" data-act="fv-form" data-v="log">Someone helped me</button>`}</div>`;
   if(F.fvForm){const h=F.fvh||1,lg=F.fvForm==='log';
     out+=`<div class="card hot" style="margin-top:10px"><div class="km"><span class="kind l">${lg?'Log a favor someone did for you':'Ask a favor'}</span><button class="link" data-act="fv-form" data-v="">cancel</button></div>
-    ${lg?`<label class="f">Who helped</label><div class="chips">${S.members.filter(m=>m.id!==u).map(m=>`<button class="chip ${F.fvwho===m.id?'on':''}" data-act="fv-who" data-v="${m.id}">${esc(m.name)}</button>`).join('')||'<span class="meta">Nobody else in the circle yet.</span>'}</div>`:''}
+    ${lg?`<label class="f">Who helped</label><div class="chips">${S.members.filter(m=>m.id!==u).map(m=>`<button class="chip ${F.fvwho===m.id?'on':''}" data-act="fv-who" data-v="${m.id}">${esc(bidi(m.name))}</button>`).join('')||'<span class="meta">Nobody else in the circle yet.</span>'}</div>`:''}
     <label class="f" for="fv-what">What</label><input class="in-t" id="fv-what" data-f="fvwhat" value="${esc(F.fvwhat||'')}" maxlength="60" placeholder="${lg?'Fixed my bike brakes':'Help me carry a wardrobe upstairs'}">
     <label class="f">How long, roughly</label><div class="chips">${FAVOR_H.map(([v,n])=>`<button class="chip ${h===v?'on':''}" data-act="fv-h" data-v="${v}">${n}</button>`).join('')}</div>
     <p class="meta">${lg?'Logged straight away: '+hrs(h).slice(1)+' to them, '+hrs(-h)+' to you.':'Whoever helps can adjust the hours before you confirm. Nothing is logged until you do.'}</p>
@@ -81,7 +81,7 @@ function potCard(p){const u=S.uid,open=S.ui.pot===p.id,n=nIn(p),on=potOn(p),st=p
     body+=`<div class="ppl">${S.members.map(m=>{const s=potState(p,m.id);return `<span class="pp ${s.replace(' ','')}"><b>${esc(m.id===u?'You':m.name)}</b>${s}</span>`}).join('')}</div>`;
     if(p.closed)body+=`<p class="meta">Closed.</p>`;
     else if(!on){const ask=S.members.find(m=>!(p.pledges||{})[m.id]);
-      body+=`<p class="meta">Nobody pays anything unless ${esc(p.min)} pledge${p.by_when?' by '+esc(p.by_when):''}. If it falls short the pot just closes: nothing moved, so nothing to refund.</p><div class="btns">${(p.pledges||{})[u]?`<button class="btn s ghost" data-act="pledge" data-v="${p.id}">Take back my pledge</button>${ask?`<button class="btn s ghost" data-act="pot-nudge" data-v="${p.id}" data-u="${ask.id}">Ask ${esc(ask.name)}</button>`:''}`:`<button class="btn s" data-act="pledge" data-v="${p.id}">Pledge ${esc(amt(p))}</button>`}</div>`}
+      body+=`<p class="meta">Nobody pays anything unless ${esc(p.min)} pledge${p.by_when?' by '+esc(p.by_when):''}. If it falls short the pot just closes: nothing moved, so nothing to refund.</p><div class="btns">${(p.pledges||{})[u]?`<button class="btn s ghost" data-act="pledge" data-v="${p.id}">Take back my pledge</button>${ask?`<button class="btn s ghost" data-act="pot-nudge" data-v="${p.id}" data-u="${ask.id}">Ask ${esc(bidi(ask.name))}</button>`:''}`:`<button class="btn s" data-act="pledge" data-v="${p.id}">Pledge ${esc(amt(p))}</button>`}</div>`}
     else if(st==='out')body+=`<div class="btns"><button class="btn s" data-act="pledge" data-v="${p.id}">I’m in: ${esc(amt(p))}</button></div>`;
     else if(st==='to pay'){const up=potUpi(p);body+=`<p class="meta">${p.mode==='pledge'?'Goal met. ':''}Pay <b>${esc(nameOf(p.by))}</b> ${esc(amt(p))} with ${up?'UPI or ':''}whatever you already use${p.pay?': <b>'+esc(p.pay)+'</b>':''}. They confirm it landed.</p>${up?`<div class="btns"><a class="btn upi" href="${esc(up)}">Pay ${esc(amt(p))} by UPI</a></div><div class="qr upiqr">${qrSvg(up)}</div><p class="meta">UPI ID <b>${esc(p.upi)}</b> <button class="link" data-act="copy" data-v="${esc(p.upi)}">copy</button>. After paying, tell ${esc(nameOf(p.by))} below.</p>`:''}${S.ui.pay===p.id?`<div class="btns">${payVia(p).map(v=>`<button class="btn s ghost" data-act="pot-paid" data-v="${p.id}" data-m="${v}">${v}</button>`).join('')}</div>`:`<div class="btns"><button class="btn s ${up?'ghost':''}" data-act="pot-pay" data-v="${p.id}">I’ve paid ${esc(nameOf(p.by))} ${esc(amt(p))}</button></div>`}`}
     else if(st==='checking')body+=`<p class="meta">You marked it paid${(p.via||{})[u]?' ('+esc(p.via[u])+')':''}. Waiting for ${esc(nameOf(p.by))} to confirm it arrived.</p>`;
