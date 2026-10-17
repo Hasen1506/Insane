@@ -1,10 +1,10 @@
-// Runs every test/e2e/flows/*.flow.js (or the ones named: node test/e2e/flows/run.js d-safety) and prints
-// "N/M passed" for test/run.js. Each flow exports async ({ ok }) => …, where ok(name, cond, extra, ms) takes a
+// Runs every test/e2e/flows/*.flow.js and *.test.js, one at a time (or the ones named: node test/e2e/flows/run.js d-safety)
+// and prints "N/M passed" for test/run.js. Each flow exports async ({ ok }) => … (WS-A/WS-B's *.test.js call it t.ok), where ok(name, cond, extra, ms) takes a
 // value or a function; a function is polled until it holds (8 s, or ms), so checks wait on what they're about.
 'use strict';
 const fs = require('fs'), path = require('path'), E = require('../../lib/e2e');
 const want = process.argv.slice(2);
-const files = fs.readdirSync(__dirname).filter(f => f.endsWith('.flow.js') && (!want.length || want.some(w => f.startsWith(w)))).sort();
+const files = fs.readdirSync(__dirname).filter(f => (f.endsWith('.flow.js') || f.endsWith('.test.js')) && (!want.length || want.some(w => f.startsWith(w)))).sort();
 (async () => {
   const results = [];
   for (const f of files) {

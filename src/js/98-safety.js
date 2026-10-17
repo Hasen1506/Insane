@@ -77,8 +77,9 @@ const consentV=()=>(S.hello&&S.hello.consent)||CONSENT_V;
 const legalHref=k=>S.backend==='server'?'/legal/'+k:'legal/'+k+'.html';
 const legalLinks=()=>`<a href="${legalHref('terms')}" target="_blank" rel="noopener">Terms</a>, <a href="${legalHref('privacy')}" target="_blank" rel="noopener">Privacy notice</a> and <a href="${legalHref('rules')}" target="_blank" rel="noopener">Community rules</a>`;
 function consentRow(o){return `<label class="chk"><input type="checkbox" id="ob-consent" data-ob="consent" ${o.consent?'checked':''}> <span>I agree to the ${legalLinks()}. <small class="meta">Version ${esc(consentV())}.</small></span></label>`}
-const obReady=o=>!!((o.name||'').trim()&&o.age&&o.consent);
-const obMissing=o=>!(o.name||'').trim()?'Add your name.':!o.age?'Confirm your age.':!o.consent?'Agree to the Terms to go on.':'';
+// int-1: one rule for step 1, WS-B's obWhy (name, month+year of birth, then consent), shared with 80-input.js
+const obMissing=o=>obWhy(o,ageCheck(o));
+const obReady=o=>!obMissing(o);
 const consentFields=()=>({adult:true,consent:{v:consentV()}});
 
 /* ---------- blocks (C87) ---------- */

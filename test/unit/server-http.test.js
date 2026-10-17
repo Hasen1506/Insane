@@ -54,7 +54,8 @@ module.exports = async function (t) {
     t.ok('a fourth circle is refused (MAX_CIRCLES 3)', four.status === 400 && four.body.code === 'failed_precondition', JSON.stringify(four.body));
     /* invite preview */
     const inv = await S.get('invite/mad8ht');
-    t.ok('GET /api/invite/:code (signed out) gives the name, size and first names only', inv.status === 200 && inv.body.name === 'Mylapore Mad Hatters' && inv.body.members === 2 && inv.body.by === 'Arjun' && JSON.stringify(inv.body.names) === '["Arjun","كافيا"]' && !JSON.stringify(inv.body).includes(a) && !/tz|cell|lat/.test(JSON.stringify(inv.body)), JSON.stringify(inv.body));
+    // int-1: WS-B's contract {name, count, max, by}: the creator's first name only, no member list
+    t.ok('GET /api/invite/:code (signed out) gives the name, size and the creator’s first name only', inv.status === 200 && inv.body.name === 'Mylapore Mad Hatters' && inv.body.count === 2 && inv.body.by === 'Arjun' && JSON.stringify(Object.keys(inv.body).sort()) === '["by","count","max","name"]' && !JSON.stringify(inv.body).includes(a) && !/tz|cell|lat|كافيا/.test(JSON.stringify(inv.body)), JSON.stringify(inv.body));
     t.ok('an unknown code is a 404', (await S.get('invite/ZZZZZZ')).status === 404);
     /* Midnight in the circle's zone */
     const ask = Date.now() + 3 * 36e5;

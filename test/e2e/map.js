@@ -35,7 +35,7 @@ async function signIn(p, email) {
   await p.waitForSelector('#ob-name', { timeout: 15000 });
 }
 async function toPlace(p, name) {
-  await p.fill('#ob-name', name); if (await p.locator('#ob-age').count()) await p.check('#ob-age'); if (await p.locator('#ob-consent').count()) await p.check('#ob-consent');
+  await p.fill('#ob-name', name); if (await p.locator('#ob-age').count()) await p.check('#ob-age'); if (await p.locator('#ob-dobm').count()) { await p.selectOption('#ob-dobm', '6'); await p.selectOption('#ob-doby', '1995'); } /* WS-B (C17) */ if (await p.locator('#ob-consent').count()) await p.check('#ob-consent');
   await tap(p, '[data-act="ob-next"]'); await p.waitForSelector('#lp-q-home');
 }
 async function finish(p, { create, join }) {

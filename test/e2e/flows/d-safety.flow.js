@@ -38,7 +38,7 @@ module.exports = async function run({ ok }) {
   }
   async function onboard(who, { create, join } = {}) {
     const page = pg(who);
-    await page.fill('#ob-name', P[who].name); await page.check('#ob-age');
+    await page.fill('#ob-name', P[who].name); await page.selectOption('#ob-dobm', '6'); await E.idle(page); await page.selectOption('#ob-doby', '1995'); await E.idle(page); // WS-B: month + year (C17)
     if (who === 'arjun') {
       await ok('F17 consent: Next stays off and says why until the Terms are agreed', async () => (await page.locator('[data-act=ob-next]').isDisabled()) && /Agree to the Terms/.test(await page.locator('#ob-why').innerText()));
       await ok('F17 consent: the Terms, Privacy notice and Community rules are linked and open', async () => { const r = await page.evaluate(async () => Promise.all(['terms', 'privacy', 'rules'].map(k => fetch(document.querySelector(`a[href="/legal/${k}"]`).href).then(x => x.status)))); return r.every(s => s === 200); });

@@ -1,0 +1,32 @@
+{
+  "_": "WS-B (first run, onboarding, unlocks, help): registry names added on purpose, and sheets whose HTML changed on purpose.",
+  "newActions": {
+    "wel-start": "C09 welcome: Get started",
+    "wel-intro": "C11 invite welcome: What's INSANE?",
+    "wel-go": "C09/C11 welcome: on to sign-in or onboarding",
+    "wel-code": "C09 welcome: I have an invite",
+    "wel-open": "C09 welcome: open the typed invite code",
+    "wel-back": "sign-in: back to the welcome",
+    "intro-go": "C10 intro: next/back card",
+    "intro-skip": "C10 intro: skip",
+    "intro-done": "C10 intro: last card",
+    "si-sug": "C12 email typo suggestion: use it",
+    "si-devcode": "C15 DEV: fill dev code",
+    "ob-shuffle": "C19 handle shuffle",
+    "ob-own": "C22 invite path: start my own instead",
+    "ob-age-redo": "C17 change the age answer after a restore",
+    "gloss": "C108 the ? explainer",
+    "tour-next": "C26 tour",
+    "tour-skip": "C26 tour",
+    "tour-start": "C26 replay the tour from Help",
+    "ask-yes": "C58 notification soft-ask",
+    "ask-later": "C58 notification soft-ask"
+  },
+  "newSheets": {
+    "gloss": "C108 one noun explained",
+    "help": "C108 Help: glossary, unlocks, safety, contact"
+  },
+  "changedSheets": {
+    "make": "C57 grouped + menu with icons, only unlocked rows"
+  }
+}

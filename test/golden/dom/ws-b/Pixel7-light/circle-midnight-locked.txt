@@ -1,0 +1,64 @@
+aside.rail role=complementary aria-label="How this build works"
+  h2 role=heading "INSANE"
+    span "v0.8"
+  p "The barter-and-dare app for the five people you actually see. This is the working build, not the mock-up: everything you do here is saved and shared with everyone you invite."
+  h3 role=heading "What's real here"
+  b.y "Real"
+  span "Places anywhere on Earth: 69,818 towns, a world map with roads, a pin you can drop to the metre."
+  b.y "Real"
+  span "Privacy you choose: an exact pin only you can read, or a 1, 4 or 9 km² square. Drops only show within the distance you set."
+  b.y "Real"
+  span "Sign-in, circles, threads, plans, journeys, feed, calls, Decode, drops, QR meeting codes. Live between everyone invited."
+  b.y "Real"
+  span "v0.6’s game, back: favors in hours with a −5 h limit, pots with who’s paid, the daily dare and the jar, photo clips gone in 24 h, cheers, the Mole, Missions with a hidden spot, trails stamped by GPS."
+  b.y "Real"
+  span "Draws worked out in the open from who turned up. Door codes kept only as a slow hash."
+  b.p "Limit"
+  span "claude.ai pages can't load street tiles, read GPS or send notifications. The INSANE server version (same app) does all three, and checks codes and answers itself."
+  h3 role=heading "Playing with friends"
+  p "Invite each person by email from the Share menu. Anyone who can only view can look around but can't post."
+main#app role=main
+  header.top role=banner
+    span.mark "INSANE"
+    button.bell role=button act="sheet" v="activity" aria-label="What’s new"
+      svg
+    span.where "Third Floor Chennai · 4 km² square"
+      span.live.demo
+      br
+    button.me-btn role=button act="tab" v="you" aria-label="You: profile, journeys, settings" "M"
+  div.banner "Nothing leaves this browser. Open the shared link signed in to play with other people."
+    b "Demo on this device."
+  div#v
+    h1.v role=heading "Third Floor"
+    p.lede "1 of 8 · not met in person yet · code"
+      b "7W9SPX"
+    button.av.me role=button act="cseg" v="people" aria-label="Meera" "M"
+    button.av.add role=button act="sheet" v="invite" aria-label="Bring someone in" "+"
+    div.seg.n5 role=tablist
+      button role=tab act="cseg" v="chat" "Chat"
+      button role=tab act="cseg" v="plans" "Plans"
+      button role=tab act="cseg" v="pacts" "Pacts"
+      button.on role=tab act="cseg" v="midnight" "Midnight"
+        span.lk aria-label="locked: Needs 3 people" "3+"
+      button role=tab act="cseg" v="mole" "Mole"
+        span.lk aria-label="locked: Needs 4 people" "4+"
+    span "Unsigned messages that go out to your circle at 00:00. Nobody, not even the server, keeps who wrote them."
+    button.qi.new role=button act="gloss" v="midnight" aria-label="What’s Midnight?"
+      span "?"
+    div.meta "LOCKED · NEEDS 3 PEOPLE"
+    h3 role=heading "Midnight"
+    p "Opens when your circle has 3 people. You have 1, so 2 more to go."
+    button.btn.s role=button act="sheet" v="invite" "Bring someone in"
+    button.btn.s.ghost role=button act="sheet" v="help" "How unlocks work"
+  nav.tabs role=navigation aria-label="Sections"
+    button role=button act="tab" v="today" aria-current="false" "Home"
+      svg
+    button.on role=button act="tab" v="circle" aria-current="page" "Circle"
+      svg
+    button.plus role=button act="make" aria-label="Make something"
+      span "+"
+    button role=button act="tab" v="city" aria-current="false" "City"
+      svg
+    button role=button act="tab" v="ledger" aria-current="false" "Ledger"
+      svg
+div#layer

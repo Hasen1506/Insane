@@ -6,7 +6,7 @@ function draw(){
   const chat=$('.chat'),nearBottom=chat?(innerHeight+scrollY>=document.body.scrollHeight-120):true;
   // Countdowns are filled by tick(), so an unchanged screen keeps its DOM and a tap mid-update isn't lost.
   const strip=h=>h.replace(/(data-until="\d+"[^>]*>)[^<]*/g,'$1');
-  const hv=strip(view()),hl=strip(layer());
+  const hv=strip(helpMarks(view())),hl=strip(layer());
   if(hv!==lastV){$('#app').innerHTML=hv;lastV=hv}
   mountMaps();document.title=(()=>{const n=S.me&&S.me.cell&&!calmNow()?activity().filter(a=>a.fresh).length:0;return (n?'('+n+') ':'')+'INSANE'})();
   if(hl!==lastL){$('#layer').innerHTML=hl;lastL=hl;mountMaps()}
@@ -15,22 +15,15 @@ function draw(){
   tick();
 }
 function view(){
-  if(S.mode==='signin')return signin();
+  if(S.mode==='signin')return welcomeGate()||signin();
   if(S.mode==='boot'||S.me===undefined)return `<div class="boot"><span class="mark">INSANE</span><span class="pulse">Signing you in…</span></div>`;
-  if(S.me===null)return onboarding();
+  if(S.me===null)return welcomeGate()||onboarding();
   if(!S.me.cell)return relocate();
   const t=S.ui.tab;
-  return header()+`<div id="v">${t==='today'?vToday():t==='circle'?vCircle():t==='city'?vCity():t==='ledger'?vLedger():vYou()}</div>`+nav();
+  return header()+softAskHtml()+`<div id="v">${t==='today'?vToday():t==='circle'?vCircle():t==='city'?vCity():t==='ledger'?vLedger():vYou()}</div>`+nav();
 }
 function relocate(){return `<div style="padding-top:18px"><span class="mark">INSANE</span><h1 class="v">Set your place again</h1><p class="lede">INSANE now works anywhere on Earth, down to the street. Pick your spot, how exact to be, and how far you’d go for a drop.</p>${picker('home')}<div class="btns"><button class="btn wide" data-act="loc-save" ${lpState('home').lat==null?'disabled':''}>Save my place</button></div></div>`}
-function signin(){
-  const f=S.ui.si||(S.ui.si={step:0,email:'',code:''});
-  return `<div style="padding-top:18px"><span class="mark">INSANE</span><h1 class="v">Sign in with your email</h1><p class="lede">We email you a 6-digit code. No password. New here? The same code makes your account.</p>${safetyNotice()}
-  ${f.step===0?`<form data-form="si-start"><label class="f" for="si-email">Email</label><input class="in-t" id="si-email" data-si="email" type="email" autocomplete="email" inputmode="email" value="${esc(f.email)}" placeholder="you@example.com"><div class="btns"><button class="btn wide" type="submit" ${f.busy?'disabled':''}>Email me a code</button></div></form>`
-  :`<form data-form="si-verify"><p>Code sent to <b>${esc(f.email)}</b>. <button type="button" class="link" data-act="si-back">Change</button></p><label class="f" for="si-code">6-digit code</label><input class="in-t" id="si-code" data-si="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" value="${esc(f.code)}" style="letter-spacing:.3em;font-family:var(--f-mono);font-size:20px"><div class="btns"><button class="btn wide" type="submit" ${f.busy?'disabled':''}>Sign in</button></div><p class="meta">Nothing after a minute? Check spam, or <button type="button" class="link" data-act="si-resend">send another</button>.</p></form>`}
-  ${f.err?`<p class="read warn">${esc(f.err)}</p>`:''}${S.hello&&S.hello.dev?'<p class="meta">Development server: codes are printed in the server log.</p>':''}</div>`;
-}
-async function siCall(r,b){const x=await fetch('/api/auth/'+r,{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify(b)});const j=await x.json().catch(()=>({}));if(!x.ok)throw new Error(j.message||'That didn’t work. Try again.');return j}
+// signin() and siCall() live in 68-welcome.js (WS-B).
 
 function header(){
   const me=S.me,c=S.circle,n=activity().filter(a=>a.fresh).length;

@@ -47,7 +47,7 @@ A new collection is a new file. In `server.js`, `beforeWrite`/`readFilter` are n
 | Route | What it does |
 |---|---|
 | `GET /api/health` | Health check |
-| `GET /api/invite/:code` | C11: public. Returns name, member count and first names; rate-limited per IP |
+| `GET /api/invite/:code` | C11: public. Returns `{name, count, max, by}` (the creator's first name only; int-1 took WS-B's contract); rate-limited per IP |
 | `GET /api/unlocks[?circle=]` | C25: `{circle, inputs, on, locked}`, from `server/unlocks.js` |
 | `GET/POST /api/funnel` | C101: owner report / `{step, anon?}` |
 | `POST /api/err` | C98: browser error tunnel → Sentry, scrubbed |

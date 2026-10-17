@@ -40,18 +40,6 @@ ACT["lp-radius"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
 ACT["lp-area"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
   {const st=lpState('home');try{st.area=JSON.parse(d.v)}catch(e){}render();return}
 };
-ACT["si-start"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
-  {const f=S.ui.si;f.err='';f.busy=true;render();try{await siCall('start',{email:f.email});f.step=1;f.code='';setTimeout(()=>{const i=$('#si-code');if(i)i.focus()},60)}catch(e){f.err=e.message}f.busy=false;render();return}
-};
-ACT["si-resend"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
-  {const f=S.ui.si;try{await siCall('start',{email:f.email});toast('Sent another code.')}catch(e){f.err=e.message;render()}return}
-};
-ACT["si-back"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
-  S.ui.si.step=0;S.ui.si.err='';render();return;
-};
-ACT["si-verify"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
-  {const f=S.ui.si;f.err='';f.busy=true;render();try{await siCall('verify',{email:f.email,code:f.code});location.reload();return}catch(e){f.err=e.message}f.busy=false;render();return}
-};
 ACT["signout"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
   await signOut();return;
 };

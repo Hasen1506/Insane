@@ -394,16 +394,16 @@ async function api(req, res, url) {
     const box = getDoc(`data/users/${u.uid}/inbox`) || { items: [] };
     return json(res, 200, box.items[0] || { title: 'INSANE', body: 'Something new.' });
   }
-  // C11: the public invite preview. Only the circle's name, size and members' first names, never ids or places.
+  // C11: the public invite preview (WS-I's route, WS-B's contract): only the circle's name, its size and the
+  // creator's first name, never ids, places or other members' names. Rate-limited per address (C84 'invite').
   if (req.method === 'GET' && r.startsWith('invite/')) {
     rate('invite', clientIp(req));
     const code = r.slice(7).toUpperCase();
-    const c = /^[A-Z0-9]{4,12}$/.test(code) && getDoc('codes/' + code), circle = c && c.cid && getDoc('circles/' + c.cid);
+    const cd = /^[A-Z0-9]{4,12}$/.test(code) && getDoc('codes/' + code), circle = cd && cd.cid && getDoc('circles/' + cd.cid);
     if (!circle) return json(res, 404, { code: 'not_found', message: 'No circle has that code.' });
-    const ids = Array.isArray(circle.members) ? circle.members : [];
-    const first = id => String((getDoc('people/' + id) || {}).name || '').trim().split(/\s+/)[0].slice(0, 24);
-    const by = circle.by && first(circle.by);
-    return json(res, 200, { name: String(circle.name || '').slice(0, 28), members: ids.length, max: 8, by: by || null, names: ids.map(first).filter(Boolean).slice(0, 8) });
+    const count = q.kids.all('people').filter(x => inCircle(JSON.parse(x.data), cd.cid)).length || (Array.isArray(circle.members) ? circle.members.length : 0);
+    const by = String((getDoc('people/' + circle.by) || {}).name || '').trim().split(/\s+/)[0].slice(0, 24);
+    return json(res, 200, { name: String(circle.name || '').slice(0, 28), count, max: 8, by: by || null }, { 'cache-control': 'no-store' });
   }
   // C25: what this person has unlocked in their (primary or ?circle=) circle.
   if (req.method === 'GET' && r === 'unlocks') {

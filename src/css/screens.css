@@ -81,3 +81,80 @@ nav.tabs .plus span{width:44px;height:40px;border-radius:14px;background:var(--s
 ul.rl{margin:6px 0 0;padding-left:18px;font-size:13.5px}ul.rl li{margin:2px 0}
 .seg.n5 button{font-size:12.5px;padding:7px 1px}
 select.in-t{width:auto;min-width:96px}
+/* ---------- v0.9 first run, unlocks, help (WS-B) ---------- */
+.wel{padding-top:18px}
+.wel .v{margin-top:22px}
+.wel-b{list-style:none;padding:0;margin:4px 0 18px;display:flex;flex-direction:column;gap:12px}
+.wel-b li{display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.4}
+.wel-b li>span:first-child{font-size:22px;line-height:1.1;flex:none;width:30px;text-align:center}
+.wel-alt{text-align:center;margin:14px 0 0;font-size:14.5px;color:var(--muted)}
+.wel .btn,.intro .btn,.wel-code .btn{min-height:48px;font-size:15px}
+.wel .link,.intro .link,.why .link{min-height:44px;padding:0 6px}
+.card.inv{margin-top:22px}
+.inv-l{font-size:15.5px;margin:4px 0 0}
+.cnt-of{color:var(--muted);font-weight:600;white-space:nowrap}
+.row2{display:flex;gap:8px;align-items:stretch}
+.row2>*{flex:1;min-width:0}
+.row2>.btn{flex:none}
+.err{color:var(--stamp);font-size:13.5px;font-weight:600;margin:6px 0 0}
+.sug{font-size:14px;margin:6px 0 0}
+.in-t.otp{letter-spacing:.3em;font-family:var(--f-mono);font-size:22px;text-align:center}
+.intro{padding-top:18px;min-height:calc(100vh - 40px);display:flex;flex-direction:column}
+.intro-top{display:flex;justify-content:space-between;align-items:center}
+.intro-card{flex:1;display:flex;flex-direction:column;justify-content:center;padding:24px 0}
+.intro-i{font-size:56px;line-height:1;margin-bottom:12px}
+.intro-card .lede{font-size:16.5px;line-height:1.45}
+.intro-dots{display:flex;gap:6px;justify-content:center;margin:0 0 6px}
+.intro-dots i{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.intro-dots i.on{background:var(--ink);width:22px;border-radius:4px}
+.cnt-n{font-family:var(--f-mono);font-size:12px;color:var(--muted);text-align:right;margin:3px 0 0}
+.ob-hint{font-size:13.5px;color:var(--muted);margin:0 0 8px}
+.chip.shuf{border-style:dashed}
+.hprev{border:1.5px dashed var(--line);border-radius:12px;padding:8px 11px;margin-top:8px;font-size:14px}
+.hprev p{margin:2px 0 0}
+.hprev b{font-family:var(--f-mono);letter-spacing:.06em}
+fieldset.dob{border:0;padding:0;margin:14px 0 0;min-width:0}
+fieldset.dob legend{padding:0;margin-bottom:6px}
+fieldset.dob select{min-height:48px}
+.agerow{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:48px;margin-top:14px;font-size:14px;font-weight:600;color:var(--good)}
+.card.under{border-color:var(--haz);background:var(--haz-soft);margin-top:10px}
+.why{font-size:13.5px;color:var(--muted);margin:6px 0 0;min-height:1em}
+.obchip{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:14.5px;margin-top:10px}
+.obchip:empty{display:none}
+.qi{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;margin:-14px -12px -14px -6px;padding:0;border:0;background:none;color:var(--ball);vertical-align:middle;position:relative;flex:none}
+.eyebrow .qi{font-family:var(--f-body);letter-spacing:0}
+.qi>span{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;border:1.5px solid currentColor;font:700 12px/1 var(--f-body)}
+.qi.new::after{content:"";position:absolute;top:9px;right:10px;width:7px;height:7px;border-radius:50%;background:var(--stamp)}
+.segx{display:flex;align-items:center;gap:6px;font-size:13.5px;color:var(--muted);margin:8px 0 0}
+.segx>span{flex:1}
+.segx .qi{margin:-10px -10px -10px 0}
+.lk{font-size:11px;margin-left:3px;font-family:var(--f-mono);font-weight:700;color:inherit}
+.card.lockcard{margin-top:12px;border-style:dashed}
+.card.lockcard .meta{color:var(--ink);font-weight:600}
+.lockcard .btn{min-height:44px}
+/* C24: how INSANE reads it, in body type and ink, not 11 px mono */
+#read-mind .rk,#read-mind .rr span{color:var(--ink)}
+#read-mind .meta{font-family:var(--f-body);font-size:13px;color:var(--ink)}
+.softask{border:1.5px solid var(--ball);background:var(--ball-soft);border-radius:12px;padding:10px 12px;margin:12px 0 0;font-size:14px}
+.softask p{margin:0}
+.tour{position:fixed;z-index:25;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:calc(86px + env(safe-area-inset-bottom,0px));max-width:420px;margin:0 auto;background:var(--ink);color:var(--paper);border-radius:14px;padding:12px 14px;box-shadow:0 6px 24px rgba(5,7,13,.25)}
+.tour::after{content:"";position:absolute;bottom:-8px;left:var(--x,50%);width:16px;height:16px;background:var(--ink);transform:translateX(-50%) rotate(45deg)}
+.tour .meta{color:inherit;opacity:.75}
+.tour h3{margin:2px 0 2px;font-size:16px}
+.tour p{margin:0;font-size:14px}
+.tour .btns{align-items:center;margin-top:8px}
+.tour .link{color:inherit;min-height:44px}
+.tour .btn{background:var(--paper);color:var(--ink);border-color:var(--paper);min-height:44px}
+.gl{display:flex;flex-direction:column;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px}
+.gl:last-child{border-bottom:0}
+.gl span{color:var(--muted)}
+.gl-s{font-size:14.5px;line-height:1.45}
+.ullist .ul{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);font-size:14px}
+.ullist .ul:last-child{border-bottom:0}
+.ullist .ul small{display:block;color:var(--muted);font-size:12.5px}
+.ullist .ul.open small{color:var(--good)}
+.sh-i .ic{font-size:20px;width:28px;text-align:center;flex:none}
+.sh-i{min-height:48px}
+.mk-more{font-family:var(--f-body);font-size:13.5px;margin:12px 0 0}
+.card.empty-l{margin-top:12px}
+.empty-i{font-size:30px;margin-bottom:6px}

@@ -113,6 +113,10 @@ async function open(who) {
   const P = PEOPLE[who];
   P.ctx = await browser.newContext({ viewport: { width: 400, height: 860 }, deviceScaleFactor: 2, geolocation: { latitude: P.geo[0], longitude: P.geo[1], accuracy: 12 }, permissions: ['geolocation'], timezoneId: P.tz, locale: 'en-GB' });
   await BR.blockExternal(P.ctx); await E.actProbe(P.ctx);
+  // v0.9 first run (WS-B): this port drives v0.8's flows, so it starts on a device that has seen the intro and
+  // the tour, with every feature unlocked (v0.8 had no gradual unlock; its checks use Midnight, the Mole and
+  // drops on day 0 in small circles). The new screens and the unlock rules are tested in test/e2e/flows.
+  await P.ctx.addInitScript(() => { try { localStorage.setItem('insane_intro', '1'); localStorage.setItem('insane_tour', 'done'); localStorage.setItem('insane_unlock_all', '1'); } catch (e) { } });
   await P.ctx.addInitScript(() => { // rAF pacing for pages not in front (see front()); installed after the page's own scripts set up
     window.__bg = true;
     addEventListener('DOMContentLoaded', () => {
@@ -152,14 +156,15 @@ async function open(who) {
 }
 async function signIn(who) {
   const P = PEOPLE[who], t = Date.now(); P.taps = 0;
+  await P.page.waitForSelector('#si-email, [data-act=wel-go]'); if (await P.page.locator('[data-act=wel-go]').count()) await tap(who, '[data-act=wel-go]'); // v0.9: an invite link opens on its preview (C11)
   await P.page.waitForSelector('#si-email'); await type(who, '#si-email', P.email); await tap(who, 'button:has-text("Email me a code")');
-  await P.page.waitForSelector('#si-code'); await type(who, '#si-code', await code(P.email)); await tap(who, 'button:has-text("Sign in")');
+  await P.page.waitForSelector('#si-code'); await type(who, '#si-code', await code(P.email)); // v0.9: six digits submit on their own (C13)
   await P.page.waitForSelector('#ob-name, nav.tabs', { timeout: 15000 });
   P.signin = Date.now() - t;
 }
 async function onboard(who, { how = 'gps', search, pick, paste, exact = false, size = 2, radius = 5, area, lane = 'need', mind, stake, create, join, skip, snap }) {
   const P = PEOPLE[who], t = Date.now();
-  await type(who, '#ob-name', P.name); await tap(who, '#ob-age'); await tap(who, '#ob-consent'); /* v0.9 WS-D: explicit consent (C63) */ await tap(who, '[data-act=ob-next]');
+  await type(who, '#ob-name', P.name); await P.page.selectOption('#ob-dobm', '6'); await P.page.selectOption('#ob-doby', '1990'); await tap(who, '#ob-consent'); await P.page.waitForSelector('[data-act=ob-next]:not([disabled])'); /* v0.9: month + year of birth (C17, WS-B); explicit consent (C63, WS-D) */ await tap(who, '[data-act=ob-next]');
   if (snap) await shot(who, snap + '-1-name');
   await P.page.waitForSelector('#lp-q-home');
   if (how === 'gps') { await tap(who, '[data-act=lp-gps]'); await until(who, async () => (await screen(who)).includes('from GPS')); }
@@ -191,9 +196,9 @@ async function circleCode(who) { return evalIn(who, () => S.circle && S.circle.c
   await open('alice');
   // a wrong code first, the way people mistype
   await type('alice', '#si-email', PEOPLE.alice.email); await tap('alice', 'button:has-text("Email me a code")'); await PEOPLE.alice.page.waitForSelector('#si-code');
-  await type('alice', '#si-code', '000000'); await tap('alice', 'button:has-text("Sign in")');
+  await type('alice', '#si-code', '000000'); // v0.9: submits on the sixth digit (C13)
   await ok('sign-in: a wrong code is refused with a clear message', async () => ((await screen('alice')).includes('isn’t right')));
-  const real = await code(PEOPLE.alice.email); await type('alice', '#si-code', real); await tap('alice', 'button:has-text("Sign in")');
+  const real = await code(PEOPLE.alice.email); await type('alice', '#si-code', real);
   await PEOPLE.alice.page.waitForSelector('#ob-name');
   ok('sign-in: the right code signs Alice in and starts onboarding', true);
   await onboard('alice', { how: 'gps', exact: true, mind: 'run 3 times a week', stake: 1, create: 'Third Floor', snap: 'p01-alice' });

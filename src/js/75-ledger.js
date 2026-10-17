@@ -13,7 +13,8 @@ function vLedger(){
   const seg=S.ui.lseg||'favors';
   let out=`<h1 class="v">Ledger</h1><p class="lede">Favors in hours, pots in money. Everything inside ${esc(S.circle?.name||'your circle')}.</p>
   <div class="seg" role="tablist">${[['favors','Favors'],['pots','Pots']].map(([k,n])=>`<button role="tab" data-act="lseg" data-v="${k}" class="${seg===k?'on':''}" aria-selected="${seg===k}">${n}</button>`).join('')}</div>`;
-  if(!S.me.circle)return out+`<div class="card dash" style="margin-top:12px"><p class="meta">Favors and pots happen inside a circle.</p><div class="btns"><button class="btn s" data-act="sheet" data-v="circle-start">Start or join one</button></div></div>`;
+  if(!S.me.circle)return out+soloLedger();
+  out+=segHelp(seg);const lk=seg==='favors'?'favor':'pot';if(!isOpen(lk))return out+lockPanel(lk); // WS-B unlock hook
   return out+(seg==='favors'?ledgerFavors():ledgerPots());
 }
 function ledgerFavors(){

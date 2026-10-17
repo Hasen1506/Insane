@@ -1,5 +1,6 @@
 /* onboarding */
 ACT["ob-next"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+  if(S.ui.ob.step===0&&obWhy(S.ui.ob,ageCheck(S.ui.ob))){render();return}
   S.ui.ob.step++;render();scrollTo(0,0);return;
 };
 ACT["ob-back"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;

@@ -1,20 +1,23 @@
-// WS-0 acceptance (PLAN-V09 §2): the same ten-plus screens, driven the same way with a frozen start
-// clock and seeded randomness, give an identical DOM snapshot and the same pixels in v0.8 (fac3720)
-// and in the built v0.9 app/index.html. The v0.9 snapshots are also kept as goldens for later work.
-// Local mode (the claude.ai store), Pixel 7 profile.
+// Golden screens (PLAN-V09 §5.d): the same ten-plus screens, driven the same way with a frozen start
+// clock and seeded randomness, compared with the DOM and pixel goldens in test/golden/ (GOLDEN_UPDATE=1
+// rewrites them after a reviewed change). Local mode (the claude.ai store), Pixel 7 and iPhone 13.
+// WS-0 proved these screens identical to v0.8 (fac3720) at 888f1fd. Since WS-A (C01: the viewport meta)
+// phones lay out at their real width, so v0.8 is no longer a pixel reference; GOLDEN_V08=1 still drives
+// v0.8 alongside and reports how far each screen has moved from it, without failing.
 'use strict';
 const fs = require('fs'), path = require('path');
 const BR = require('../lib/browser'), E = require('../lib/e2e'), GD = require('../lib/golden');
 const { v08Dir } = require('../lib/load');
-const SCREENS = require('../diff/allowed.json').screens || {};
 
 const T0 = Date.UTC(2026, 9, 12, 3, 30); // Mon 12 Oct 2026, 09:00 in Chennai
-const PROFILE = process.env.GOLDEN_PROFILE || 'Pixel 7';
+const PROFILES = (process.env.GOLDEN_PROFILE || 'Pixel 7,iPhone 13').split(',').map(s => s.trim());
 
-async function screens(browser, file) {
+async function screens(browser, file, PROFILE) {
   const srv = await E.serveStatic({ file, port: +process.env.GOLDEN_PORT || 8777 }); // same origin both runs: links carry it
   const ctx = await browser.newContext(BR.profile(PROFILE, { timezoneId: 'Asia/Kolkata', locale: 'en-GB', colorScheme: 'light', reducedMotion: 'reduce' }));
   await BR.blockExternal(ctx); await GD.seedRandom(ctx, 9);
+  // WS-B's welcome, intro and tour have their own goldens (firstrun.test.js); these screens start past them
+  await ctx.addInitScript(() => { try { localStorage.setItem('insane_intro', '1'); localStorage.setItem('insane_tour', 'done'); } catch (e) { } });
   const page = await ctx.newPage(); const errors = [];
   page.on('pageerror', e => errors.push(e.message));
   await page.clock.install({ time: T0 });
@@ -23,9 +26,14 @@ async function screens(browser, file) {
   const tap = async sel => { await page.locator(sel).first().click(); await E.settled(page); };
   await page.goto(srv.url + '/?as=meera'); await page.waitForSelector('#ob-name'); await GD.freeze(page);
   await snap('ob-1-name');
-  await page.fill('#ob-name', 'Meera'); await page.check('#ob-age'); if (await page.locator('#ob-consent').count()) await page.check('#ob-consent'); /* v0.9 WS-D (C63) */ await tap('[data-act="ob-next"]');
+  await page.fill('#ob-name', 'Meera');
+  if (await page.locator('#ob-age').count()) await page.check('#ob-age'); // v0.8
+  else { await page.selectOption('#ob-dobm', '6'); await page.selectOption('#ob-doby', '1999'); await E.settled(page); } // v0.9 (C17)
+  if (await page.locator('#ob-consent').count()) await page.check('#ob-consent'); // v0.9 WS-D (C63)
+  await tap('[data-act="ob-next"]');
   await page.waitForSelector('#lp-q-home'); await page.fill('#lp-q-home', 'Chennai'); await page.waitForSelector('.res'); await tap('.res');
-  await tap('[data-act="lp-paste"]'); await page.waitForSelector('#lp-p-home'); await page.fill('#lp-p-home', '13.2790, 80.2619'); await tap('form[data-form="lp-use"] button');
+  if (await page.locator('[data-act="lp-paste"]').count()) { await tap('[data-act="lp-paste"]'); await page.waitForSelector('#lp-p-home'); await page.fill('#lp-p-home', '13.2790, 80.2619'); await tap('form[data-form="lp-use"] button'); } // v0.8
+  else { await page.fill('#lp-q-home', '13.2790, 80.2619'); await page.waitForSelector('.res[data-src="link"]'); await tap('.res[data-src="link"]'); } // WS-F (C65): links go in the search box
   await E.until(async () => (await page.locator('[data-act="lp-size"]').count()) > 0, { what: 'precision chips' });
   await tap('[data-act="lp-size"][data-v="2"]'); await tap('[data-act="lp-radius"][data-v="5"]');
   await snap('ob-2-place');
@@ -44,36 +52,26 @@ async function screens(browser, file) {
   return { out, errors };
 }
 
-// WS-E changed two things these screens show, on purpose (docs/WS-E.md): the Decode clue (C91: city packs,
-// so Chennai gets a Chennai puzzle) and the starter daily dare (C92: a no-repeat cycle). Against v0.8 those
-// lines are compared as placeholders, and their screens get a looser pixel bound; everything else is exact.
-const WSE = new Set(['home', 'tab-city']);
-const wse = dom => dom.replace(/(act="sheet" v="decode"\n\s+div\.meta "Decode · week \d+"\n\s+h3 role=heading )"[^\n]*"/g, '$1"<this week’s Decode clue>"')
-  .replace(/(div\.k "DAILY DARE · FROM THE STARTER JAR · )\d+\/10"\n(\s+div\.q )"[^\n]*"/g, '$1<level>/10"\n$2"<today’s starter dare>"');
 module.exports = async function (t) {
   const browser = await BR.launch();
   try {
-    const v08 = await screens(browser, path.join(v08Dir(), 'app', 'index.html'));
-    const v09 = await screens(browser, E.APP());
-    t.ok('both runs drove the same screens', JSON.stringify(v08.out.map(s => s.name)) === JSON.stringify(v09.out.map(s => s.name)), v09.out.map(s => s.name).join(','));
-    t.ok('no script errors in either', !v08.errors.length && !v09.errors.length, [...v08.errors, ...v09.errors].join(' | '));
     const helper = await browser.newPage();
-    for (let i = 0; i < v09.out.length; i++) {
-      const a = v08.out[i], b = v09.out[i];
-      const why = SCREENS[b.name]; // a documented, intentional change since v0.8 (test/diff/allowed.json "screens")
-      if (why) t.ok(`${b.name}: differs from v0.8 on purpose (${why})`, a.dom !== b.dom, 'listed as changed, but it is identical to v0.8: take it off the list');
-      else {
-        const da = WSE.has(b.name) ? wse(a.dom) : a.dom, db = WSE.has(b.name) ? wse(b.dom) : b.dom;
-        t.ok(`${b.name}: DOM identical to v0.8${WSE.has(b.name) ? ' (but the Decode clue and starter dare, WS-E)' : ''}`, da === db, da === db ? '' : GD.lineDiff(da, db));
-        const r = await GD.pixelDiff(helper, a.img, b.img), tol = WSE.has(b.name) ? 0.05 : 0.001;
-        t.ok(`${b.name}: pixels match v0.8 (${(r * 100).toFixed(3)}% differ, tolerance ${tol * 100}%${WSE.has(b.name) ? ', new text' : ''})`, r <= tol);
+    for (const PROFILE of PROFILES) {
+      const dir = `ws0/${PROFILE.replace(/\s/g, '')}`, P = PROFILE + ': ';
+      const v09 = await screens(browser, E.APP(), PROFILE);
+      t.ok(P + 'drove all 11 screens', v09.out.length === 11, v09.out.map(s => s.name).join(','));
+      t.ok(P + 'no script errors', !v09.errors.length, v09.errors.join(' | '));
+      const v08 = process.env.GOLDEN_V08 ? await screens(browser, path.join(v08Dir(), 'app', 'index.html'), PROFILE) : null;
+      for (let i = 0; i < v09.out.length; i++) {
+        const b = v09.out[i];
+        const g = GD.matchDom(`${dir}/${b.name}`, b.dom); t.ok(P + `${b.name}: DOM golden ${g.created ? 'written' : 'matches'}`, g.ok, g.diff);
+        const p = await GD.matchPixels(helper, `${dir}/${b.name}`, b.img); t.ok(P + `${b.name}: pixel golden ${p.created ? 'written' : 'matches (' + (p.ratio * 100).toFixed(3) + '%)'}`, p.ok);
+        if (v08) console.log(`  ${P}${b.name}: ${v08.out[i].dom === b.dom ? 'DOM same as v0.8' : 'DOM differs from v0.8'}, ${((await GD.pixelDiff(helper, v08.out[i].img, b.img)) * 100).toFixed(1)}% pixels differ`);
       }
-      const g = GD.matchDom(`ws0/${PROFILE.replace(/\s/g, '')}/${b.name}`, b.dom); t.ok(`${b.name}: DOM golden ${g.created ? 'written' : 'matches'}`, g.ok, g.diff);
-      const p = await GD.matchPixels(helper, `ws0/${PROFILE.replace(/\s/g, '')}/${b.name}`, b.img); t.ok(`${b.name}: pixel golden ${p.created ? 'written' : 'matches (' + (p.ratio * 100).toFixed(3) + '%)'}`, p.ok);
+      // the snapshot helper must actually see a difference when there is one
+      const home = v09.out.find(s => s.name === 'home').dom;
+      t.ok(P + 'DOM snapshot detects a one-word change', home.replace('Third Floor', 'Fourth Floor') !== home);
+      t.ok(P + 'pixel diff detects a different screen', (await GD.pixelDiff(helper, v09.out[0].img, v09.out[4].img)) > 0.01);
     }
-    // the snapshot helper must actually see a difference when there is one
-    const tweak = v09.out.find(s => s.name === 'home').dom.replace('Third Floor', 'Fourth Floor');
-    t.ok('DOM snapshot detects a one-word change', tweak !== v09.out.find(s => s.name === 'home').dom);
-    t.ok('pixel diff detects a different screen', (await GD.pixelDiff(helper, v09.out[0].img, v09.out[4].img)) > 0.01);
   } finally { await browser.close(); }
 };

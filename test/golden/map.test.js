@@ -17,7 +17,7 @@ async function run(browser, scheme) {
   const snap = async name => { await E.gone(page, '.toast', { timeout: 8000 }); await E.stable(page, 'body'); await quiet(); out.push({ name, dom: await GD.domSnapshot(page, 'body'), img: await GD.pixelShot(page) }); };
   const tap = async sel => { await page.locator(sel).first().click(); await E.idle(page); };
   await page.goto(srv.url + '/?as=meera'); await page.waitForSelector('#ob-name'); await GD.freeze(page);
-  await page.fill('#ob-name', 'Meera'); await page.check('#ob-age'); await tap('[data-act="ob-next"]');
+  await page.fill('#ob-name', 'Meera'); await page.selectOption('#ob-dobm', '6'); await page.selectOption('#ob-doby', '1999'); await E.settled(page); if (await page.locator('#ob-consent').count()) await page.check('#ob-consent'); /* WS-B C17 + WS-D C63 */ await tap('[data-act="ob-next"]');
   await page.waitForSelector('#lp-q-home'); await E.until(() => page.evaluate(() => !!(GEO.places && GEO.places.length)), { what: 'places' });
   await snap('picker-open');
   await page.fill('#lp-q-home', 'Chennai'); await page.waitForSelector('.res'); await snap('picker-search');

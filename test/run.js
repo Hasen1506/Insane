@@ -10,7 +10,7 @@
 //   regression  test/regression/*.test.js one test per live-test bug (R-Cnn)
 //   e2e:map     test/e2e/map.js           WS-F: place picker (search, GPS, links, privacy preview) and the City map, Pixel 7
 //   golden      test/golden/*.test.js     DOM + pixel goldens (GOLDEN_UPDATE=1 rewrites)
-//   e2e:flows   test/e2e/flows/run.js     the F-flows (each *.flow.js), server mode, Pixel 7
+//   e2e:flows   test/e2e/flows/run.js     user flows on phone profiles: every *.flow.js (WS-D) and *.test.js (WS-A, WS-B)
 // In-process suites export `async t => { t.ok(name, cond, extra) }`. Script suites are run as child
 // processes and pass when they exit 0. Time budgets (PLAN-V09 §5.0) are reported per suite; set
 // BUDGETS=strict to fail a suite that runs over 1.5x its budget. The legacy e2e ports have no fixed sleeps,
@@ -31,7 +31,7 @@ const SUITES = {
   regression: { budget: 10, dir: 'test/regression' },          // R-Cnn: one per live-test bug (PLAN-V09 §5.e)
   'e2e:map': { budget: 60, script: ['test/e2e/map.js'] }, // WS-F: picker and City map on Pixel 7, both modes
   golden: { budget: 30, dir: 'test/golden' },
-  'e2e:flows': { budget: 90, script: ['test/e2e/flows/run.js'] }, // user-story flows, Pixel 7 (PLAN-V09 §5.a)
+  'e2e:flows': { budget: 150, script: ['test/e2e/flows/run.js'] }, // F-flows on Pixel 7 / iPhone 13 (PLAN-V09 §5.a); one runner for *.flow.js and *.test.js
 };
 
 function runScript(args) {
