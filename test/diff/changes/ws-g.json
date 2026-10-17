@@ -1,0 +1,25 @@
+{
+  "_": "WS-G (Ledger and India money, C52-C54): what differs from v0.8 on purpose. potState, potOn, nIn, potPaidN and balance are unchanged (test/diff/ledger.test.js checks them on v0.8- and v0.9-shaped data). The new pot fields (upi, amounts to the paisa) are ignored by them.",
+  "newActions": {},
+  "newSheets": {},
+  "changedSheets": {
+    "pay-note": "C52: for an INR pot the organiser's 'How to pay you' asks for a UPI ID (validated name@bank), not a payment link. Other currencies and the empty state render exactly as v0.8."
+  },
+  "screens": {
+    "tab-ledger": "C54: one-line balance explainer with the sign in words, 'How favors work' folded away, circle balances say owed/owes"
+  },
+  "behaviour": {
+    "fv-log-self": "P02: v0.8's client let you log a favor with yourself as the helper (the server refused it). v0.9 refuses in the client too.",
+    "fv-claim-own": "P02: v0.8's client let you claim your own favor (the server refused). Refused.",
+    "fv-done-not-yours": "P02: marking done a favor someone else claimed, or one not claimed. Refused, as the server does.",
+    "fv-confirm-not-yours": "P02/P01: confirming a favor you didn't ask for, or one not done yet. Refused, as the server does.",
+    "fv-cancel-not-yours": "P01/P03: v0.8's client let anyone delete any favor, logged ones too, which moves balances. Only the asker takes down an unlogged favor (as the server does).",
+    "pot-confirm-not-organiser": "P04: v0.8's client let anyone confirm a payment (the server refused). Only the organiser confirms, and only for someone who is in.",
+    "pot-paid-not-in": "P04: marking yourself paid in a pot you organise or haven't joined. Refused."
+  },
+  "data": {
+    "pots.per": "May carry paise (14.5), parsed from what was typed ('1,500', '₹1,50,000', '1500.50'); v0.8 rounded to whole units, refused '1,500' and capped at 100,000. Cap is now 10,00,000 (₹10 lakh). Sums are done in paise (potSum).",
+    "pots.upi": "New, INR pots only: the organiser's VPA. Server keeps it only when the organiser writes it and it matches name@bank; nobody else can change upi or pay.",
+    "pay-save": "Only the organiser saves 'How to pay you' (the sheet was only shown to them; the action now checks too). For INR it saves a validated UPI ID."
+  }
+}

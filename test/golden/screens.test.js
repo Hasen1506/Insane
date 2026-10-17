@@ -12,12 +12,11 @@ const { v08Dir } = require('../lib/load');
 const T0 = Date.UTC(2026, 9, 12, 3, 30); // Mon 12 Oct 2026, 09:00 in Chennai
 const PROFILES = (process.env.GOLDEN_PROFILE || 'Pixel 7,iPhone 13').split(',').map(s => s.trim());
 
-let GPORT = +process.env.GOLDEN_PORT || 0;
-const goldenPort = async () => GPORT || (GPORT = await E.freePort());
+const ORIGIN = 'http://localhost:8777'; // what the page sees (links carry it); served from a free port by BR.aliasOrigin
 async function screens(browser, file, PROFILE) {
-  const srv = await E.serveStatic({ file, port: await goldenPort() }); // same origin every run (links carry it): one free port per process
+  const srv = await E.serveStatic({ file, port: 0 });
   const ctx = await browser.newContext(BR.profile(PROFILE, { timezoneId: 'Asia/Kolkata', locale: 'en-GB', colorScheme: 'light', reducedMotion: 'reduce' }));
-  await BR.blockExternal(ctx); await GD.seedRandom(ctx, 9);
+  await BR.blockExternal(ctx); await BR.aliasOrigin(ctx, srv.url, ORIGIN); await GD.seedRandom(ctx, 9);
   // WS-B's welcome, intro and tour have their own goldens (firstrun.test.js); these screens start past them
   await ctx.addInitScript(() => { try { localStorage.setItem('insane_intro', '1'); localStorage.setItem('insane_tour', 'done'); } catch (e) { } });
   const page = await ctx.newPage(); const errors = [];
@@ -26,7 +25,7 @@ async function screens(browser, file, PROFILE) {
   const out = [];
   const snap = async name => { await E.gone(page, '.toast', { timeout: 6000 }); /* toasts run on a wall-clock timer, so wait them out */ await E.stable(page, 'body'); out.push({ name, dom: await GD.domSnapshot(page, 'body'), img: await GD.pixelShot(page) }); };
   const tap = async sel => { await page.locator(sel).first().click(); await E.settled(page); };
-  await page.goto(srv.url + '/?as=meera'); await page.waitForSelector('#ob-name'); await GD.freeze(page);
+  await page.goto(ORIGIN + '/?as=meera'); await page.waitForSelector('#ob-name'); await GD.freeze(page);
   await snap('ob-1-name');
   await page.fill('#ob-name', 'Meera');
   if (await page.locator('#ob-age').count()) await page.check('#ob-age'); // v0.8

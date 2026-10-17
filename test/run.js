@@ -11,6 +11,7 @@
 //   e2e:map     test/e2e/map.js           WS-F: place picker (search, GPS, links, privacy preview) and the City map, Pixel 7
 //   golden      test/golden/*.test.js     DOM + pixel goldens (GOLDEN_UPDATE=1 rewrites)
 //   e2e:flows   test/e2e/flows/run.js     user flows on phone profiles: every *.flow.js (WS-D) and *.test.js (WS-A, WS-B)
+//   e2e:ledger  test/e2e/ledger.js        WS-G: INR pot → Pay by UPI → organiser confirms; favor balances (Pixel 7, local)
 // In-process suites export `async t => { t.ok(name, cond, extra) }`. Script suites are run as child
 // processes and pass when they exit 0. Time budgets (PLAN-V09 §5.0) are reported per suite; set
 // BUDGETS=strict to fail a suite that runs over 1.5x its budget. The legacy e2e ports have no fixed sleeps,
@@ -32,6 +33,7 @@ const SUITES = {
   'e2e:map': { budget: 60, script: ['test/e2e/map.js'] }, // WS-F: picker and City map on Pixel 7, both modes
   golden: { budget: 30, dir: 'test/golden' },
   'e2e:flows': { budget: 150, script: ['test/e2e/flows/run.js'] }, // F-flows on Pixel 7 / iPhone 13 (PLAN-V09 §5.a); one runner for *.flow.js and *.test.js
+  'e2e:ledger': { budget: 60, script: ['test/e2e/ledger.js'] },
 };
 
 function runScript(args) {

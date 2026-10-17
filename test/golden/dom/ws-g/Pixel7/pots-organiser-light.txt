@@ -1,0 +1,65 @@
+main#app role=main
+  header.top role=banner
+    span.mark "INSANE"
+    button.bell role=button act="sheet" v="activity" aria-label="What’s new: 1"
+      svg
+      span.cnt "1"
+    span.where "Third Floor Chennai · 4 km² square"
+      span.live.demo
+      br
+    button.me-btn role=button act="tab" v="you" aria-label="You: profile, journeys, settings" "M"
+  div.banner "Nothing leaves this browser. Open the shared link signed in to play with other people."
+    b "Demo on this device."
+  div#v
+    h1.v role=heading "Ledger"
+    p.lede "Favors in hours, pots in money. Everything inside Third Floor."
+    div.seg role=tablist
+      button role=tab act="lseg" v="favors" "Favors"
+      button.on role=tab act="lseg" v="pots" "Pots"
+    div.safe "Pots track who’s in and who’s paid. You pay each other, or the shop, with whatever you already use."
+      b "INSANE never holds your money."
+    div.meta "WHO OWES WHAT"
+    span "Owed to you"
+      b.pos "₹1,500"
+    span "Arjun → you · Festival tickets"
+    span.amt.pos "₹1,500"
+    small "says paid: confirm it landed"
+    button.btn.s role=button act="pot-new" "+ New pot"
+    div.potbtn role=button act="pot-open" v="qz9mvkn5nfye8pzu"
+      span.kind.l "Pledge, then pay · You"
+      span.meta
+      p "· ₹1,50,000 each"
+        b "Goa trip"
+      i
+      span.meta "1/3 pledged"
+      span.meta "tap to open"
+    div.potbtn role=button act="pot-open" v="mim49asehkndvjp9"
+      span.kind.l "Split pot · You"
+      span.meta
+      p "· ₹1,500 each ·"
+        b "Festival tickets"
+        b.due "₹1,500 still to come in"
+      i
+      span.meta "1/2 paid"
+      span.meta
+    span.pp.checking "checking"
+      b "Arjun"
+    span.pp.paid "paid"
+      b "You"
+    p.meta "You’re collecting this one."
+    div.meta "Did it land?"
+    span.grow "Arjun · UPI"
+    button.btn.s role=button act="pot-confirm" v="mim49asehkndvjp9" "Confirm"
+    button.link role=button act="pot-close" v="mim49asehkndvjp9" "Close the pot"
+    button.btn.s.ghost role=button act="open" v="mim49asehkndvjp9" "Thread"
+  nav.tabs role=navigation aria-label="Sections"
+    button role=button act="tab" v="today" aria-current="false" "Home"
+      svg
+    button role=button act="tab" v="circle" aria-current="false" "Circle"
+      svg
+    button.plus role=button act="make" aria-label="Make something"
+      span "+"
+    button role=button act="tab" v="city" aria-current="false" "City"
+      svg
+    button.on role=button act="tab" v="ledger" aria-current="page" "Ledger"
+      svg

@@ -59,4 +59,14 @@ async function blockExternal(ctx, { allow = [] } = {}) {
   ctx.__blocked = ABORT;
 }
 
-module.exports = { playwright, chromiumPath, launch, devices, profile, blockExternal, QR_FILE };
+// Goldens need a fixed origin (invite links and QR codes carry it) but must not hold a fixed port (int-1, WS-J
+// groundwork). The page talks to `alias` (e.g. http://localhost:8777), which nothing listens on: this context
+// answers those requests from the real server at `realUrl` (a free port). Register it after blockExternal().
+async function aliasOrigin(ctx, realUrl, alias) {
+  await ctx.route(u => u.href === alias || u.href.startsWith(alias + '/'), async route => {
+    const u = new URL(route.request().url());
+    try { await route.fulfill({ response: await route.fetch({ url: realUrl + u.pathname + u.search }) }); } catch (e) { await route.abort('connectionrefused').catch(() => { }); }
+  });
+  return alias;
+}
+module.exports = { playwright, chromiumPath, launch, devices, profile, blockExternal, aliasOrigin, QR_FILE };

@@ -1,0 +1,66 @@
+main#app role=main
+  header.top role=banner
+    span.mark "INSANE"
+    button.bell role=button act="sheet" v="activity" aria-label="What’s new"
+      svg
+    span.where "Third Floor Chennai · 4 km² square"
+      span.live.demo
+      br
+    button.me-btn role=button act="tab" v="you" aria-label="You: profile, journeys, settings" "A"
+  div.banner "Nothing leaves this browser. Open the shared link signed in to play with other people."
+    b "Demo on this device."
+  div#v
+    h1.v role=heading "Ledger"
+    p.lede "Favors in hours, pots in money. Everything inside Third Floor."
+    div.seg role=tablist
+      button role=tab act="lseg" v="favors" "Favors"
+      button.on role=tab act="lseg" v="pots" "Pots"
+    div.safe "Pots track who’s in and who’s paid. You pay each other, or the shop, with whatever you already use."
+      b "INSANE never holds your money."
+    div.meta "WHO OWES WHAT"
+    span "You owe"
+      b.neg "₹1,500"
+    span "You → Meera · Festival tickets"
+    span.amt.neg "₹1,500"
+    small "to pay"
+    button.btn.s role=button act="pot-new" "+ New pot"
+    div.potbtn role=button act="pot-open" v="qz9mvkn5nfye8pzu"
+      span.kind.l "Pledge, then pay · Meera"
+      span.meta
+      p "· ₹1,50,000 each"
+        b "Goa trip"
+      i
+      span.meta "1/3 pledged"
+      span.meta "tap to open"
+    div.potbtn role=button act="pot-open" v="mim49asehkndvjp9"
+      span.kind.l "Split pot · Meera"
+      span.meta
+      p "· ₹1,500 each ·"
+        b "Festival tickets"
+        b.due "you owe ₹1,500"
+      i
+      span.meta "1/2 paid"
+      span.meta
+    span.pp.topay "to pay"
+      b "You"
+    span.pp.paid "paid"
+      b "Meera"
+    p.meta "Pay ₹1,500 with UPI or whatever you already use. They confirm it landed."
+      b "Meera"
+    a.btn.upi role=link href="upi://pay?pa=meera.k@okaxis&pn=Meera&am=1500.00&cu=INR&tn=Festival%20tickets" "Pay ₹1,500 by UPI"
+    p.meta "UPI ID . After paying, tell Meera below."
+      b "meera.k@okaxis"
+      button.link role=button act="copy" v="meera.k@okaxis" "copy"
+    button.btn.s.ghost role=button act="pot-pay" v="mim49asehkndvjp9" "I’ve paid Meera ₹1,500"
+    button.btn.s.ghost role=button act="open" v="mim49asehkndvjp9" "Thread"
+  nav.tabs role=navigation aria-label="Sections"
+    button role=button act="tab" v="today" aria-current="false" "Home"
+      svg
+    button role=button act="tab" v="circle" aria-current="false" "Circle"
+      svg
+    button.plus role=button act="make" aria-label="Make something"
+      span "+"
+    button role=button act="tab" v="city" aria-current="false" "City"
+      svg
+    button.on role=button act="tab" v="ledger" aria-current="page" "Ledger"
+      svg
