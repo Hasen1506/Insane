@@ -88,10 +88,12 @@ module.exports = function account(ctx, mod) {
     const priv = Object.fromEntries(q.kids.all('data/users/' + uid).map(r => [r.path.split('/').pop(), JSON.parse(r.data)]));
     const msgs = db.prepare("SELECT path,data FROM docs WHERE path LIKE '%/msgs/%' AND data LIKE ?").all('%' + uid + '%').map(r => ({ path: r.path, ...JSON.parse(r.data) })).filter(m => m.by === uid)
       .map(m => { const t = getDoc(m.path.split('/').slice(0, -2).join('/')) || {}; return { where: t.title || (m.path.startsWith('dms/') ? 'Direct messages' : 'A room'), text: m.text, at: m.at }; }).sort((a, b) => a.at - b.at);
-    const favors = me.circle ? q.kids.all(`circles/${me.circle}/favors`).map(r => JSON.parse(r.data)).filter(f => f.asker === uid || f.doer === uid) : [];
+    // every circle the person is in (WS-I circles[], int-1), not just the primary
+    const myCircles = [...new Set([...(me.circle ? [me.circle] : []), ...(Array.isArray(me.circles) ? me.circles : [])])];
+    const favors = myCircles.flatMap(c => q.kids.all(`circles/${c}/favors`)).map(r => JSON.parse(r.data)).filter(f => f.asker === uid || f.doer === uid);
     const ledger = favors.filter(f => f.status === 'logged').map(f => ({ what: f.what, h: f.h, you: f.doer === uid ? 'helped' : 'were helped', at: f.loggedAt || f.at }));
     const posts = q.kids.all('posts').map(r => JSON.parse(r.data)).filter(p => p.by === uid).map(p => ({ text: p.text, kind: p.kind, at: p.at }));
-    const pots = me.circle ? q.kids.all(`circles/${me.circle}/threads`).map(r => JSON.parse(r.data)).filter(t => t.kind === 'pot' && ((t.pledges || {})[uid] || t.by === uid)).map(t => ({ title: t.title, per: t.per, cur: t.cur, paid: (t.paid || {})[uid] || false, organiser: t.by === uid })) : [];
+    const pots = myCircles.flatMap(c => q.kids.all(`circles/${c}/threads`)).map(r => JSON.parse(r.data)).filter(t => t.kind === 'pot' && ((t.pledges || {})[uid] || t.by === uid)).map(t => ({ title: t.title, per: t.per, cur: t.cur, paid: (t.paid || {})[uid] || false, organiser: t.by === uid }));
     const data = { profile: me, private: priv, messages: msgs, ledger, favors, pots, posts, exportedAt: new Date(now()).toISOString() };
     const d = t => t ? new Date(t).toISOString().slice(0, 16).replace('T', ' ') : '';
     const sec = (h, rows, f) => `<h2>${esc(h)}</h2>${rows.length ? `<ul>${rows.map(x => `<li>${f(x)}</li>`).join('')}</ul>` : '<p>Nothing.</p>'}`;

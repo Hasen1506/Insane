@@ -11,16 +11,21 @@ const UNDO_MS = 24 * 36e5;
 
 module.exports = function moderation(ctx) {
   const { db, q, getDoc, putDoc, now, isOwner, Refuse, rid, touched, refreshUser } = ctx;
-  db.exec(`CREATE TABLE IF NOT EXISTS reports(id TEXT PRIMARY KEY, at INTEGER, by TEXT, kind TEXT, target TEXT, path TEXT, cid TEXT, category TEXT, note TEXT, status TEXT);
-CREATE TABLE IF NOT EXISTS audit(at INTEGER, actor TEXT, action TEXT, target TEXT, note TEXT);`);
+  // reports and audit are created by server/migrate.js (schema step 3), which server.js runs before this module loads
+  for (const t of ['reports', 'audit']) if (!db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?").get(t)) throw new Error(`moderation: table ${t} is missing; run server/migrate.js first`);
   const audit = (actor, action, target, note = '') => db.prepare('INSERT INTO audit(at,actor,action,target,note) VALUES(?,?,?,?,?)').run(now(), actor, action, String(target || ''), String(note || '').slice(0, 300));
 
   /* ---------- who is who ---------- */
   const person = uid => getDoc('people/' + uid) || {};
-  const circleOf = uid => person(uid).circle || null;
-  const isMember = (uid, cid) => !!uid && !!cid && (circleOf(uid) === cid || ((getDoc('circles/' + cid) || {}).members || []).includes(uid));
+  // int-1: a person can be in up to MAX_CIRCLES circles (WS-I, people/{uid}.circles); `circle` is the primary one.
+  // Every membership and read check below goes through circlesOfDoc, so it holds for each circle, not just the primary.
+  const circlesOfDoc = d => { const cs = Array.isArray(d && d.circles) ? d.circles.filter(x => typeof x === 'string' && x) : []; return d && d.circle && !cs.includes(d.circle) ? [d.circle, ...cs] : cs; };
+  const circleOf = uid => person(uid).circle || null; // the primary circle: defaults only (reports, the admin route's cid)
+  const circlesOf = uid => circlesOfDoc(person(uid));
+  const isMember = (uid, cid) => !!uid && !!cid && (circlesOf(uid).includes(cid) || ((getDoc('circles/' + cid) || {}).members || []).includes(uid));
+  const shareCircle = (a, b) => { const mine = circlesOf(a); return circlesOfDoc(b).some(c => mine.includes(c)); };
   const ownerOf = c => c && (c.owner || c.by);
-  const membersOf = cid => q.kids.all('people').map(r => ({ id: r.path.split('/')[1], ...JSON.parse(r.data) })).filter(p => p.circle === cid);
+  const membersOf = cid => q.kids.all('people').map(r => ({ id: r.path.split('/')[1], ...JSON.parse(r.data) })).filter(p => circlesOfDoc(p).includes(cid));
   const blocksOf = uid => ((getDoc(`data/users/${uid}/blocks`) || {}).ids) || {};
   // Blocking works both ways: neither person sees the other's content, and neither can reach the other.
   const hidden = (a, b) => !!a && !!b && a !== b && (!!blocksOf(a)[b] || !!blocksOf(b)[a]);
@@ -51,12 +56,12 @@ CREATE TABLE IF NOT EXISTS audit(at INTEGER, actor TEXT, action TEXT, target TEX
     const s = p.split('/');
     if (s[0] === 'people' && s.length === 2 && s[1] !== u.uid) {
       d = { ...d }; delete d.consent; delete d.adultAt;
-      if (!(d.circle && d.circle === circleOf(u.uid)) && !isOwner(u)) delete d.cell; // C44: strangers never get your square
+      if (!shareCircle(u.uid, d) && !isOwner(u)) delete d.cell; // C44: strangers never get your square
       return d;
     }
     if (s[0] === 'live' && s.length === 2 && s[1] !== u.uid) { // C90: presence is for your circle only, and can be off
       const them = person(s[1]);
-      if (!them.circle || them.circle !== circleOf(u.uid) || them.presenceOff || hidden(u.uid, s[1])) return null;
+      if (!shareCircle(u.uid, them) || them.presenceOff || hidden(u.uid, s[1])) return null;
       return d;
     }
     if (s[0] === 'circles' && s.length === 2) {
@@ -83,18 +88,22 @@ CREATE TABLE IF NOT EXISTS audit(at INTEGER, actor TEXT, action TEXT, target TEX
     if (!(c.members || []).includes(uid) && membersOf(cid).length >= 8) throw new Refuse('failed_precondition', `${c.name} is full. Circles stop at 8.`);
     return c;
   }
-  // Membership follows people/{uid}.circle, which only the person sets: joining adds you, leaving takes you off.
+  // Membership follows people/{uid}.circles (and .circle, mirrored into it by server/rules/people.js), which only
+  // the person sets: each circle added is checked (closed, removed, full) and adds you; each one dropped takes you off.
+  // Every join is checked before any circle doc changes, so a refused join leaves nothing half done.
   function moveMember(uid, from, to) {
-    const out = [];
-    if (from && from !== to) {
-      const c = getDoc('circles/' + from);
+    const out = [], fromS = new Set(from), toS = new Set(to);
+    const joins = [...toS].filter(c => !fromS.has(c)).map(cid => [cid, joinCheck(cid, uid)]);
+    for (const cid of fromS) {
+      if (toS.has(cid)) continue;
+      const c = getDoc('circles/' + cid);
       if (c) {
         c.members = (c.members || []).filter(x => x !== uid);
-        if (ownerOf(c) === uid && c.members.length) { c.owner = c.members[0]; audit(uid, 'owner-left', from, 'ownership passed on'); }
-        putDoc('circles/' + from, c); out.push('circles/' + from);
+        if (ownerOf(c) === uid && c.members.length) { c.owner = c.members[0]; audit(uid, 'owner-left', cid, 'ownership passed on'); }
+        putDoc('circles/' + cid, c); out.push('circles/' + cid);
       }
     }
-    if (to && from !== to) { const c = joinCheck(to, uid); c.members = [...new Set([...(c.members || []), uid])]; putDoc('circles/' + to, c); out.push('circles/' + to); }
+    for (const [cid, c] of joins) { c.members = [...new Set([...(c.members || []), uid])]; putDoc('circles/' + cid, c); out.push('circles/' + cid); }
     return out;
   }
   function beforeWrite(op, p, data, u, old) {
@@ -111,9 +120,9 @@ CREATE TABLE IF NOT EXISTS audit(at INTEGER, actor TEXT, action TEXT, target TEX
         if (op === 'set' && old) { data.adult = old.adult; data.adultAt = old.adultAt; data.consent = old.consent; }
       }
       if ('presenceOff' in data) data.presenceOff = !!data.presenceOff;
-      if ('circle' in data) {
-        const to = data.circle || null, from = (old && old.circle) || null;
-        data.circle = to;
+      if ('circle' in data || 'circles' in data) {
+        if ('circle' in data) data.circle = data.circle || null;
+        const to = circlesOfDoc(op === 'set' || !old ? data : { ...old, ...data }), from = circlesOfDoc(old);
         const paths = moveMember(s[1], from, to);
         if (paths.length) setImmediate(() => touched(paths));
       }
@@ -192,7 +201,13 @@ CREATE TABLE IF NOT EXISTS audit(at INTEGER, actor TEXT, action TEXT, target TEX
     const c = getDoc('circles/' + cid);
     c.members = (c.members || []).filter(x => x !== uid); c.removed = { ...(c.removed || {}), [uid]: now() };
     putDoc('circles/' + cid, c);
-    const pp = getDoc('people/' + uid); if (pp && pp.circle === cid) { pp.circle = null; putDoc('people/' + uid, pp); }
+    const pp = getDoc('people/' + uid);
+    if (pp && circlesOfDoc(pp).includes(cid)) { // off every list: the primary, and circles[] (WS-I)
+      const cs = circlesOfDoc(pp).filter(x => x !== cid);
+      if (Array.isArray(pp.circles) || cs.length) pp.circles = cs;
+      if (pp.circle === cid) pp.circle = cs[0] || null;
+      putDoc('people/' + uid, pp);
+    }
     q.del.run(`circles/${cid}/progress/${uid}`);
     audit(actor, 'remove-member', cid, uid);
     touched(['circles/' + cid, 'people/' + uid, `circles/${cid}/progress/${uid}`]); refreshUser(uid);
@@ -272,15 +287,15 @@ CREATE TABLE IF NOT EXISTS audit(at INTEGER, actor TEXT, action TEXT, target TEX
       if (r === 'circle/remove') {
         const who = String(b.uid || '');
         if (who === u.uid) throw new Refuse('invalid_argument', 'Transfer the circle first, then leave.');
-        if (!(c.members || []).includes(who) && circleOf(who) !== cid) throw new Refuse('failed_precondition', 'They aren’t in this circle.');
+        if (!isMember(who, cid)) throw new Refuse('failed_precondition', 'They aren’t in this circle.');
         removeMember(cid, who, u.uid); return { ok: true };
       }
       if (r === 'circle/unremove') {
         const who = String(b.uid || ''), at = (c.removed || {})[who];
         if (!at) throw new Refuse('failed_precondition', 'They weren’t removed.');
         const rem = { ...c.removed }; delete rem[who]; const n = { ...c, removed: rem };
-        const back = now() - at <= UNDO_MS && !circleOf(who) && (getDoc('people/' + who));
-        if (back) { n.members = [...new Set([...(n.members || []), who])]; const pp = getDoc('people/' + who); pp.circle = cid; putDoc('people/' + who, pp); }
+        const back = now() - at <= UNDO_MS && !circlesOf(who).length && (getDoc('people/' + who)); // v0.8 rule kept: only if they're in no circle now
+        if (back) { n.members = [...new Set([...(n.members || []), who])]; const pp = getDoc('people/' + who); pp.circle = cid; pp.circles = [cid]; putDoc('people/' + who, pp); }
         putDoc('circles/' + cid, n); audit(u.uid, 'unremove', cid, who); touched(['circles/' + cid, 'people/' + who]); refreshUser(who);
         return { ok: true, back: !!back };
       }
