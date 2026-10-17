@@ -45,7 +45,10 @@ async function open({ built = true } = {}) {
     // compare one call on every side
     compare(input, call) {
       const [base, ...rest] = Object.entries(sides).map(([n, a]) => [n, attempt(() => call(input)(a))]);
-      for (const [n, r] of rest) if (key(r) !== key(base[1])) return { diff: true, a: base, b: [n, r] };
+      // the built side drops the indentation after a newline inside template literals (tools/build.js, int-2):
+      // HTML between tags renders the same, so that one difference is compared away for it, and nothing else
+      const k = (n, v) => n === 'v0.9 built' ? key(v).replace(/\\n[ \t]+/g, '\\n') : key(v);
+      for (const [n, r] of rest) if (k(n, r) !== k(n, base[1])) return { diff: true, a: base, b: [n, r] };
       return { diff: false };
     },
     same(name, gen, call, opts = {}) {

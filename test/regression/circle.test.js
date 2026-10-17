@@ -98,7 +98,7 @@ module.exports = async function (t) {
   }
   { // R-C73: "You're in." from Circle was still showing on Ledger
     const app = fresh();
-    app.run(`S.ui.tab='circle';toast('You’re in.')`); app.run(`S.ui.tab='ledger';toastHtml()`);
+    app.run(`S.ui.tab='circle';toast('You’re in.');toastHtml()`); app.run(`S.ui.tab='ledger';toastHtml()`); // shown on Circle (toastHtml is the draw), then a later tap
     t.ok('R-C73 a toast is cleared by a tab change', app.run('S.toast') === null);
     app.run(`toast('one');toast('two')`);
     t.ok('R-C73 a new toast replaces the last: one at a time', app.run('S.toast') === 'two');

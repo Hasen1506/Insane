@@ -91,6 +91,16 @@ async function run(browser, scheme) {
   await state('circle-plan-form', () => { S.ui.tab = 'circle'; S.ui.cseg = 'plans'; act('np-toggle', {}); });
   await state('thread-general', () => act('open', { type: 'thread', v: 'general' }));
   await state('toast', () => { act('tab', { v: 'today' }); toast('Plan sent. Everyone taps in or out.'); }, null);
+  // WS-C's screens (int-2): the invite card on Home (fewer than 3 of you), the circle switcher with two circles
+  // (header button and sheet), and the invite sheet with the share row
+  await state('home-invite-card', () => { globalThis.__m = S.members; S.members = S.members.slice(0, 2); act('tab', { v: 'today' }); render(); });
+  if (!(await a.locator('#app .card.invite').count())) errors.push('home-invite-card: no invite card drawn');
+  await a.evaluate(() => { S.members = globalThis.__m; render(); }); await E.idle(a);
+  await a.evaluate(() => { globalThis.__c = S.me.circles; S.me.circles = [S.me.circle, 'a11y-family']; S.cnames['a11y-family'] = 'Family'; openSheet('circles'); }); await E.idle(a);
+  if ((await a.locator('.sheet [data-act="c-switch"]').count()) !== 2) errors.push('sheet-circles-two: not two circles in the switcher');
+  await shot(a, 'sheet-circles-two'); await a.evaluate(() => { S.ui.sheet = null; render(); }); await E.idle(a);
+  await a.evaluate(() => { S.me.circles = globalThis.__c; render(); }); await E.idle(a);
+  await state('sheet-invite-share', () => openSheet('invite'));
   await a.evaluate(() => { toast(null); act('tab', { v: 'you' }); }); await E.idle(a);
   await a.evaluate(async () => { Object.assign(F, { darkH: 1, darkAt: 0 }); await act('dark-go', {}); }); await E.idle(a);
   if (await a.locator('.darkall').count()) await shot(a, 'gone-dark', { scope: '.darkall' });
