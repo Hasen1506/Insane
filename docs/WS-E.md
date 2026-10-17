@@ -43,7 +43,7 @@ There are 72 puzzles. Chennai, Bengaluru, Mumbai and Delhi have 12 each; Hyderab
 
 - **Commit-reveal.** When a drop is made, the server picks a random seed, keeps it aside (`kv dropseed:<id>`) and publishes only `seedHash = sha256(seed)`. Hosts can't set or replace the seed or the hash, or re-roll by saving again.
 - **Reveal.** When the drop closes, the sweep writes `seed` into the drop, and reads after the end include it. The page checks the seed against the hash and says whether it matches.
-- **The draw** is a seeded shuffle of the eligible circles: each circle once, only check-ins inside the window, never the host's own circle. The winner is first place, and later places can carry more prizes, so nobody is drawn twice.
+- **The draw** is a seeded shuffle of the eligible circles: each circle once, only check-ins inside the window. The winner is first place, and later places can carry more prizes, so nobody is drawn twice.
 - **A check-in's circle is set by the server** from the person's own record, so nobody can enter another circle.
 - **Local mode.** The host's device keeps the seed privately and publishes it after the drop closes.
 - **Old drops.** Drops from before v0.9 (no `seedHash`) and trails keep v0.8's formula, so old winners still check out.

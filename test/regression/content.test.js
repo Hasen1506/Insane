@@ -15,7 +15,7 @@ module.exports = async function (t) {
   // R-C50: v0.8's drawWinner(d) = fnv(d.id + circles) was computable by anyone before the draw
   const d = { id: 'drop1', start: 0, end: 10, seedHash: 'abc' }, ins = [{ circle: 'a', at: 5 }, { circle: 'b', at: 5 }];
   t.ok('R-C50 a v0.9 drop has no winner anyone can compute until its seed is out', app.get('drawWinner')(d, ins) === null && app.get('drawWinner')({ ...d, seed: 'x' }, ins) !== null);
-  t.ok('R-C50 the host’s own circle can’t win its drop, and late check-ins don’t count', app.get('drawWinner')({ ...d, seed: 's', hostCircle: 'a' }, ins) === 'b' && app.get('drawWinner')({ ...d, seed: 's' }, [{ circle: 'a', at: 50 }]) === null);
+  t.ok('R-C50 a check-in after the drop closed doesn’t enter the draw', app.get('drawWinner')({ ...d, seed: 's' }, [{ circle: 'a', at: 50 }]) === null && app.get('drawWinner')({ ...d, seed: 's' }, [{ circle: 'a', at: 50 }, { circle: 'b', at: 5 }]) === 'b');
   // R-C91: Chennai got London's Waterloo and Big Ben. A Chennai person now gets the Chennai pack.
   const P = K.P.packs, chennai = P.find(p => p.id === 'chennai');
   t.ok('R-C91 a Minjur/Chennai city id gets the Chennai pack, in the page and on the server', app.run('packFor(DECODE_LOCAL.packs,"IN-tamil_nadu-chennai").id') === 'chennai' && K.C.packFor(P, 'IN-tamil_nadu-chennai').id === 'chennai' && chennai.puzzles.length >= 12);

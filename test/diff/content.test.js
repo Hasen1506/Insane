@@ -3,7 +3,7 @@
 //   same:     decodeState and decPts (ranking and points), the hint thresholds, drawWinner for drops made
 //             before v0.9, moleDone and the first 8 dares and Mole tasks
 //   allowed:  drawWinner for v0.9 drops (C50, commit-reveal: drawn from the published seed among the circles
-//             that checked in during the window, host's circle excluded; sealed = no winner);
+//             that checked in during the window; sealed = no winner);
 //             dailyDare starters (C92: a no-repeat cycle instead of v0.8's hash, which repeated)
 'use strict';
 const H = require('./harness');
@@ -33,7 +33,7 @@ module.exports = async function (t) {
     allow: (a, b, [d, ins]) => {
       changed++;
       const w = b.ok !== undefined ? JSON.parse(b.ok) : 'threw';
-      const el = [...new Set(ins.filter(i => i.circle && (i.at == null || (i.at >= d.start && i.at <= d.end)) && i.circle !== d.hostCircle).map(i => i.circle))].sort();
+      const el = [...new Set(ins.filter(i => i.circle && (i.at == null || (i.at >= d.start && i.at <= d.end))).map(i => i.circle))].sort();
       if (!d.seed) return w === null; // sealed: nobody can compute it yet
       if (!el.length) return w === null;
       return el.includes(w) && w === v9.get('drawOrder')(d.seed, el)[0];

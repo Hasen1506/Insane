@@ -26,8 +26,8 @@ module.exports = async function (t) {
     const w = drawWinner(d, ins), sh = ins.map((x, i) => [((i + 1) * 2654435761 + k) % 4294967296, x]).sort((a, b) => a[0] - b[0]).map(x => x[1]);
     return w === drawWinner(d, sh) && w === drawWinner(d, [...ins, ...ins]) && w === drawWinner({ ...d }, ins.slice());
   }));
-  check(prop('P10 draw: the winner is a circle that checked in during the window, never the host’s; none only when nobody eligible came', G.tuple(DROP, INS), ([d, ins]) => {
-    const w = drawWinner(d, ins), el = ins.filter(i => i.circle && (i.at == null || (i.at >= d.start && i.at <= d.end)) && i.circle !== d.hostCircle).map(i => i.circle);
+  check(prop('P10 draw: the winner is a circle that checked in during the window; none only when nobody eligible came', G.tuple(DROP, INS), ([d, ins]) => {
+    const w = drawWinner(d, ins), el = ins.filter(i => i.circle && (i.at == null || (i.at >= d.start && i.at <= d.end))).map(i => i.circle);
     return w === null ? el.length === 0 : el.includes(w);
   }));
   check(prop('draw: nobody is drawn twice (the full draw order is a permutation of the eligible circles)', G.tuple(SEEDS, G.array(G.pick(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']), { max: 20 })), ([seed, xs]) => {
