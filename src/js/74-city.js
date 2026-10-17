@@ -12,7 +12,7 @@ function decodeCard(compact){
   let status=mine?`<b>Solved, ${ordinal(S.solves.indexOf(mine)+1)} in ${esc(S.me.cityName)}</b> · ${decPts(S.solves.indexOf(mine)+1,mine.hints)} points`:st.revealed?(cl.answer?`The answer was <b>${esc(cl.answer)}</b>`:'The answer is out.'):circ?`${esc(nameOf(circ.uid))} solved it for your circle. You can still solve it yourself.`:'';
   const info=`<div class="meta">${st.n} solved in ${esc(S.me.cityName)} · ${st.revealed?'answer is out':`answer out in <span data-until="${st.reveal}">${left(st.reveal-now())}</span>`}</div>`;
   // C33: a one-line teaser; the clue itself is in the sheet, so it never outshouts what needs you
-  if(compact)return `<button class="card ball dtz" data-act="sheet" data-v="decode"><b>Decode · week ${weekNum()}</b><span class="meta">${mine?'Solved · ':st.revealed?'Answer is out · ':''}${st.n} solved in ${esc(S.me.cityName)}</span><span aria-hidden="true">›</span></button>`;
+  if(compact)return `<button class="card ball dtz" data-act="sheet" data-v="decode"><b>Decode · week ${weekNum()}</b><span class="meta">${status||`${st.n} solved in ${esc(S.me.cityName)}`}</span><span aria-hidden="true">›</span></button>`;
   return {st,cl,mine,status,info};
 }
 /* ---------- City, map first (C43, C44): the map at the top, List / Map toggle, distance chips, clusters ---------- */
