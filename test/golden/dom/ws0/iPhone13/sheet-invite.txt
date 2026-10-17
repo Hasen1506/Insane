@@ -122,8 +122,8 @@ div#layer
       svg
       div.big.code "7W9SPX"
       button.btn.s role=button act="share" "Share invite"
-      a.btn.s.ghost role=link href="https://wa.me/?text=Join%20my%20circle%20%E2%80%9CThird%20Floor%E2%80%9D%20on%20INSANE%3A%20http%3A%2F%2Flocalhost%3A8777%2F%3Fas%3Dmeera%23c7W9SPX%20(code%207W9SPX)" "WhatsApp"
-      button.btn.s.ghost role=button act="copy" v="http://localhost:8777/?as=meera#c7W9SPX" "Copy link"
+      a.btn.s.ghost role=link href="https://wa.me/?text=Join%20my%20circle%20%E2%80%9CThird%20Floor%E2%80%9D%20on%20INSANE%3A%20http%3A%2F%2Flocalhost%3APORT%2F%3Fas%3Dmeera%23c7W9SPX%20(code%207W9SPX)" "WhatsApp"
+      button.btn.s.ghost role=button act="copy" v="http://localhost:PORT/?as=meera#c7W9SPX" "Copy link"
       p.meta "Next time you’re together, scan each other’s phones (Meet someone). Two of you meeting in person unlocks posting in the City."
       button.btn.ghost.wide role=button act="sheet-close" "Close"
 div#toasts role=status
