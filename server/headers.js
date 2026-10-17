@@ -1,5 +1,5 @@
 // Security headers for every response (C85). The CSP allows exactly what the built app/index.html loads today:
-// its own inline <script>/<style> (one file, by design), Google Fonts, the cdnjs QR library (until C04 vendors
+// its own inline <script>/<style> (one file, by design; system fonts since WS-H, so no font host), the cdnjs QR library (until C04 vendors
 // it, then drop cdnjs), map tiles from TILE_URL's origin, and data:/blob: images (photo clips, canvas).
 // CSP_EXTRA appends sources, e.g. CSP_EXTRA="img-src https://tiles.example.com; connect-src https://x.ingest.sentry.io".
 'use strict';
@@ -11,8 +11,8 @@ function buildCsp({ tileUrl = '', extra = '' } = {}) {
   const d = {
     'default-src': ["'self'"],
     'script-src': ["'self'", "'unsafe-inline'", 'https://cdnjs.cloudflare.com'],
-    'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-    'font-src': ["'self'", 'https://fonts.gstatic.com', 'data:'],
+    'style-src': ["'self'", "'unsafe-inline'"],
+    'font-src': ["'self'", 'data:'], // WS-H: system font stacks, no web fonts
     'img-src': ["'self'", 'data:', 'blob:', ...(tiles ? [tiles] : [])],
     'connect-src': ["'self'", ...(tiles ? [tiles] : [])],
     'worker-src': ["'self'"],

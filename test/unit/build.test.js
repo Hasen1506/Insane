@@ -21,11 +21,11 @@ module.exports = async function (t) {
   t.ok('the size budget is enforced', r3.status === 1 && /budget/.test(r3.stderr), r3.stderr);
   fs.rmSync(tmp, { force: true });
 
-  // one self-contained file: exactly one inline script and one style block; the only remote fetch is Google Fonts (C04: QR is built in)
+  // one self-contained file: exactly one inline script and one style block; nothing is fetched from another host (C04: QR is built in; WS-H: system fonts)
   const html = a.html;
   t.ok('one <style> and one inline <script>', (html.match(/<style>/g) || []).length === 1 && (html.match(/<script>/g) || []).length === 1);
   const remote = [...html.matchAll(/<(?:script|link)[^>]+(?:src|href)="(https?:[^"]+)"/g)].map(m => new URL(m[1]).host).sort();
-  t.ok('remote resources are only Google Fonts (no script from any CDN, C04)', JSON.stringify([...new Set(remote)]) === JSON.stringify(['fonts.googleapis.com', 'fonts.gstatic.com']), remote.join(','));
+  t.ok('no remote resources at all: system fonts (WS-H), QR built in (C04)', remote.length === 0 && !/fonts\.(googleapis|gstatic)\.com/.test(html), remote.join(','));
   t.ok('no external <script src> at all (C04)', !/<script[^>]+src=/i.test(html));
   t.ok('starts with <!doctype html><html lang>, has v0.8\'s <title>, carries a build stamp (C03)', /^<!doctype html>\n<html lang="en">\n/.test(html) && html.includes('<title>INSANE</title>') && new RegExp(`INSANE build ${a.id}`).test(html));
   t.ok("'use strict' is the script's first statement", /<script>\n\/\* src\/js\/00-helpers\.js \*\/\n(['"])use strict\1;/.test(html)); // esbuild writes "use strict"

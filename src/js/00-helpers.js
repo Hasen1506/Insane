@@ -1,6 +1,8 @@
 'use strict';
 /* ---------- tiny helpers ---------- */
 const $=s=>document.querySelector(s);
+// C21: a name with right-to-left letters is isolated (U+2068 … U+2069, what <bdi> does), so "Ask كافيا Kavya: Help…" keeps its order
+const bidi=s=>/[\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/.test(s)?'\u2068'+s+'\u2069':s;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let CLOCK_SKEW=0; // server mode: the server's clock minus this phone's, when they disagree by more than 5 s (C61)
 const now=()=>Date.now()+CLOCK_SKEW;

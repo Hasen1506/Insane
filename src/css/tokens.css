@@ -1,20 +1,21 @@
-/* One phone-width column, a rail of build notes beside it on wide screens. Paper, ink, a rubber stamp and a ballpoint. */
+/* WS-H design tokens: every colour, the type scale and the tap size live here. Other files use var(--…), never raw colours.
+   Paper, ink, a rubber stamp and a ballpoint. Every text/background pair below is WCAG AA (test/a11y), light and dark.
+   No web fonts: system stacks only, so nothing is fetched and nothing reflows when a font arrives (C04/C82). */
 :root{
-  --paper:#ECEEE7;--card:#F9FAF6;--ink:#151D36;--muted:#596277;--line:#CDD2C8;
-  --stamp:#C8214B;--ball:#2443C4;--haz:#8A6A00;--good:#1F7A4D;
-  --stamp-soft:rgba(200,33,75,.10);--ball-soft:rgba(36,67,196,.10);--haz-soft:rgba(217,164,0,.16);--good-soft:rgba(31,122,77,.12);
-  --cell:#E2E6DC;--cell2:#D7DCD0;--sea:#C7D5DC;--night:#05070D;--night-ink:#C9CED9;
-  --f-display:"Dela Gothic One","Arial Black",Impact,sans-serif;
-  --f-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --paper:#ECEEE7;--card:#FFF;--ink:#151D36;--muted:#4F586C;--line:#B4BBAE;
+  --stamp:#AA1C40;--ball:#2443C4;--haz:#6E5400;--good:#18663F;--ons:#FFF;--ond:#FFF;
+  --stamp-soft:rgba(170,28,64,.1);--ball-soft:rgba(36,67,196,.1);--haz-soft:rgba(217,164,0,.16);--good-soft:rgba(24,102,63,.12);
+  --cell:#E2E6DC;--cell2:#D7DCD0;--sea:#C7D5DC;--night:#05070D;--night-ink:#C9CED9;--night-dim:#8A93A8;--night-line:#3A4566;
+  --dd1:#AA1C40;--dd2:#3B1640;--mn:#151D36;--mn-ink:#ECEEE7;--mn-dim:#A3ABBF;--mn-hi:#B9C3FF;
+  --scrim:rgba(5,7,13,.45);--shadow:0 1px 2px rgba(21,29,54,.1),0 1px 6px rgba(21,29,54,.05);
+  --f-display:"Arial Black","Segoe UI Black",system-ui,-apple-system,Roboto,sans-serif;
+  --f-body:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Noto Sans Tamil","Noto Sans Devanagari",sans-serif;
+  --f-mono:ui-monospace,SFMono-Regular,Menlo,"Roboto Mono","Droid Sans Mono",monospace;
+  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);--sal:env(safe-area-inset-left,0px);--sar:env(safe-area-inset-right,0px);
+  --t1:12px;--t2:13px;--t3:14px;--tap:44px;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --paper:#0E1320;--card:#161D2D;--ink:#E5E8E0;--muted:#8C95A8;--line:#2B3550;
-  --stamp:#FF5A7E;--ball:#8197FF;--haz:#F2C53D;--good:#4CC38A;
-  --stamp-soft:rgba(255,90,126,.14);--ball-soft:rgba(129,151,255,.14);--haz-soft:rgba(242,197,61,.14);--good-soft:rgba(76,195,138,.14);
-  --cell:#1A2233;--cell2:#212B40;--sea:#0A1524;color-scheme:dark}}
-:root[data-theme="dark"]{
-  --paper:#0E1320;--card:#161D2D;--ink:#E5E8E0;--muted:#8C95A8;--line:#2B3550;
-  --stamp:#FF5A7E;--ball:#8197FF;--haz:#F2C53D;--good:#4CC38A;
-  --stamp-soft:rgba(255,90,126,.14);--ball-soft:rgba(129,151,255,.14);--haz-soft:rgba(242,197,61,.14);--good-soft:rgba(76,195,138,.14);
-  --cell:#1A2233;--cell2:#212B40;--sea:#0A1524;color-scheme:dark}
+@media (prefers-color-scheme:dark){:root{
+  --paper:#0E1320;--card:#20283B;--ink:#E5E8E0;--muted:#9DA6B8;--line:#3A4566;
+  --stamp:#FF7A96;--ball:#97AAFF;--haz:#F2C53D;--good:#4CC38A;--ons:#0E1320;
+  --stamp-soft:rgba(255,122,150,.14);--ball-soft:rgba(151,170,255,.14);--haz-soft:rgba(242,197,61,.12);--good-soft:rgba(76,195,138,.14);
+  --cell:#1A2233;--cell2:#2A3550;--sea:#0A1524;--shadow:none;color-scheme:dark}}

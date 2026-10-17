@@ -1,5 +1,5 @@
 SHEETS["midnight"]=(sh,close)=>{
-  return `<h2>Write it unsigned</h2><p class="meta">Goes to ${esc(S.circle?.name||'your circle')} at midnight. Your name isn’t saved anywhere, not even by INSANE. Two flags from the circle hide it.</p>
+  return `<h2>Write it unsigned</h2><p class="meta">Goes to ${esc(bidi(S.circle?.name||'your circle'))} at midnight. Your name isn’t saved anywhere, not even by INSANE. Two flags from the circle hide it.</p>
     <label class="sr" for="mn-text">Message</label><textarea class="in-t" id="mn-text" data-f="mntext" maxlength="400" placeholder="Whoever keeps doing the washing up at 2am: thank you.">${esc(F.mntext||'')}</textarea>
     <label class="f">When</label><div class="chips">${[['tonight','Tonight at midnight'],['week','Some night this week']].map(([v,n])=>`<button class="chip ${(F.mnwhen||'week')===v?'on':''}" data-act="mnwhen" data-v="${v}">${n}</button>`).join('')}</div>
     <p class="meta">“Some night this week” picks the night at random, so nobody can match the timing to you.</p>

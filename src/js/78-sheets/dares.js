@@ -8,7 +8,7 @@ SHEETS["proof"]=(sh,close)=>{
 SHEETS["dare"]=(sh,close)=>{
   {const to=F.dareto||'';const lv=F.darelvl||3;
     return `<h2>Dare someone, or fill the jar</h2>
-    <label class="f">Who</label><div class="chips"><button class="chip ${!to?'on':''}" data-act="dare-to" data-v="">The jar</button>${S.members.filter(m=>m.id!==S.uid).map(m=>`<button class="chip ${to===m.id?'on':''}" data-act="dare-to" data-v="${m.id}">${esc(m.name)}</button>`).join('')}</div>
+    <label class="f">Who</label><div class="chips"><button class="chip ${!to?'on':''}" data-act="dare-to" data-v="">The jar</button>${S.members.filter(m=>m.id!==S.uid).map(m=>`<button class="chip ${to===m.id?'on':''}" data-act="dare-to" data-v="${m.id}">${esc(bidi(m.name))}</button>`).join('')}</div>
     <label class="f" for="dr-text">The dare</label><input class="in-t" id="dr-text" data-f="drtext" value="${esc(F.drtext||'')}" maxlength="100" placeholder="Order your coffee in the voice of a movie trailer">
     <label class="f">How bold <small>1 to 6</small></label><div class="chips">${[1,2,3,4,5,6].map(n=>`<button class="chip ${lv===n?'on':''}" data-act="dare-lvl" data-v="${n}">${n}</button>`).join('')}</div>
     <p class="meta">${to?esc(nameOf(to))+' can accept it or say “not this one”, no reason needed.':'The jar feeds the daily dare. Anything you add can come up from tomorrow.'} Nothing that could hurt anyone, nothing with strangers’ bodies, money or the law. The jar stops at 6: anything wilder needs a venue with staff.</p>
