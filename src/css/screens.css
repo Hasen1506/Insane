@@ -128,9 +128,13 @@ fieldset.dob select{min-height:48px}
 .segx{display:flex;align-items:center;gap:6px;font-size:13.5px;color:var(--muted);margin:8px 0 0}
 .segx>span{flex:1}
 .segx .qi{margin:-10px -10px -10px 0}
-.lk{font-size:10.5px;margin-left:3px;font-family:var(--f-mono);font-weight:600;opacity:.8}
+.lk{font-size:11px;margin-left:3px;font-family:var(--f-mono);font-weight:700;color:inherit}
 .card.lockcard{margin-top:12px;border-style:dashed}
-.card.lockcard .meta{color:var(--haz)}
+.card.lockcard .meta{color:var(--ink);font-weight:600}
+.lockcard .btn{min-height:44px}
+/* C24: how INSANE reads it, in body type and ink, not 11 px mono */
+#read-mind .rk,#read-mind .rr span{color:var(--ink)}
+#read-mind .meta{font-family:var(--f-body);font-size:13px;color:var(--ink)}
 .softask{border:1.5px solid var(--ball);background:var(--ball-soft);border-radius:12px;padding:10px 12px;margin:12px 0 0;font-size:14px}
 .softask p{margin:0}
 .tour{position:fixed;z-index:25;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:calc(86px + env(safe-area-inset-bottom,0px));max-width:420px;margin:0 auto;background:var(--ink);color:var(--paper);border-radius:14px;padding:12px 14px;box-shadow:0 6px 24px rgba(5,7,13,.25)}
