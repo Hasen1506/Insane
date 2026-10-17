@@ -88,14 +88,21 @@ node test/run.js diff  # any suite by name; VERBOSE=1 streams script output; BUD
 | Suite | What | Where |
 |---|---|---|
 | build | `--check` | `tools/build.js` |
-| unit | build is deterministic; `--check` catches an edit; budget enforced; one inline script; remote hosts are exactly v0.8's; registry files lead their folders. Lint: no fixed sleeps and no `/opt` paths in `test/` (the two legacy ports are exempt from the sleep rule) | `test/unit/` |
+| unit | build is deterministic; `--check` catches an edit; budget enforced; one inline script; remote hosts are exactly v0.8's; registry files lead their folders. Lint: no fixed sleeps and no `/opt` paths anywhere in `test/`, the legacy ports included. Scripts: every `node <file>` in `package.json` exists, `run.js` takes its build check from `scripts.check`, and the docs name only commands that exist | `test/unit/` |
 | pbt | the runner tests itself: it finds planted bugs, shrinks to the minimal case, replays by seed, and handles async | `test/pbt/` |
-| diff | v0.8 vs v0.9 src vs v0.9 built on seeded inputs, 5,000 per function (`DIFF_RUNS`). Covers 29 pure functions: geometry, text, urges, time, Decode, drops, pots, balance, and place search/area over the real 69,818-town file. Also checks that the ACT and SHEETS registries hold exactly v0.8's 150 action names and 23 sheets, and that every sheet renders identical HTML | `test/diff/` |
-| e2e:local | v0.8's 83 local-store checks, IDs `V08-L01…`, against the built file | `test/e2e/legacy-local.js` |
+| diff | v0.8 vs v0.9 src vs v0.9 built on seeded inputs, 5,000 per function (`DIFF_RUNS`); the place-file scans run 40–60 cases (`DIFF_PLACES_RUNS`, `DIFF_AREA_RUNS`, `DIFF_NEAR_RUNS`), since a region search costs ~80 ms a call on each of the three sides. Covers 29 pure functions: geometry, text, urges, time, Decode, drops, pots, balance, and place search/area over the real 69,818-town file. Also checks that the ACT and SHEETS registries hold exactly v0.8's 150 action names and 23 sheets, and that every sheet renders identical HTML | `test/diff/` |
+| e2e:local | v0.8's 83 local-store checks, IDs `V08-L01…`, against the built file. Starts at a fixed Wed 07:00 Lisbon (inside quiet hours), so all 83 run at any hour; v0.8 skipped two of them by day | `test/e2e/legacy-local.js` |
 | e2e:server | v0.8's 92 server checks, IDs `V08-S01…`, against the built file served by `server/server.js` | `test/e2e/legacy-server.js` |
 | golden | 11 screens (onboarding ×4, Home, Circle, City, Ledger, You, + sheet, invite sheet) on Pixel 7, driven identically on v0.8 and v0.9: **identical DOM and pixels**. The v0.9 shots are kept as DOM and JPEG goldens | `test/golden/` |
 
-`app/test/e2e.js` and `server/test/playtest.js` are now one-line shims to the ports, so the old commands still work.
+`app/test/e2e.js` and `server/test/playtest.js` are now one-line shims to the ports, so the old commands still work. `package.json` scripts are the source of truth; there is no `tools/check.js` (the check is `npm run check`).
+
+**No fixed sleeps.** v0.8's 97 (local) and 47 (server) fixed waits are gone:
+- Every tap waits for its `act()` to finish and draw (`E.idle`, via the act probe).
+- A check that depends on something arriving is polled (`ok(name, async () => …)`, 8 s), so it passes the moment the write or push lands.
+- Local mode reads a tab only once it has caught up: an init script counts each tab's LocalDB writes on a side `BroadcastChannel`, and a read waits until the tab has heard every other tab's latest write, then for `#app` to stop changing.
+- Server mode: the two `wait(21000)` for the server's 20 s sweep are polls (up to 45 s) that end when the sweep has run. `POST /api/dev/tick` (§5.0) would make them instant, but it is a server change, left to WS-I/J.
+- Server mode drops Playwright's fake clock (it fakes every timer and rAF, and across eleven windows its timer loop was a big share of the CPU) for a per-page `Date` offset that `setClock` moves. The harness also paces rAF to 4 fps in the windows the test isn't driving and caps map repaints at 8 a second: v0.8's map repaints the whole vector world every frame while a drop or trail pulses, which on a 2-core box starved taps until they timed out. No app code changes.
 
 ### The J foundation (`test/lib`, `test/pbt`, `test/diff`)
 
