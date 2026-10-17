@@ -7,6 +7,8 @@
 //   e2e:local   test/e2e/legacy-local.js  v0.8's 83 local-mode checks against the built file
 //   e2e:server  test/e2e/legacy-server.js v0.8's 92 server checks against the built file
 //   golden      test/golden/*.test.js     DOM + pixel goldens (GOLDEN_UPDATE=1 rewrites)
+//   regression  test/regression/*.test.js one test per live-test bug, R-Cnn
+//   e2e:flows   test/e2e/flows/run.js     the F-flows (each *.flow.js), server mode, Pixel 7
 // In-process suites export `async t => { t.ok(name, cond, extra) }`. Script suites are run as child
 // processes and pass when they exit 0. Time budgets (PLAN-V09 §5.0) are reported per suite; set
 // BUDGETS=strict to fail a suite that runs over 1.5x its budget. The legacy e2e ports have no fixed sleeps,
@@ -24,6 +26,8 @@ const SUITES = {
   'e2e:local': { budget: 60, script: ['test/e2e/legacy-local.js'], legacy: true },
   'e2e:server': { budget: 90, script: ['test/e2e/legacy-server.js'], legacy: true },
   golden: { budget: 30, dir: 'test/golden' },
+  regression: { budget: 10, dir: 'test/regression' },          // R-Cnn: one per live-test bug (PLAN-V09 §5.e)
+  'e2e:flows': { budget: 90, script: ['test/e2e/flows/run.js'] }, // user-story flows, Pixel 7 (PLAN-V09 §5.a)
 };
 
 function runScript(args) {

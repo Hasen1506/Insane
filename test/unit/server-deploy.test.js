@@ -42,7 +42,7 @@ module.exports = async function (t) {
   const secrets = ['RESEND_API_KEY', 'SENTRY_DSN', 'BACKUP_SECRET_ACCESS_KEY', 'BACKUP_ACCESS_KEY_ID'];
   t.ok('secrets are never given values in render.yaml (sync: false)', secrets.every(k => new RegExp(`- key:\\s*${k}[^\\n]*\\n\\s*sync:\\s*false`).test(ry)));
   const srv = read('server/server.js'), used = [...new Set([...srv.matchAll(/ENV\.([A-Z_]+)/g)].map(m => m[1]))];
-  const devOnly = ['PORT', 'DEV', 'DB_FILE', 'BACKUP_DIR', 'CSP_EXTRA', 'GOOGLE_TOKENINFO_URL', 'MAX_BODY', 'BACKUP_EVERY_H'];
+  const devOnly = ['PORT', 'DEV', 'DB_FILE', 'BACKUP_DIR', 'CSP_EXTRA', 'GOOGLE_TOKENINFO_URL', 'MAX_BODY', 'BACKUP_EVERY_H', 'LISTEN'];
   t.ok('every env var server.js reads is in render.yaml or set by the Dockerfile (or is dev/test only)', used.every(k => keys.includes(k) || k in env || devOnly.includes(k)), used.filter(k => !keys.includes(k) && !(k in env) && !devOnly.includes(k)).join(','));
 
   if (hasDocker) {

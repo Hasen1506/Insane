@@ -36,17 +36,18 @@ module.exports = async function (t) {
     const big = await S.post('set', JSON.stringify({ path: 'people/' + a, data: { name: 'x'.repeat(1024 * 1024) } }), 'arjun@example.in');
     t.ok('a 1 MB body is refused with 413 payload_too_large', big.status === 413 && big.body.code === 'payload_too_large', big.status);
     /* onboarding + circle create: tz and roles stamped by the server */
-    await S.post('set', { path: 'people/' + a, data: { name: 'Arjun Kumar', circle: null, tz: 'Asia/Kolkata', joined: Date.now() } }, 'arjun@example.in');
-    await S.post('set', { path: 'people/' + k, data: { name: 'كافيا Kavya', circle: null, tz: 'Europe/Lisbon', joined: Date.now() } }, 'kavya@example.in');
+    await S.post('set', { path: 'people/' + a, data: { name: 'Arjun Kumar', circle: null, adult: true, consent: { v: '2026-10-draft' }, tz: 'Asia/Kolkata', joined: Date.now() } }, 'arjun@example.in');
+    await S.post('set', { path: 'people/' + k, data: { name: 'كافيا Kavya', circle: null, adult: true, consent: { v: '2026-10-draft' }, tz: 'Europe/Lisbon', joined: Date.now() } }, 'kavya@example.in');
     await S.post('set', { path: 'codes/MAD8HT', data: { cid: 'c1', at: Date.now() } }, 'arjun@example.in');
     await S.post('set', { path: 'circles/c1', data: { name: 'Mylapore Mad Hatters', code: 'MAD8HT', members: [a], by: 'someone-else' } }, 'arjun@example.in');
     const c1 = (await S.post('get', { path: 'circles/c1' }, 'arjun@example.in')).body.doc;
     t.ok('a new circle gets tz from its creator, the creator as admin, and by = the writer', c1.tz === 'Asia/Kolkata' && c1.tzFrom === 'creator' && c1.roles[a] === 'admin' && c1.by === a, JSON.stringify(c1));
     await S.post('update', { path: 'people/' + a, data: { circle: 'c1' } }, 'arjun@example.in');
-    await S.post('update', { path: 'circles/c1', data: { members: [a, k], roles: { [k]: 'admin' }, tz: 'Europe/Lisbon' } }, 'kavya@example.in');
-    const c1b = (await S.post('get', { path: 'circles/c1' }, 'kavya@example.in')).body.doc;
-    t.ok('a member can join (members) but not make themselves admin or move the circle’s zone', c1b.members.length === 2 && !c1b.roles[k] && c1b.tz === 'Asia/Kolkata', JSON.stringify(c1b));
+    // int-1: since WS-D, joining is people/{uid}.circle (the server keeps members in step); a raw members write is ignored
     await S.post('update', { path: 'people/' + k, data: { circle: 'c1' } }, 'kavya@example.in');
+    await S.post('update', { path: 'circles/c1', data: { members: [a, k, 'u_stranger'], roles: { [k]: 'admin' }, tz: 'Europe/Lisbon' } }, 'kavya@example.in');
+    const c1b = (await S.post('get', { path: 'circles/c1' }, 'kavya@example.in')).body.doc;
+    t.ok('a member can join (people.circle → members) but not make themselves admin or move the circle’s zone', c1b.members.length === 2 && !c1b.roles[k] && c1b.tz === 'Asia/Kolkata', JSON.stringify(c1b));
     const pk = (await S.post('get', { path: 'people/' + k }, 'kavya@example.in')).body.doc;
     t.ok('a v0.8 `circle` write is mirrored into circles: [cid] (C36 expand)', JSON.stringify(pk.circles) === '["c1"]' && pk.circle === 'c1', JSON.stringify(pk));
     const four = await S.post('update', { path: 'people/' + k, data: { circles: ['c1', 'c2', 'c3', 'c4'] } }, 'kavya@example.in');

@@ -12,7 +12,7 @@ async function boot(){
   }else{
     const hello=await fetch('/api/hello',{credentials:'same-origin'}).then(r=>r.ok?r.json():null).catch(()=>null);
     if(hello&&hello.insane){
-      S.backend='server';S.hello=hello;MAPCFG.tiles=hello.tiles;MAPCFG.attr=hello.attr;
+      S.backend='server';S.hello=hello;setSkew(hello.now);MAPCFG.tiles=hello.tiles;MAPCFG.attr=hello.attr;
       if(!hello.signedIn){S.mode='signin';render();loadPlaces();return}
       S.mode='live';S.db=RemoteDB();S.uid=hello.uid;S.isOwner=hello.isOwner;S.email=hello.email;
     }else{S.mode='demo';S.backend='local';S.db=LocalDB();S.uid=localUid();S.isOwner=!/[?&]as=/.test(location.search)||/[?&]as=alice\b/.test(location.search)}

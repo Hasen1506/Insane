@@ -55,7 +55,9 @@ ACT["cseg-go"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
   S.ui.tab='circle';S.ui.cseg=d.v;S.ui.open=null;S.ui.sheet=null;if(d.v==='midnight')setSeen('midnight');wire2();render();return;
 };
 ACT["export"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
-  {const out={profile:me,exactPin:S.priv.loc||null,journeys:journeys(),timeline:S.priv.log?.items||[],decodeTries:S.priv.dec||{},myPosts:S.posts.filter(p=>p.by===uid),myCheckins:S.myCheckins||[],steps:S.ev,exportedAt:new Date().toISOString()};const txt=JSON.stringify(out,null,2);
+  {const out={profile:me,exactPin:S.priv.loc||null,journeys:journeys(),timeline:S.priv.log?.items||[],decodeTries:S.priv.dec||{},myPosts:S.posts.filter(p=>p.by===uid),myCheckins:S.myCheckins||[],steps:S.ev,exportedAt:new Date().toISOString()};
+    if(S.backend==='server'){try{const r=await exportHtml();if(r){Object.assign(out,{messages:r.data.messages,ledger:r.data.ledger,pots:r.data.pots});S.exportHtml=true}}catch(e){}}
+    const txt=JSON.stringify(out,null,2);
     if(downloads){try{await downloads.save({filename:'insane-my-data.json',data:txt});return}catch(e){}}S.exportText=txt;render();return}
 };
 ACT["del-ask"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
@@ -65,6 +67,7 @@ ACT["del-no"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
   S.ui.confirm=null;render();return;
 };
 ACT["del-yes"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+  if(S.backend==='server'){S.ui.confirm=null;await deleteMe();return}
   {S.ui.confirm=null;logMem=[];await W(async()=>{for(const k of Object.keys(S.priv))await db.doc(`data/users/${uid}/${k}`).delete();for(const p of S.posts.filter(p=>p.by===uid))await db.doc('posts/'+p.id).delete();if(me.circle){await db.doc(`circles/${me.circle}/progress/${uid}`).delete().catch(()=>{});if(S.circle)await db.doc('circles/'+me.circle).update({members:(S.circle.members||[]).filter(x=>x!==uid)}).catch(()=>{})}await db.doc('ev/'+uid).delete();await db.doc('people/'+uid).delete()},'Deleted. Everything of yours is gone.');S.ui.ob={step:0,zone:4,cq:''};return}
 };
 ACT["stats"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;

@@ -45,5 +45,13 @@ main#app role=main
   label.chk role=label
     input#ob-age role=checkbox checked=false
     span "I’m 16 or over. INSANE is built for meeting people in real places, so it isn’t for under-16s."
+  label.chk role=label
+    input#ob-consent role=checkbox checked=false
+    span "I agree to the , and ."
+      a role=link href="legal/terms.html" "Terms"
+      a role=link href="legal/privacy.html" "Privacy notice"
+      a role=link href="legal/rules.html" "Community rules"
+      small.meta "Version 2026-10-draft."
   button.btn.wide role=button act="ob-next" disabled="" "Next"
+  p#ob-why.meta role=status "Add your name."
 div#layer

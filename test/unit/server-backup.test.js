@@ -28,7 +28,7 @@ module.exports = async function (t) {
   try {
     uid = await S.signIn('meera@example.in');
     for (let i = 0; i < 20; i++) await S.post('set', { path: `posts/b${i}`, data: { by: uid, text: 'note ' + i } }, 'meera@example.in').catch(() => { });
-    await S.post('set', { path: 'people/' + uid, data: { name: 'Meera', circle: null } }, 'meera@example.in');
+    await S.post('set', { path: 'people/' + uid, data: { name: 'Meera', circle: null, adult: true, consent: { v: '2026-10-draft' } } }, 'meera@example.in');
     // online backup while the server is running and holding the WAL
     const b = await cli(['backup'], BENV);
     const out = b.code === 0 && JSON.parse(b.out);

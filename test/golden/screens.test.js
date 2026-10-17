@@ -6,6 +6,7 @@
 const fs = require('fs'), path = require('path');
 const BR = require('../lib/browser'), E = require('../lib/e2e'), GD = require('../lib/golden');
 const { v08Dir } = require('../lib/load');
+const SCREENS = require('../diff/allowed.json').screens || {};
 
 const T0 = Date.UTC(2026, 9, 12, 3, 30); // Mon 12 Oct 2026, 09:00 in Chennai
 const PROFILE = process.env.GOLDEN_PROFILE || 'Pixel 7';
@@ -22,7 +23,7 @@ async function screens(browser, file) {
   const tap = async sel => { await page.locator(sel).first().click(); await E.settled(page); };
   await page.goto(srv.url + '/?as=meera'); await page.waitForSelector('#ob-name'); await GD.freeze(page);
   await snap('ob-1-name');
-  await page.fill('#ob-name', 'Meera'); await page.check('#ob-age'); await tap('[data-act="ob-next"]');
+  await page.fill('#ob-name', 'Meera'); await page.check('#ob-age'); if (await page.locator('#ob-consent').count()) await page.check('#ob-consent'); /* v0.9 WS-D (C63) */ await tap('[data-act="ob-next"]');
   await page.waitForSelector('#lp-q-home'); await page.fill('#lp-q-home', 'Chennai'); await page.waitForSelector('.res'); await tap('.res');
   await tap('[data-act="lp-paste"]'); await page.waitForSelector('#lp-p-home'); await page.fill('#lp-p-home', '13.2790, 80.2619'); await tap('form[data-form="lp-use"] button');
   await E.until(async () => (await page.locator('[data-act="lp-size"]').count()) > 0, { what: 'precision chips' });
@@ -53,9 +54,13 @@ module.exports = async function (t) {
     const helper = await browser.newPage();
     for (let i = 0; i < v09.out.length; i++) {
       const a = v08.out[i], b = v09.out[i];
-      t.ok(`${b.name}: DOM identical to v0.8`, a.dom === b.dom, a.dom === b.dom ? '' : GD.lineDiff(a.dom, b.dom));
-      const r = await GD.pixelDiff(helper, a.img, b.img);
-      t.ok(`${b.name}: pixels match v0.8 (${(r * 100).toFixed(3)}% differ, tolerance 0.1%)`, r <= 0.001);
+      const why = SCREENS[b.name]; // a documented, intentional change since v0.8 (test/diff/allowed.json "screens")
+      if (why) t.ok(`${b.name}: differs from v0.8 on purpose (${why})`, a.dom !== b.dom, 'listed as changed, but it is identical to v0.8: take it off the list');
+      else {
+        t.ok(`${b.name}: DOM identical to v0.8`, a.dom === b.dom, a.dom === b.dom ? '' : GD.lineDiff(a.dom, b.dom));
+        const r = await GD.pixelDiff(helper, a.img, b.img);
+        t.ok(`${b.name}: pixels match v0.8 (${(r * 100).toFixed(3)}% differ, tolerance 0.1%)`, r <= 0.001);
+      }
       const g = GD.matchDom(`ws0/${PROFILE.replace(/\s/g, '')}/${b.name}`, b.dom); t.ok(`${b.name}: DOM golden ${g.created ? 'written' : 'matches'}`, g.ok, g.diff);
       const p = await GD.matchPixels(helper, `ws0/${PROFILE.replace(/\s/g, '')}/${b.name}`, b.img); t.ok(`${b.name}: pixel golden ${p.created ? 'written' : 'matches (' + (p.ratio * 100).toFixed(3) + '%)'}`, p.ok);
     }

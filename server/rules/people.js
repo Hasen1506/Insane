@@ -5,8 +5,15 @@
 'use strict';
 const MAX = () => Math.max(1, +process.env.MAX_CIRCLES || 3);
 const ID = /^[A-Za-z0-9_\-:.@]{1,64}$/;
-module.exports = ({ Refuse }) => ({
-  write(op, p, s, data, u, old) {
+module.exports = ({ Refuse, safe }) => {
+  // WS-I's circle/circles mirroring runs first, so a primary-circle change made through `circles` is a `circle`
+  // change too; WS-D's rule (server/moderation.js) then checks age + consent on sign-up and moves membership.
+  const rule = { write(op, p, s, data, u, old) {
+    data = mirror(op, p, s, data, u, old);
+    const sd = safe().beforeWrite(op, p, data, u, old);
+    return sd === undefined ? data : sd;
+  } };
+  function mirror(op, p, s, data, u, old) {
     if (s.length !== 2 || op === 'delete') return data;
     if (op === 'update' && !('circle' in data) && !('circles' in data)) return data;
     const prev = old ? (Array.isArray(old.circles) ? old.circles : old.circle ? [old.circle] : []) : [];
@@ -20,5 +27,6 @@ module.exports = ({ Refuse }) => ({
     const out = { ...data, circles: cs };
     if ('circles' in data && !('circle' in data) && !(old && old.circle && cs.includes(old.circle))) out.circle = cs[0] || null;
     return out;
-  },
-});
+  }
+  return rule;
+};

@@ -23,9 +23,11 @@ const cheerId=(to,label)=>`${to}_${S.uid}_${weekKey()}_${fnv(label)}`;
 const jLabel=j=>j.read.kind==='Ladder'?'Ladder':j.read.what;
 function cheersFor(u,label){return S.cheers.filter(c=>c.to===u&&c.label===label&&c.week===weekKey())}
 /* the daily dare: one a day from the circle's jar, picked from dares that were in it before today began */
-function dailyDare(){const t0=dayStart(now());const j=S.dares.filter(d=>!d.to&&d.at<t0);
+function dailyDare(){const t0=dayStart(now());const j=S.dares.filter(d=>!d.to&&d.at<t0&&!d.pulled&&!dareFlagged(d));
   const list=j.length?j:STARTER_DARES.map(([text,level],i)=>({id:'starter'+i,text,level,starter:true}));
-  return list[fnvN((S.me.circle||'')+today())%list.length]}
+  // flagged as not safe (C88): today's pick moves on to the next one for you; two flags take it off for the circle
+  const off=(S.daily.flags||[]).includes(S.uid)||(S.daily.flags||[]).length>=2;
+  return list[(fnvN((S.me.circle||'')+today())+(off?1:0))%list.length]}
 const moleReveal=(t=now())=>weekStart(t)+6*DAY+21*HOUR;
 const myMole=()=>{const m=S.priv.mole;return m&&m.week===weekKey()&&S.mole?m:null};
 const moleDone=m=>m.tasks.filter((ti,i)=>(m.prog[i]||0)>=MOLE_N[ti]).length;

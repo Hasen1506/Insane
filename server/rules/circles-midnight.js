@@ -10,9 +10,13 @@ function circleMidnight(getDoc, cid, at, t, MIN) {
   const m = nearestMidnight(at, tz);
   return m >= t + MIN ? m : nextMidnight(t + MIN, tz);
 }
-module.exports = ({ getDoc, kv, now, isOwner, Refuse, balanceOf, MIN }) => ({
+module.exports = ({ getDoc, kv, now, isOwner, Refuse, balanceOf, MIN, safe }) => ({
   write(op, p, s, data, u, old) {
     if (s[0] === 'circles' && s[2] === 'midnight' && s.length === 4) {
+      // WS-D (C37): the name screen, `m` (who was in the circle at write time), removedAt, no deletes. It returns the
+      // doc to store; WS-I's C102 rule then moves the release onto 00:00 in the circle's time zone.
+      const sd = safe().beforeWrite(op, p, data, u, old);
+      if (sd !== undefined) { if (op === 'set') sd.releaseAt = circleMidnight(getDoc, s[1], sd.releaseAt, now(), MIN); return sd; }
       if (op === 'set') return { text: String(data.text || '').slice(0, 400), releaseAt: circleMidnight(getDoc, s[1], Math.max(+data.releaseAt || 0, now() + MIN), now(), MIN), flags: [] }; // no author, by construction
       if (op === 'update') {
         const keep = {};

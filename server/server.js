@@ -40,7 +40,7 @@ const now = () => Date.now() + clockOffset;
 const MIN = 6e4, HOUR = 36e5, DAY = 864e5;
 
 /* ---------- storage ---------- */
-const DB_FILE = path.resolve(ENV.DB_FILE || path.join(__dirname, 'insane.db'));
+const DB_FILE = ENV.DB_FILE === ':memory:' ? ':memory:' : path.resolve(ENV.DB_FILE || path.join(__dirname, 'insane.db')); // ':memory:' for the in-process rule tests (test/lib/inproc.js)
 const db = new DatabaseSync(DB_FILE);
 db.exec('PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000;');
 const MIGRATION = migrate(db, { file: DB_FILE, backupDir: ENV.BACKUP_DIR }); // tables + store steps (server/migrate.js)
@@ -69,7 +69,7 @@ function canRead(p, u) {
   const s = p.split('/');
   if (s[0] === 'data' && s[1] === 'users') return s[2] === u.uid;
   if (s[0] === 'ev') return s.length === 1 ? isOwner(u) : (s[1] === u.uid || isOwner(u));
-  return true;
+  return SAFE.canRead(p, u); // circles are for members, DMs for the two people (server/moderation.js)
 }
 function canWrite(p, u) {
   if (!u) return false;
@@ -77,16 +77,20 @@ function canWrite(p, u) {
   if (s[0] === 'data' && s[1] === 'users') return s[2] === u.uid;
   if (s[0] === 'meta') return false; // meta/schema is the server's (migrate.js)
   if (['people', 'pair', 'ev', 'live'].includes(s[0])) return s[1] === u.uid || (isOwner(u) && s[0] !== 'live');
-  return true;
+  return SAFE.canWrite(p, u);
 }
 const merge = (a, b) => { for (const k in b) { const v = b[k]; if (v && typeof v === 'object' && !Array.isArray(v) && a[k] && typeof a[k] === 'object' && !Array.isArray(a[k])) merge(a[k], v); else a[k] = v; } return a; };
-class Refuse extends Error { constructor(code, msg, retryMs) { super(msg); this.code = code; if (retryMs) this.retryMs = retryMs; } }
+// The third argument is a retry delay in ms (C84, WS-I) or a machine-readable reason (WS-D, e.g. 'names_blocked').
+class Refuse extends Error { constructor(code, msg, more) { super(msg); this.code = code; if (typeof more === 'number') { if (more) this.retryMs = more; } else if (more) this.reason = more; } }
 // C84: spend one token from each bucket, or refuse with how long to wait.
 function rate(cls, who) { const r = limiter.take(cls, who); if (!r.ok) throw new Refuse('resource_exhausted', 'Too fast. Try again in a moment.', r.retryMs); }
 
 /* ---------- the checks a page can't be trusted with: server/rules/<collection>.js ---------- */
-const rules = require('./rules')({ getDoc, kv, now, isOwner, Refuse, balanceOf, MIN });
-const beforeWrite = rules.beforeWrite, readFilter = rules.readFilter;
+// WS-D's safety rules (server/moderation.js) are called from the rule files they belong to through `safe()`;
+// its read filter (blocks, removals, presence, squares) runs after every collection's own read rule.
+const rules = require('./rules')({ getDoc, kv, now, isOwner, Refuse, balanceOf, MIN, safe: () => SAFE });
+const beforeWrite = rules.beforeWrite;
+const readFilter = (p, d, u) => SAFE.readFilter(p, rules.readFilter(p, d, u), u); // null: blocked, removed, flagged away, or another circle's presence
 function balanceOf(cid, uid) {
   let b = 0; for (const r of q.kids.all(`circles/${cid}/favors`)) { const f = JSON.parse(r.data); if (f.status !== 'logged') continue; if (f.doer === uid) b += f.h; if (f.asker === uid) b -= f.h; }
   return b;
@@ -104,7 +108,7 @@ function runQuery(spec, u) {
   if (spec.orderBy) { const [f, dir] = spec.orderBy; rows.sort((a, b) => { const x = a.data[f], y = b.data[f]; if (x === undefined) return 1; if (y === undefined) return -1; return (x < y ? -1 : x > y ? 1 : 0) * (dir === 'desc' ? -1 : 1); }); }
   else rows.sort((a, b) => a.id < b.id ? -1 : 1);
   if (spec.limit) rows = rows.slice(0, spec.limit);
-  return rows.map(r => ({ id: r.id, data: readFilter(r.path, r.data, u) }));
+  return rows.map(r => ({ id: r.id, data: readFilter(r.path, r.data, u) })).filter(r => r.data != null);
 }
 function readDoc(p, u) { if (!canRead(p, u)) throw new Refuse('permission_denied', 'Not yours to read.'); return readFilter(p, getDoc(p), u); }
 
@@ -127,8 +131,12 @@ function touched(paths) {
     if (paths.some(p => p === sp || parentOf(p) === sp || (sub.spec.doc && p === sub.spec.doc))) pushSub(c, id, sub);
   }
 }
-setInterval(() => pushTimeBound(), 15000);
-setInterval(() => { for (const [cid, c] of clients) if (!c.res && now() - c.gone > 10 * MIN) clients.delete(cid); }, MIN);
+setInterval(() => pushTimeBound(), 15000).unref();
+setInterval(() => { for (const [cid, c] of clients) if (!c.res && now() - c.gone > 10 * MIN) clients.delete(cid); }, MIN).unref();
+// Re-run every live view one person has open: after a block, a removal or a close their access changed.
+function refreshUser(uid) { for (const c of clients.values()) if (c.uid === uid) for (const [id, sub] of c.subs) pushSub(c, id, sub); }
+// End live streams (a revoked session, a deleted account): they reconnect, get 401, and the page signs out.
+function endStreams(pred) { for (const [cid, c] of clients) if (pred(c)) { try { if (c.res) c.res.end(); } catch (e) { /* already gone */ } c.res = null; c.subs.clear(); clients.delete(cid); } }
 function setLive(uid) {
   const on = [...clients.values()].some(c => c.uid === uid && c.res);
   const p = 'live/' + uid, cur = getDoc(p);
@@ -140,9 +148,11 @@ const userById = uid => { const r = db.prepare('SELECT uid,email FROM users WHER
 function userFromReq(req) {
   const m = /(?:^|;\s*)insane_s=([A-Za-z0-9_-]+)/.exec(req.headers.cookie || '');
   if (!m) return null;
-  const s = db.prepare('SELECT uid,exp FROM sessions WHERE hash=?').get(sha(m[1]));
+  const h = sha(m[1]), s = db.prepare('SELECT uid,exp FROM sessions WHERE hash=?').get(h);
   if (!s || s.exp < Date.now()) return null;
-  return userById(s.uid);
+  const u = userById(s.uid); if (!u) return null;
+  ACC.touch(h, req);
+  return { ...u, sess: h };
 }
 const hits = new Map();
 function limited(key, n, ms) { const t = Date.now(), a = (hits.get(key) || []).filter(x => t - x < ms); a.push(t); hits.set(key, a); return a.length > n; }
@@ -181,7 +191,8 @@ function quiet(person) {
   const from = qh.from ?? 23, to = qh.to ?? 8;
   return from > to ? (h >= from || h < to) : (h >= from && h < to);
 }
-async function notify(uid, title, body, tag) {
+async function notify(uid, title, body, tag, from) {
+  if (from && SAFE.mutedFor(uid, from)) return;
   const person = getDoc('people/' + uid);
   if (quiet(person)) { pushLog.push({ uid, title, held: 'quiet', at: now() }); return; }
   const box = getDoc(`data/users/${uid}/inbox`) || { items: [] };
@@ -204,9 +215,9 @@ function afterWrite(op, p, data, u) {
   if (s[0] === 'circles' && s.length === 4 && op !== 'delete') {
     const circleIds = () => q.kids.all('people').map(r => ({ id: r.path.split('/')[1], d: JSON.parse(r.data) })).filter(x => inCircle(x.d, s[1]) && x.id !== u.uid).map(x => x.id);
     const name = (getDoc('people/' + u.uid) || {}).name || 'Someone', doc = getDoc(p) || {};
-    if (s[2] === 'favors' && op === 'set' && doc.status === 'open') for (const id of circleIds()) notify(id, `${name} asks a favor`, doc.what, 'fv:' + s[3]);
-    if (s[2] === 'favors' && doc.status === 'done' && data.status === 'done') notify(doc.asker, `${name} did your favor`, `${doc.what} · confirm to log it`, 'fv:' + s[3]);
-    if (s[2] === 'dares' && op === 'set' && doc.to) notify(doc.to, `${name} dared you`, doc.text, 'dare:' + s[3]);
+    if (s[2] === 'favors' && op === 'set' && doc.status === 'open') for (const id of circleIds()) notify(id, `${name} asks a favor`, doc.what, 'fv:' + s[3], u.uid);
+    if (s[2] === 'favors' && doc.status === 'done' && data.status === 'done') notify(doc.asker, `${name} did your favor`, `${doc.what} · confirm to log it`, 'fv:' + s[3], u.uid);
+    if (s[2] === 'dares' && op === 'set' && doc.to) notify(doc.to, `${name} dared you`, doc.text, 'dare:' + s[3], u.uid);
     return;
   }
   if (op !== 'set' || s[s.length - 2] !== 'msgs') return;
@@ -215,17 +226,17 @@ function afterWrite(op, p, data, u) {
     const t = getDoc(s.slice(0, 4).join('/')); if (!t || t.muted) return;
     const ids = q.kids.all('people').map(r => ({ id: r.path.split('/')[1], d: JSON.parse(r.data) })).filter(x => inCircle(x.d, s[1]) && x.id !== by);
     const going = t.kind === 'plan' ? t.going || {} : null;
-    for (const x of ids) if (!going || going[x.id]) notify(x.id, `${name} in ${t.title}`, text, 't:' + s[3]);
+    for (const x of ids) if (!going || going[x.id]) notify(x.id, `${name} in ${t.title}`, text, 't:' + s[3], by);
   } else if (s[0] === 'rooms') {
     const r = getDoc('rooms/' + s[1]); if (!r) return;
-    for (const row of q.kids.all('people')) { const d = JSON.parse(row.data), id = row.path.split('/')[1]; if (id !== by && r.circles.some(c => inCircle(d, c))) notify(id, `${name} · ${r.title}`, text, 'r:' + s[1]); }
+    for (const row of q.kids.all('people')) { const d = JSON.parse(row.data), id = row.path.split('/')[1]; if (id !== by && r.circles.some(c => inCircle(d, c))) notify(id, `${name} · ${r.title}`, text, 'r:' + s[1], by); }
   } else if (s[0] === 'dms') {
-    for (const id of s[1].split('__')) if (id !== by) notify(id, name, text, 'd:' + s[1]);
+    for (const id of s[1].split('__')) if (id !== by) notify(id, name, text, 'd:' + s[1], by);
   }
 }
 // Once a minute: Midnight messages going out, drops opening in 15 minutes near people.
 let lastSweep = now();
-setInterval(sweep, 20000);
+setInterval(sweep, 20000).unref();
 function sweep() {
   const t = now(), from = lastSweep; lastSweep = t; const before = pushLog.length;
   for (const c of q.kids.all('circles')) {
@@ -249,6 +260,11 @@ function sweep() {
 // Push time-bound subscriptions (Midnight, sealed, pair codes) whose answer changed with the clock.
 function pushTimeBound() { for (const c of clients.values()) for (const [id, sub] of c.subs) if (timeBound(sub.spec.doc || sub.spec.col)) pushSub(c, id, sub); }
 function km(a, b) { const r = x => x * Math.PI / 180, dLat = r(b[0] - a[0]), dLon = r(b[1] - a[1]); const h = Math.sin(dLat / 2) ** 2 + Math.cos(r(a[0])) * Math.cos(r(b[0])) * Math.sin(dLon / 2) ** 2; return 2 * 6371 * Math.asin(Math.sqrt(h)); }
+
+/* ---------- safety and account (WS-D): server/moderation.js, server/account.js ---------- */
+const CTX = { db, q, getDoc, putDoc, parentOf, kv, sha, rid, now: () => now(), isOwner, Refuse, touched, refreshUser, endStreams, limited, sendMail, cookie: (v, a) => cookie(v, a), DEV, PUBLIC_URL };
+const SAFE = require('./moderation')(CTX);
+const ACC = require('./account')(CTX, SAFE);
 
 /* ---------- place search beyond towns: OpenStreetMap's Nominatim, one request a second ---------- */
 const geoCache = new Map(); let geoNext = 0;
@@ -299,7 +315,7 @@ async function api(req, res, url) {
   if (req.method === 'GET' && r === 'health') { const n = db.prepare('SELECT COUNT(*) n FROM docs').get().n; return json(res, 200, { ok: true, build: BUILD_ID, schema: MIGRATION.sql[1], store: MIGRATION.store.to, docs: n }); }
   if (req.method === 'GET' && r === 'hello') {
     if (u) dayOneReturn(u);
-    return json(res, 200, { insane: true, version: '0.8', build: BUILD_ID, minBuild: MIN_CLIENT_BUILD || null, google: GOOGLE_CLIENT_ID || null, signedIn: !!u, uid: u?.uid || null, email: u?.email || null, isOwner: isOwner(u), tiles: TILE_URL, attr: TILE_ATTR, vapid: vapidPublic, dev: DEV, now: now() });
+    return json(res, 200, { insane: true, version: '0.8', build: BUILD_ID, minBuild: MIN_CLIENT_BUILD || null, google: GOOGLE_CLIENT_ID || null, signedIn: !!u, uid: u?.uid || null, email: u?.email || null, isOwner: isOwner(u), tiles: TILE_URL, attr: TILE_ATTR, vapid: vapidPublic, dev: DEV, now: now(), consent: SAFE.CONSENT_VERSION });
   }
   if (req.method === 'GET' && r === 'stream') {
     if (!u) return json(res, 401, { code: 'unauthenticated' });
@@ -307,7 +323,7 @@ async function api(req, res, url) {
     res.writeHead(200, { 'content-type': 'text/event-stream', 'cache-control': 'no-store', connection: 'keep-alive', 'x-accel-buffering': 'no' });
     res.write('retry: 2000\n\n');
     let c = clients.get(cid); if (!c || c.uid !== u.uid) { c = { uid: u.uid, res: null, subs: new Map() }; clients.set(cid, c); }
-    c.res = res; for (const [id, sub] of c.subs) pushSub(c, id, sub, true);
+    c.res = res; c.sess = u.sess; for (const [id, sub] of c.subs) pushSub(c, id, sub, true);
     setLive(u.uid);
     const ka = setInterval(() => res.write(': ka\n\n'), 25000);
     req.on('close', () => { clearInterval(ka); if (c.res === res) { c.res = null; c.gone = now(); } setLive(u.uid); });
@@ -399,6 +415,8 @@ async function api(req, res, url) {
     return json(res, 200, { now: now(), ...swept });
   }
   if (!u) throw new Refuse('unauthenticated', 'Sign in first.');
+  if (r.startsWith('account/')) { const out = await ACC.route(r, b, u, req); if (out) return json(res, 200, out.body, out.headers || {}); }
+  { const out = SAFE.route(r, b, u); if (out) return json(res, 200, out); }
   if (r === 'push/sub') {
     const sub = b.subscription; if (!sub || !/^https:\/\//.test(sub.endpoint || '')) throw new Refuse('invalid_argument', 'Bad subscription.');
     db.prepare('INSERT INTO push(endpoint,uid,sub) VALUES(?,?,?) ON CONFLICT(endpoint) DO UPDATE SET uid=excluded.uid,sub=excluded.sub').run(sub.endpoint, u.uid, JSON.stringify(sub));
@@ -416,12 +434,17 @@ async function api(req, res, url) {
   if (r === 'unsub') { const c = clients.get(b.cid); if (c && c.uid === u.uid) c.subs.delete(b.sub); return json(res, 200, { ok: true }); }
   if (r === 'get') { if (!validPath(b.path, true)) throw new Refuse('invalid_argument', 'Bad path.'); return json(res, 200, { doc: readDoc(b.path, u) }); }
   if (r === 'query') { if (!validPath(b.col, false)) throw new Refuse('invalid_argument', 'Bad path.'); return json(res, 200, { docs: runQuery(b, u) }); }
-  if (['set', 'update', 'delete'].includes(r)) {
+  if (['set', 'update', 'delete'].includes(r)) { doWrite(r, b, u, true, req); return json(res, 200, { ok: true }); }
+  return json(res, 404, { code: 'not_found' });
+}
+// One write, the way /api/set|update|delete does it. Exported (without the rate limit) for the in-process rule tests.
+function doWrite(r, b, u, limit, req) {
+  {
     if (!validPath(b.path, true)) throw new Refuse('invalid_argument', 'Bad path.');
     if (!canWrite(b.path, u)) throw new Refuse('permission_denied', 'Not yours to change.');
-    rate('write', u.uid); rate('writeIp', clientIp(req));
+    if (limit) { rate('write', u.uid); rate('writeIp', clientIp(req)); } // in-process rule tests pass limit=false and no req
     let data = r === 'delete' ? null : b.data;
-    { const exists = r === 'set' && !!q.get.get(b.path); for (const cls of writeClasses(r, b.path, data, exists)) rate(cls, u.uid); }
+    if (limit) { const exists = r === 'set' && !!q.get.get(b.path); for (const cls of writeClasses(r, b.path, data, exists)) rate(cls, u.uid); }
     if (r !== 'delete' && (!data || typeof data !== 'object' || Array.isArray(data))) throw new Refuse('invalid_argument', 'Data must be an object.');
     data = beforeWrite(r, b.path, data, u);
     if (r === 'delete') q.del.run(b.path);
@@ -430,9 +453,7 @@ async function api(req, res, url) {
     touched([b.path]);
     try { afterWrite(r, b.path, data, u); } catch (e) { console.warn('afterWrite', e); }
     try { funnelWrite(r, b.path, data, u); } catch (e) { /* counts never block a write */ }
-    return json(res, 200, { ok: true });
   }
-  return json(res, 404, { code: 'not_found' });
 }
 
 const server = http.createServer(async (req, res) => {
@@ -444,11 +465,12 @@ const server = http.createServer(async (req, res) => {
     if (url.pathname === '/favicon.ico') { res.writeHead(204); return res.end(); }
     if (url.pathname === '/sw.js') return sendFile(req, res, path.join(__dirname, 'public', 'sw.js'));
     if (url.pathname === '/manifest.webmanifest' || url.pathname === '/icon.svg') return sendFile(req, res, path.join(__dirname, 'public', url.pathname.slice(1)));
+    { const m = /^\/legal\/(terms|privacy|rules)(\.html)?$/.exec(url.pathname); if (m) return sendFile(req, res, path.join(ROOT, 'legal', m[1] + '.html')); }
     const f = path.normalize(path.join(ROOT, decodeURIComponent(url.pathname)));
     if (!f.startsWith(path.join(ROOT, 'data') + path.sep)) { res.writeHead(404); return res.end('Not found'); }
     return sendFile(req, res, f);
   } catch (e) {
-    if (e instanceof Refuse) return json(res, { unauthenticated: 401, permission_denied: 403, resource_exhausted: 429, payload_too_large: 413, not_found: 404 }[e.code] || 400, { code: e.code, message: e.message }, e.retryMs ? { 'retry-after': String(Math.ceil(e.retryMs / 1000)) } : {});
+    if (e instanceof Refuse) return json(res, { unauthenticated: 401, permission_denied: 403, resource_exhausted: 429, payload_too_large: 413, not_found: 404 }[e.code] || 400, { code: e.code, message: e.message, ...(e.reason ? { reason: e.reason } : {}) }, e.retryMs ? { 'retry-after': String(Math.ceil(e.retryMs / 1000)) } : {});
     console.error(e); sentry.captureException(e, { tags: { route: url.pathname.slice(0, 40) } });
     if (res.headersSent) return res.end();
     return json(res, 500, { code: 'internal', message: 'Something broke on the server.' });
@@ -504,4 +526,5 @@ if (BACKUP_EVERY_H > 0) setInterval(() => backupNow(db, DB_FILE).then(r => conso
 process.on('uncaughtException', e => { console.error(e); sentry.captureException(e, { tags: { fatal: 'uncaught' } }).finally(() => process.exit(1)); });
 process.on('unhandledRejection', e => { console.error(e); sentry.captureException(e, { tags: { fatal: 'rejection' } }); });
 
-server.listen(PORT, () => console.log(`INSANE on ${PUBLIC_URL} (port ${PORT})${DEV ? ' [dev: codes in /api/dev/outbox, movable clock]' : ''}`));
+module.exports = { server, doWrite, userById, getDoc, putDoc, readDoc, runQuery, beforeWrite, canRead, canWrite, merge, db, q, kv, SAFE, ACC, Refuse, setClock: off => { clockOffset = off; }, now: () => now() };
+if (require.main === module || ENV.LISTEN === '1') server.listen(PORT, () => console.log(`INSANE on ${PUBLIC_URL} (port ${PORT})${DEV ? ' [dev: codes in /api/dev/outbox, movable clock]' : ''}`));

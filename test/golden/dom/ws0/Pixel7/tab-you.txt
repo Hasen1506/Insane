@@ -101,6 +101,18 @@ main#app role=main
       option "10:00"
     div.eyebrow "Notifications"
     p.meta "Notifications need the INSANE server."
+    div.eyebrow "Safety"
+    label.chk role=label
+      input role=checkbox checked=true
+      span "Only your circle sees “Here now”. Never shown in the City."
+        b "Show when I’m here."
+    label.f role=label "Blocked"
+    p.meta "Nobody. To block or report someone, tap their name in your circle."
+    p.meta ", and . Grievance officer: ."
+      a role=link href="legal/terms.html" "Terms"
+      a role=link href="legal/privacy.html" "Privacy notice"
+      a role=link href="legal/rules.html" "Community rules"
+      b "to be named (needs Vijay)"
     div.eyebrow "Your data"
     p "Saved: your name, a 4 km² square and your city, your journeys and timeline (private to you), what you post, and the steps you’ve reached (for example, “joined a circle”) with the days you opened the app, to learn what works. No location history. No contacts."
     button.btn.s.ghost role=button act="export" "Download my data"

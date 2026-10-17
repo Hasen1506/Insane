@@ -16,7 +16,8 @@ function onboarding(){
     <label class="f" for="ob-handle">Your handle <small>what the rest of the city sees</small></label><div class="chips">${hs.map(h=>`<button class="chip ${o.handle===h?'on':''}" data-act="ob-handle" data-v="${esc(h)}">${esc(h)}</button>`).join('')}</div>
     <input class="in-t" id="ob-handle" data-ob="handle" maxlength="16" value="${esc(o.handle)}" style="margin-top:6px;text-transform:uppercase;font-family:var(--f-mono);letter-spacing:.08em" aria-label="Or type your own handle">
     <label class="chk"><input type="checkbox" id="ob-age" data-ob="age" ${o.age?'checked':''}> <span>I’m 16 or over. INSANE is built for meeting people in real places, so it isn’t for under-16s.</span></label>
-    <div class="btns"><button class="btn wide" data-act="ob-next" ${(o.name||'').trim()&&o.age?'':'disabled'}>Next</button></div>`;
+    ${consentRow(o)}
+    <div class="btns"><button class="btn wide" data-act="ob-next" ${obReady(o)?'':'disabled'}>Next</button></div><p class="meta" id="ob-why" role="status">${esc(obMissing(o))}</p>`;
   }else if(st===1){
     body=`<h1 class="v">Where’s home?</h1><p class="lede">Anywhere on Earth. You choose how exact: a private pin, or just a square of 1 to 9 km².</p>${picker('home')}
     <div class="btns"><button class="btn ghost" data-act="ob-back">Back</button><button class="btn" style="flex:1" data-act="ob-next" ${lpState('home').lat!=null?'':'disabled'}>Next</button></div>`;
@@ -46,7 +47,7 @@ async function finishOnboarding(mode){
   const o=S.ui.ob,st=lpState('home');if(S.deep&&S.deep.kind==='c')S.deep=null;
   const f=homeFields(st);const how=o.how||'skip';const withMind=mode!=='skip'&&(o.mind||'').trim();
   const ok=await W(async()=>{
-    await S.db.doc('people/'+S.uid).set(Object.assign({name:o.name.trim().slice(0,24),handle:(o.handle||'').trim().toUpperCase().slice(0,16)||null,circle:null,joined:now(),seen:now(),quiet:{from:23,to:8},tz:tzName()},f));
+    await S.db.doc('people/'+S.uid).set(Object.assign({name:o.name.trim().slice(0,24),handle:(o.handle||'').trim().toUpperCase().slice(0,16)||null,circle:null,joined:now(),seen:now(),quiet:{from:23,to:8},tz:tzName()},f,consentFields()));
     if(st.prec==='exact')await S.db.doc(`data/users/${S.uid}/loc`).set({lat:+st.lat.toFixed(6),lon:+st.lon.toFixed(6),src:st.src,acc:st.acc||null,at:now()});
     if(withMind)await addJourney(o.lane||'need',o.mind,STAKES[o.stake||0]);
   });

@@ -2,7 +2,8 @@
 /* ---------- tiny helpers ---------- */
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const now=()=>Date.now();
+let CLOCK_SKEW=0; // server mode: the server's clock minus this phone's, when they disagree by more than 5 s (C61)
+const now=()=>Date.now()+CLOCK_SKEW;
 const MIN=6e4,HOUR=36e5,DAY=864e5;
 const ALPH='abcdefghijkmnpqrstuvwxyz23456789',CODEA='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const rnd=(n,a=ALPH)=>Array.from(crypto.getRandomValues(new Uint8Array(n)),x=>a[x%a.length]).join('');
