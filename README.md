@@ -8,7 +8,11 @@ A concept for a post-money barter-and-dare app. Swap stuff in multi-person loops
 
 | Path | What it is |
 |---|---|
-| [`app/index.html`](app/index.html) | **v0.7, the working app.** Sign in, start or join a circle by code, threads with plans and pots, journeys, the weekly city Decode, hosted drops with door codes, a feed without counts, calls and rooms, meeting in person, Midnight and sealed messages, Go dark, export and delete. Live for everyone invited when published as an artifact; a one-device demo anywhere else. Five-person browser test in [`app/test/e2e.js`](app/test/e2e.js) |
+| [`app/index.html`](app/index.html) | **v0.8, the working app**, with v0.6's flow back: Home · Circle · + · City · Ledger. Places anywhere on Earth (exact private pin or a 1–9 km² square), favors in hours, pots with who's paid, the daily dare and jar, 24-hour photo clips, cheers, the Mole, Missions with a hidden spot, trails stamped by GPS, plus everything from v0.7. Runs inside claude.ai (shared store) or on the INSANE server. Seven-person browser test in [`app/test/e2e.js`](app/test/e2e.js) |
+| [`server/server.js`](server/server.js) | The INSANE server: email sign-in, live sync, OpenStreetMap tiles and search, web push, and the checks a page can't be trusted with. Node 22, no dependencies. Two-week, eleven-person playtest in [`server/test/playtest.js`](server/test/playtest.js) |
+| [`app/data/`](app/data) | Bundled world map and 69,818 places, built from Natural Earth and GeoNames by [`tools/build_geo.py`](tools/build_geo.py) |
+| [`docs/V08.md`](docs/V08.md) | v0.8: why v0.6's features went missing and what's back, real location, the server, simulator vs playtest, findings, what's still not built |
+| [`docs/PLAYTEST.md`](docs/PLAYTEST.md) | The two-week playtest diary, timings and all 92 checks, with screenshots in [`docs/playtest/`](docs/playtest) |
 | [`prototype/index.html`](prototype/index.html) | **v0.6.** Onboarding ends with needs, wants and urges in your own words. Adds chat in threads, rooms with other circles, a City feed without counts, Decode nights, drops per zone, trails, Go dark and sealed messages. Console: v0.6 tested, v0.5 tested, the road to 90%, what to build next, your ideas tested, the simulator, and a week on v0.6 |
 | [`prototype/v5/index.html`](prototype/v5/index.html) | v0.5: the first five minutes, Pacts, Midnight, the Mole, the Wall and Calls |
 | [`prototype/v4/index.html`](prototype/v4/index.html) | v0.4: Pots, Chapters and Missions on top of v0.3 |
@@ -28,7 +32,14 @@ A concept for a post-money barter-and-dare app. Swap stuff in multi-person loops
 
 ## Run it
 
-No build step. Open `prototype/index.html` for the prototype and research console, or `app/index.html` for the app (a demo on one device when opened from a file). Run the app's test with `node app/test/e2e.js` (needs Playwright and Chromium).
+No build step. Open `prototype/index.html` for the prototype and research console.
+
+The app runs three ways:
+- **Inside claude.ai** as a published artifact (shared live with everyone invited).
+- **On the INSANE server:** `DEV=1 OWNER_EMAIL=you@example.com node server/server.js`, then open http://localhost:8080. Sign-in codes print to the log; set `RESEND_API_KEY`, `MAIL_FROM` and `PUBLIC_URL` to send real email.
+- **As a one-device demo** from any static server.
+
+Tests (need Playwright and Chromium): `node app/test/e2e.js` (local store, 83 checks) and `node server/test/playtest.js` (server, 14 days, 92 checks).
 
 ## The short version
 
@@ -52,5 +63,7 @@ Before it compares designs, the simulator has to match published social-app rete
 **v0.5** asks what keeps people opening an app whose best moments are rare. The answer is **Pacts**: goals your circle checks in on, with two free misses a week (+8.6 points of day 30 on top of v0.4). Next is **the Mole**, one secret saboteur per circle each week (+6.0). **Midnight** releases unsigned messages about yourself together at midnight; gossip about other people hurts five times as many people for almost no gain. Fake Missions are stopped by a Reliability stake and meeting in person, not by money escrow. The flow matters as much as the features: shown all at once, the new ideas fall below v0.4 once each concept costs people attention, so the phone now has four tabs, one + button, and unlocks things over two weeks. See [`docs/V05.md`](docs/V05.md).
 
 **v0.6** builds the things people asked for, the quiet way. Chat lives in threads on plans, pots and pacts: one busy room for the whole circle *loses* about 6 points, while threads add up to 3. The City feed has no like counts, no follower counts and no stranger comments; that was the best idea of the round, while the open version hurt about 220 people. Decode nights give points by solve order and draw the prize among everyone who turns up, because whenever arriving first wins, everyone rushes. Drops go one per zone, sponsored by shops but never auctioned. Go dark covers your noisy apps for up to a day; no app can blank the whole phone. Onboarding ends with what you need, want or have an urge to do, in your own words. See [`docs/V06.md`](docs/V06.md).
+
+**v0.8** makes the working app real end to end and brings v0.6's game back into it. Places work anywhere on Earth: you choose an exact pin that only you can read, or a 1, 4 or 9 km² square, plus how far you'd go for a drop. The INSANE server adds email sign-in, street maps, GPS, push and server-side checks. The five-tab layout returns with the + button, alongside the Ledger (favors in hours with a −5 h limit, pots with who's paid), the daily dare and jar, photo clips that vanish in 24 hours, cheers, the Mole, Missions whose exact spot stays hidden until two hours before, and trails stamped by GPS. A two-week playtest with eleven people in four cities passes 92 of 92 checks. See [`docs/V08.md`](docs/V08.md).
 
 **v0.7** is the working app, separate from the prototype. You sign in with your account, and everything is shared live with the people you invite. Each person's journeys and timeline are private by storage rule, and Midnight messages are saved with no author. Drops are hosted by shops, stalls and circles: swap boxes, two-key drops that only open when two circles arrive together, counter dares, shop offers and free cash draws. The draw can be checked by anyone. Map tiles, GPS, QR and Bluetooth, push notifications and Screen Time need the phone app; the app labels each stand-in on screen. A five-person browser test passes 41 of 41 checks. See [`docs/BUILD.md`](docs/BUILD.md).

@@ -1,5 +1,7 @@
 # v0.7: the working app
 
+> **Updated by [v0.8](V08.md):** places anywhere on Earth, the INSANE server (email sign-in, street maps, GPS, push, server-side checks), and v0.6's game brought back into the app. The stand-ins listed below are now real, or labelled in the app as a limit of claude.ai pages.
+
 v0.1 to v0.6 were mock-ups with a simulator beside them. v0.7 is an app people can use: [`app/index.html`](../app/index.html). It's a single file. Published as a claude.ai artifact, it has real sign-in, shared live data and a privacy rule on every collection. Opened anywhere else, it runs as a demo on one device. The integrated prototype and research console stay at [`prototype/index.html`](../prototype/index.html).
 
 ---

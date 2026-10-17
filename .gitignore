@@ -1,0 +1,6 @@
+# local server data and test output
+server/*.db
+server/*.db-*
+server/test/playtest-out/
+app/test/shots/
+node_modules/
