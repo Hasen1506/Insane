@@ -35,6 +35,14 @@ services:
         sync: false
       - key: TILE_ATTR
         sync: false
+      - key: TILE_KIND         # WS-F: xyz | pmtiles | none (guessed from TILE_URL when unset)
+        sync: false
+      - key: TILE_URL_DARK     # WS-F: optional dark XYZ template
+        sync: false
+      - key: TILE_MAXZ         # WS-F: deepest zoom the tile source has
+        sync: false
+      - key: TILE_FILE         # WS-F: a self-hosted basemap.pmtiles on the disk, served at /data/basemap.pmtiles
+        value: /var/data/basemap.pmtiles
       - key: VAPID_SUBJECT     # mailto: contact for web push
         sync: false
       - key: BACKUP_BUCKET     # optional: S3-compatible bucket (R2/S3/B2); unset = snapshots stay on the disk

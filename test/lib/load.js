@@ -31,7 +31,7 @@ function makeContext() {
   const store = new Map();
   const localStorage = { getItem: k => store.has(k) ? store.get(k) : null, setItem: (k, v) => store.set(k, String(v)), removeItem: k => store.delete(k), clear: () => store.clear(), key: i => [...store.keys()][i] ?? null, get length() { return store.size; } };
   const fileFetch = async u => { // only data/ files, read from app/; everything else never answers
-    const m = /^data\/(places\.tsv|world\.json)$/.exec(String(u));
+    const m = /^data\/(places\.tsv|world\.json|places\/[A-Za-z0-9._-]+)$/.exec(String(u)); // places/: WS-F's per-country chunks
     if (!m) return new Promise(() => { });
     const f = path.join(REPO, 'app', 'data', m[1]);
     return { ok: true, status: 200, text: async () => fs.readFileSync(f, 'utf8'), json: async () => JSON.parse(fs.readFileSync(f, 'utf8')) };

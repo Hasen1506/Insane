@@ -20,7 +20,7 @@ module.exports = ({ getDoc, kv, now, isOwner, Refuse, balanceOf, MIN }) => ({
   read(p, s, d, u) {
     if (s[0] === 'missions' && d.by !== u.uid) {
       const me = getDoc('people/' + u.uid) || {}, host = me.circle && me.circle === d.cid, inn = !!(d.ins || {})[u.uid];
-      if (!host && !(inn && now() >= d.when - 2 * 3600e3)) d = { ...d, spot: '' };
+      if (!host && !(inn && now() >= d.when - 2 * 3600e3)) d = { ...d, spot: '', pin: null }; // the exact spot (text and pin) only to yes-sayers from T-2h (WS-F)
       if (!host && !inn) d = { ...d, roles: [] };
     }
     return d;

@@ -8,6 +8,7 @@
 //   e2e:server  test/e2e/legacy-server.js v0.8's 92 server checks against the built file
 //   e2e:decode  test/e2e/decode-server.js the Decode solved on a Pixel 7 against the server; the owner content tool
 //   regression  test/regression/*.test.js one test per live-test bug (R-Cnn)
+//   e2e:map     test/e2e/map.js           WS-F: place picker (search, GPS, links, privacy preview) and the City map, Pixel 7
 //   golden      test/golden/*.test.js     DOM + pixel goldens (GOLDEN_UPDATE=1 rewrites)
 //   e2e:flows   test/e2e/flows/run.js     the F-flows (each *.flow.js), server mode, Pixel 7
 // In-process suites export `async t => { t.ok(name, cond, extra) }`. Script suites are run as child
@@ -28,6 +29,7 @@ const SUITES = {
   'e2e:server': { budget: 90, script: ['test/e2e/legacy-server.js'], legacy: true },
   'e2e:decode': { budget: 30, script: ['test/e2e/decode-server.js'] }, // WS-E: F11 Decode on Pixel 7 vs the server, and the owner tool
   regression: { budget: 10, dir: 'test/regression' },          // R-Cnn: one per live-test bug (PLAN-V09 §5.e)
+  'e2e:map': { budget: 60, script: ['test/e2e/map.js'] }, // WS-F: picker and City map on Pixel 7, both modes
   golden: { budget: 30, dir: 'test/golden' },
   'e2e:flows': { budget: 90, script: ['test/e2e/flows/run.js'] }, // user-story flows, Pixel 7 (PLAN-V09 §5.a)
 };
