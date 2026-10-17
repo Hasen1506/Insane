@@ -60,7 +60,7 @@ const UNSAFE = [
   [/\b(roof|rooftop|ledge|cliff|balcony|climb (a|the|up) [a-z]+|jump (off|from)|heights?|parapet|terrace edge)\b/, 'Nothing at heights.'],
   [/\b(alcohol|drunk|drink (a|the|\d)|tequila shots?|vodka shots?|beer|vodka|whisk(e)?y|rum|tequila|wine|daru|booze|weed|drugs?|ganja|smoke|vape)\b/, 'Nothing with alcohol, drugs or smoking.'],
   [/\b(police|cops?|security guard|steal|shoplift|trespass|graffiti|vandal|break in|illegal)\b/, 'Nothing with the police or the law.'],
-  [/\b(money|cash|rupees?|rs|inr|pay (for|me|us|them|someone|a stranger)|bet|loan|gamble|wallet|upi|paytm|gpay)\b|[₹$€£]/, 'Nothing with money.'],
+  [/\b(money|cash|rupees?|rs|inr|pay for|pay (me|us|them|someone|a stranger) (rs|inr|₹|\d)|bet|loan|gamble|wallet|upi|paytm|gpay)\b|[₹$€£]/, 'Nothing with money.'],
   [/\b(touch|kiss|hug|grab|lick|tickle|slap|hit|push|follow|film|photograph|record) (a |an |some )?(random )?(stranger|stranger's|strangers|someone you don't know|a girl|a guy|a woman|a man)\b|\bstrangers'? bod(y|ies)\b/, 'Nothing with strangers’ bodies, and no filming people who didn’t agree.'],
   [/\b(knife|blade|weapon|gun|naked|nude|strip naked|underwear|self ?harm|cut yourself|starve|fast for|hold your breath|choke|blackout|pills?)\b/, 'Nothing that could hurt anyone.'],
 ];
