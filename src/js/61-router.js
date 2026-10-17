@@ -59,7 +59,7 @@ function routeApply(st){
   const y=st.y||0;ROUTE.y=y;requestAnimationFrame(()=>scrollTo(0,y));
 }
 function routePop(e){
-  const st=e.state;ROUTE.popped=location.href; // its hashchange (a separate task, after this) is the same traversal
+  const st=e.state;ROUTE.popped=st&&st.insane?location.href:null; // its hashchange (a separate task, after this) is the same traversal; a fragment link also fires popstate, with no state, and its hashchange must still route
   if(ROUTE.pending){ROUTE.pending=false;if(st&&st.insane&&st.r!==routeOf(S.ui))routeSync();return}
   if(!st||!st.insane||!routeLive())return;
   routeApply(st);

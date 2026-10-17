@@ -51,7 +51,9 @@ async function domSnapshot(page, sel = '#app', { mask = [] } = {}) {
     })(root, 0);
     return out.join('\n');
   }, sel);
-  return mask.reduce((s, [re, by]) => s.replace(re, by), raw) + '\n';
+  // Test servers listen on dynamic ports: the port in invite links (plain or URL-encoded) is masked.
+  const PORT = [[/localhost(:|%3A)\d+/g, 'localhost$1PORT']];
+  return PORT.concat(mask).reduce((s, [re, by]) => s.replace(re, by), raw) + '\n';
 }
 
 function lineDiff(a, b, ctx = 2) {
