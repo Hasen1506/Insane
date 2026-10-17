@@ -463,6 +463,16 @@ async function api(req, res, url) {
   }
   if (DEV && req.method === 'GET' && r === 'dev/outbox') { const row = db.prepare('SELECT sent FROM otps WHERE email=?').get((url.searchParams.get('email') || '').toLowerCase()); return json(res, 200, { mail: row ? JSON.parse(row.sent) : null }); }
   if (DEV && req.method === 'GET' && r === 'dev/pushlog') return json(res, 200, { log: pushLog });
+  // C11 (WS-B; route to be owned by WS-I): a public invite preview, so a link opened signed out can say who
+  // invited you. Only the circle's name, its size and the creator's first name. Rate-limited per address.
+  if (req.method === 'GET' && /^invite\/[A-Za-z0-9]{6}$/.test(r)) {
+    if (limited('inv:' + req.socket.remoteAddress, 30, MIN)) return json(res, 429, { code: 'resource_exhausted' });
+    const code = r.split('/')[1].toUpperCase(), cd = getDoc('codes/' + code), c = cd && getDoc('circles/' + cd.cid);
+    if (!c) return json(res, 404, { code: 'not_found' });
+    const count = q.kids.all('people').filter(x => JSON.parse(x.data).circle === cd.cid).length || (c.members || []).length;
+    const by = String((getDoc('people/' + c.by) || {}).name || '').trim().split(/\s+/)[0].slice(0, 24);
+    return json(res, 200, { name: String(c.name || '').slice(0, 28), count, max: 8, by }, { 'cache-control': 'no-store' });
+  }
   if (req.method !== 'POST') return json(res, 405, { code: 'invalid_argument' });
   const b = await body(req);
   if (r === 'auth/start') {

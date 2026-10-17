@@ -2,7 +2,7 @@
 function vCity(){
   const seg=S.ui.sseg;
   let out=`<h1 class="v">${esc(S.me.cityName)}</h1><p class="lede">Drops within ${S.me.radius||5} km, Missions, trails, the Decode, the feed, and calls from other circles.</p>
-  <div class="seg" role="tablist">${[['map','Map'],['feed','Feed'],['calls','Calls'],['league','League']].map(([k,n])=>`<button role="tab" data-act="sseg" data-v="${k}" class="${seg===k?'on':''}" aria-selected="${seg===k}">${n}</button>`).join('')}</div>`;
+  <div class="seg" role="tablist">${[['map','Map'],['feed','Feed'],['calls','Calls'],['league','League']].map(([k,n])=>`<button role="tab" data-act="sseg" data-v="${k}" class="${seg===k?'on':''}" aria-selected="${seg===k}">${n}</button>`).join('')}</div>`+segHelp(seg);
   if(seg==='map')out+=cityMap();else if(seg==='feed')out+=cityFeed();else if(seg==='calls')out+=cityCalls()+callsExtra();else out+=cityLeague();
   return out;
 }

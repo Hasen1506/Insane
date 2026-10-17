@@ -75,21 +75,26 @@ module.exports = async function (t) {
   same('nearName', NEAR, ([a, b]) => app => app.get('nearName')(a, b), { runs: +process.env.DIFF_NEAR_RUNS || 40 });
   same('areaChoices', NEAR, ([a, b]) => app => app.get('areaChoices')(a, b), { runs: +process.env.DIFF_AREA_RUNS || 60 });
 
-  // the registries: every v0.8 action name and sheet still resolves, and nothing new appeared
+  // the registries: every v0.8 action name and sheet still resolves, and nothing new appeared except what a
+  // workstream declared in test/diff/changes/<ws>.json ({newActions, newSheets, changedSheets}, each with a why)
+  const CH = { newActions: [], newSheets: [], changedSheets: [] };
+  const chDir = require('path').join(__dirname, 'changes');
+  if (require('fs').existsSync(chDir)) for (const f of require('fs').readdirSync(chDir).filter(f => f.endsWith('.json')).sort()) { const j = JSON.parse(require('fs').readFileSync(require('path').join(chDir, f), 'utf8')); for (const k of Object.keys(CH)) CH[k].push(...Object.keys(j[k] || {})); }
   const v08 = require('fs').readFileSync(require('../lib/load').v08Dir() + '/app/index.html', 'utf8');
   const actNames = [...v08.slice(v08.indexOf('async function act(')).matchAll(/case '([^']+)':/g)].map(m => m[1]);
   const sheetFn = v08.slice(v08.indexOf('function sheetBody('), v08.indexOf('function sealOpts('));
   const sheetNames = [...sheetFn.matchAll(/case '([^']+)':/g)].map(m => m[1]);
   for (const [n, a] of Object.entries(h.sides).slice(1)) {
     const acts = Object.keys(a.run('ACT')).sort(), sheets = Object.keys(a.run('SHEETS')).sort();
-    t.ok(`${n}: ACT registry has exactly v0.8's ${actNames.length} action names`, JSON.stringify(acts) === JSON.stringify([...actNames].sort()), acts.length);
-    t.ok(`${n}: SHEETS registry has exactly v0.8's ${sheetNames.length} sheets`, JSON.stringify(sheets) === JSON.stringify([...sheetNames].sort()), sheets.length);
+    t.ok(`${n}: ACT registry has exactly v0.8's ${actNames.length} action names plus the ${CH.newActions.length} declared new ones`, JSON.stringify(acts) === JSON.stringify([...new Set([...actNames, ...CH.newActions])].sort()), acts.filter(x => !actNames.includes(x) && !CH.newActions.includes(x)).join(',') + ' | missing ' + [...actNames, ...CH.newActions].filter(x => !acts.includes(x)).join(','));
+    t.ok(`${n}: SHEETS registry has exactly v0.8's ${sheetNames.length} sheets plus the ${CH.newSheets.length} declared new ones`, JSON.stringify(sheets) === JSON.stringify([...new Set([...sheetNames, ...CH.newSheets])].sort()), sheets.join(','));
   }
-  // sheets render the same HTML for the same state (the switch → registry change, checked end to end)
+  // sheets render the same HTML for the same state (the switch → registry change, checked end to end),
+  // except the sheets a workstream declared as intentionally changed
   const bad = [];
-  for (const name of [...sheetNames, 'no-such-sheet']) {
+  for (const name of [...sheetNames, 'no-such-sheet'].filter(x => !CH.changedSheets.includes(x))) {
     const c = h.compare(name, n => app => { try { return app.run(`sheetBody({t:${JSON.stringify(n)}})`); } catch (e) { return 'threw ' + e.constructor.name; } });
     if (c.diff) bad.push(name + ': ' + JSON.stringify(c).slice(0, 200));
   }
-  t.ok(`sheetBody: ${sheetNames.length + 1} sheet types render identically on an empty state`, bad.length === 0, bad.join(' | '));
+  t.ok(`sheetBody: ${sheetNames.length + 1 - CH.changedSheets.length} unchanged sheet types render identically on an empty state`, bad.length === 0, bad.join(' | '));
 };
