@@ -1,0 +1,156 @@
+{
+ "version": 1,
+ "note": "Mole tasks. i is the task's permanent index (stored in each Mole's private doc); never renumber or reuse one. n is how many times it has to be done. The first 8 are v0.8's, unchanged.",
+ "tasks": [
+  {
+   "i": 0,
+   "text": "Get three people to say “pineapple” before Sunday",
+   "n": 3
+  },
+  {
+   "i": 1,
+   "text": "Swap two things round in a shared space without anyone noticing",
+   "n": 1
+  },
+  {
+   "i": 2,
+   "text": "Borrow someone’s hoodie and wear it to the next plan",
+   "n": 1
+  },
+  {
+   "i": 3,
+   "text": "Get someone to high-five you for no reason",
+   "n": 1
+  },
+  {
+   "i": 4,
+   "text": "Work the word “flamingo” into three conversations",
+   "n": 3
+  },
+  {
+   "i": 5,
+   "text": "Get the circle to move a plan by five minutes",
+   "n": 1
+  },
+  {
+   "i": 6,
+   "text": "Leave a sticky note with a compliment where someone will find it",
+   "n": 1
+  },
+  {
+   "i": 7,
+   "text": "Start an argument about the best crisp flavour and stay out of it",
+   "n": 1
+  },
+  {
+   "i": 8,
+   "text": "Get three people to tell you the time without asking them for it",
+   "n": 3
+  },
+  {
+   "i": 9,
+   "text": "Get someone in the circle to sing a line of a song",
+   "n": 1
+  },
+  {
+   "i": 10,
+   "text": "Sit in a different seat from usual at every plan this week",
+   "n": 1
+  },
+  {
+   "i": 11,
+   "text": "Get the circle to take a group photo",
+   "n": 1
+  },
+  {
+   "i": 12,
+   "text": "Say “as my grandmother always says” twice, and make up the saying",
+   "n": 2
+  },
+  {
+   "i": 13,
+   "text": "Get someone to swap seats with you",
+   "n": 1
+  },
+  {
+   "i": 14,
+   "text": "Get two people to agree that mangoes are overrated",
+   "n": 2
+  },
+  {
+   "i": 15,
+   "text": "Borrow a pen and keep it until the end of the plan without anyone asking for it",
+   "n": 1
+  },
+  {
+   "i": 16,
+   "text": "Get someone to teach you a word in their language",
+   "n": 1
+  },
+  {
+   "i": 17,
+   "text": "Order exactly what the first person orders, at every meal this week",
+   "n": 1
+  },
+  {
+   "i": 18,
+   "text": "Get the circle to try a snack none of you has had before",
+   "n": 1
+  },
+  {
+   "i": 19,
+   "text": "Wear the same colour as someone in the circle without planning it openly",
+   "n": 1
+  },
+  {
+   "i": 20,
+   "text": "Get someone to send you a photo of their lunch",
+   "n": 1
+  },
+  {
+   "i": 21,
+   "text": "Slip the word “flabbergasted” into the circle chat twice",
+   "n": 2
+  },
+  {
+   "i": 22,
+   "text": "Get two people to recommend you the same film",
+   "n": 1
+  },
+  {
+   "i": 23,
+   "text": "Get the circle to take the long way somewhere",
+   "n": 1
+  },
+  {
+   "i": 24,
+   "text": "Make someone laugh using only a facial expression",
+   "n": 1
+  },
+  {
+   "i": 25,
+   "text": "Get two other people to high-five each other",
+   "n": 1
+  },
+  {
+   "i": 26,
+   "text": "Persuade someone to try a new chai or coffee order",
+   "n": 1
+  },
+  {
+   "i": 27,
+   "text": "Use someone’s favourite emoji back at them three times",
+   "n": 3
+  },
+  {
+   "i": 28,
+   "text": "Leave a doodle on a napkin or sticky note where the circle will find it",
+   "n": 1
+  },
+  {
+   "i": 29,
+   "text": "Get the circle to plan next week’s outing without suggesting it yourself",
+   "n": 1
+  }
+ ]
+}

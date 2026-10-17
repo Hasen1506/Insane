@@ -23,6 +23,8 @@ services:
         sync: false
       - key: MAIL_FROM         # e.g. INSANE <signin@yourdomain.in> (a Resend-verified sender)
         sync: false
+      - key: CONTENT_SECRET    # WS-E: the Decode/dare schedule secret (C92); generated once, never shown to clients
+        generateValue: true
       - key: SENTRY_DSN        # optional: errors to Sentry; unset = off
         sync: false
       - key: SENTRY_ENV

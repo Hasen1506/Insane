@@ -1,0 +1,510 @@
+{
+ "version": 1,
+ "note": "Daily-dare starters. Levels 1-6 (the jar caps at 6). Safety floor: server/content-core.js screenText. The first 8 are v0.8's, unchanged.",
+ "dares": [
+  {
+   "id": "d01",
+   "text": "Order your coffee in the voice of a movie trailer",
+   "level": 3,
+   "tags": [
+    "food",
+    "voice"
+   ]
+  },
+  {
+   "id": "d02",
+   "text": "Compliment a stranger’s shoes, and mean it",
+   "level": 2,
+   "tags": [
+    "kind"
+   ]
+  },
+  {
+   "id": "d03",
+   "text": "Eat lunch somewhere you’ve never sat before",
+   "level": 1,
+   "tags": [
+    "food"
+   ]
+  },
+  {
+   "id": "d04",
+   "text": "Wear something inside out all afternoon",
+   "level": 2,
+   "tags": [
+    "style"
+   ]
+  },
+  {
+   "id": "d05",
+   "text": "Ask a shop worker for their favourite thing in the shop",
+   "level": 3,
+   "tags": [
+    "talk"
+   ]
+  },
+  {
+   "id": "d06",
+   "text": "Sing the first line of a song out loud on the street",
+   "level": 5,
+   "tags": [
+    "voice"
+   ]
+  },
+  {
+   "id": "d07",
+   "text": "Do ten squats somewhere unusual and say nothing about it",
+   "level": 3,
+   "tags": [
+    "move"
+   ]
+  },
+  {
+   "id": "d08",
+   "text": "Leave a nice note for the next person to sit where you sat",
+   "level": 1,
+   "tags": [
+    "kind"
+   ]
+  },
+  {
+   "id": "d09",
+   "text": "Take a different way home today, even if it’s longer",
+   "level": 1,
+   "tags": [
+    "walk"
+   ]
+  },
+  {
+   "id": "d10",
+   "text": "Have your chai or coffee with your phone out of sight",
+   "level": 1,
+   "tags": [
+    "food",
+    "calm"
+   ]
+  },
+  {
+   "id": "d11",
+   "text": "Write down three things you noticed on the way to work",
+   "level": 1,
+   "tags": [
+    "calm"
+   ]
+  },
+  {
+   "id": "d12",
+   "text": "Try a snack from a shop you’ve walked past a hundred times",
+   "level": 1,
+   "tags": [
+    "food"
+   ]
+  },
+  {
+   "id": "d13",
+   "text": "Photograph something beautiful that nobody else would notice",
+   "level": 1,
+   "tags": [
+    "calm"
+   ]
+  },
+  {
+   "id": "d14",
+   "text": "Find out when the oldest building on your street was built",
+   "level": 1,
+   "tags": [
+    "city"
+   ]
+  },
+  {
+   "id": "d15",
+   "text": "Go one whole conversation without saying “basically”",
+   "level": 1,
+   "tags": [
+    "talk"
+   ]
+  },
+  {
+   "id": "d16",
+   "text": "Learn the name of the person who sells you flowers, fruit or tea",
+   "level": 1,
+   "tags": [
+    "kind",
+    "talk"
+   ]
+  },
+  {
+   "id": "d17",
+   "text": "Eat one meal today with your other hand",
+   "level": 1,
+   "tags": [
+    "food"
+   ]
+  },
+  {
+   "id": "d18",
+   "text": "Spend ten minutes in a park doing nothing at all",
+   "level": 1,
+   "tags": [
+    "calm"
+   ]
+  },
+  {
+   "id": "d19",
+   "text": "Ask an elder in your family for a story you’ve never heard",
+   "level": 2,
+   "tags": [
+    "talk",
+    "family"
+   ]
+  },
+  {
+   "id": "d20",
+   "text": "Swap lunches with someone in the circle",
+   "level": 2,
+   "tags": [
+    "food"
+   ]
+  },
+  {
+   "id": "d21",
+   "text": "Call a friend you haven’t spoken to in a year, just to say hi",
+   "level": 2,
+   "tags": [
+    "kind",
+    "talk"
+   ]
+  },
+  {
+   "id": "d22",
+   "text": "Wear one colour from head to toe today",
+   "level": 2,
+   "tags": [
+    "style"
+   ]
+  },
+  {
+   "id": "d23",
+   "text": "Thank a watchman, cleaner or conductor by name",
+   "level": 2,
+   "tags": [
+    "kind"
+   ]
+  },
+  {
+   "id": "d24",
+   "text": "Write the circle a two-line poem about your day",
+   "level": 2,
+   "tags": [
+    "words"
+   ]
+  },
+  {
+   "id": "d25",
+   "text": "Hum the same tune all morning until someone asks what it is",
+   "level": 2,
+   "tags": [
+    "voice"
+   ]
+  },
+  {
+   "id": "d26",
+   "text": "Learn to say thank you in a language you don’t speak, and use it today",
+   "level": 2,
+   "tags": [
+    "talk"
+   ]
+  },
+  {
+   "id": "d27",
+   "text": "Send a voice note to the circle describing your lunch like a food critic",
+   "level": 2,
+   "tags": [
+    "food",
+    "voice"
+   ]
+  },
+  {
+   "id": "d28",
+   "text": "Draw a map of your neighbourhood from memory and share it",
+   "level": 2,
+   "tags": [
+    "city",
+    "words"
+   ]
+  },
+  {
+   "id": "d29",
+   "text": "Ask someone for a place to eat nearby, and go there this week",
+   "level": 3,
+   "tags": [
+    "food",
+    "talk"
+   ]
+  },
+  {
+   "id": "d30",
+   "text": "Speak only in questions for your next conversation",
+   "level": 3,
+   "tags": [
+    "talk"
+   ]
+  },
+  {
+   "id": "d31",
+   "text": "Narrate the next five minutes out loud like a cricket commentator",
+   "level": 3,
+   "tags": [
+    "voice"
+   ]
+  },
+  {
+   "id": "d32",
+   "text": "Teach someone in the circle a skill in under five minutes",
+   "level": 3,
+   "tags": [
+    "kind"
+   ]
+  },
+  {
+   "id": "d33",
+   "text": "Draw the next person you sit with and give them the drawing",
+   "level": 3,
+   "tags": [
+    "kind",
+    "words"
+   ]
+  },
+  {
+   "id": "d34",
+   "text": "Ask someone to recommend a song, and listen to it with them right there",
+   "level": 3,
+   "tags": [
+    "talk"
+   ]
+  },
+  {
+   "id": "d35",
+   "text": "Order something you can’t pronounce, and ask how to say it",
+   "level": 3,
+   "tags": [
+    "food",
+    "talk"
+   ]
+  },
+  {
+   "id": "d36",
+   "text": "Give the next auto or cab driver a real compliment on their driving",
+   "level": 3,
+   "tags": [
+    "kind",
+    "talk"
+   ]
+  },
+  {
+   "id": "d37",
+   "text": "Find three people in the circle who share your birth month, or prove none do",
+   "level": 3,
+   "tags": [
+    "talk"
+   ]
+  },
+  {
+   "id": "d38",
+   "text": "Bring a homemade snack to the next plan and don’t say you made it",
+   "level": 3,
+   "tags": [
+    "food"
+   ]
+  },
+  {
+   "id": "d39",
+   "text": "Give a 30-second toast at your next meal with the circle",
+   "level": 4,
+   "tags": [
+    "voice",
+    "food"
+   ]
+  },
+  {
+   "id": "d40",
+   "text": "Wear sunglasses indoors for an hour, and act completely normal",
+   "level": 4,
+   "tags": [
+    "style"
+   ]
+  },
+  {
+   "id": "d41",
+   "text": "Introduce yourself to a neighbour you’ve never spoken to",
+   "level": 4,
+   "tags": [
+    "talk",
+    "kind"
+   ]
+  },
+  {
+   "id": "d42",
+   "text": "Speak in rhyme for the next ten minutes",
+   "level": 4,
+   "tags": [
+    "voice",
+    "words"
+   ]
+  },
+  {
+   "id": "d43",
+   "text": "Order your next meal in the local language, if it isn’t yours, after practising",
+   "level": 4,
+   "tags": [
+    "food",
+    "talk"
+   ]
+  },
+  {
+   "id": "d44",
+   "text": "Do a 20-second dance move in a park, then carry on as if nothing happened",
+   "level": 4,
+   "tags": [
+    "move"
+   ]
+  },
+  {
+   "id": "d45",
+   "text": "Ask the person at the next table what they’re eating and whether it’s good",
+   "level": 4,
+   "tags": [
+    "food",
+    "talk"
+   ]
+  },
+  {
+   "id": "d46",
+   "text": "Hold a door for ten people in a row",
+   "level": 4,
+   "tags": [
+    "kind"
+   ]
+  },
+  {
+   "id": "d47",
+   "text": "Start a round of applause for something small and ordinary in the circle",
+   "level": 4,
+   "tags": [
+    "voice",
+    "kind"
+   ]
+  },
+  {
+   "id": "d48",
+   "text": "Ask a librarian or bookseller for the best book they read this year, and borrow or buy it",
+   "level": 4,
+   "tags": [
+    "talk",
+    "words"
+   ]
+  },
+  {
+   "id": "d49",
+   "text": "Ask someone to take a photo of your circle, then offer to take one of them",
+   "level": 5,
+   "tags": [
+    "talk"
+   ]
+  },
+  {
+   "id": "d50",
+   "text": "Do one minute of stand-up for your circle, written today",
+   "level": 5,
+   "tags": [
+    "voice",
+    "words"
+   ]
+  },
+  {
+   "id": "d51",
+   "text": "Recite a poem out loud on a park bench",
+   "level": 5,
+   "tags": [
+    "voice",
+    "words"
+   ]
+  },
+  {
+   "id": "d52",
+   "text": "Play or sing one song in a park with a friend, just for whoever’s there",
+   "level": 5,
+   "tags": [
+    "voice"
+   ]
+  },
+  {
+   "id": "d53",
+   "text": "Start a conversation in a queue and learn one thing about the person",
+   "level": 5,
+   "tags": [
+    "talk"
+   ]
+  },
+  {
+   "id": "d54",
+   "text": "Wear a homemade paper crown for the whole afternoon",
+   "level": 5,
+   "tags": [
+    "style"
+   ]
+  },
+  {
+   "id": "d55",
+   "text": "Lead your circle in a two-minute group stretch in a park",
+   "level": 6,
+   "tags": [
+    "move"
+   ]
+  },
+  {
+   "id": "d56",
+   "text": "Learn a 30-second song in a language you don’t speak and sing it for the circle, outdoors",
+   "level": 6,
+   "tags": [
+    "voice"
+   ]
+  },
+  {
+   "id": "d57",
+   "text": "Organise a 15-minute litter pick at a spot you love, and invite passers-by to join",
+   "level": 6,
+   "tags": [
+    "kind",
+    "city"
+   ]
+  },
+  {
+   "id": "d58",
+   "text": "Ask a street musician to teach you one chord or one beat",
+   "level": 6,
+   "tags": [
+    "talk",
+    "voice"
+   ]
+  },
+  {
+   "id": "d59",
+   "text": "Give a one-minute speech in a park on the best food in your city",
+   "level": 6,
+   "tags": [
+    "voice",
+    "food"
+   ]
+  },
+  {
+   "id": "d60",
+   "text": "Run a five-minute free compliment stall with a cardboard sign, in a park",
+   "level": 6,
+   "tags": [
+    "kind",
+    "voice"
+   ]
+  }
+ ]
+}

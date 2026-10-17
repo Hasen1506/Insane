@@ -12,7 +12,9 @@ module.exports = ({ getDoc, kv, now, isOwner, Refuse, balanceOf, MIN }) => ({
       const t = now();
       if (t < drop.start || t > drop.end) throw new Refuse('failed_precondition', 'This drop isn’t open right now.');
       if (String(data.code || '').toUpperCase() !== String(drop.code).toUpperCase()) throw new Refuse('failed_precondition', 'wrong_code');
-      delete data.code; data.at = t; data.uid = u.uid; data.verified = 'server';
+      if (s[1] !== data.drop + '_' + u.uid) throw new Refuse('permission_denied', 'One check-in each, under your own name.'); // WS-E (C50)
+      const me = getDoc('people/' + u.uid) || {}; // the draw is among circles, so the circle is the one you're in, not the one you say
+      delete data.code; data.at = t; data.uid = u.uid; data.verified = 'server'; data.circle = me.circle || null;
       return data;
     }
     return data;

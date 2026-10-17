@@ -8,9 +8,6 @@ const STAKES=['My circle picks a dare from the jar','I cook for the circle','No 
 const FAVOR_H=[[.25,'15 min'],[.5,'30 min'],[1,'1 hour'],[2,'2 hours'],[4,'Half a day']];
 const hrs=h=>{const a=Math.abs(h),s=h>0?'+':h<0?'−':'';return s+(a%1===0?a:a.toFixed(2).replace(/0$/,''))+' h'};
 const LIMIT=-5; // favors: nobody goes more than five hours into the red
-const STARTER_DARES=[['Order your coffee in the voice of a movie trailer',3],['Compliment a stranger’s shoes, and mean it',2],['Eat lunch somewhere you’ve never sat before',1],['Wear something inside out all afternoon',2],['Ask a shop worker for their favourite thing in the shop',3],['Sing the first line of a song out loud on the street',5],['Do ten squats somewhere unusual and say nothing about it',3],['Leave a nice note for the next person to sit where you sat',1]];
-const MOLE_TASKS=['Get three people to say “pineapple” before Sunday','Swap two things round in a shared space without anyone noticing','Borrow someone’s hoodie and wear it to the next plan','Get someone to high-five you for no reason','Work the word “flamingo” into three conversations','Get the circle to move a plan by five minutes','Leave a sticky note with a compliment where someone will find it','Start an argument about the best crisp flavour and stay out of it'];
-const MOLE_N=[3,1,1,1,3,1,1,1];
 const DARE_CAP=6; // dares go up to 6 out of 10 in the jar; nothing above that outside a venue with staff
 const nc=(k,kc,r,body,btns,cls='')=>`<div class="card ${cls}"><div class="km"><span class="kind ${kc}">${k}</span><span class="meta">${r||''}</span></div>${body}${btns?`<div class="btns">${btns}</div>`:''}</div>`;
 const safeImg=s=>typeof s==='string'&&/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(s)&&s.length<200000?s:'';
@@ -22,12 +19,13 @@ const verified=()=>verifiedN()>=2;
 const cheerId=(to,label)=>`${to}_${S.uid}_${weekKey()}_${fnv(label)}`;
 const jLabel=j=>j.read.kind==='Ladder'?'Ladder':j.read.what;
 function cheersFor(u,label){return S.cheers.filter(c=>c.to===u&&c.label===label&&c.week===weekKey())}
-/* the daily dare: one a day from the circle's jar, picked from dares that were in it before today began */
+/* the daily dare: one a day from the circle's jar (or the starters), from dares that were in it before today began */
 function dailyDare(){const t0=dayStart(now());const j=S.dares.filter(d=>!d.to&&d.at<t0&&!d.pulled&&!dareFlagged(d));
-  const list=j.length?j:STARTER_DARES.map(([text,level],i)=>({id:'starter'+i,text,level,starter:true}));
-  // flagged as not safe (C88): today's pick moves on to the next one for you; two flags take it off for the circle
+  const list=j.length?j:STARTER_DARES.map(([text,level],i)=>({id:'starter'+i,text,level,starter:true}));contentLoad();
+  // flagged as not safe (WS-D, C88): today's pick moves on to the next one for you; two flags take it off for the circle
   const off=(S.daily.flags||[]).includes(S.uid)||(S.daily.flags||[]).length>=2;
-  return list[(fnvN((S.me.circle||'')+today())+(off?1:0))%list.length]}
+  // a fixed shuffled cycle per circle (WS-E, C92): no dare comes round again until the whole list has
+  return list[(permAt(list.length,'dare|'+(S.me.circle||''),dayIdx(today()))+(off?1:0))%list.length]}
 const moleReveal=(t=now())=>weekStart(t)+6*DAY+21*HOUR;
 const myMole=()=>{const m=S.priv.mole;return m&&m.week===weekKey()&&S.mole?m:null};
 const moleDone=m=>m.tasks.filter((ti,i)=>(m.prog[i]||0)>=MOLE_N[ti]).length;

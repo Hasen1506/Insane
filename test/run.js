@@ -6,8 +6,9 @@
 //   diff        test/diff/*.test.js       v0.8 (fac3720) vs v0.9 on seeded inputs (DIFF_RUNS)
 //   e2e:local   test/e2e/legacy-local.js  v0.8's 83 local-mode checks against the built file
 //   e2e:server  test/e2e/legacy-server.js v0.8's 92 server checks against the built file
+//   e2e:decode  test/e2e/decode-server.js the Decode solved on a Pixel 7 against the server; the owner content tool
+//   regression  test/regression/*.test.js one test per live-test bug (R-Cnn)
 //   golden      test/golden/*.test.js     DOM + pixel goldens (GOLDEN_UPDATE=1 rewrites)
-//   regression  test/regression/*.test.js one test per live-test bug, R-Cnn
 //   e2e:flows   test/e2e/flows/run.js     the F-flows (each *.flow.js), server mode, Pixel 7
 // In-process suites export `async t => { t.ok(name, cond, extra) }`. Script suites are run as child
 // processes and pass when they exit 0. Time budgets (PLAN-V09 §5.0) are reported per suite; set
@@ -25,8 +26,9 @@ const SUITES = {
   diff: { budget: 10, dir: 'test/diff' },
   'e2e:local': { budget: 60, script: ['test/e2e/legacy-local.js'], legacy: true },
   'e2e:server': { budget: 90, script: ['test/e2e/legacy-server.js'], legacy: true },
-  golden: { budget: 30, dir: 'test/golden' },
+  'e2e:decode': { budget: 30, script: ['test/e2e/decode-server.js'] }, // WS-E: F11 Decode on Pixel 7 vs the server, and the owner tool
   regression: { budget: 10, dir: 'test/regression' },          // R-Cnn: one per live-test bug (PLAN-V09 §5.e)
+  golden: { budget: 30, dir: 'test/golden' },
   'e2e:flows': { budget: 90, script: ['test/e2e/flows/run.js'] }, // user-story flows, Pixel 7 (PLAN-V09 §5.a)
 };
 

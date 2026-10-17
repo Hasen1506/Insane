@@ -6,5 +6,30 @@ const DK={
  twokey:{n:'Two-key',s:'2K',d:'Opens only when two different circles check in during the hour. Then everyone there gets the prize.'},
  dare:{n:'Counter dare',s:'DAR',d:'Do the dare at the counter, then check in with the door code to get the prize.'}};
 function dropPhase(d,t=now()){return t<d.start?'soon':t<d.end?'open':'over'}
-function drawWinner(d,ins){const cs=[...new Set(ins.map(i=>i.circle).filter(Boolean))].sort();if(!cs.length)return null;return cs[fnvN(d.id+'|'+cs.join(','))%cs.length]}
-
+// The draw (C50). A drop made since v0.9 carries seedHash, the hash of a seed nobody can see while it's on
+// (the server keeps it; in local mode the host's device does). When it closes the seed is published, and the
+// draw is a seeded shuffle of the eligible circles: each circle once however many of it turned up, only
+// check-ins inside the window (the server files each under the circle its person is really in). Same seed and check-ins, same order, anywhere.
+// Drops from before v0.9 (no seedHash) keep v0.8's draw, so their winners still check out.
+function drawEligible(d,ins){return [...new Set(ins.filter(i=>i.circle&&(i.at==null||(i.at>=d.start&&i.at<=d.end))).map(i=>i.circle))].sort()}
+function drawOrder(seed,cs){const r=mulberry(fnv32('draw|'+seed+'|'+cs.join(',')));const o=cs.slice();for(let i=o.length-1;i>0;i--){const j=Math.floor(r()*(i+1));const x=o[i];o[i]=o[j];o[j]=x}return o}
+function drawWinner(d,ins){
+  if(!d.seedHash){const cs=[...new Set(ins.map(i=>i.circle).filter(Boolean))].sort();if(!cs.length)return null;return cs[fnvN(d.id+'|'+cs.join(','))%cs.length]}
+  const seed=d.seed||DSEED[d.id];if(!seed)return null;const cs=drawEligible(d,ins);return cs.length?drawOrder(seed,cs)[0]:null;
+}
+const DSEED={}; // seeds this page has fetched, by drop id
+const drawSealed=d=>!!(d&&d.seedHash&&!d.seed&&!DSEED[d.id]);
+async function sha256hex(s){return [...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(String(s))))].map(x=>x.toString(16).padStart(2,'0')).join('')}
+// A closed drop whose seed hasn't reached this page yet: ask for it (the server adds it once the drop is
+// over; in local mode the host's own device publishes it from its private store). Once per drop per page.
+const SEEDASK={};
+function drawSeedFetch(d){
+  if(!drawSealed(d)||dropPhase(d)!=='over'||SEEDASK[d.id])return;SEEDASK[d.id]=1;
+  const put=x=>{if(x&&x.seed){DSEED[d.id]=x.seed;render()}};
+  if(S.backend==='server'){S.db.doc('drops/'+d.id).get().then(s=>put(s.exists&&s.data())).catch(()=>{SEEDASK[d.id]=0});return}
+  const mine=d.host===S.uid&&(S.priv.seeds||{})[d.id];
+  if(mine)S.db.doc('drops/'+d.id).update({seed:mine}).then(()=>put({seed:mine})).catch(()=>{SEEDASK[d.id]=0});
+}
+// Check a published seed against the hash that was out before anyone checked in.
+const SEEDOK={};
+function drawVerified(d){const seed=d&&(d.seed||DSEED[d.id]);if(!seed||!d.seedHash)return null;if(!(d.id in SEEDOK)){SEEDOK[d.id]=null;sha256hex(seed).then(h=>{SEEDOK[d.id]=h===d.seedHash;render()})}return SEEDOK[d.id]}
