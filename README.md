@@ -33,14 +33,14 @@ A concept for a post-money barter-and-dare app. Swap stuff in multi-person loops
 
 ## Run it
 
-No build step. Open `prototype/index.html` for the prototype and research console.
+Open `prototype/index.html` for the prototype and research console. The app's source is in `src/`; `npm run build` writes the single-file `app/index.html` (committed, pasteable into claude.ai), and `npm run check` fails if it's stale. See [`docs/WS0.md`](docs/WS0.md).
 
 The app runs three ways:
 - **Inside claude.ai** as a published artifact (shared live with everyone invited).
 - **On the INSANE server:** `DEV=1 OWNER_EMAIL=you@example.com node server/server.js`, then open http://localhost:8080. Sign-in codes print to the log; set `RESEND_API_KEY`, `MAIL_FROM` and `PUBLIC_URL` to send real email.
 - **As a one-device demo** from any static server.
 
-Tests (need Playwright and Chromium): `node app/test/e2e.js` (local store, 83 checks) and `node server/test/playtest.js` (server, 14 days, 92 checks).
+Tests: `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm i` once (playwright-core, uses the system Chromium or `CHROMIUM=`), then `npm test`: build check, unit, property-based, v0.8-vs-v0.9 differential, the 83 local-store and 92 server checks against the built file, and golden screens. `npm run test:quick` skips the browser suites.
 
 ## The short version
 

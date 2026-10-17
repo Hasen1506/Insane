@@ -1,0 +1,122 @@
+aside.rail role=complementary aria-label="How this build works"
+  h2 role=heading "INSANE"
+    span "v0.8"
+  p "The barter-and-dare app for the five people you actually see. This is the working build, not the mock-up: everything you do here is saved and shared with everyone you invite."
+  h3 role=heading "What's real here"
+  b.y "Real"
+  span "Places anywhere on Earth: 69,818 towns, a world map with roads, a pin you can drop to the metre."
+  b.y "Real"
+  span "Privacy you choose: an exact pin only you can read, or a 1, 4 or 9 km² square. Drops only show within the distance you set."
+  b.y "Real"
+  span "Sign-in, circles, threads, plans, journeys, feed, calls, Decode, drops, QR meeting codes. Live between everyone invited."
+  b.y "Real"
+  span "v0.6’s game, back: favors in hours with a −5 h limit, pots with who’s paid, the daily dare and the jar, photo clips gone in 24 h, cheers, the Mole, Missions with a hidden spot, trails stamped by GPS."
+  b.y "Real"
+  span "Draws worked out in the open from who turned up. Door codes kept only as a slow hash."
+  b.p "Limit"
+  span "claude.ai pages can't load street tiles, read GPS or send notifications. The INSANE server version (same app) does all three, and checks codes and answers itself."
+  h3 role=heading "Playing with friends"
+  p "Invite each person by email from the Share menu. Anyone who can only view can look around but can't post."
+main#app role=main
+  header.top role=banner
+    span.mark "INSANE"
+    button.bell role=button act="sheet" v="activity" aria-label="What’s new"
+      svg
+    span.where "Third Floor Chennai · 4 km² square"
+      span.live.demo
+      br
+    button.me-btn.on role=button act="tab" v="you" aria-label="You: profile, journeys, settings" "M"
+  div.banner "Nothing leaves this browser. Open the shared link signed in to play with other people."
+    b "Demo on this device."
+  div#v
+    h1.v role=heading "Meera"
+    p.lede "in the city · Chennai · 4 km² square near Mīnjūr · Third Floor"
+      b "NIGHT BUS"
+      button.link role=button act="sheet" v="profile" "Edit"
+    div.eyebrow "Your journeys"
+      button role=button act="sheet" v="add-j" "+ Add"
+    p.meta "Needs you keep doing, wants you reach over weeks, urges you do once. Your circle sees the counts, never your words."
+    span.tag.need "Need"
+    span.meta "Pact"
+    h3 role=heading "Run"
+    svg
+    div.meta "0 of 3 this week · 3 a week"
+    i.t
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    p.meta "If you miss: i cook for the circle"
+    button.btn.s role=button act="tick" v="j_u3eu3sdmbb" "Done today"
+    button.btn.s.ghost role=button act="j-menu" v="j_u3eu3sdmbb" "More"
+    div.eyebrow "Passport · 0 stamps"
+    p.meta "Check in at a drop, meet someone, solve a Decode or finish a journey, and it gets stamped here."
+    div.eyebrow "Your story so far"
+    ul.tl role=list
+      li role=listitem "Started Third Floor"
+        small "just now"
+    div.eyebrow "Go dark"
+    p "1 to 24 hours, now or later, alone or with the circle. INSANE goes blank and holds every notification."
+    button.btn.s role=button act="dark-setup" "Set it up"
+    div.eyebrow "Calm"
+    label.chk role=label
+      input role=checkbox checked=false
+      span "No red dots or counts, no confetti or sounds, and Today shows less."
+        b "Calm mode."
+    label.chk role=label
+      input role=checkbox checked=false
+      span "A soft click when you tick, solve or check in."
+        b "Sounds."
+    label.f role=label "Quiet hours"
+      small "no badges, no notifications"
+    select.in-t role=combobox aria-label="Quiet from" value="23"
+      option "Off"
+      option "20:00"
+      option "21:00"
+      option "22:00"
+      option "23:00"
+      option "00:00"
+    span.meta "to"
+    select.in-t role=combobox aria-label="Quiet until" value="8"
+      option "06:00"
+      option "07:00"
+      option "08:00"
+      option "09:00"
+      option "10:00"
+    div.eyebrow "Notifications"
+    p.meta "Notifications need the INSANE server."
+    div.eyebrow "Your data"
+    p "Saved: your name, a 4 km² square and your city, your journeys and timeline (private to you), what you post, and the steps you’ve reached (for example, “joined a circle”) with the days you opened the app, to learn what works. No location history. No contacts."
+    button.btn.s.ghost role=button act="export" "Download my data"
+    button.btn.s.ghost role=button act="del-ask" "Delete everything"
+    div.eyebrow "How this copy works"
+    b.y "Demo"
+    span "Everything stays in this browser. Open the shared link, or run the INSANE server, to play with other people."
+  nav.tabs role=navigation aria-label="Sections"
+    button role=button act="tab" v="today" aria-current="false" "Home"
+      svg
+    button role=button act="tab" v="circle" aria-current="false" "Circle"
+      svg
+    button.plus role=button act="make" aria-label="Make something"
+      span "+"
+    button role=button act="tab" v="city" aria-current="false" "City"
+      svg
+    button role=button act="tab" v="ledger" aria-current="false" "Ledger"
+      svg
+div#layer

@@ -1,0 +1,64 @@
+/* ---------- rendering ---------- */
+let rq=0,stick=false,lastV='',lastL='';
+function render(scrollChat){if(scrollChat)stick=true;if(rq)return;rq=requestAnimationFrame(()=>{rq=0;draw()})}
+function draw(){
+  const a=document.activeElement,fid=a&&a.id,ss=a&&a.selectionStart,se=a&&a.selectionEnd;
+  const chat=$('.chat'),nearBottom=chat?(innerHeight+scrollY>=document.body.scrollHeight-120):true;
+  // Countdowns are filled by tick(), so an unchanged screen keeps its DOM and a tap mid-update isn't lost.
+  const strip=h=>h.replace(/(data-until="\d+"[^>]*>)[^<]*/g,'$1');
+  const hv=strip(view()),hl=strip(layer());
+  if(hv!==lastV){$('#app').innerHTML=hv;lastV=hv}
+  mountMaps();document.title=(()=>{const n=S.me&&S.me.cell&&!calmNow()?activity().filter(a=>a.fresh).length:0;return (n?'('+n+') ':'')+'INSANE'})();
+  if(hl!==lastL){$('#layer').innerHTML=hl;lastL=hl;mountMaps()}
+  if(fid){const el=document.getElementById(fid);if(el&&el!==document.activeElement){el.focus({preventScroll:true});try{if(ss!=null)el.setSelectionRange(ss,se)}catch(e){}}}
+  if(stick&&nearBottom&&$('.chat'))scrollTo(0,document.body.scrollHeight);stick=false;
+  tick();
+}
+function view(){
+  if(S.mode==='signin')return signin();
+  if(S.mode==='boot'||S.me===undefined)return `<div class="boot"><span class="mark">INSANE</span><span class="pulse">Signing you in…</span></div>`;
+  if(S.me===null)return onboarding();
+  if(!S.me.cell)return relocate();
+  const t=S.ui.tab;
+  return header()+`<div id="v">${t==='today'?vToday():t==='circle'?vCircle():t==='city'?vCity():t==='ledger'?vLedger():vYou()}</div>`+nav();
+}
+function relocate(){return `<div style="padding-top:18px"><span class="mark">INSANE</span><h1 class="v">Set your place again</h1><p class="lede">INSANE now works anywhere on Earth, down to the street. Pick your spot, how exact to be, and how far you’d go for a drop.</p>${picker('home')}<div class="btns"><button class="btn wide" data-act="loc-save" ${lpState('home').lat==null?'disabled':''}>Save my place</button></div></div>`}
+function signin(){
+  const f=S.ui.si||(S.ui.si={step:0,email:'',code:''});
+  return `<div style="padding-top:18px"><span class="mark">INSANE</span><h1 class="v">Sign in with your email</h1><p class="lede">We email you a 6-digit code. No password. New here? The same code makes your account.</p>
+  ${f.step===0?`<form data-form="si-start"><label class="f" for="si-email">Email</label><input class="in-t" id="si-email" data-si="email" type="email" autocomplete="email" inputmode="email" value="${esc(f.email)}" placeholder="you@example.com"><div class="btns"><button class="btn wide" type="submit" ${f.busy?'disabled':''}>Email me a code</button></div></form>`
+  :`<form data-form="si-verify"><p>Code sent to <b>${esc(f.email)}</b>. <button type="button" class="link" data-act="si-back">Change</button></p><label class="f" for="si-code">6-digit code</label><input class="in-t" id="si-code" data-si="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" value="${esc(f.code)}" style="letter-spacing:.3em;font-family:var(--f-mono);font-size:20px"><div class="btns"><button class="btn wide" type="submit" ${f.busy?'disabled':''}>Sign in</button></div><p class="meta">Nothing after a minute? Check spam, or <button type="button" class="link" data-act="si-resend">send another</button>.</p></form>`}
+  ${f.err?`<p class="read warn">${esc(f.err)}</p>`:''}${S.hello&&S.hello.dev?'<p class="meta">Development server: codes are printed in the server log.</p>':''}</div>`;
+}
+async function siCall(r,b){const x=await fetch('/api/auth/'+r,{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify(b)});const j=await x.json().catch(()=>({}));if(!x.ok)throw new Error(j.message||'That didn’t work. Try again.');return j}
+
+function header(){
+  const me=S.me,c=S.circle,n=activity().filter(a=>a.fresh).length;
+  const where=`${esc(c?c.name:'No circle yet')}<br>${esc(me.cityName||'')} · ${esc(cellText(me.cell))}`;
+  return `<header class="top"><span class="mark">INSANE</span><button class="bell" data-act="sheet" data-v="activity" aria-label="What’s new${n?': '+n:''}">${ICON.bell}${n&&!calmNow()?`<span class="cnt">${n>9?'9+':n}</span>`:''}</button><span class="where"><span class="live ${S.mode==='demo'?'demo':''}" aria-hidden="true"></span>${where}</span><button class="me-btn ${S.ui.tab==='you'?'on':''}" data-act="tab" data-v="you" aria-label="You: profile, journeys, settings">${esc(initials(me.name))}</button></header>`+
+   (S.mode==='demo'?`<div class="banner"><b>Demo on this device.</b> Nothing leaves this browser. Open the shared link signed in to play with other people.</div>`:'')+
+   (S.offline?`<div class="banner"><b>Reconnecting…</b> Changes will show when you’re back online.</div>`:'')+
+   (S.ui.readonly?`<div class="banner"><b>Look-only access.</b> To post, check in or join a circle, ask the owner to invite you by email as an Editor.</div>`:'');
+}
+const ICON={
+ today:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>',
+ ledger:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>',
+ circle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="4" r="1.6" fill="currentColor"/><circle cx="19" cy="15" r="1.6" fill="currentColor"/><circle cx="5" cy="15" r="1.6" fill="currentColor"/></svg>',
+ city:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg>',
+ gps:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>',
+ bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>',
+ you:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>'};
+function nav(){
+  const b=badges();
+  return `<nav class="tabs" aria-label="Sections"><div class="in">${[['today','Home'],['circle','Circle'],['plus',''],['city','City'],['ledger','Ledger']].map(([k,n])=>k==='plus'?`<button class="plus" data-act="make" aria-label="Make something"><span>+</span></button>`:`<button data-act="tab" data-v="${k}" class="${S.ui.tab===k?'on':''}" aria-current="${S.ui.tab===k?'page':'false'}">${ICON[k]}${n}${b[k]?'<span class="dot" aria-label="new"></span>':''}</button>`).join('')}</div></nav>`;
+}
+function unreadThreads(){
+  const seen=S.priv.seen||{};const out=[];
+  for(const t of S.threads)if(t.last&&t.last.by!==S.uid&&t.last.at>(seen['t:'+t.id]||0)&&!t.muted)out.push({type:'thread',id:t.id,title:t.title,last:t.last});
+  for(const r of S.rooms)if(r.last&&r.last.by!==S.uid&&r.last.at>(seen['r:'+r.id]||0)&&r.closesAt>now())out.push({type:'room',id:r.id,title:roomTitle(r),last:r.last});
+  return out;
+}
+function badges(){if(calmNow())return {};const seen=S.priv.seen||{};const midNew=S.midnight.some(m=>m.releaseAt<=now()&&m.releaseAt>(seen.midnight||0));
+  const u=S.uid;const led=S.favors.some(f=>(f.status==='done'&&f.asker===u)||(f.status==='claimed'&&f.doer===u))||pots().some(p=>!p.closed&&(potState(p,u)==='to pay'||(p.by===u&&Object.values(p.paid||{}).includes('wait'))));
+  return {circle:unreadThreads().length>0||midNew,city:S.posts.some(p=>p.at>(seen.feed||0)&&p.by!==S.uid)&&S.ui.tab!=='city',ledger:led&&S.ui.tab!=='ledger'}}
+

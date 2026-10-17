@@ -1,0 +1,9 @@
+SHEETS["thread-new"]=(sh,close)=>{
+  {const k=F.tkind||'plan';
+    return `<h2>New thread</h2><div class="chips" style="margin:8px 0">${[['talk','Just talk'],['plan','Plan'],['pot','Pot']].map(([v,n])=>`<button class="chip ${k===v?'on':''}" data-act="tkind" data-v="${v}">${n}</button>`).join('')}</div>
+    <label class="f" for="t-title">${k==='pot'?'What’s the money for?':k==='plan'?'What’s the plan?':'Topic'}</label><input class="in-t" id="t-title" data-f="ttitle" value="${esc(F.ttitle||'')}" maxlength="40" placeholder="${k==='pot'?'Lisbon flights':k==='plan'?'Quiz night':'Flat stuff'}">
+    ${k==='plan'?`<label class="f" for="t-when">When</label><input class="in-t" id="t-when" data-f="twhen" value="${esc(F.twhen||'')}" maxlength="40" placeholder="Thu 7pm"><label class="f" for="t-where">Where <small>optional</small></label><input class="in-t" id="t-where" data-f="twhere" value="${esc(F.twhere||'')}" maxlength="60" placeholder="The Loading Dock">`:''}
+    ${k==='pot'?`<label class="f" for="t-per">${esc(cur())} each</label><input class="in-t" id="t-per" data-f="tper" inputmode="numeric" value="${esc(F.tper||'')}" placeholder="80"><label class="f" for="t-min">Goes ahead if this many pledge</label><input class="in-t" id="t-min" data-f="tmin" inputmode="numeric" value="${esc(F.tmin||'')}" placeholder="4"><label class="f" for="t-by">Pledge by <small>optional</small></label><input class="in-t" id="t-by" data-f="tby" value="${esc(F.tby||'')}" maxlength="30" placeholder="Friday">`:''}
+    <p class="meta">${k==='talk'?'Only people who open it get badges.':k==='plan'?'Everyone taps in or out. The thread pings only the people going.':'Nobody pays unless enough pledge. Then everyone pays the organiser directly. INSANE never holds money.'}</p>
+    <div class="btns"><button class="btn" data-act="t-create">Create</button><button class="btn ghost" data-act="sheet-close">Cancel</button></div>`}
+};

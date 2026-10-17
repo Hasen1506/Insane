@@ -1,0 +1,9 @@
+.mapslot{height:300px;margin-top:10px;border:1.5px solid var(--ink);border-radius:14px;overflow:hidden;position:relative;background:var(--sea)}
+.mapslot.tall{height:340px}.mapslot.short{height:190px}
+.mapv{position:absolute;inset:0}.mapv canvas{display:block;width:100%;height:100%;cursor:grab}
+.mapctl{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:4px}
+.mapctl button{width:34px;height:34px;border-radius:9px;border:1.5px solid var(--ink);background:var(--card);font-weight:700;font-size:17px;line-height:1;padding:0}
+.mapattr{position:absolute;left:6px;bottom:4px;font:10px var(--f-mono);color:var(--ink);background:var(--card);opacity:.85;padding:1px 5px;border-radius:4px;max-width:calc(100% - 12px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.results{display:flex;flex-direction:column;border:1.5px solid var(--line);border-radius:12px;margin-top:6px;background:var(--card);overflow:hidden}
+.res{display:flex;flex-direction:column;align-items:flex-start;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:8px 11px;min-width:0}
+.res:last-child{border-bottom:0}.res b{font-size:14.5px}

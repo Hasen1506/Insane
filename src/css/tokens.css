@@ -1,0 +1,20 @@
+/* One phone-width column, a rail of build notes beside it on wide screens. Paper, ink, a rubber stamp and a ballpoint. */
+:root{
+  --paper:#ECEEE7;--card:#F9FAF6;--ink:#151D36;--muted:#596277;--line:#CDD2C8;
+  --stamp:#C8214B;--ball:#2443C4;--haz:#8A6A00;--good:#1F7A4D;
+  --stamp-soft:rgba(200,33,75,.10);--ball-soft:rgba(36,67,196,.10);--haz-soft:rgba(217,164,0,.16);--good-soft:rgba(31,122,77,.12);
+  --cell:#E2E6DC;--cell2:#D7DCD0;--sea:#C7D5DC;--night:#05070D;--night-ink:#C9CED9;
+  --f-display:"Dela Gothic One","Arial Black",Impact,sans-serif;
+  --f-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0E1320;--card:#161D2D;--ink:#E5E8E0;--muted:#8C95A8;--line:#2B3550;
+  --stamp:#FF5A7E;--ball:#8197FF;--haz:#F2C53D;--good:#4CC38A;
+  --stamp-soft:rgba(255,90,126,.14);--ball-soft:rgba(129,151,255,.14);--haz-soft:rgba(242,197,61,.14);--good-soft:rgba(76,195,138,.14);
+  --cell:#1A2233;--cell2:#212B40;--sea:#0A1524;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0E1320;--card:#161D2D;--ink:#E5E8E0;--muted:#8C95A8;--line:#2B3550;
+  --stamp:#FF5A7E;--ball:#8197FF;--haz:#F2C53D;--good:#4CC38A;
+  --stamp-soft:rgba(255,90,126,.14);--ball-soft:rgba(129,151,255,.14);--haz-soft:rgba(242,197,61,.14);--good-soft:rgba(76,195,138,.14);
+  --cell:#1A2233;--cell2:#212B40;--sea:#0A1524;color-scheme:dark}

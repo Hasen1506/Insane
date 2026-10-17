@@ -4,3 +4,5 @@ server/*.db-*
 server/test/playtest-out/
 app/test/shots/
 node_modules/
+test/out/
+.v08/

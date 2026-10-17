@@ -1,0 +1,33 @@
+SHEETS["host"]=(sh,close)=>{
+  {const k=F.dkind||'swap';
+    return `<h2>Host a drop</h2><p class="meta">For shops, stalls, clubs and circles. One hour, one place. You get a door code to show people who turn up. People within their own distance of the spot see it.</p>
+    <label class="f">Type</label><div class="chips">${Object.entries(DK).map(([v,o])=>`<button class="chip ${k===v?'on':''}" data-act="dkind" data-v="${v}">${o.n}</button>`).join('')}</div><p class="meta">${esc(DK[k].d)}</p>
+    <label class="f" for="d-venue">Place name</label><input class="in-t" id="d-venue" data-f="dvenue" value="${esc(F.dvenue||'')}" maxlength="40" placeholder="The Book Nook">
+    <label class="f" for="d-addr">Address or how to find it</label><input class="in-t" id="d-addr" data-f="daddr" value="${esc(F.daddr||'')}" maxlength="80" placeholder="14 Market Row, by the clock">
+    <div class="sub">${picker('drop')}</div>
+    <div class="row" style="gap:8px"><div class="grow"><label class="f" for="d-date">Day</label><input class="in-t" type="date" id="d-date" data-f="ddate" value="${esc(F.ddate||today())}"></div><div class="grow"><label class="f" for="d-time">Starts</label><input class="in-t" type="time" id="d-time" data-f="dtime" value="${esc(F.dtime||'18:00')}"></div></div>
+    <label class="f">Length</label><div class="chips">${[30,60,120].map(m=>`<button class="chip ${(F.dlen||60)===m?'on':''}" data-act="dlen" data-v="${m}">${m<60?m+' min':m/60+' h'}</button>`).join('')}</div>
+    <label class="f" for="d-prize">${k==='swap'?'What’s in the box to start':k==='cash'?'Cash prize, put up by':'Prize'}</label><input class="in-t" id="d-prize" data-f="dprize" value="${esc(F.dprize||'')}" maxlength="60" placeholder="${k==='swap'?'A signed Pulp 7-inch':k==='cash'?'£50 from The Book Nook':k==='dare'?'Free coffee for the whole circle':'10% off for everyone, a £20 voucher drawn'}">
+    ${k==='dare'?`<label class="f" for="d-dare">The dare</label><input class="in-t" id="d-dare" data-f="ddare" value="${esc(F.ddare||'')}" maxlength="80" placeholder="Read the first page of any book out loud">`:''}
+    ${k==='cash'?'<p class="meta">Free entry only. Nobody pays to take part, so it’s a free draw, not a lottery. Check your local rules on prize draws.</p>':''}
+    <div class="btns"><button class="btn" data-act="d-create">Publish the drop</button><button class="btn ghost" data-act="sheet-close">Cancel</button></div>`}
+};
+SHEETS["drop"]=(sh,close)=>{
+  {const d=S.drops.find(x=>x.id===sh.id);if(!d)return `<p>This drop has gone.</p>${close}`;
+    const ph=dropPhase(d),k=DK[d.kind]||DK.offer,ins=S.dropIns,circles=[...new Set(ins.map(i=>i.circle))];const mineIn=ins.find(i=>i.uid===S.uid);const ref=myRef();const km=ref&&isFinite(d.lat)?distKm(ref,[d.lat,d.lon]):null;
+    const hostCode=d.host===S.uid?(d.code||(S.priv.codes||{})[d.id]||''):'';
+    let state='';
+    if(d.kind==='twokey')state=circles.length>=2?'<b style="color:var(--good)">Unlocked.</b> Two circles are here. Everyone checked in gets the prize.':`<b>Locked.</b> ${circles.length} circle${circles.length===1?'':'s'} here. It needs 2.`;
+    const drawn=ph==='over'&&(d.kind==='offer'||d.kind==='cash');const w=drawn?drawWinner(d,ins):null;
+    if(drawn)state=w?`<div class="drawbox" id="drawbox"><div class="meta">The draw</div><div class="drawname" id="draw-name">${S.ui.drawn===d.id?esc(ins.find(i=>i.circle===w)?.cname||'a circle'):'?'}</div>${S.ui.drawn===d.id?`<p class="meta">Worked out from the ${circles.length} circle${circles.length>1?'s':''} who turned up: sort their ids, hash the drop id with them, divide by ${circles.length}, keep the remainder. Anyone can check it.</p>`:`<button class="btn s" data-act="draw-run" data-v="${esc(d.id)}">Run the draw</button>`}</div>`:'Nobody turned up, so nothing was drawn.';
+    return `<div class="meta"><span class="tag k">${esc(k.n)}</span>${km!=null?fmtKm(km)+' from you':''}</div><h2>${esc(d.venue)}</h2><p style="margin:0">${esc(d.addr||'')}</p>
+    ${isFinite(d.lat)?`<div class="mapslot short" data-map="drop"></div><p class="meta" style="margin-top:4px">Directions: <a href="${osmLink(d.lat,d.lon)}" target="_blank" rel="noopener">OpenStreetMap</a> · <a href="${gmapLink(d.lat,d.lon)}" target="_blank" rel="noopener">Google Maps</a></p>`:''}
+    <div class="panel"><div class="meta">${ph==='soon'?`${esc(when(d.start))} · opens in <span data-until="${d.start}">${left(d.start-now())}</span>`:ph==='open'?`Open now · <span data-until="${d.end}">${left(d.end-now())}</span> left`:'Over'}</div><b>${esc(d.prize)}</b>${d.dare?`<p><b>The dare:</b> ${esc(d.dare)}</p>`:''}${d.kind==='swap'&&d.item?`<p>In the box now: <b>${esc(d.item)}</b></p>`:''}<p class="meta">${esc(k.d)}</p>${state?`<div>${state}</div>`:''}</div>
+    <p class="meta">${circles.length} circle${circles.length===1?'':'s'} checked in${circles.length?': '+circles.map(c=>esc(ins.find(i=>i.circle===c)?.cname||'')).join(', '):''}.</p>
+    ${d.host===S.uid?`<div class="panel" style="border-color:var(--stamp)"><div class="meta">You’re hosting · show this at the door</div><div class="big">${esc(hostCode||'······')}</div><button class="link" data-act="d-del" data-v="${esc(d.id)}">Cancel this drop</button></div>`:''}
+    ${ph==='open'&&!mineIn&&d.host!==S.uid?(S.me.circle?`<form data-form="checkin" data-id="${esc(d.id)}"><label class="f" for="d-code">Door code <small>ask at the counter</small></label><div class="row"><input class="in-t grow" id="d-code" data-f="dcode" maxlength="6" value="${esc(F.dcode||'')}" placeholder="6 letters" autocomplete="off" autocapitalize="characters" style="text-transform:uppercase;letter-spacing:.15em;font-family:var(--f-mono)"><button class="btn" type="submit">Check in</button></div></form>`:'<p class="meta">Join a circle to check in.</p>'):''}
+    ${mineIn?`<p><b>You’re checked in.</b> ${esc(ago(mineIn.at))}${mineIn.verified==='server'?' · code checked by the server':''}</p>`:''}
+    ${d.kind==='swap'&&mineIn&&!mineIn.swapped?`<form data-form="swap" data-id="${esc(d.id)}"><label class="f" for="s-left">What did you leave in the box?</label><div class="row"><input class="in-t grow" id="s-left" data-f="sleft" maxlength="60" value="${esc(F.sleft||'')}" placeholder="A Polaroid camera"><button class="btn" type="submit">Swap</button></div></form>`:''}
+    ${d.kind==='swap'&&(d.swaps||[]).length?`<div class="eyebrow">The box’s log</div><ul class="tl">${(d.swaps||[]).slice().reverse().map(s=>`<li>${esc(s.cname)} took ${esc(s.took)}, left ${esc(s.left)}<small>${esc(ago(s.at))}</small></li>`).join('')}</ul>`:''}
+    ${close}`}
+};

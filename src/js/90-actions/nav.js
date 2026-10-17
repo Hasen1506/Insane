@@ -1,0 +1,28 @@
+/* nav */
+ACT["tab"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+  S.ui.tab=d.v;S.ui.open=null;try{localStorage.setItem('insane_tab',d.v)}catch(e){}if(d.v==='city'&&S.ui.sseg==='feed')setSeen('feed');wire2();render();scrollTo(0,0);return;
+};
+ACT["cseg"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+  S.ui.cseg=d.v;if(d.v==='midnight')setSeen('midnight');render();return;
+};
+ACT["sseg"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+  S.ui.sseg=d.v;if(d.v==='feed')setSeen('feed');render();return;
+};
+ACT["sheet"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+  openSheet(d.v,{id:d.id});return;
+};
+ACT["sheet-close"]=ACT["sheet-bg"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+  closeSheet();return;
+};
+ACT["open"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+  S.ui.tab='circle';S.ui.open={type:d.type,id:d.v};S.msgs=[];setSeen((d.type==='thread'?'t:':d.type==='room'?'r:':'d:')+d.v);S.ui.sheet=null;wire2();render(true);return;
+};
+ACT["close"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+  S.ui.open=null;drop('msgs');render();return;
+};
+ACT["copy"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+  try{await navigator.clipboard.writeText(d.v);toast('Copied '+d.v)}catch(e){toast('Code: '+d.v)}return;
+};
+ACT["zone"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+  S.ui.zoneFilter=S.ui.zoneFilter===+d.v?null:+d.v;render();return;
+};
