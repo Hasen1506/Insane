@@ -1,0 +1,59 @@
+# Render Blueprint for the INSANE server (C96, C97, C99). One Docker web service with a persistent disk
+# for SQLite. A disk means one instance and a short restart on each deploy (no zero-downtime deploys).
+# Values marked `sync: false` are set by hand in the Render dashboard (they are secrets or Vijay's choices).
+services:
+  - type: web
+    name: insane
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    region: singapore          # nearest Render region to Chennai
+    plan: starter              # persistent disks need a paid instance type
+    healthCheckPath: /api/health
+    autoDeploy: false          # deploy tagged releases on purpose (docs/RUNBOOK.md), not every push
+    disk:
+      name: insane-data
+      mountPath: /var/data     # DB_FILE and BACKUP_DIR live here (see Dockerfile)
+      sizeGB: 1
+    envVars:
+      - key: PUBLIC_URL        # https://insane.onrender.com or the custom domain; https turns on Secure cookies + HSTS
+        sync: false
+      - key: OWNER_EMAIL       # the owner account (moderation, stats, funnel)
+        sync: false
+      - key: RESEND_API_KEY    # sign-in emails; without it codes only go to the server log
+        sync: false
+      - key: MAIL_FROM         # e.g. INSANE <signin@yourdomain.in> (a Resend-verified sender)
+        sync: false
+      - key: SENTRY_DSN        # optional: errors to Sentry; unset = off
+        sync: false
+      - key: SENTRY_ENV
+        value: production
+      - key: GOOGLE_CLIENT_ID  # optional: Google Sign-In; unset = the button is hidden
+        sync: false
+      - key: TILE_URL          # map tiles; OSM's own tile server is not for production (C69)
+        sync: false
+      - key: TILE_ATTR
+        sync: false
+      - key: VAPID_SUBJECT     # mailto: contact for web push
+        sync: false
+      - key: BACKUP_BUCKET     # optional: S3-compatible bucket (R2/S3/B2); unset = snapshots stay on the disk
+        sync: false
+      - key: BACKUP_ENDPOINT   # e.g. https://<account>.r2.cloudflarestorage.com
+        sync: false
+      - key: BACKUP_ACCESS_KEY_ID
+        sync: false
+      - key: BACKUP_SECRET_ACCESS_KEY
+        sync: false
+      - key: BACKUP_REGION
+        value: auto
+      - key: BACKUP_EVERY_H
+        value: "24"
+      - key: BACKUP_KEEP
+        value: "14"
+      - key: DEFAULT_TZ        # circles and quiet hours with no zone of their own
+        value: Asia/Kolkata
+      - key: MAX_CIRCLES
+        value: "3"
+      - key: TRUST_PROXY       # read the client IP from Render's proxy for per-IP limits
+        value: "1"
+      - key: MIN_CLIENT_BUILD  # optional: clients older than this build reload (C08)
+        sync: false
