@@ -12,7 +12,7 @@
     "check": "node tools/build.js --check",
     "test": "node test/run.js",
     "test:quick": "node test/run.js build unit pbt diff",
-    "test:e2e": "node test/run.js e2e:local e2e:server",
+    "test:e2e": "node test/run.js e2e:local e2e:server e2e:flows",
     "golden:update": "GOLDEN_UPDATE=1 node test/run.js golden",
     "start": "node server/server.js"
   },
