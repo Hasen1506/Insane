@@ -16,6 +16,8 @@
 //   names     every control has an accessible name (aria-label, aria-labelledby, title, alt, a <label>,
 //             or text) (C77, 4.1.2).
 //   fonts     no visible text under 12 px (C70).
+//   bidi      text with right-to-left letters is isolated from its sentence (C21)
+//   anims     with reduced motion asked for, nothing is animating (C80)
 //   cards     a .card stands off what is behind it: (fill ≥ 1.25:1 or a shadow) and a border ≥ 1.4:1 (C72).
 'use strict';
 
@@ -74,7 +76,7 @@ function pageAudit(kitSrc, opts) {
     return base;
   }
   const opacity = el => { let o = 1; for (let e = el; e; e = e.parentElement) o *= +cs(e).opacity; return o; };
-  const out = { contrast: [], targets: [], names: [], fonts: [], cards: [], counts: { text: 0, targets: 0, cards: 0 }, hscroll: document.documentElement.scrollWidth > innerWidth + 1 };
+  const out = { contrast: [], targets: [], names: [], fonts: [], cards: [], bidi: [], anims: 0, counts: { text: 0, targets: 0, cards: 0 }, hscroll: document.documentElement.scrollWidth > innerWidth + 1 };
   if (!scope) return out;
 
   // text contrast and size; a glyph hidden from readers inside a control (an icon like "?" or "+") is
@@ -126,10 +128,21 @@ function pageAudit(kitSrc, opts) {
     const r2 = bw && bc ? K.ratio(K.blend(bc, under), under) : 1, shadow = s.boxShadow && s.boxShadow !== 'none';
     if (!(r1 >= 1.25 || shadow) || r2 < 1.4) out.cards.push(`${desc(el)} "${txt(el)}" fill ${r1.toFixed(2)} border ${r2.toFixed(2)}`);
   }
+  // C21: right-to-left text is isolated from what is around it (FSI…PDI, <bdi>, dir=…, or unicode-bidi isolate/plaintext)
+  const RTL = /[\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/;
+  const tw = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT);
+  for (let n; (n = tw.nextNode());) {
+    const v = n.textContent; if (!RTL.test(v)) continue; const el = n.parentElement; if (!el || hidden(el) || !visible(el)) continue;
+    const i = v.search(RTL), iso = v.lastIndexOf('\u2068', i) > v.lastIndexOf('\u2069', i);
+    let ok = iso || !!el.closest('bdi,[dir],input,textarea');
+    for (let e = el; !ok && e && e !== scope.parentElement; e = e.parentElement) ok = /isolate|plaintext/.test(cs(e).unicodeBidi);
+    if (!ok) out.bidi.push(`${desc(el)} "${v.trim().slice(0, 28)}"`);
+  }
+  out.anims = document.getAnimations().filter(a => a.playState === 'running').length;
   return out;
 }
 
 const kit = colorKit();
 const audit = (page, opts = {}) => page.evaluate(([k, src, o]) => (0, eval)('(' + src + ')')(k, o), [colorKit.toString(), pageAudit.toString(), opts]);
-const total = r => r.contrast.length + r.targets.length + r.names.length + r.fonts.length + r.cards.length + (r.hscroll ? 1 : 0);
+const total = r => r.contrast.length + r.targets.length + r.names.length + r.fonts.length + r.cards.length + r.bidi.length + (r.anims ? 1 : 0) + (r.hscroll ? 1 : 0);
 module.exports = { colorKit, kit, pageAudit, audit, total };

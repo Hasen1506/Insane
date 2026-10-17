@@ -15,6 +15,7 @@ function draw(){
   tick();
   // C06: a new kind of screen (sign-in -> onboarding -> the app) starts at the top, not where the last one was scrolled.
   const k=viewKind();if(k!==lastK){if(lastK)scrollTo(0,0);lastK=k}
+  a11yAfter();
   routeSync();
 }
 let lastK='';

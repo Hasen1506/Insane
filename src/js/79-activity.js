@@ -23,11 +23,15 @@ function hereNow(){const ids=S.backend==='server'?(S.live||[]):S.backend==='clau
 let AC=null;
 function sfx(){if(!prefs().sound||calmNow())return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.setValueAtTime(660,t);o.frequency.exponentialRampToValueAtTime(990,t+.09);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.12,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.28);o.connect(g).connect(AC.destination);o.start(t);o.stop(t+.3)}catch(e){}}
 // A rubber stamp and a burst of paper. Calm mode and reduced motion get the words only.
+// C55: the stamp lands where the person tapped (the row that changed), never over the screen's buttons
+// in the middle, and it can't be hit: .celebrate and everything in it is pointer-events:none.
+let tapY=null;addEventListener('pointerdown',e=>{tapY=e.clientY},true);
 function celebrate(stamp,msg){
   sfx();try{if(navigator.vibrate)navigator.vibrate(20)}catch(e){}
   if(msg)toast(msg);
   if(calmNow()||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   const el=document.createElement('div');el.className='celebrate';el.setAttribute('aria-hidden','true');
+  if(tapY!=null)el.style.setProperty('--cy',Math.round(Math.min(Math.max(tapY,90),innerHeight-120))+'px');
   el.innerHTML=`<div class="cstamp">${esc(stamp)}</div>`+Array.from({length:20},(_,i)=>`<i style="--x:${Math.round((Math.random()*2-1)*170)}px;--y:${Math.round(-70-Math.random()*170)}px;--r:${Math.round(Math.random()*540)}deg;--dl:${i*10}ms;background:${['var(--stamp)','var(--ball)','var(--haz)','var(--good)'][i%4]}"></i>`).join('');
   document.body.appendChild(el);setTimeout(()=>el.remove(),1600);
 }
@@ -48,7 +52,33 @@ async function pushOn(){
 }
 async function checkPush(){if(S.backend!=='server'||!('serviceWorker' in navigator)||!('Notification' in window))return;try{const reg=await navigator.serviceWorker.getRegistration('/sw.js');const sub=reg&&await reg.pushManager.getSubscription();S.pushOn=!!sub;S.pushState=Notification.permission;render()}catch(e){}}
 
-let toastT=null;
-function toast(m){S.toast=m;clearTimeout(toastT);toastT=setTimeout(()=>{S.toast=null;render()},3200);render()}
-const toastHtml=()=>S.toast?`<div class="toast" role="status">${esc(S.toast)}</div>`:'';
+// C73: one snackbar above the tab bar, two lines at most, gone after 3 s or as soon as the person moves to
+// another screen (a toast set by the tap that moved them stays). role=status, so it is read out once.
+let toastT=null,toastAt=0,toastOn='';
+const screenKey=()=>{const u=S.ui||{};return [u.tab,u.cseg,u.sseg,u.lseg,u.open&&u.open.id,u.sheet&&u.sheet.t].join('|')};
+function toast(m){S.toast=m;toastAt=Date.now();toastOn=screenKey();clearTimeout(toastT);toastT=setTimeout(()=>{S.toast=null;render()},3000);render()}
+function toastHtml(){if(S.toast&&screenKey()!==toastOn){if(Date.now()-toastAt>600)S.toast=null;else toastOn=screenKey()}return S.toast?`<div class="toast" role="status">${esc(S.toast)}</div>`:''}
+
+/* ---------- C77/C78/C21: after every draw ---------- */
+// Sheets: focus moves into a sheet when it opens (its heading, or the sheet), Tab and Shift+Tab stay inside
+// it, and focus goes back to the control that opened it when it closes. Sheet openers say they open a dialog.
+// User text fields take their own direction (dir=auto).
+let a11ySheet='',a11yFrom=null;
+function a11yAfter(){
+  const sh=document.querySelector('#layer .sheet'),k=sh&&S.ui.sheet?S.ui.sheet.t+'/'+(S.ui.sheet.id||''):'';
+  if(k!==a11ySheet){
+    if(k&&sh){const ae=document.activeElement;if(!a11ySheet&&ae&&ae!==document.body&&!sh.contains(ae))a11yFrom=ae.dataset&&ae.dataset.act?{act:ae.dataset.act,v:ae.dataset.v}:null;
+      const h=sh.querySelector('h2,h3');if(h){h.tabIndex=-1;if(!h.id)h.id='sheet-h';sh.setAttribute('aria-labelledby',h.id)}
+      if(!sh.contains(document.activeElement))(h||sh).focus({preventScroll:true})}
+    else if(!k&&a11yFrom){const el=document.querySelector(`#app [data-act="${a11yFrom.act}"]`+(a11yFrom.v?`[data-v="${CSS.escape(a11yFrom.v)}"]`:''));a11yFrom=null;if(el)el.focus({preventScroll:true})}
+    a11ySheet=k}
+  const o=S.ui.sheet&&S.ui.sheet.t;for(const el of document.querySelectorAll('[data-act="sheet"],[data-act="make"]')){el.ariaHasPopup='dialog';el.ariaExpanded=o===(el.dataset.v||'make')}
+  for(const el of document.querySelectorAll('input:not([dir]),textarea:not([dir])'))el.dir='auto';
+}
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Tab')return;const sh=document.querySelector('#layer .sheet');if(!sh)return;
+  const f=[...sh.querySelectorAll('button,[href],input,select,textarea,summary')].filter(x=>!x.disabled&&x.type!=='hidden'&&x.getClientRects().length);if(!f.length)return;
+  const a=document.activeElement,i=f.indexOf(a);
+  if(e.shiftKey&&(i<=0)){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&(i<0||i===f.length-1)){e.preventDefault();f[0].focus()}
+});
 

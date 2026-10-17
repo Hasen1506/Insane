@@ -70,5 +70,5 @@ function syncVerified(){const c=S.circle;if(!c||!S.me?.circle)return;const v=c.v
 function openPath(o){if(!o)return null;if(o.type==='thread')return `circles/${S.me&&S.me.circle}/threads/${o.id}`;if(o.type==='room')return 'rooms/'+o.id;if(o.type==='dm')return 'dms/'+o.id;return null}
 const pending={};
 function person(id){if(!id||S.people[id]||pending[id])return S.people[id];pending[id]=1;S.db.doc('people/'+id).get().then(s=>{S.people[id]=s.exists?s.data():{name:'Someone'};render()}).catch(()=>{});return null}
-const nameOf=id=>id===S.uid?'You':(S.people[id]?.name||person(id)?.name||'Someone');
+const nameOf=id=>id===S.uid?'You':bidi(S.people[id]?.name||person(id)?.name||'Someone');
 

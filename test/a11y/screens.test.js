@@ -3,7 +3,7 @@
 // favor, a post and a dare, so lists, chips and avatars are drawn. Screens: welcome, intro, each onboarding
 // step, the tour, every tab and every segment of it, and every sheet in the SHEETS registry that opens with
 // no arguments. Each is audited by test/lib/a11y.js (contrast from the DOM, 44 px targets, accessible names,
-// 12 px minimum font, card separation, no sideways scroll). A11Y_REPORT=path writes the full findings as JSON.
+// 12 px minimum font, card separation, isolated RTL text, no animation under reduced motion, no sideways scroll). A11Y_REPORT=path writes the full findings as JSON.
 'use strict';
 const fs = require('fs');
 const BR = require('../lib/browser'), E = require('../lib/e2e'), A = require('../lib/a11y');
@@ -106,15 +106,16 @@ module.exports = async function (t) {
       const { screens, errors, members } = await run(browser, scheme), P = `Pixel 7 ${scheme}: `;
       t.ok(P + 'Meera and Kavya (RTL name) are both in the circle', members.includes(KAVYA) && members.length === 2, members.join(','));
       t.ok(P + `drove ${screens.length} screens without script errors`, screens.length >= 30 && !errors.length, screens.length + ' ' + errors.join(' | '));
-      const sum = { contrast: 0, targets: 0, names: 0, fonts: 0, cards: 0, hscroll: 0 };
+      const sum = { contrast: 0, targets: 0, names: 0, fonts: 0, cards: 0, bidi: 0, anims: 0, hscroll: 0 };
       for (const s of screens) {
         report[`${scheme}/${s.name}`] = s.r;
-        for (const k of Object.keys(sum)) sum[k] += k === 'hscroll' ? +s.r.hscroll : s.r[k].length;
+        for (const k of Object.keys(sum)) sum[k] += k === 'hscroll' ? +s.r.hscroll : k === 'anims' ? +!!s.r.anims : s.r[k].length;
         t.ok(P + `${s.name}: text contrast WCAG AA`, !s.r.contrast.length, s.r.contrast.join(' | '));
         t.ok(P + `${s.name}: targets ≥ 44 px`, !s.r.targets.length, s.r.targets.join(' | '));
         t.ok(P + `${s.name}: every control has a name`, !s.r.names.length, s.r.names.join(' | '));
         t.ok(P + `${s.name}: no text under 12 px`, !s.r.fonts.length, s.r.fonts.join(' | '));
         t.ok(P + `${s.name}: cards stand off the page, no sideways scroll`, !s.r.cards.length && !s.r.hscroll, s.r.cards.join(' | '));
+        t.ok(P + `${s.name}: R-C21 right-to-left text is isolated; R-C80 nothing animates under reduced motion`, !s.r.bidi.length && !s.r.anims, s.r.bidi.join(' | ') + ' anims=' + s.r.anims);
       }
       console.log(`  a11y ${scheme}: ${screens.length} screens; findings ${JSON.stringify(sum)}`);
     }
