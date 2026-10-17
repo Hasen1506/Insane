@@ -44,9 +44,26 @@ The next feature that adds copy will not fit. The real fix is C95 finished (stri
 
 ## Suite results
 
-The full `npm test`, every suite serially in `test/run.js` order, twice in a row at RUNS_SHA (the commit before this doc). Times in seconds, on a shared 2-core box.
+The full `npm test`, every suite serially in `test/run.js` order, twice in a row at 0f120f4 (the commit before this doc). Times in seconds, on a shared 2-core box.
 
-RUNS_TABLE
+| suite | checks | run 1 (s) | run 2 (s) |
+|---|---|---|---|
+| build | 1/1 | 3.8 | 0.2 |
+| unit | 230/230 | 11.2 | 6.1 |
+| pbt | 154/154 | 13.3 | 13.8 |
+| diff | 54/54 | 24.3 | 21.6 |
+| e2e:local | 83/83 | 53.6 | 60.3 |
+| e2e:server | 92/92 | 127.1 | 118.8 |
+| e2e:decode | 17/17 | 8.5 | 4.5 |
+| regression | 107/107 | 29.1 | 16.1 |
+| e2e:map | 26/26 | 17.7 | 13.4 |
+| golden | 280/280 | 70.3 | 66.1 |
+| e2e:flows | 266/266 | 51.5 | 70.0 |
+| e2e:ledger | 17/17 | 14.3 | 22.6 |
+| a11y | 687/687 | 36.2 | 57.7 |
+| **total** | **2,014/2,014** | | |
+
+Two late fixes came before these runs: the DOM goldens now mask the dynamic test-server port in invite links (earlier runs failed 12, then 4, golden checks on the port alone), and the router once more routes a typed or followed `#/` link (a fragment navigation fires a stateless popstate, which had marked its hashchange as a Back; caught by flows/shell.test.js).
 
 Budgets are informational (`BUDGETS=strict` not set).
 
