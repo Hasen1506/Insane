@@ -30,4 +30,7 @@ async function step1(p, name, { m = '6', y = '1999' } = {}) {
   await p.selectOption('#ob-dobm', m); await E.idle(p); await p.selectOption('#ob-doby', y); await E.idle(p);
   await tap(p, '[data-act="ob-next"]');
 }
-module.exports = { context, page, tap, text, has, pickPlace, step1 };
+// A port nobody is listening on right now (several worktrees run servers on this box at once; a fixed
+// port can attach a test to someone else's server).
+const freePort = () => new Promise(res => { const s = require('net').createServer(); s.listen(0, '127.0.0.1', () => { const p = s.address().port; s.close(() => res(p)); }); });
+module.exports = { freePort, context, page, tap, text, has, pickPlace, step1 };

@@ -7,7 +7,7 @@ const BR = require('../../lib/browser'), E = require('../../lib/e2e');
 const L = require('./_b-lib');
 
 module.exports = async function (t) {
-  const port = 8900 + (process.pid % 90);
+  const port = await L.freePort();
   const server = await E.startServer({ port, owner: 'owner@x.com' }), B = server.url;
   const browser = await BR.launch(); const errors = [];
   try {

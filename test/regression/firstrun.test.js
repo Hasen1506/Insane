@@ -10,7 +10,7 @@ const tap = async (p, s) => { await E.tapOnce(p, s); await E.idle(p); };
 
 module.exports = async function (t) {
   const browser = await BR.launch(), srv = await E.serveStatic({});
-  const port = 8990 + (process.pid % 9), server = await E.startServer({ port });
+  const port = await require('../e2e/flows/_b-lib').freePort(), server = await E.startServer({ port });
   try {
     // R-C16: Meera typed her name, reloaded, and was back at step 1 with an empty name
     {
