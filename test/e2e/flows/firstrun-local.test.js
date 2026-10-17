@@ -126,6 +126,6 @@ async function run(t, browser, srv, profile) {
 
 module.exports = async function (t) {
   const browser = await BR.launch(), srv = await E.serveStatic({});
-  try { for (const prof of ['Pixel 7', 'iPhone 13']) await run(t, browser, srv, prof); }
+  try { await Promise.all(['Pixel 7', 'iPhone 13'].map(prof => run(t, browser, srv, prof))); } // two phones side by side, separate contexts
   finally { await browser.close(); await srv.close(); }
 };
