@@ -536,7 +536,7 @@ const server = http.createServer(async (req, res) => {
     if (url.pathname === '/' || url.pathname === '/index.html') return sendFile(req, res, path.join(ROOT, 'index.html'));
     if (url.pathname === '/favicon.ico') { res.writeHead(204); return res.end(); }
     if (url.pathname === '/sw.js') return sendFile(req, res, path.join(__dirname, 'public', 'sw.js'));
-    if (url.pathname === '/manifest.webmanifest' || url.pathname === '/icon.svg') return sendFile(req, res, path.join(__dirname, 'public', url.pathname.slice(1)));
+    if (/^\/(manifest\.webmanifest|icon\.svg|icon-(192|512|maskable-512)\.png|apple-touch-icon(-precomposed)?\.png)$/.test(url.pathname)) return sendFile(req, res, path.join(__dirname, 'public', url.pathname.slice(1).replace('-precomposed', ''))); // WS-A hook (C02): PNG icons
     const f = path.normalize(path.join(ROOT, decodeURIComponent(url.pathname)));
     if (!f.startsWith(path.join(ROOT, 'data') + path.sep)) { res.writeHead(404); return res.end('Not found'); }
     return sendFile(req, res, f);
