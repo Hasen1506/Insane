@@ -90,7 +90,7 @@ module.exports = async function (t) {
   }, { runs: 60 }));
 
   /* ---------- the server's schedule ---------- */
-  const fresh = (nowT) => { const db = new DatabaseSync(':memory:'); const clock = { t: nowT }; return { db, clock, c: makeContent({ db, now: () => clock.t, secret: 's' }) }; };
+  const fresh = (nowT) => { const db = new DatabaseSync(':memory:'); require('../../server/migrate').migrate(db, { log: () => { } }); const clock = { t: nowT }; return { db, clock, c: makeContent({ db, now: () => clock.t, secret: 's' }) }; };
   check(prop('server Decode: consecutive weeks in a city never repeat until the pack is used up, then never back to back', G.tuple(G.pick(['IN-tamil_nadu-chennai', 'IN-delhi-delhi', 'PT-lisbon-lisbon']), G.int(0, 300)), ([city, w0]) => {
     const { c } = fresh(Date.UTC(2026, 9, 1)); const n = c.packFor(city).puzzles.length, ids = [];
     for (let i = 0; i < 2 * n + 3; i++) ids.push(c.puzzleFor(city, C.isoWeekKeyUTC(Date.UTC(2024, 0, 3) + (w0 + i) * 7 * DAY)).id);

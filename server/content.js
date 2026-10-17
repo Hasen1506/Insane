@@ -14,8 +14,8 @@ const HINT_AT = [3, 8, 15], HINT_DAY = [1, 3, 5]; // the same as the client's 35
 const { DAY, HOUR } = C;
 
 module.exports = function makeContent({ db, now = Date.now, secret = 'dev', dir = path.join(__dirname, 'content') }) {
-  db.exec(`CREATE TABLE IF NOT EXISTS content_items(kind TEXT NOT NULL, id TEXT NOT NULL, data TEXT NOT NULL, at INTEGER, PRIMARY KEY(kind,id));
-CREATE TABLE IF NOT EXISTS content_sched(kind TEXT NOT NULL, scope TEXT NOT NULL, period TEXT NOT NULL, id TEXT NOT NULL, at INTEGER, PRIMARY KEY(kind,scope,period));`);
+  // content_items and content_sched are created by server/migrate.js (schema step 4), which runs before this module loads
+  for (const t of ['content_items', 'content_sched']) if (!db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?").get(t)) throw new Error(`content: table ${t} is missing; run server/migrate.js first`);
   const read = f => JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
   const SEED = { puzzles: read('puzzles.json'), dares: read('dares.json').dares, mole: read('mole.json').tasks, drops: read('drops.json').drops };
   const q = {

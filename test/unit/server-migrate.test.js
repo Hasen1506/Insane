@@ -23,7 +23,7 @@ module.exports = async function (t) {
   let S = await start({ dir, db, env: { DEFAULT_TZ: 'Asia/Kolkata' } });
   try {
     const h = (await S.get('health')).body;
-    t.ok('boots on the v0.8 file and reports schema 3, store v9', h && h.ok && h.schema === 3 && h.store === 9, JSON.stringify(h));
+    t.ok('boots on the v0.8 file and reports schema 4, store v9', h && h.ok && h.schema === 4 && h.store === 9, JSON.stringify(h));
     const snap = path.join(dir, 'backups', 'backup-pre-v9.db');
     t.ok('snapshot backup-pre-v9.db written before migrating', fs.existsSync(snap));
     t.ok('the snapshot is the untouched v0.8 data', fs.existsSync(snap) && JSON.stringify(dump(snap)) === JSON.stringify(before));
@@ -66,11 +66,12 @@ module.exports = async function (t) {
   // schema step 3 (int-1): WS-D's reports + audit tables come from the migration, not from server/moderation.js
   const cols = (f, tb) => { const d = new DatabaseSync(f, { readOnly: true }); try { return d.prepare(`PRAGMA table_info(${tb})`).all().map(c => c.name).join(','); } finally { d.close(); } };
   t.ok('schema step 3 made WS-D\'s reports and audit tables', cols(db, 'reports') === 'id,at,by,kind,target,path,cid,category,note,status' && cols(db, 'audit') === 'at,actor,action,target,note', cols(db, 'reports') + ' | ' + cols(db, 'audit'));
+  t.ok('schema step 4 made WS-E\'s content_items and content_sched tables', cols(db, 'content_items') === 'kind,id,data,at' && cols(db, 'content_sched') === 'kind,scope,period,id,at', cols(db, 'content_items') + ' | ' + cols(db, 'content_sched'));
   t.ok('a second boot takes no second snapshot', fs.readdirSync(path.join(dir, 'backups')).filter(f => f.startsWith('backup-pre-v9')).length === 1);
   fs.rmSync(dir, { recursive: true, force: true });
 
   // Step 3 is idempotent, and passes through a dev database where an earlier v0.9 build made the tables ad hoc
-  // (user_version 2, reports already holding a row): the row survives, the version moves to 3, a rerun is a no-op.
+  // (user_version 2, reports already holding a row): the row survives, the version moves to 4, a rerun is a no-op.
   const M = require('../../server/migrate');
   const mem = new DatabaseSync(':memory:'), quiet = () => { };
   for (let v = 0; v < 2; v++) mem.exec(M.SCHEMA[v]);
@@ -79,9 +80,26 @@ module.exports = async function (t) {
   mem.prepare("INSERT INTO reports(id,at,by,kind,status) VALUES('r1',1,'u','post','open')").run();
   const r1 = M.migrate(mem, { log: quiet });
   const r2 = M.migrate(mem, { log: quiet });
-  t.ok('step 3 over ad hoc tables: version 3, the existing report kept', r1.sql[0] === 2 && r1.sql[1] === 3 && M.schemaVersion(mem) === 3 && mem.prepare('SELECT COUNT(*) n FROM reports').get().n === 1);
-  t.ok('step 3 rerun is a no-op', r2.sql[0] === 3 && r2.sql[1] === 3 && mem.prepare('SELECT COUNT(*) n FROM reports').get().n === 1);
+  t.ok('step 3 over ad hoc tables: version 4, the existing report kept', r1.sql[0] === 2 && r1.sql[1] === 4 && M.schemaVersion(mem) === 4 && mem.prepare('SELECT COUNT(*) n FROM reports').get().n === 1);
+  t.ok('step 3 rerun is a no-op', r2.sql[0] === 4 && r2.sql[1] === 4 && mem.prepare('SELECT COUNT(*) n FROM reports').get().n === 1);
   const fresh = new DatabaseSync(':memory:'); M.migrate(fresh, { log: quiet });
   t.ok('a fresh database gets reports and audit from the migration', ['reports', 'audit'].every(tb => fresh.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?").get(tb)));
-  mem.close(); fresh.close();
+  // Step 4 the same way for WS-E's content tables: a v0.9 dev DB at user_version 3 where server/content.js made
+  // them ad hoc keeps its owner edits and schedule; a rerun is a no-op; a fresh DB gets them; content.js boots on it.
+  const m3 = new DatabaseSync(':memory:');
+  for (let v = 0; v < 3; v++) m3.exec(M.SCHEMA[v]);
+  m3.exec('PRAGMA user_version=3');
+  m3.exec('CREATE TABLE content_items(kind TEXT NOT NULL, id TEXT NOT NULL, data TEXT NOT NULL, at INTEGER, PRIMARY KEY(kind,id)); CREATE TABLE content_sched(kind TEXT NOT NULL, scope TEXT NOT NULL, period TEXT NOT NULL, id TEXT NOT NULL, at INTEGER, PRIMARY KEY(kind,scope,period));');
+  m3.prepare("INSERT INTO content_items(kind,id,data,at) VALUES('dares','o1','{}',1)").run();
+  m3.prepare("INSERT INTO content_sched(kind,scope,period,id,at) VALUES('dares','c1','2026-10-17','o1',1)").run();
+  const s1 = M.migrate(m3, { log: quiet }), s2 = M.migrate(m3, { log: quiet });
+  const n3 = () => m3.prepare('SELECT COUNT(*) n FROM content_items').get().n + m3.prepare('SELECT COUNT(*) n FROM content_sched').get().n;
+  t.ok('step 4 over ad hoc content tables: version 4, the owner item and schedule row kept', s1.sql[0] === 3 && s1.sql[1] === 4 && M.schemaVersion(m3) === 4 && n3() === 2);
+  t.ok('step 4 rerun is a no-op', s2.sql[0] === 4 && s2.sql[1] === 4 && n3() === 2);
+  t.ok('a fresh database gets content_items and content_sched from the migration', ['content_items', 'content_sched'].every(tb => fresh.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?").get(tb)));
+  const makeContent = require('../../server/content');
+  let threw = null; try { makeContent({ db: new DatabaseSync(':memory:'), secret: 's' }); } catch (e) { threw = e.message; }
+  t.ok('server/content.js no longer makes its tables: it refuses an unmigrated DB', /content_items is missing/.test(threw || ''), threw);
+  t.ok('server/content.js boots on a migrated DB', (() => { try { makeContent({ db: fresh, secret: 's' }); return true; } catch (e) { return false; } })());
+  mem.close(); fresh.close(); m3.close();
 };

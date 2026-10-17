@@ -28,6 +28,10 @@ const SCHEMA = [
   //    dev database where an earlier v0.9 build made these tables ad hoc passes through unchanged.
   `CREATE TABLE IF NOT EXISTS reports(id TEXT PRIMARY KEY, at INTEGER, by TEXT, kind TEXT, target TEXT, path TEXT, cid TEXT, category TEXT, note TEXT, status TEXT);
    CREATE TABLE IF NOT EXISTS audit(at INTEGER, actor TEXT, action TEXT, target TEXT, note TEXT);`,
+  // 4: v0.9 content (WS-E, server/content.js): the owner's added/edited items and the per-scope schedule (which
+  //    puzzle/dare/task each city or circle got for each period). IF NOT EXISTS, for the same reason as step 3.
+  `CREATE TABLE IF NOT EXISTS content_items(kind TEXT NOT NULL, id TEXT NOT NULL, data TEXT NOT NULL, at INTEGER, PRIMARY KEY(kind,id));
+   CREATE TABLE IF NOT EXISTS content_sched(kind TEXT NOT NULL, scope TEXT NOT NULL, period TEXT NOT NULL, id TEXT NOT NULL, at INTEGER, PRIMARY KEY(kind,scope,period));`,
 ];
 const SCHEMA_VERSION = SCHEMA.length;
 
