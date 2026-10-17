@@ -3,7 +3,7 @@ ACT["mnwhen"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
   F.mnwhen=d.v;render();return;
 };
 ACT["mn-send"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
-  {const text=(F.mntext||'').trim();if(!text){toast('Write something first.');return}const nm=S.members.filter(m=>m.id!==uid&&m.name&&m.name.length>1).find(m=>new RegExp('(^|[^\\p{L}])'+m.name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'($|[^\\p{L}])','iu').test(text));if(nm){toast('Blocked. Midnight is about you: take out “'+nm.name+'” and say it about yourself.');return}const mid=dayStart(now())+DAY;const wn=F.mnwhen||'week';const k=wn==='tonight'?0:wn==='tomorrow'?1:crypto.getRandomValues(new Uint8Array(1))[0]%7;
+  {const text=(F.mntext||'').trim();if(!text){toast('Write something first.');return}const nm=S.members.filter(m=>m.id!==uid).find(m=>NAMES.nameHit(text,[m]));if(nm){toast('Blocked. Midnight is about you: take out “'+nm.name+'” and say it about yourself.');return}const mid=dayStart(now())+DAY;const wn=F.mnwhen||'week';const k=wn==='tonight'?0:wn==='tomorrow'?1:crypto.getRandomValues(new Uint8Array(1))[0]%7;
     if(await W(()=>db.collection(`circles/${me.circle}/midnight`).add({text:text.slice(0,400),releaseAt:mid+k*DAY,flags:[]}),wn==='tonight'?'Queued for midnight. Unsigned.':wn==='tomorrow'?'Queued for tomorrow at midnight. Unsigned.':'Queued for a random night this week. Unsigned.')){F.mntext='';logMine('Midnight message queued');if(S.ui.sheet)closeSheet();else render()}return}
 };
 ACT["mflag"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;

@@ -6,7 +6,7 @@ ACT["dare-lvl"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
   F.darelvl=+d.v;render();return;
 };
 ACT["dare-add"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
-  {const text=(F.drtext||'').trim();if(!text){toast('Write the dare.');return}const r=readUrge('urge',text);if(r&&(r.kind==='No'||r.kind==='Support')){toast('Not that one. Nothing that could hurt anyone.');return}const to=F.dareto||null;
+  {const text=(F.drtext||'').trim();if(!text){toast('Write the dare.');return}const r=readUrge('urge',text);if(r&&(r.kind==='No'||r.kind==='Support')){toast('Not that one. Nothing that could hurt anyone.');return}{const why=NAMES.unsafeDare(text);if(why){toast('Not that one. '+why);return}}const to=F.dareto||null;
     if(await W(()=>db.collection(`circles/${me.circle}/dares`).add({text:text.slice(0,100),level:Math.min(DARE_CAP,F.darelvl||3),by:uid,at:now(),to,status:to?'open':null}),to?`Dared ${nameOf(to)}. They can say no, no reason needed.`:'In the jar. It can come up as the daily dare from tomorrow.')){Object.assign(F,{drtext:'',dareto:''});closeSheet();logMine(to?'Dared '+nameOf(to):'Put a dare in the jar')}return}
 };
 ACT["dare-del"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;

@@ -3,6 +3,7 @@
 // checks the two agree on random input. The server's copy is the one that counts.
 'use strict';
 
+// <names> (kept identical to src/js/98-safety.js by test/unit/safety.test.js)
 // Look-alike letters from other scripts that people use to dodge a filter (Cyrillic/Greek → Latin).
 const CONF = { 'а': 'a', 'е': 'e', 'о': 'o', 'р': 'p', 'с': 'c', 'у': 'y', 'х': 'x', 'к': 'k', 'і': 'i', 'ј': 'j', 'ѕ': 's', 'ԁ': 'd', 'ɡ': 'g', 'м': 'm', 'т': 't', 'н': 'h', 'в': 'b', 'ν': 'v', 'ο': 'o', 'α': 'a', 'ρ': 'p', 'τ': 't', 'ι': 'i', 'κ': 'k', 'ε': 'e', 'υ': 'u', 'ı': 'i', 'ß': 'ss', 'æ': 'ae', 'œ': 'oe', 'ø': 'o', 'đ': 'd', 'ł': 'l', 'ħ': 'h' };
 // Case-fold, take accents and combining marks off, drop invisible format characters (zero-width
@@ -69,5 +70,6 @@ function unsafeDare(text) {
   for (const [re, why] of UNSAFE) if (re.test(f)) return why;
   return null;
 }
+// </names>
 
 module.exports = { fold, nameTokens, handleTerms, nameHit, unsafeDare, UNSAFE };

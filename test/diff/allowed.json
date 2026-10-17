@@ -1,0 +1,12 @@
+{
+  "_": "Documented, intentional differences from v0.8 (PLAN-V09 §5.c). Each entry: name -> the workstream and critique that added or changed it. v0.8's names must all still resolve.",
+  "acts": {
+    "block": "WS-D C87", "rep-cat": "WS-D C87", "report": "WS-D C87",
+    "c-remove": "WS-D C35", "c-unremove": "WS-D C35", "c-transfer": "WS-D C35", "c-rename": "WS-D C35", "c-code": "WS-D C35", "c-close": "WS-D C35",
+    "dare-flag": "WS-D C88", "mod-open": "WS-D C89", "mod-act": "WS-D C89", "mod-report": "WS-D C89",
+    "sess-load": "WS-D C60", "sess-revoke": "WS-D C60", "sess-all": "WS-D C60",
+    "chg-open": "WS-D C60", "chg-cancel": "WS-D C60", "chg-start": "WS-D C60", "chg-verify": "WS-D C60", "consent-yes": "WS-D C63"
+  },
+  "sheets": { "person": "WS-D C87 C35", "circle-admin": "WS-D C35", "mod": "WS-D C89" },
+  "sheetRender": { "dare": "WS-D C88: scale relabelled “How bold (1 to 6)”" }
+}

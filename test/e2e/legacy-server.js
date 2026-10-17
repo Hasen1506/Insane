@@ -155,7 +155,7 @@ async function signIn(who) {
 }
 async function onboard(who, { how = 'gps', search, pick, paste, exact = false, size = 2, radius = 5, area, lane = 'need', mind, stake, create, join, skip, snap }) {
   const P = PEOPLE[who], t = Date.now();
-  await type(who, '#ob-name', P.name); await tap(who, '#ob-age'); await tap(who, '[data-act=ob-next]');
+  await type(who, '#ob-name', P.name); await tap(who, '#ob-age'); await tap(who, '#ob-consent'); /* v0.9 WS-D: explicit consent (C63) */ await tap(who, '[data-act=ob-next]');
   if (snap) await shot(who, snap + '-1-name');
   await P.page.waitForSelector('#lp-q-home');
   if (how === 'gps') { await tap(who, '[data-act=lp-gps]'); await until(who, async () => (await screen(who)).includes('from GPS')); }
@@ -287,7 +287,7 @@ async function circleCode(who) { return evalIn(who, () => S.circle && S.circle.c
   await tab('bob', 'today'); await tap('bob', '[data-act=sheet][data-v=proof][data-id=daily]'); await type('bob', '#pr-note', 'the barista did the voice back');
   await PEOPLE.bob.page.setInputFiles('#pr-photo', { name: 'coffee.png', mimeType: 'image/png', buffer: PNG }); await PEOPLE.bob.page.waitForSelector('.sheet img[alt="Your photo"]'); await tap('bob', '[data-act=dare-did]');
   { const cid = await evalIn('bob', () => S.me.circle); const r = await api('alice', 'query', { col: `circles/${cid}/clips` }); ok('daily dare done with a photo; it sits in the circle’s clips for 24 h', r.body.docs.length === 1 && r.body.docs[0].data.exp - r.body.docs[0].data.at === DAY, JSON.stringify(r.body.docs.map(d => d.data.exp - d.data.at)));
-    const bad = await api('mariana', 'set', { path: `circles/${cid}/clips/x1`, data: { by: await evalIn('mariana', () => S.uid), img: 'javascript:alert(1)', what: 'x' } }); ok('the server refuses a “clip” that isn’t a photo', bad.status === 400, bad.status); }
+    const bad = await api('bob', 'set', { path: `circles/${cid}/clips/x1`, data: { by: await evalIn('bob', () => S.uid), img: 'javascript:alert(1)', what: 'x' } }); ok('the server refuses a “clip” that isn’t a photo', bad.status === 400, bad.status); } // v0.9 WS-D: a member tries it (outsiders now get 403 before the photo check)
   await tab('alice', 'circle'); await tap('alice', '[data-act=cseg][data-v=plans]'); await ok('Alice sees Bob’s dare photo in the clips', async () => ((await PEOPLE.alice.page.locator('.vt-tile').count()) === 1));
   await tab('bob', 'circle'); await tap('bob', '[data-act=cseg][data-v=pacts]'); await tap('bob', '[data-act=cheer]');
   await tab('alice', 'circle'); await tap('alice', '[data-act=cseg][data-v=pacts]'); await ok('Alice sees Bob cheered her run', async () => (await until('alice', async () => (await screen('alice')).includes('Cheered by Bob'))));

@@ -99,7 +99,7 @@ const ok = (name, cond, extra = '') => {
   // Where each person lives: real coordinates, pasted the way someone pastes from their maps app.
   const SPOT = { Alice: '38.7139, -9.1334', Bob: '38.7107, -9.1365', Carol: '38.7069, -9.1600', Erin: '38.7570, -9.2240', Dave: '53.4794, -2.2453', Fay: '38.7160, -9.1400', Gus: '38.7200, -9.1450' };
   async function onboard(p, name, { search = 'Lisbon', size = 2, radius = 5, exact = false, lane = 'need', mind = '', stake = 0, create, join, snap }) {
-    await p.waitForSelector('#ob-name'); await p.fill('#ob-name', name); await p.check('#ob-age');
+    await p.waitForSelector('#ob-name'); await p.fill('#ob-name', name); await p.check('#ob-age'); await p.check('#ob-consent'); // v0.9 WS-D: explicit consent (C63)
     if (snap) await shot(p, '01-welcome');
     await click(p, '[data-act="ob-next"]');
     await p.fill('#lp-q-home', search); await p.waitForSelector('.res'); await click(p, '.res');

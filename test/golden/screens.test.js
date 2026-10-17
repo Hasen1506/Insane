@@ -22,7 +22,7 @@ async function screens(browser, file) {
   const tap = async sel => { await page.locator(sel).first().click(); await E.settled(page); };
   await page.goto(srv.url + '/?as=meera'); await page.waitForSelector('#ob-name'); await GD.freeze(page);
   await snap('ob-1-name');
-  await page.fill('#ob-name', 'Meera'); await page.check('#ob-age'); await tap('[data-act="ob-next"]');
+  await page.fill('#ob-name', 'Meera'); await page.check('#ob-age'); if (await page.locator('#ob-consent').count()) await page.check('#ob-consent'); /* v0.9 WS-D (C63) */ await tap('[data-act="ob-next"]');
   await page.waitForSelector('#lp-q-home'); await page.fill('#lp-q-home', 'Chennai'); await page.waitForSelector('.res'); await tap('.res');
   await tap('[data-act="lp-paste"]'); await page.waitForSelector('#lp-p-home'); await page.fill('#lp-p-home', '13.2790, 80.2619'); await tap('form[data-form="lp-use"] button');
   await E.until(async () => (await page.locator('[data-act="lp-size"]').count()) > 0, { what: 'precision chips' });

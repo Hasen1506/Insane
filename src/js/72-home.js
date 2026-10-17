@@ -60,7 +60,7 @@ function days21(j){const set=new Set(j.ticks||[]);const start=dayStart(j.created
 function needsYou(){
   if(!S.me.circle)return [];const u=S.uid,out=[],t=now();
   for(const d of S.dares)if(d.to===u&&(!d.status||d.status==='open'||d.status==='accepted'))
-    out.push(nc(`${esc(nameOf(d.by))} dared you · ${d.level}/10`,'z',esc(ago(d.at)),`<p><b>${esc(d.text)}</b></p>`,d.status==='accepted'?`<button class="btn s red" data-act="sheet" data-v="proof" data-id="${d.id}">I did it</button>`:`<button class="btn s red" data-act="dare-accept" data-v="${d.id}">Accept</button><button class="btn s ghost" data-act="dare-decline" data-v="${d.id}">Not this one</button>`,'stamp'));
+    out.push(nc(`${esc(nameOf(d.by))} dared you · bold ${d.level}/6`,'z',esc(ago(d.at)),`<p><b>${esc(d.text)}</b></p>`,(d.status==='accepted'?`<button class="btn s red" data-act="sheet" data-v="proof" data-id="${d.id}">I did it</button>`:`<button class="btn s red" data-act="dare-accept" data-v="${d.id}">Accept</button><button class="btn s ghost" data-act="dare-decline" data-v="${d.id}">Not this one</button>`)+flagBtn(d.id),'stamp'));
   for(const f of S.favors){
     if(f.status==='done'&&f.asker===u)out.push(nc('Favor done for you','l',hrs(f.h).slice(1),`<p><b>${esc(nameOf(f.doer))}</b> did “${esc(f.what)}”. Confirm and it’s logged: ${hrs(f.h).slice(1)} to them, ${hrs(-f.h)} to you.</p>`,`<button class="btn s" data-act="fv-confirm" data-v="${f.id}">Confirm</button>`));
     else if(f.status==='claimed'&&f.doer===u)out.push(nc('You said you’d help','l',esc(nameOf(f.asker)),`<p>${esc(f.what)}</p>`,`<button class="btn s" data-act="fv-done" data-v="${f.id}">Done it</button>`));
@@ -79,9 +79,9 @@ function needsYou(){
   return out;
 }
 function dareCard(dd){const done=(S.daily.done||{});const mine=done[S.uid];const n=Object.keys(done).length;
-  return `<div class="dd"><div class="k">DAILY DARE · ${dd.starter?'FROM THE STARTER JAR':'BY '+esc(nameOf(dd.by).toUpperCase())} · ${esc(dd.level)}/10</div><div class="q">${esc(dd.text)}</div>
+  return `<div class="dd"><div class="k">DAILY DARE · ${dd.starter?'FROM THE STARTER JAR':'BY '+esc(nameOf(dd.by).toUpperCase())} · BOLD ${esc(dd.level)}/6</div><div class="q">${esc(dd.text)}</div>
   ${mine?`<span class="meta">Done${mine.note?': “'+esc(mine.note)+'”':''} · ${n} of ${S.members.length} today</span>`:`<button class="btn s" data-act="sheet" data-v="proof" data-id="daily">I did it</button>`}
-  <button class="btn s ghost" data-act="sheet" data-v="dare">${n&&!mine?n+' did it · ':''}Add to the jar</button></div>`}
+  <button class="btn s ghost" data-act="sheet" data-v="dare">${n&&!mine?n+' did it · ':''}Add to the jar</button>${mine?'':flagBtn('daily')}</div>`}
 function circleCards(){
   const t=now(),u=S.uid,out=[];
   const rel=S.midnight.filter(m=>m.releaseAt<=t&&m.releaseAt>t-DAY&&!m.removed&&(m.flags||[]).length<2).length,pend=S.midnight.filter(m=>m.releaseAt>t).length;
