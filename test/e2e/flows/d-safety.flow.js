@@ -9,7 +9,7 @@
 const BR = require('../../lib/browser'), E = require('../../lib/e2e');
 
 module.exports = async function run({ ok }) {
-  const server = await E.startServer({ port: +process.env.FLOW_PORT || 8941, owner: 'arjun@insane.test' }), B = server.url;
+  const server = await E.startServer({ port: +process.env.FLOW_PORT || 0, owner: 'arjun@insane.test' }), B = server.url;
   const browser = await BR.launch();
   const P = {
     arjun: { name: 'Arjun', email: 'arjun@insane.test' },

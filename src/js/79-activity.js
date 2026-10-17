@@ -39,7 +39,7 @@ function runDraw(id){
 async function pushOn(){
   try{
     const perm=await Notification.requestPermission();S.pushState=perm;if(perm!=='granted'){render();return}
-    const reg=await navigator.serviceWorker.register('/sw.js');await navigator.serviceWorker.ready;
+    const reg=await swReg();await navigator.serviceWorker.ready;
     const key=Uint8Array.from(atob(S.hello.vapid.replace(/-/g,'+').replace(/_/g,'/')+'=='.slice(0,(4-S.hello.vapid.length%4)%4)),c=>c.charCodeAt(0));
     const sub=await reg.pushManager.getSubscription()||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:key});
     await S.db.call('push/sub',{subscription:sub.toJSON()});S.pushOn=true;toast('Notifications are on.');

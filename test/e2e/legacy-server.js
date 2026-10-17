@@ -9,7 +9,7 @@
 // The two 21 s sweep waits are gone: after moving the clock the test calls POST /api/dev/tick (PLAN-V09 §5.0,
 // WS-I), which runs the server's sweep at once, and the checks then poll only for the push to land.
 // Run: node test/e2e/legacy-server.js
-//   SERVER_PORT (default 8791). SERVER_URL=http://localhost:8099 attaches to a running DEV server instead,
+//   SERVER_PORT (default: a free port). SERVER_URL=http://localhost:8099 attaches to a running DEV server instead,
 //   which must be fresh (empty DB) and started with OWNER_EMAIL=alice@example.com for the owner checks.
 //   CHROMIUM / CHROME, PW: see test/lib/browser.js.  OUT: output dir (default test/out/playtest)
 'use strict';

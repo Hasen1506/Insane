@@ -47,7 +47,7 @@ const mapState = (p, k) => p.evaluate(k => { const m = MAPS[k]; return m ? { cen
 const inIN = c => c && c[0] > IN_BB[0] && c[0] < IN_BB[2] && c[1] > IN_BB[1] && c[1] < IN_BB[3];
 
 (async () => {
-  server = await E.startServer({ port: +process.env.MAP_PORT || 8000 + Math.floor(Math.random() * 900), env: { TILE_FILE: FIX } });
+  server = await E.startServer({ port: +process.env.MAP_PORT || 0, env: { TILE_FILE: FIX } });
   browser = await BR.launch();
   /* ---------- Meera, Pixel 7, Chennai: the picker ---------- */
   const A = await phone(); const p = A.page;

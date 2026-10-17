@@ -1,4 +1,8 @@
 /* ---------- needs, wants, urges ---------- */
+// The crisis line for the person's locale (int-1): India's Tele-MANAS by default (INSANE launches in India);
+// the UK's Samaritans only when the phone's locale is GB, which is what v0.8 always showed.
+const crisisGB=()=>{try{return /-GB$/i.test(navigator.language||'')}catch(e){return false}};
+const crisisLine=()=>crisisGB()?'In the UK and Ireland, Samaritans answer any time on <b>116 123</b>.':'In India, Tele-MANAS answers any time, free, on <b>14416</b> (or 1-800-891-4416).';
 const LANES={
  need:{k:'Need',lead:'I need to…',hz:'keep doing · this month',ph:'run three times a week',ex:['run 3 times a week','call home every Sunday','be in bed by 1 every night','read 10 pages a day']},
  want:{k:'Want',lead:'I want to…',hz:'reach · this season',ph:'go to Lisbon with the flat',ex:['go to Lisbon in May','learn to cook one proper dish','see a gig every month','save £300 for a bike']},
@@ -29,7 +33,7 @@ function readUrge(lane,raw){
 }
 function readCard(r){
   if(!r)return '<div class="read empty">Type a line, or tap an example. You’ll see what it turns into before anything starts.</div>';
-  if(r.kind==='Support')return `<div class="read warn"><div class="rk">This one needs a person, not a pact</div>If you’re thinking about hurting yourself, talk to someone today. In the UK and Ireland, Samaritans answer any time on <b>116 123</b>. Elsewhere, findahelpline.com lists free lines near you. This line won’t be saved.</div>`;
+  if(r.kind==='Support')return `<div class="read warn"><div class="rk">This one needs a person, not a pact</div>If you’re thinking about hurting yourself, talk to someone today. ${crisisLine()} Elsewhere, findahelpline.com lists free lines near you. This line won’t be saved.</div>`;
   if(r.kind==='No')return `<div class="read warn"><div class="rk">INSANE won’t turn this into anything</div>Nothing that could hurt someone, break the law or follow a person. Try it another way.</div>`;
   return `<div class="read"><div class="rk">How INSANE reads it</div><div class="rr"><span>Becomes</span><b>${esc(r.kind)}</b></div><div class="rr"><span>What</span><b>${esc(r.what)}</b></div><div class="rr"><span>How</span><b>${esc(r.how)}</b></div><div class="rr"><span>Proof</span><b>${esc(r.proof)}</b></div><div class="meta" style="margin-top:5px">${esc(r.note)}</div></div>`;
 }

@@ -80,16 +80,30 @@ function serveStatic({ port = +process.env.APP_PORT || 0, file = APP(), dir = AP
 
 /* ---------- the INSANE server in DEV mode ---------- */
 // Spawns server/server.js with a temp DB, or attaches to $SERVER_URL if one is already running
-// (e.g. `DEV=1 OWNER_EMAIL=owner@x.com DB_FILE=/tmp/x.db PORT=8099 node server/server.js`).
-async function startServer({ port = +process.env.SERVER_PORT || 8791, owner = 'owner@x.com', env = {} } = {}) {
+// (e.g. `DEV=1 OWNER_EMAIL=owner@x.com DB_FILE=/tmp/x.db PORT=<port> node server/server.js`).
+// int-1 (WS-J groundwork): no fixed ports. With no port (or 0) it picks a free one, and retries on a fresh
+// port if another process grabbed it first; SERVER_PORT still pins one. SEED defaults to a fixed test seed,
+// so the content schedule (WS-E) is the same on every run; pass env.SEED to change it.
+const freePort = () => new Promise((res, rej) => { const s = require('net').createServer(); s.on('error', rej); s.listen(0, '127.0.0.1', () => { const p = s.address().port; s.close(() => res(p)); }); });
+async function startServer({ port = +process.env.SERVER_PORT || 0, owner = 'owner@x.com', env = {} } = {}) {
   if (process.env.SERVER_URL) { const url = process.env.SERVER_URL.replace(/\/$/, ''); await until(async () => (await fetch(url + '/api/hello')).ok, { what: 'server at ' + url }); return { url, close: async () => { } }; }
-  const db = path.join(os.tmpdir(), `insane-test-${process.pid}-${port}.db`);
-  for (const s of ['', '-wal', '-shm']) fs.rmSync(db + s, { force: true });
-  const proc = spawn(process.execPath, [path.join(REPO, 'server', 'server.js')], { env: { ...process.env, DEV: '1', PORT: String(port), DB_FILE: db, OWNER_EMAIL: owner, ...env }, stdio: ['ignore', 'pipe', 'pipe'] });
-  proc.stderr.on('data', d => { if (!/ExperimentalWarning|trace-warnings/.test(d)) process.stderr.write('[server] ' + d); });
-  const url = `http://localhost:${port}`;
-  await until(async () => (await fetch(url + '/api/hello')).ok, { timeout: 15000, what: 'server to answer /api/hello' });
-  return { url, proc, db, close: async () => { proc.kill(); await new Promise(r => proc.once('exit', r)); for (const s of ['', '-wal', '-shm']) fs.rmSync(db + s, { force: true }); } };
+  for (let attempt = 0; ; attempt++) {
+    const p = port || await freePort();
+    const db = path.join(os.tmpdir(), `insane-test-${process.pid}-${p}.db`);
+    for (const s of ['', '-wal', '-shm']) fs.rmSync(db + s, { force: true });
+    const proc = spawn(process.execPath, [path.join(REPO, 'server', 'server.js')], { env: { ...process.env, DEV: '1', SEED: 'test-seed', PORT: String(p), DB_FILE: db, OWNER_EMAIL: owner, ...env }, stdio: ['ignore', 'pipe', 'pipe'] });
+    let exited = false, err = ''; proc.once('exit', () => { exited = true; });
+    proc.stdout.resume();
+    proc.stderr.on('data', d => { err += d; if (!/ExperimentalWarning|trace-warnings/.test(d)) process.stderr.write('[server] ' + d); });
+    const url = `http://localhost:${p}`;
+    try {
+      await until(async () => { if (exited) throw new Error('server exited: ' + err.slice(-300)); return (await fetch(url + '/api/hello')).ok; }, { timeout: 15000, what: 'server to answer /api/hello' });
+    } catch (e) {
+      if (!exited) proc.kill(); for (const s of ['', '-wal', '-shm']) fs.rmSync(db + s, { force: true });
+      if (!port && attempt < 2 && /EADDRINUSE/.test(err)) continue; throw e;
+    }
+    return { url, port: p, proc, db, close: async () => { if (!exited) { proc.kill(); await new Promise(r => proc.once('exit', r)); } for (const s of ['', '-wal', '-shm']) fs.rmSync(db + s, { force: true }); } };
+  }
 }
 // The sign-in code from the DEV outbox, read the way a person reads their inbox.
 async function outboxCode(base, email) {
@@ -103,4 +117,4 @@ function results(prefix = '') {
   return { list, ok, passed: () => list.filter(r => r[0] === 'PASS').length };
 }
 
-module.exports = { REPO, APP, APP_DIR, tick, within, until, settled, stable, actProbe, idle, tapOnce, textHas, gone, clock, serveStatic, startServer, outboxCode, results };
+module.exports = { REPO, APP, APP_DIR, tick, within, until, settled, stable, actProbe, idle, tapOnce, textHas, gone, clock, serveStatic, startServer, freePort, outboxCode, results };

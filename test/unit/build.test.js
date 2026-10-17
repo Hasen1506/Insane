@@ -13,7 +13,7 @@ module.exports = async function (t) {
   const tmp = path.join(os.tmpdir(), `insane-build-${process.pid}.html`);
   fs.writeFileSync(tmp, a.html.replace('<title>INSANE</title>', '<title>INSANE!</title>'));
   const r = spawnSync(process.execPath, [path.join(ROOT, 'tools', 'build.js'), '--check'], { env: { ...process.env, OUT: tmp }, encoding: 'utf8' });
-  t.ok('--check fails on a hand-edited file and names the line', r.status === 1 && /line 1\b/.test(r.stderr), r.stderr);
+  t.ok('--check fails on a hand-edited file and names the line', r.status === 1 && /line 5\b/.test(r.stderr), r.stderr);
   fs.writeFileSync(tmp, a.html);
   const r2 = spawnSync(process.execPath, [path.join(ROOT, 'tools', 'build.js'), '--check'], { env: { ...process.env, OUT: tmp }, encoding: 'utf8' });
   t.ok('--check passes on a fresh build', r2.status === 0, r2.stderr);
@@ -21,12 +21,13 @@ module.exports = async function (t) {
   t.ok('the size budget is enforced', r3.status === 1 && /budget/.test(r3.stderr), r3.stderr);
   fs.rmSync(tmp, { force: true });
 
-  // one self-contained file: exactly one inline script and one style block; the only remote fetches are v0.8's (fonts, QR lib)
+  // one self-contained file: exactly one inline script and one style block; the only remote fetch is Google Fonts (C04: QR is built in)
   const html = a.html;
   t.ok('one <style> and one inline <script>', (html.match(/<style>/g) || []).length === 1 && (html.match(/<script>/g) || []).length === 1);
   const remote = [...html.matchAll(/<(?:script|link)[^>]+(?:src|href)="(https?:[^"]+)"/g)].map(m => new URL(m[1]).host).sort();
-  t.ok('remote resources are exactly v0.8\'s: Google Fonts and the QR library', JSON.stringify([...new Set(remote)]) === JSON.stringify(['cdnjs.cloudflare.com', 'fonts.googleapis.com', 'fonts.gstatic.com']), remote.join(','));
-  t.ok('starts with v0.8\'s <title>, carries a build stamp', html.startsWith('<title>INSANE</title>') && new RegExp(`INSANE build ${a.id}`).test(html));
+  t.ok('remote resources are only Google Fonts (no script from any CDN, C04)', JSON.stringify([...new Set(remote)]) === JSON.stringify(['fonts.googleapis.com', 'fonts.gstatic.com']), remote.join(','));
+  t.ok('no external <script src> at all (C04)', !/<script[^>]+src=/i.test(html));
+  t.ok('starts with <!doctype html><html lang>, has v0.8\'s <title>, carries a build stamp (C03)', /^<!doctype html>\n<html lang="en">\n/.test(html) && html.includes('<title>INSANE</title>') && new RegExp(`INSANE build ${a.id}`).test(html));
   t.ok("'use strict' is the script's first statement", /<script>\n\/\* src\/js\/00-helpers\.js \*\/\n'use strict';/.test(html));
 
   // layout invariants

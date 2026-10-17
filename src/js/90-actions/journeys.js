@@ -6,7 +6,7 @@ ACT["j-ex"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
   F.jtext=d.v;render();return;
 };
 ACT["j-add"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
-  {const lane=F.jlane||'need',r=readUrge(lane,F.jtext);if(!r){toast('Type a line first.');return}if(r.kind==='Support'||r.kind==='No'){toast(r.kind==='No'?'INSANE won’t turn that into anything.':'Please talk to someone today. Samaritans: 116 123.');return}
+  {const lane=F.jlane||'need',r=readUrge(lane,F.jtext);if(!r){toast('Type a line first.');return}if(r.kind==='Support'||r.kind==='No'){toast(r.kind==='No'?'INSANE won’t turn that into anything.':(crisisGB()?'Please talk to someone today. Samaritans: 116 123.':'Please talk to someone today. Tele-MANAS: 14416.'));return}
     if(await W(()=>addJourney(lane,F.jtext),'Started: '+r.what)){mark('nwu');logMine('Started '+LANES[lane].k.toLowerCase()+': '+r.what);F.jtext='';closeSheet();setTimeout(pushProgress,300)}return}
 };
 ACT["tick"]=ACT["untick"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;

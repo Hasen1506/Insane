@@ -12,8 +12,10 @@ const { v08Dir } = require('../lib/load');
 const T0 = Date.UTC(2026, 9, 12, 3, 30); // Mon 12 Oct 2026, 09:00 in Chennai
 const PROFILES = (process.env.GOLDEN_PROFILE || 'Pixel 7,iPhone 13').split(',').map(s => s.trim());
 
+let GPORT = +process.env.GOLDEN_PORT || 0;
+const goldenPort = async () => GPORT || (GPORT = await E.freePort());
 async function screens(browser, file, PROFILE) {
-  const srv = await E.serveStatic({ file, port: +process.env.GOLDEN_PORT || 8777 }); // same origin both runs: links carry it
+  const srv = await E.serveStatic({ file, port: await goldenPort() }); // same origin every run (links carry it): one free port per process
   const ctx = await browser.newContext(BR.profile(PROFILE, { timezoneId: 'Asia/Kolkata', locale: 'en-GB', colorScheme: 'light', reducedMotion: 'reduce' }));
   await BR.blockExternal(ctx); await GD.seedRandom(ctx, 9);
   // WS-B's welcome, intro and tour have their own goldens (firstrun.test.js); these screens start past them

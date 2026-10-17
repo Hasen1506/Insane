@@ -86,6 +86,8 @@ module.exports = async function (t) {
   const sheetNames = [...sheetFn.matchAll(/case '([^']+)':/g)].map(m => m[1]);
   // WS-D's test/diff/allowed.json (acts, sheets, sheetRender) declares the same things; both registries count
   { const A = require('./allowed.json'); CH.newActions.push(...Object.keys(A.acts || {})); CH.newSheets.push(...Object.keys(A.sheets || {})); CH.changedSheets.push(...Object.keys(A.sheetRender || {})); }
+  // WS-A's test/diff/new-names/<ws>.json ({acts, sheets} as lists) too
+  { const ND = require('path').join(__dirname, 'new-names'); for (const f of require('fs').existsSync(ND) ? require('fs').readdirSync(ND).filter(f => f.endsWith('.json')) : []) { const j = JSON.parse(require('fs').readFileSync(require('path').join(ND, f), 'utf8')); CH.newActions.push(...(j.acts || [])); CH.newSheets.push(...(j.sheets || [])); } }
   for (const k of Object.keys(CH)) CH[k] = [...new Set(CH[k])];
   for (const [n, a] of Object.entries(h.sides).slice(1)) {
     const acts = Object.keys(a.run('ACT')).sort(), sheets = Object.keys(a.run('SHEETS')).sort();

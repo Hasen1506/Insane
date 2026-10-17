@@ -578,7 +578,7 @@ const server = http.createServer(async (req, res) => {
     if (url.pathname === '/admin/content') return sendFile(req, res, path.join(__dirname, 'admin', 'content.html')); // owner tool; its API checks the owner
     if (url.pathname === '/favicon.ico') { res.writeHead(204); return res.end(); }
     if (url.pathname === '/sw.js') return sendFile(req, res, path.join(__dirname, 'public', 'sw.js'));
-    if (url.pathname === '/manifest.webmanifest' || url.pathname === '/icon.svg') return sendFile(req, res, path.join(__dirname, 'public', url.pathname.slice(1)));
+    if (/^\/(manifest\.webmanifest|icon\.svg|icon-(192|512|maskable-512)\.png|apple-touch-icon(-precomposed)?\.png)$/.test(url.pathname)) return sendFile(req, res, path.join(__dirname, 'public', url.pathname.slice(1).replace('-precomposed', ''))); // WS-A hook (C02): PNG icons
     { const m = /^\/legal\/(terms|privacy|rules)(\.html)?$/.exec(url.pathname); if (m) return sendFile(req, res, path.join(ROOT, 'legal', m[1] + '.html')); }
     if (url.pathname === '/data/basemap.pmtiles') return sendFile(req, res, TILE_FILE);
     const f = path.normalize(path.join(ROOT, decodeURIComponent(url.pathname)));

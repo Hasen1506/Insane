@@ -11,7 +11,7 @@ const tmpDir = tag => fs.mkdtempSync(path.join(os.tmpdir(), `insane-${tag}-`));
 async function start({ env = {}, dir = tmpDir('srv'), db, nodeArgs = ['--no-warnings'] } = {}) {
   const port = await freePort(), file = db || path.join(dir, 'insane.db');
   let log = '';
-  const proc = spawn(process.execPath, [...nodeArgs, path.join(REPO, 'server', 'server.js')], { env: { ...process.env, DEV: '1', PORT: String(port), DB_FILE: file, OWNER_EMAIL: 'owner@example.com', BACKUP_DIR: path.join(dir, 'backups'), RATE_LIMITS: '', ...env }, stdio: ['ignore', 'pipe', 'pipe'] });
+  const proc = spawn(process.execPath, [...nodeArgs, path.join(REPO, 'server', 'server.js')], { env: { ...process.env, DEV: '1', SEED: 'test-seed', PORT: String(port), DB_FILE: file, OWNER_EMAIL: 'owner@example.com', BACKUP_DIR: path.join(dir, 'backups'), RATE_LIMITS: '', ...env }, stdio: ['ignore', 'pipe', 'pipe'] });
   proc.stdout.on('data', d => { log += d; }); proc.stderr.on('data', d => { log += d; });
   const exited = new Promise(r => proc.once('exit', r));
   const url = `http://127.0.0.1:${port}`;
