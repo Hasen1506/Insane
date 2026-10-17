@@ -95,7 +95,8 @@ async function meet(a, b) { // face to face: one shows the code, the other types
   await until(b, () => PEOPLE[b].page.evaluate(() => S.met.length > 0 || !!(S.circle && Object.keys(S.circle.verified || {}).length)));
   await esc(a); await esc(b);
 }
-async function pin(who, k, ll) { await tap(who, `[data-act=lp-paste][data-k=${k}]`); await type(who, '#lp-p-' + k, ll); await tap(who, `form[data-form=lp-use][data-k=${k}] button`); }
+// v0.9 (WS-F, C65): links and coordinates go in the one search box, which offers "This spot".
+async function pin(who, k, ll) { await type(who, '#lp-q-' + k, ll); await PEOPLE[who].page.waitForSelector(`.res[data-src=link][data-k=${k}]`); await tap(who, `.res[data-src=link][data-k=${k}]`); }
 const ymdIn = (who, t) => evalIn(who, t => { const d = new Date(t); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }, t);
 const hmIn = (who, t) => evalIn(who, t => { const d = new Date(t); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }, t);
 async function db(who, path) { const r = await api(who, 'get', { path }); return r.body && r.body.doc; }
@@ -160,7 +161,7 @@ async function onboard(who, { how = 'gps', search, pick, paste, exact = false, s
   await P.page.waitForSelector('#lp-q-home');
   if (how === 'gps') { await tap(who, '[data-act=lp-gps]'); await until(who, async () => (await screen(who)).includes('from GPS')); }
   if (how === 'search') { await type(who, '#lp-q-home', search); await P.page.waitForSelector(`.res:has-text("${pick || search}")`, { timeout: 15000 }); if (snap) await shot(who, snap + '-2-search'); await tap(who, `.res:has-text("${pick || search}")`); }
-  if (how === 'paste') { await tap(who, '[data-act=lp-paste]'); await type(who, '#lp-p-home', paste); await tap(who, 'form[data-form=lp-use] button'); }
+  if (how === 'paste') await pin(who, 'home', paste);
   if (exact) await tap(who, '[data-act=lp-prec][data-v=exact]'); else await tap(who, `[data-act=lp-size][data-v="${size}"]`);
   await tap(who, `[data-act=lp-radius][data-v="${radius}"]`);
   if (area) await tap(who, `[data-act=lp-area]:has-text("${area}")`);
@@ -418,8 +419,9 @@ async function circleCode(who) { return evalIn(who, () => S.circle && S.circle.c
   // Alice proposes a Mission for Saturday 15:00 Lisbon (14:00 UTC)
   await tab('alice', 'city'); await tap('alice', '[data-act=sseg][data-v=map]'); await tap('alice', '[data-act=sheet][data-v=propose]');
   await type('alice', '#ms-title', 'The Slow Walk'); await type('alice', '#ms-desc', 'Everyone crosses the square at one step every five seconds, in silence, then walks off as if nothing happened.');
-  await type('alice', '#ms-roles', 'Look at your watch on every step\nHum one note, very quietly\nCarry something orange'); await type('alice', '#ms-spot', 'Under the arch on the river side');
-  await type('alice', '#ms-date', await ymdIn('alice', at(5, 14))); await type('alice', '#ms-time', await hmIn('alice', at(5, 14))); await pin('alice', 'drop', '38.7077, -9.1365');
+  await type('alice', '#ms-roles', 'Look at your watch on every step\nHum one note, very quietly\nCarry something orange'); await tap('alice', '[data-act=ms-step][data-v="2"]'); // v0.9 wizard (C51)
+  await type('alice', '#ms-spot', 'Under the arch on the river side'); await pin('alice', 'drop', '38.7077, -9.1365'); await tap('alice', '[data-act=ms-step][data-v="3"]');
+  await type('alice', '#ms-date', await ymdIn('alice', at(5, 14))); await type('alice', '#ms-time', await hmIn('alice', at(5, 14)));
   await tap('alice', '[data-act=ms-create]'); await shot('alice', 'p10b-mission'); await esc('alice');
   const msId = await evalIn('alice', () => S.missions[0] && S.missions[0].id);
   await tab('carol', 'city'); await tap('carol', '[data-act=sseg][data-v=map]'); await tap('carol', '[data-act=ms-confirm]'); await tap('carol', '[data-act=ms-in]');
@@ -440,9 +442,9 @@ async function circleCode(who) { return evalIn(who, () => S.circle && S.circle.c
 
   /* ===== Day 5, Saturday: a trail and the Mission ===== */
   await setClock(at(5, 10));
-  await tab('carol', 'city'); await tap('carol', '[data-act=sseg][data-v=map]'); await tap('carol', '[data-act=sheet][data-v=trail-new]'); await type('carol', '#tr-title', 'The Bridges Trail');
+  await tab('carol', 'city'); await tap('carol', '[data-act=sseg][data-v=map]'); await tap('carol', '[data-act=sheet][data-v=trail-new]'); await type('carol', '#tr-title', 'The Bridges Trail'); await tap('carol', '[data-act=tr-step][data-v="2"]');
   for (const [n, ll, d] of [['River steps', '38.7071, -9.1365', 'Count the arches out loud'], ['Old tram stop', '38.7110, -9.1330', ''], ['Miradouro', '38.7130, -9.1300', 'Point at your house']]) { await type('carol', '#tr-sname', n); if (d) await type('carol', '#tr-sdare', d); await pin('carol', 'drop', ll); await tap('carol', '[data-act=tr-add]'); }
-  await type('carol', '#tr-date', await ymdIn('carol', at(5, 10))); await type('carol', '#tr-from', await hmIn('carol', at(5, 10))); await type('carol', '#tr-to', await hmIn('carol', at(5, 13))); await tap('carol', '[data-act=tr-create]');
+  await tap('carol', '[data-act=tr-step][data-v="3"]'); await type('carol', '#tr-date', await ymdIn('carol', at(5, 10))); await type('carol', '#tr-from', await hmIn('carol', at(5, 10))); await type('carol', '#tr-to', await hmIn('carol', at(5, 13))); await tap('carol', '[data-act=tr-create]');
   await shot('carol', 'p12b-trail'); await esc('carol');
   await tab('erin', 'city'); await tap('erin', '[data-act=sseg][data-v=map]'); await tap('erin', '.drop:has-text("Bridges Trail")'); await tap('erin', '[data-act=tr-stamp]'); await until('erin', async () => (await evalIn('erin', () => S.toast || '')).includes('from River steps'));
   await ok('stamping from home is refused: Erin’s phone says she’s 7 km away', async () => ((await evalIn('erin', () => S.toast || '')).includes('from River steps') && !(await evalIn('erin', () => S.stamps.some(x => x.uid === S.uid)))), async () => (await evalIn('erin', () => S.toast)));

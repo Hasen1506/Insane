@@ -86,7 +86,8 @@ const ok = (name, cond, extra = '') => {
   const sheet = async p => { await sync(p); return p.locator('.sheet').innerText(); };
   const closeT = async p => { if (await count(p, '[data-act="close"]')) await click(p, '[data-act="close"]'); };
   const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
-  const pin = async (p, k, ll) => { await click(p, `[data-act="lp-paste"][data-k="${k}"]`); await p.waitForSelector('#lp-p-' + k); await p.fill('#lp-p-' + k, ll); await click(p, `form[data-form="lp-use"][data-k="${k}"] button`); };
+  // v0.9 (WS-F, C65): links and coordinates go in the one search box, which offers "This spot".
+  const pin = async (p, k, ll) => { await p.fill('#lp-q-' + k, ll); await p.waitForSelector(`.res[data-src="link"][data-k="${k}"]`); await click(p, `.res[data-src="link"][data-k="${k}"]`); };
   // Two phones face to face: one shows a code, the other types it.
   async function meet(a, b) {
     for (const p of [a, b]) { await p.bringToFront(); await p.keyboard.press('Escape'); }
@@ -103,7 +104,7 @@ const ok = (name, cond, extra = '') => {
     if (snap) await shot(p, '01-welcome');
     await click(p, '[data-act="ob-next"]');
     await p.fill('#lp-q-home', search); await p.waitForSelector('.res'); await click(p, '.res');
-    await click(p, '[data-act="lp-paste"]'); await p.fill('#lp-p-home', SPOT[name]); await click(p, 'form[data-form="lp-use"] button');
+    await pin(p, 'home', SPOT[name]);
     if (exact) await click(p, '[data-act="lp-prec"][data-v="exact"]'); else await click(p, `[data-act="lp-size"][data-v="${size}"]`);
     await click(p, `[data-act="lp-radius"][data-v="${radius}"]`);
     if (snap) await shot(p, '02-city');
@@ -319,8 +320,9 @@ const ok = (name, cond, extra = '') => {
   await shot(alice, '24-mole');
   // Missions: a circle that has met proposes; another met circle confirms and joins
   await tab(alice, 'city'); await click(alice, '[data-act="sseg"][data-v="map"]'); await click(alice, '[data-act="sheet"][data-v="propose"]');
-  await alice.fill('#ms-title', 'The Slow Walk'); await alice.fill('#ms-desc', 'Everyone crosses the bridge at one step every five seconds, in silence.'); await alice.fill('#ms-roles', 'Look at your watch every step\nHum, very quietly'); await alice.fill('#ms-spot', 'North end of the bridge'); await pin(alice, 'drop', '38.7075, -9.1360');
-  await click(alice, '[data-act="ms-create"]');
+  await alice.fill('#ms-title', 'The Slow Walk'); await alice.fill('#ms-desc', 'Everyone crosses the bridge at one step every five seconds, in silence.'); await alice.fill('#ms-roles', 'Look at your watch every step\nHum, very quietly');
+  await click(alice, '[data-act="ms-step"][data-v="2"]'); await alice.fill('#ms-spot', 'North end of the bridge'); await pin(alice, 'drop', '38.7075, -9.1360'); // v0.9 wizard (C51): What → Where → When
+  await click(alice, '[data-act="ms-step"][data-v="3"]'); await click(alice, '[data-act="ms-create"]');
   db = await store(alice); { const ms = Object.values(db).find(v => v && v.title === 'The Slow Walk'); ok('Mission proposed, its area nudged away from the pin', !!ms && Math.abs(ms.area.lat - 38.7075) + Math.abs(ms.area.lon + 9.136) > 0.0003, ms && JSON.stringify(ms.area)); }
   await click(alice, '[data-act="sheet-close"]');
   await tab(carol, 'city'); await click(carol, '[data-act="sseg"][data-v="map"]');
@@ -330,9 +332,9 @@ const ok = (name, cond, extra = '') => {
   // Trails: Carol makes one, Erin stamps a stop
   const hmA = await carol.evaluate(() => { const d = new Date(Date.now() - 10 * 60000); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); });
   const hmB = await carol.evaluate(() => { const d = new Date(Date.now() + 110 * 60000); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); });
-  await click(carol, '[data-act="sheet"][data-v="trail-new"]'); await carol.fill('#tr-title', 'The Bridges Trail');
+  await click(carol, '[data-act="sheet"][data-v="trail-new"]'); await carol.fill('#tr-title', 'The Bridges Trail'); await click(carol, '[data-act="tr-step"][data-v="2"]');
   for (const [n, ll] of [['River steps', '38.7071, -9.1365'], ['Old tram stop', '38.7110, -9.1330'], ['Miradouro', '38.7130, -9.1300']]) { await carol.fill('#tr-sname', n); await pin(carol, 'drop', ll); await click(carol, '[data-act="tr-add"]'); }
-  await carol.fill('#tr-from', hmA); await carol.fill('#tr-to', hmB < hmA ? '23:59' : hmB); await click(carol, '[data-act="tr-create"]');
+  await click(carol, '[data-act="tr-step"][data-v="3"]'); await carol.fill('#tr-from', hmA); await carol.fill('#tr-to', hmB < hmA ? '23:59' : hmB); await click(carol, '[data-act="tr-create"]');
   await ok('trail published with 3 stops', async () => ((await sheet(carol)).includes('The Bridges Trail') && await count(carol, '.sheet .tasks li') === 3));
   await shot(carol, '26-trail');
   await click(carol, '[data-act="sheet-close"]');
