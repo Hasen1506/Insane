@@ -14,7 +14,7 @@
    ],
    "puzzles": [
     {
-     "id": "chennai-marina",
+     "id": "chennai-01",
      "kind": "caesar",
      "data": {
       "shift": 3,
@@ -29,7 +29,7 @@
      "a": "MARINA"
     },
     {
-     "id": "chennai-mylapore",
+     "id": "chennai-02",
      "kind": "a1z26",
      "data": {
       "nums": [
@@ -52,7 +52,7 @@
      "a": "MYLAPORE"
     },
     {
-     "id": "chennai-adyar",
+     "id": "chennai-03",
      "kind": "hidden",
      "data": {
       "text": "Please read yarn labels before you knit."
@@ -66,7 +66,7 @@
      "a": "ADYAR"
     },
     {
-     "id": "chennai-guindy",
+     "id": "chennai-04",
      "kind": "keypad",
      "data": {
       "digits": "484639"
@@ -80,7 +80,7 @@
      "a": "GUINDY"
     },
     {
-     "id": "chennai-egmore",
+     "id": "chennai-05",
      "kind": "morse",
      "data": {
       "code": ". --. -- --- .-. ."
@@ -94,7 +94,7 @@
      "a": "EGMORE"
     },
     {
-     "id": "chennai-santhome",
+     "id": "chennai-06",
      "kind": "reverse",
      "data": {
       "text": "EMOHTNAS"
@@ -108,7 +108,7 @@
      "a": "SANTHOME"
     },
     {
-     "id": "chennai-koyambedu",
+     "id": "chennai-07",
      "kind": "atbash",
      "data": {
       "text": "PLBZNYVWF"
@@ -122,7 +122,7 @@
      "a": "KOYAMBEDU"
     },
     {
-     "id": "chennai-kolam",
+     "id": "chennai-08",
      "kind": "acrostic",
      "data": {
       "text": "Keep Old Lamps Always Mended."
@@ -136,7 +136,7 @@
      "a": "KOLAM"
     },
     {
-     "id": "chennai-margazhi",
+     "id": "chennai-09",
      "kind": "zip",
      "data": {
       "text": "MYAPRFGBATZQHXI"
@@ -150,7 +150,7 @@
      "a": "MARGAZHI"
     },
     {
-     "id": "chennai-sundal",
+     "id": "chennai-10",
      "kind": "hidden",
      "data": {
       "text": "Lunch on the terrace was sun, dal and rice."
@@ -164,7 +164,7 @@
      "a": "SUNDAL"
     },
     {
-     "id": "chennai-pongal",
+     "id": "chennai-11",
      "kind": "anagram",
      "data": {
       "letters": "LONPAG"
@@ -178,7 +178,7 @@
      "a": "PONGAL"
     },
     {
-     "id": "chennai-kaapi",
+     "id": "chennai-12",
      "kind": "lastletters",
      "data": {
       "text": "Walk, sofa, idea, sip, taxi."
@@ -202,7 +202,7 @@
    ],
    "puzzles": [
     {
-     "id": "bengaluru-lalbagh",
+     "id": "bengaluru-01",
      "kind": "caesar",
      "data": {
       "shift": 5,
@@ -217,7 +217,7 @@
      "a": "LALBAGH"
     },
     {
-     "id": "bengaluru-cubbon",
+     "id": "bengaluru-02",
      "kind": "a1z26",
      "data": {
       "nums": [
@@ -238,7 +238,7 @@
      "a": "CUBBON"
     },
     {
-     "id": "bengaluru-malleswaram",
+     "id": "bengaluru-03",
      "kind": "atbash",
      "data": {
       "text": "NZOOVHDZIZN"
@@ -252,7 +252,7 @@
      "a": "MALLESWARAM"
     },
     {
-     "id": "bengaluru-jayanagar",
+     "id": "bengaluru-04",
      "kind": "keypad",
      "data": {
       "digits": "529262427"
@@ -266,7 +266,7 @@
      "a": "JAYANAGAR"
     },
     {
-     "id": "bengaluru-koramangala",
+     "id": "bengaluru-05",
      "kind": "zip",
      "data": {
       "text": "KBOTRQAXMVAZNJGKAWLTA"
@@ -280,7 +280,7 @@
      "a": "KORAMANGALA"
     },
     {
-     "id": "bengaluru-basavanagudi",
+     "id": "bengaluru-06",
      "kind": "reverse",
      "data": {
       "text": "IDUGANAVASAB"
@@ -294,7 +294,7 @@
      "a": "BASAVANAGUDI"
     },
     {
-     "id": "bengaluru-nandi",
+     "id": "bengaluru-07",
      "kind": "acrostic",
      "data": {
       "text": "Never Again Nap During Interviews."
@@ -308,7 +308,7 @@
      "a": "NANDI"
     },
     {
-     "id": "bengaluru-ulsoor",
+     "id": "bengaluru-08",
      "kind": "morse",
      "data": {
       "code": "..- .-.. ... --- --- .-."
@@ -322,7 +322,7 @@
      "a": "ULSOOR"
     },
     {
-     "id": "bengaluru-vidhana",
+     "id": "bengaluru-09",
      "kind": "anagram",
      "data": {
       "letters": "AHDVAIN"
@@ -336,7 +336,7 @@
      "a": "VIDHANA"
     },
     {
-     "id": "bengaluru-indiranagar",
+     "id": "bengaluru-10",
      "kind": "caesar",
      "data": {
       "shift": 7,
@@ -351,7 +351,7 @@
      "a": "INDIRANAGAR"
     },
     {
-     "id": "bengaluru-karaga",
+     "id": "bengaluru-11",
      "kind": "lastletters",
      "data": {
       "text": "Book, sofa, star, pizza, dog, tea."
@@ -365,7 +365,7 @@
      "a": "KARAGA"
     },
     {
-     "id": "bengaluru-benne",
+     "id": "bengaluru-12",
      "kind": "hidden",
      "data": {
       "text": "Tell Ben next time, not now."
@@ -391,7 +391,7 @@
    ],
    "puzzles": [
     {
-     "id": "mumbai-colaba",
+     "id": "mumbai-01",
      "kind": "caesar",
      "data": {
       "shift": 4,
@@ -406,7 +406,7 @@
      "a": "COLABA"
     },
     {
-     "id": "mumbai-bandra",
+     "id": "mumbai-02",
      "kind": "hidden",
      "data": {
       "text": "Urban drama at the station again."
@@ -420,7 +420,7 @@
      "a": "BANDRA"
     },
     {
-     "id": "mumbai-juhu",
+     "id": "mumbai-03",
      "kind": "keypad",
      "data": {
       "digits": "5848"
@@ -434,7 +434,7 @@
      "a": "JUHU"
     },
     {
-     "id": "mumbai-dadar",
+     "id": "mumbai-04",
      "kind": "a1z26",
      "data": {
       "nums": [
@@ -454,7 +454,7 @@
      "a": "DADAR"
     },
     {
-     "id": "mumbai-worli",
+     "id": "mumbai-05",
      "kind": "hidden",
      "data": {
       "text": "Throw or lift the bag, but don’t drag it."
@@ -468,7 +468,7 @@
      "a": "WORLI"
     },
     {
-     "id": "mumbai-chowpatty",
+     "id": "mumbai-06",
      "kind": "morse",
      "data": {
       "code": "-.-. .... --- .-- .--. .- - - -.--"
@@ -482,7 +482,7 @@
      "a": "CHOWPATTY"
     },
     {
-     "id": "mumbai-vadapav",
+     "id": "mumbai-07",
      "kind": "reverse",
      "data": {
       "text": "VAPADAV"
@@ -496,7 +496,7 @@
      "a": "VADAPAV"
     },
     {
-     "id": "mumbai-dabbawala",
+     "id": "mumbai-08",
      "kind": "atbash",
      "data": {
       "text": "WZYYZDZOZ"
@@ -510,7 +510,7 @@
      "a": "DABBAWALA"
     },
     {
-     "id": "mumbai-elephanta",
+     "id": "mumbai-09",
      "kind": "zip",
      "data": {
       "text": "EPLFEBPTHQAXNVTZA"
@@ -524,7 +524,7 @@
      "a": "ELEPHANTA"
     },
     {
-     "id": "mumbai-byculla",
+     "id": "mumbai-10",
      "kind": "anagram",
      "data": {
       "letters": "YCLLBAU"
@@ -538,7 +538,7 @@
      "a": "BYCULLA"
     },
     {
-     "id": "mumbai-gateway",
+     "id": "mumbai-11",
      "kind": "acrostic",
      "data": {
       "text": "Go And Take Every Wave As Yours."
@@ -552,7 +552,7 @@
      "a": "GATEWAY"
     },
     {
-     "id": "mumbai-mahim",
+     "id": "mumbai-12",
      "kind": "lastletters",
      "data": {
       "text": "Film, pizza, fish, taxi, room."
@@ -582,7 +582,7 @@
    ],
    "puzzles": [
     {
-     "id": "delhi-chandni",
+     "id": "delhi-01",
      "kind": "caesar",
      "data": {
       "shift": 6,
@@ -597,7 +597,7 @@
      "a": "CHANDNI"
     },
     {
-     "id": "delhi-qutub",
+     "id": "delhi-02",
      "kind": "a1z26",
      "data": {
       "nums": [
@@ -617,7 +617,7 @@
      "a": "QUTUB"
     },
     {
-     "id": "delhi-lodhi",
+     "id": "delhi-03",
      "kind": "keypad",
      "data": {
       "digits": "56344"
@@ -631,7 +631,7 @@
      "a": "LODHI"
     },
     {
-     "id": "delhi-hauzkhas",
+     "id": "delhi-04",
      "kind": "reverse",
      "data": {
       "text": "SAHKZUAH"
@@ -645,7 +645,7 @@
      "a": "HAUZKHAS"
     },
     {
-     "id": "delhi-kartavya",
+     "id": "delhi-05",
      "kind": "atbash",
      "data": {
       "text": "PZIGZEBZ"
@@ -659,7 +659,7 @@
      "a": "KARTAVYA"
     },
     {
-     "id": "delhi-janpath",
+     "id": "delhi-06",
      "kind": "acrostic",
      "data": {
       "text": "Just Ask Nani, People Always Trust Her."
@@ -673,7 +673,7 @@
      "a": "JANPATH"
     },
     {
-     "id": "delhi-paratha",
+     "id": "delhi-07",
      "kind": "zip",
      "data": {
       "text": "PWAYRPAFTBHTA"
@@ -687,7 +687,7 @@
      "a": "PARATHA"
     },
     {
-     "id": "delhi-lotus",
+     "id": "delhi-08",
      "kind": "hidden",
      "data": {
       "text": "They promised to allot us two seats."
@@ -701,7 +701,7 @@
      "a": "LOTUS"
     },
     {
-     "id": "delhi-connaught",
+     "id": "delhi-09",
      "kind": "morse",
      "data": {
       "code": "-.-. --- -. -. .- ..- --. .... -"
@@ -715,7 +715,7 @@
      "a": "CONNAUGHT"
     },
     {
-     "id": "delhi-puranaqila",
+     "id": "delhi-10",
      "kind": "anagram",
      "data": {
       "letters": "AANPRQAUIL"
@@ -729,7 +729,7 @@
      "a": "PURANAQILA"
     },
     {
-     "id": "delhi-chole",
+     "id": "delhi-11",
      "kind": "lastletters",
      "data": {
       "text": "Music, much, radio, ball, cake."
@@ -743,7 +743,7 @@
      "a": "CHOLE"
     },
     {
-     "id": "delhi-yamuna",
+     "id": "delhi-12",
      "kind": "caesar",
      "data": {
       "shift": 9,
@@ -768,7 +768,7 @@
    ],
    "puzzles": [
     {
-     "id": "hyderabad-charminar",
+     "id": "hyderabad-01",
      "kind": "caesar",
      "data": {
       "shift": 3,
@@ -783,7 +783,7 @@
      "a": "CHARMINAR"
     },
     {
-     "id": "hyderabad-biryani",
+     "id": "hyderabad-02",
      "kind": "a1z26",
      "data": {
       "nums": [
@@ -805,7 +805,7 @@
      "a": "BIRYANI"
     },
     {
-     "id": "hyderabad-golconda",
+     "id": "hyderabad-03",
      "kind": "atbash",
      "data": {
       "text": "TLOXLMWZ"
@@ -819,7 +819,7 @@
      "a": "GOLCONDA"
     },
     {
-     "id": "hyderabad-hussainsagar",
+     "id": "hyderabad-04",
      "kind": "zip",
      "data": {
       "text": "HTUQSXSVAZIJNKSWATGQAXR"
@@ -833,7 +833,7 @@
      "a": "HUSSAINSAGAR"
     },
     {
-     "id": "hyderabad-irani",
+     "id": "hyderabad-05",
      "kind": "hidden",
      "data": {
       "text": "Hari ran in from the rain."
@@ -847,7 +847,7 @@
      "a": "IRANI"
     },
     {
-     "id": "hyderabad-haleem",
+     "id": "hyderabad-06",
      "kind": "keypad",
      "data": {
       "digits": "425336"
@@ -866,12 +866,11 @@
    "id": "kolkata",
    "name": "Kolkata",
    "cities": [
-    "IN-west_bengal-kolkata",
-    "IN-west_bengal-howrah"
+    "IN-west_bengal-kolkata"
    ],
    "puzzles": [
     {
-     "id": "kolkata-howrah",
+     "id": "kolkata-01",
      "kind": "hidden",
      "data": {
       "text": "Please show Rahul the way to the ferry."
@@ -885,7 +884,7 @@
      "a": "HOWRAH"
     },
     {
-     "id": "kolkata-victoria",
+     "id": "kolkata-02",
      "kind": "caesar",
      "data": {
       "shift": 4,
@@ -900,7 +899,7 @@
      "a": "VICTORIA"
     },
     {
-     "id": "kolkata-rasgulla",
+     "id": "kolkata-03",
      "kind": "reverse",
      "data": {
       "text": "ALLUGSAR"
@@ -914,7 +913,7 @@
      "a": "RASGULLA"
     },
     {
-     "id": "kolkata-kumartuli",
+     "id": "kolkata-04",
      "kind": "atbash",
      "data": {
       "text": "PFNZIGFOR"
@@ -928,7 +927,7 @@
      "a": "KUMARTULI"
     },
     {
-     "id": "kolkata-phuchka",
+     "id": "kolkata-05",
      "kind": "morse",
      "data": {
       "code": ".--. .... ..- -.-. .... -.- .-"
@@ -942,7 +941,7 @@
      "a": "PHUCHKA"
     },
     {
-     "id": "kolkata-hooghly",
+     "id": "kolkata-06",
      "kind": "a1z26",
      "data": {
       "nums": [
@@ -971,7 +970,7 @@
    "cities": [],
    "puzzles": [
     {
-     "id": "generic-market",
+     "id": "generic-01",
      "kind": "acrostic",
      "data": {
       "text": "Mangoes Always Ripen Kindly Every Tuesday."
@@ -985,7 +984,7 @@
      "a": "MARKET"
     },
     {
-     "id": "generic-museum",
+     "id": "generic-02",
      "kind": "a1z26",
      "data": {
       "nums": [
@@ -1006,7 +1005,7 @@
      "a": "MUSEUM"
     },
     {
-     "id": "generic-bridge",
+     "id": "generic-03",
      "kind": "hidden",
      "data": {
       "text": "Meet me on the cab ridge road."
@@ -1020,7 +1019,7 @@
      "a": "BRIDGE"
     },
     {
-     "id": "generic-station",
+     "id": "generic-04",
      "kind": "keypad",
      "data": {
       "digits": "7828466"
@@ -1034,7 +1033,7 @@
      "a": "STATION"
     },
     {
-     "id": "generic-garden",
+     "id": "generic-05",
      "kind": "anagram",
      "data": {
       "letters": "DANGER"
@@ -1048,7 +1047,7 @@
      "a": "GARDEN"
     },
     {
-     "id": "generic-library",
+     "id": "generic-06",
      "kind": "caesar",
      "data": {
       "shift": 3,
@@ -1063,7 +1062,7 @@
      "a": "LIBRARY"
     },
     {
-     "id": "generic-bakery",
+     "id": "generic-07",
      "kind": "morse",
      "data": {
       "code": "-... .- -.- . .-. -.--"
@@ -1077,7 +1076,7 @@
      "a": "BAKERY"
     },
     {
-     "id": "generic-harbour",
+     "id": "generic-08",
      "kind": "atbash",
      "data": {
       "text": "SZIYLFI"
@@ -1091,7 +1090,7 @@
      "a": "HARBOUR"
     },
     {
-     "id": "generic-fountain",
+     "id": "generic-09",
      "kind": "zip",
      "data": {
       "text": "FYOPUFNBTTAQIXN"
@@ -1105,7 +1104,7 @@
      "a": "FOUNTAIN"
     },
     {
-     "id": "generic-lighthouse",
+     "id": "generic-10",
      "kind": "reverse",
      "data": {
       "text": "ESUOHTHGIL"
@@ -1119,7 +1118,7 @@
      "a": "LIGHTHOUSE"
     },
     {
-     "id": "generic-playground",
+     "id": "generic-11",
      "kind": "caesar",
      "data": {
       "shift": 5,
@@ -1134,7 +1133,7 @@
      "a": "PLAYGROUND"
     },
     {
-     "id": "generic-bandstand",
+     "id": "generic-12",
      "kind": "lastletters",
      "data": {
       "text": "Club, sofa, sun, red, bus, cat, pizza, fan, bread."

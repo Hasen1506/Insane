@@ -12,7 +12,7 @@ const BR = require('../lib/browser'), E = require('../lib/e2e');
 const OUT = process.env.OUT || path.join(E.REPO, 'test', 'out', 'e2e-local');
 fs.mkdirSync(OUT, { recursive: true });
 let BASE, srv;
-const ANS = ['WATERLOO', 'MARKET', 'CARD', 'MUSEUM', 'BRIDGE', 'STATION', 'GARDEN', 'TOWER'];
+const CONTENT = require('../lib/content'); // WS-E: the page has no answers; local mode's week answer comes from the packs
 const results = [];
 const record = (name, cond, extra) => { results.push([cond ? 'PASS' : 'FAIL', 'V08-L' + String(results.length + 1).padStart(2, '0') + ' ' + name, extra]); };
 // ok(name, cond, extra): a check. When cond is a function it is polled (E.until, 8 s) until it holds, so a
@@ -183,7 +183,7 @@ const ok = (name, cond, extra = '') => {
   await shot(bob, '07-circle');
 
   // Decode
-  const week = await carol.evaluate(() => weekNum()); const ans = ANS[week % 8];
+  const [wkKey, ccity] = await carol.evaluate(() => [weekKey(), S.me.city]); const ans = CONTENT.localAnswer(ccity, wkKey);
   await tab(carol, 'city'); await click(carol, '[data-act="sheet"][data-v="decode"]'); await carol.fill('#dec-a', 'wrong'); await enter(carol, '#dec-a');
   await carol.fill('#dec-a', ans.toLowerCase()); await enter(carol, '#dec-a');
   await ok('Decode: Carol solves first', async () => ((await sheet(carol)).includes('Solved, 1st in Lisbon')));

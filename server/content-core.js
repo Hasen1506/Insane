@@ -104,6 +104,7 @@ function checkPuzzle(p) {
   if (!solves(p, a)) bad.push(`not solvable: the ${p.kind} data does not give ${a}`);
   for (const s of SHOWS[p.kind](p.data)) if (!p.q.includes(s)) { bad.push('the clue does not show its data (' + s + ')'); break; }
   if (hasWord(p.q, a)) bad.push('the clue gives the answer away');
+  if (String(p.id).toUpperCase().replace(/[^A-Z]/g, '').includes(a)) bad.push('the id gives the answer away (ids reach the page)');
   p.h.forEach((h, i) => { if (hasWord(h, a)) bad.push(`hint ${i + 1} gives the answer away`); });
   return bad;
 }

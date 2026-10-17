@@ -18,7 +18,8 @@ const BR = require('../lib/browser'), E = require('../lib/e2e');
 let B;
 const OUT = process.env.OUT || path.join(E.REPO, 'test', 'out', 'playtest');
 fs.mkdirSync(OUT, { recursive: true });
-const ANS = ['WATERLOO', 'MARKET', 'CARD', 'MUSEUM', 'BRIDGE', 'STATION', 'GARDEN', 'TOWER'];
+// WS-E: the page has no Decode answers; this week's answer for a city comes from the DEV endpoint
+const devAnswer = async (who) => { const [week, city] = await evalIn(who, () => [weekKey(), S.me.city]); return (await (await fetch(`${B}/api/dev/decode?city=${encodeURIComponent(city)}&week=${week}`)).json()).answer; };
 const DAY = 864e5, HOUR = 36e5, MIN = 6e4;
 const results = [], diary = [], errors = [], timings = {};
 const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
@@ -292,7 +293,7 @@ async function circleCode(who) { return evalIn(who, () => S.circle && S.circle.c
   await tab('bob', 'circle'); await tap('bob', '[data-act=cseg][data-v=pacts]'); await tap('bob', '[data-act=cheer]');
   await tab('alice', 'circle'); await tap('alice', '[data-act=cseg][data-v=pacts]'); await ok('Alice sees Bob cheered her run', async () => (await until('alice', async () => (await screen('alice')).includes('Cheered by Bob'))));
   log('Bob', 'Did the daily dare (“order your coffee in the voice of a movie trailer”), added a photo: it’s in Third Floor’s clips for 24 hours. Then cheered Alice’s run.');
-  const wk = await evalIn('carol', () => weekNum()); const ans = ANS[wk % 8];
+  const ans = await devAnswer('carol');
   await tab('carol', 'city'); await tap('carol', '[data-act=sheet][data-v=decode]');
   await evalIn('carol', () => { window.__c = 0; new MutationObserver(() => { if (document.querySelector('.celebrate')) window.__c++; }).observe(document.body, { childList: true }); });
   const tDec = Date.now();
@@ -309,7 +310,7 @@ async function circleCode(who) { return evalIn(who, () => S.circle && S.circle.c
     const r2 = await api('mariana', 'set', { path: `solves/${wkKey}_${await evalIn('alice', () => S.uid)}`, data: { week: wkKey, answer: ans } });
     ok('server refuses a solve filed under someone else’s name', r2.status === 403, r2.status);
   }
-  await tab('kenji', 'city'); await tap('kenji', '[data-act=sseg][data-v=map]'); await tap('kenji', '[data-act=sheet][data-v=decode]'); await type('kenji', '#dec-a', ans); await enter('kenji', '#dec-a');
+  await tab('kenji', 'city'); await tap('kenji', '[data-act=sseg][data-v=map]'); await tap('kenji', '[data-act=sheet][data-v=decode]'); await type('kenji', '#dec-a', await devAnswer('kenji')); await enter('kenji', '#dec-a');
   await ok('Decode is per city: Kenji is 1st in Tokyo, not 2nd', async () => (await until('kenji', async () => (await sheet('kenji')).includes('Solved, 1st in Tokyo'))));
   await tap('kenji', '[data-act=sheet-close]');
   await tab('alice', 'city'); await tap('alice', '[data-act=sheet][data-v=decode]'); await type('alice', '#dec-a', ans); await enter('alice', '#dec-a'); await tap('alice', '[data-act=sheet-close]');

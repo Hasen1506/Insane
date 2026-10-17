@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>INSANE · content</title>
+<style>
+:root{color-scheme:light dark;font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{margin:0 auto;max-width:880px;padding:16px;background:Canvas;color:CanvasText}
+h1{font-size:22px;margin:0 0 4px}h2{font-size:17px;margin:20px 0 8px}
+.meta{opacity:.7;font-size:13px}
+nav{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+nav button,button{font:inherit;min-height:44px;padding:0 14px;border-radius:10px;border:1px solid GrayText;background:ButtonFace;color:ButtonText;cursor:pointer}
+nav button[aria-pressed=true]{outline:3px solid Highlight}
+input,select,textarea{font:inherit;width:100%;box-sizing:border-box;min-height:44px;padding:8px;border-radius:8px;border:1px solid GrayText;background:Field;color:FieldText}
+textarea{min-height:70px}
+label{display:block;font-size:13px;margin:10px 0 2px}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1 1 140px}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{border-bottom:1px solid GrayText;padding:6px 4px;text-align:left;vertical-align:top}
+.bad{color:LinkText;font-weight:600}.ok{font-weight:600}
+.card{border:1px solid GrayText;border-radius:12px;padding:12px;margin:10px 0}
+code{font-family:ui-monospace,Menlo,monospace;font-size:13px}
+</style>
+</head>
+<body>
+<h1>INSANE content</h1>
+<p class="meta">Owner only. Decode puzzles per city pack, daily-dare starters, Mole tasks and seed drops. Every puzzle is checked before it saves: it must be solvable from its own clue, and no clue or hint may give the answer away. A puzzle pinned to a week is that week's puzzle; otherwise a city gets one it hasn't had until its pack is used up.</p>
+<div id="who" class="meta"></div>
+<nav id="tabs"></nav>
+<main id="main"><p>Loading…</p></main>
+<script>
+'use strict';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const api=(r,b)=>fetch('/api/'+r,b===undefined?{credentials:'same-origin'}:{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify(b)}).then(async x=>({status:x.status,body:await x.json().catch(()=>({}))}));
+const TABS=[['puzzles','Puzzles'],['preview','Schedule'],['dares','Dares'],['mole','Mole tasks'],['drops','Seed drops']];
+let L=null,tab='puzzles',edit=null;
+const DATA_HELP={caesar:'{"shift":3,"text":"PDULQD"}',atbash:'{"text":"..."}',a1z26:'{"nums":[13,1,18]}',morse:'{"code":".- -..."}',reverse:'{"text":"..."}',acrostic:'{"text":"Words whose first letters spell it."}',lastletters:'{"text":"Words whose last letters spell it."}',zip:'{"text":"every other letter, from the first"}',anagram:'{"letters":"DANGER"}',keypad:'{"digits":"7828466"}',hidden:'{"text":"A line where it hides across a word break."}'};
+async function load(){const r=await api('admin/content');if(r.status!==200){$('#main').innerHTML=`<p class="bad">${r.status===401?'Sign in to INSANE first, as the owner.':'This page is for the owner only.'}</p><p><a href="/">Open INSANE</a></p>`;return}L=r.body;draw()}
+function nav(){$('#tabs').innerHTML=TABS.map(([k,n])=>`<button data-tab="${k}" aria-pressed="${tab===k}">${n}</button>`).join('')}
+function draw(){nav();const m=$('#main');
+  if(tab==='puzzles')m.innerHTML=puzzleForm()+L.packs.map(p=>`<h2>${esc(p.name)} <span class="meta">${esc(p.id)} · ${p.puzzles.length} puzzles · ${esc((p.cities||[]).join(', ')||'everywhere else')}</span></h2><table><tr><th>Answer</th><th>Clue</th><th>Pin</th><th></th></tr>${p.puzzles.map(z=>`<tr><td><b>${esc(z.a)}</b><div class="meta">${esc(z.kind)} · ${esc(z.source)}</div></td><td>${esc(z.q)}<div class="meta">${z.h.map(esc).join(' / ')}</div></td><td>${esc(z.week||'')}${z.city?'<div class="meta">'+esc(z.city)+'</div>':''}</td><td><button data-edit="${esc(z.id)}">Edit</button> <button data-rm="puzzle" data-id="${esc(z.id)}">Remove</button></td></tr>`).join('')}</table>`).join('');
+  if(tab==='preview')m.innerHTML=`<h2>What a city gets next</h2><div class="row"><div><label for="pv-city">City id (as in people/…/city, e.g. IN-tamil_nadu-chennai)</label><input id="pv-city" value="IN-tamil_nadu-chennai"></div><div style="flex:0 0 auto;align-self:end"><button data-do="preview">Show 6 weeks</button></div></div><div id="pv"></div><h2>Recently given</h2><table>${L.recent.map(r=>`<tr><td>${esc(r.period)}</td><td>${esc(r.scope)}</td><td>${esc(r.id)}</td></tr>`).join('')}</table>`;
+  if(tab==='dares')m.innerHTML=`<div class="card"><h2>Add or edit a dare</h2><div class="row"><div><label for="d-id">Id (blank for new)</label><input id="d-id"></div><div><label for="d-level">How bold (1–6)</label><input id="d-level" type="number" min="1" max="6" value="2"></div></div><label for="d-text">Dare</label><input id="d-text" maxlength="100"><p><button data-save="dare">Check and save</button></p><div id="msg"></div></div><table><tr><th>Lvl</th><th>Dare</th><th></th></tr>${L.dares.map(d=>`<tr><td>${d.level}</td><td>${esc(d.text)} <span class="meta">${esc(d.id)} · ${esc(d.source)}</span></td><td><button data-rm="dare" data-id="${esc(d.id)}">Remove</button></td></tr>`).join('')}</table>`;
+  if(tab==='mole')m.innerHTML=`<div class="card"><h2>Add a Mole task</h2><p class="meta">Tasks keep their number for good: a Mole's private list stores numbers, so edit the text rather than reusing a number.</p><div class="row"><div><label for="m-i">Number (blank for new)</label><input id="m-i" type="number" min="0"></div><div><label for="m-n">Times to do it</label><input id="m-n" type="number" min="1" max="5" value="1"></div></div><label for="m-text">Task</label><input id="m-text" maxlength="100"><p><button data-save="mole">Check and save</button></p><div id="msg"></div></div><table><tr><th>#</th><th>Task</th><th>×</th><th></th></tr>${L.mole.map(t=>`<tr><td>${t.i}</td><td>${esc(t.text)} <span class="meta">${esc(t.source)}</span></td><td>${t.n}</td><td><button data-rm="mole" data-id="${t.i}">Remove</button></td></tr>`).join('')}</table>`;
+  if(tab==='drops')m.innerHTML=`<div class="card"><h2>Publish a seed drop</h2><p class="meta">A real offer from a real place, hosted by INSANE. People within their distance see it; the door code shows here once. The draw is commit-reveal like every drop.</p><div class="row"><div><label for="s-venue">Place name</label><input id="s-venue" maxlength="40"></div><div><label for="s-city">City id</label><input id="s-city" value="IN-tamil_nadu-chennai"></div></div><div class="row"><div><label for="s-lat">Latitude</label><input id="s-lat" inputmode="decimal"></div><div><label for="s-lon">Longitude</label><input id="s-lon" inputmode="decimal"></div></div><div class="row"><div><label for="s-kind">Kind</label><select id="s-kind"><option>offer</option><option>swap</option><option>twokey</option><option>dare</option><option>cash</option></select></div><div><label for="s-start">Starts</label><input id="s-start" type="datetime-local"></div><div><label for="s-len">Minutes</label><select id="s-len"><option>30</option><option selected>60</option><option>120</option></select></div></div><label for="s-prize">Prize</label><input id="s-prize" maxlength="60"><label for="s-dare">Counter dare (for a dare drop)</label><input id="s-dare" maxlength="80"><p><button data-save="drop">Check and publish</button></p><div id="msg"></div></div><table>${L.drops.map(d=>`<tr><td>${esc(d.venue)}</td><td>${esc(d.city)}</td><td>${new Date(d.start).toLocaleString()}</td><td>${esc(d.prize)}</td></tr>`).join('')}</table>`;
+}
+function puzzleForm(){const z=edit||{kind:'caesar',pack:'chennai',h:['','','']};
+  return `<div class="card"><h2>${edit?'Edit '+esc(edit.id):'Add a puzzle'}</h2><div class="row"><div><label for="p-pack">Pack</label><select id="p-pack">${L.packs.map(p=>`<option value="${esc(p.id)}" ${p.id===z.pack?'selected':''}>${esc(p.name)}</option>`).join('')}</select></div><div><label for="p-kind">Kind</label><select id="p-kind">${L.kinds.map(k=>`<option ${k===z.kind?'selected':''}>${k}</option>`).join('')}</select></div><div><label for="p-a">Answer (one word)</label><input id="p-a" value="${esc(z.a||'')}" autocapitalize="characters"></div></div>
+  <label for="p-data">Data, as JSON <span class="meta" id="p-help">${esc(DATA_HELP[z.kind])}</span></label><textarea id="p-data">${esc(z.data?JSON.stringify(z.data):'')}</textarea>
+  <label for="p-q">Clue (blank: written from the data)</label><input id="p-q" value="${esc(z.q||'')}">
+  ${[0,1,2].map(i=>`<label for="p-h${i}">Hint ${i+1}</label><input id="p-h${i}" value="${esc((z.h||[])[i]||'')}">`).join('')}
+  <div class="row"><div><label for="p-id">Id</label><input id="p-id" value="${esc(z.id||'')}" placeholder="blank: made for you"></div><div><label for="p-week">Pin to week (e.g. 2026-W44)</label><input id="p-week" value="${esc(z.week||'')}"></div><div><label for="p-city">…for one city only (optional)</label><input id="p-city" value="${esc(z.city||'')}"></div></div>
+  <p class="row" style="flex-wrap:nowrap"><button data-do="check">Check</button><button data-save="puzzle">Check and save</button>${edit?'<button data-do="new">New instead</button>':''}</p><div id="msg"></div></div>`}
+function readPuzzle(){let data=null;try{data=JSON.parse($('#p-data').value||'null')}catch(e){}
+  const a=$('#p-a').value.toUpperCase().replace(/[^A-Z]/g,'');return {id:$('#p-id').value.trim()||($('#p-pack').value+'-'+Date.now().toString(36)),pack:$('#p-pack').value,kind:$('#p-kind').value,a,data,q:$('#p-q').value.trim(),h:[0,1,2].map(i=>$('#p-h'+i).value.trim()),week:$('#p-week').value.trim(),city:$('#p-city').value.trim()}}
+const show=(ok,list)=>{$('#msg').innerHTML=ok?'<p class="ok">'+esc(ok)+'</p>':'<ul>'+list.map(x=>`<li class="bad">${esc(x)}</li>`).join('')+'</ul>'};
+document.addEventListener('change',e=>{if(e.target.id==='p-kind')$('#p-help').textContent=DATA_HELP[e.target.value]||''});
+document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.tab){tab=b.dataset.tab;edit=null;draw();return}
+  if(b.dataset.edit){edit=L.packs.flatMap(p=>p.puzzles).find(z=>z.id===b.dataset.edit);draw();scrollTo(0,0);return}
+  if(b.dataset.do==='new'){edit=null;draw();return}
+  if(b.dataset.do==='check'){const r=await api('admin/content/check',{kind:'puzzle',item:readPuzzle()});show(r.body.problems.length?'':'Solvable, and nothing gives it away.',r.body.problems);if(r.body.item&&r.body.item.q&&!$('#p-q').value)$('#p-q').value=r.body.item.q;return}
+  if(b.dataset.do==='preview'){const r=await api('admin/content/preview',{city:$('#pv-city').value.trim(),n:6});$('#pv').innerHTML='<table>'+r.body.weeks.map(w=>`<tr><td>${esc(w.week)}</td><td>${w.puzzle?'<b>'+esc(w.puzzle.a)+'</b> '+esc(w.puzzle.q):'none'}</td><td class="meta">${w.stored?'given':'planned'}</td></tr>`).join('')+'</table>';return}
+  if(b.dataset.save){const k=b.dataset.save;let item;
+    if(k==='puzzle')item=readPuzzle();
+    if(k==='dare')item={id:$('#d-id').value.trim(),level:+$('#d-level').value,text:$('#d-text').value};
+    if(k==='mole')item={i:$('#m-i').value===''?'':+$('#m-i').value,n:+$('#m-n').value,text:$('#m-text').value};
+    if(k==='drop')item={venue:$('#s-venue').value,city:$('#s-city').value.trim(),lat:$('#s-lat').value,lon:$('#s-lon').value,kind:$('#s-kind').value,start:new Date($('#s-start').value).getTime(),len:+$('#s-len').value,prize:$('#s-prize').value,dare:$('#s-dare').value};
+    const r=await api('admin/content/save',{kind:k,item,publish:k==='drop'});
+    if(!r.body.ok){show('',r.body.problems||[r.body.message||'Not saved']);return}
+    const extra=r.body.published&&r.body.published.code?' Door code: '+r.body.published.code:'';
+    edit=null;await load();show('Saved.'+extra,[]);return}
+  if(b.dataset.rm){if(!confirm('Remove it? Seed items can be restored by saving them again.'))return;await api('admin/content/remove',{kind:b.dataset.rm,id:b.dataset.id});await load();return}
+});
+api('hello').then(r=>{$('#who').textContent=r.body.signedIn?'Signed in as '+r.body.email+(r.body.isOwner?' (owner)':''):'Not signed in.'});
+load();
+</script>
+</body>
+</html>
