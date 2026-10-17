@@ -62,13 +62,16 @@ textarea.in-t{min-height:72px;resize:vertical}
 .thr .last{display:block;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .thr .un{width:9px;height:9px;border-radius:50%;background:var(--stamp);margin-top:6px;flex:0 0 auto}
 .av{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;background:var(--cell2);color:var(--ink);flex:0 0 auto}
-.chat{display:flex;flex-direction:column;gap:6px;padding:10px 0;min-height:200px}
+.chat{display:flex;flex-direction:column;gap:6px;padding:10px 0;min-height:max(200px,calc(100dvh - var(--nav-h) - 330px))}
 .msg{max-width:84%;align-self:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px 14px 14px 4px;padding:6px 11px;font-size:14.5px;overflow-wrap:anywhere}
 .msg small{display:block;font-family:var(--f-mono);font-size:10px;color:var(--muted)}
 .msg.me{align-self:flex-end;background:var(--ink);color:var(--paper);border-color:var(--ink);border-radius:14px 14px 4px 14px}
 .msg.me small{color:inherit;opacity:.7}
-.compose{position:sticky;bottom:calc(64px + env(safe-area-inset-bottom,0px));background:var(--paper);display:flex;gap:8px;padding:8px 0}
+.msg .mt{white-space:pre-wrap}.msg.no{background:var(--card);color:var(--stamp);border:1px dashed var(--stamp)}.msg.no small,.msg.no .link{color:inherit;opacity:1}.msg.sending{opacity:.6}
+.compose{position:sticky;z-index:5;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));background:var(--paper);display:flex;gap:8px;padding:8px 0}
 .compose input{flex:1;min-width:0}
+/* C38: while the keyboard is up (.kb, from visualViewport) the tab bar steps aside and the composer rides it (--kb: iOS) */
+.kb nav.tabs{display:none}.kb .compose{bottom:var(--kb,0px)}
 .panel{border:1.5px solid var(--ink);border-radius:14px;padding:10px 12px;margin-top:10px;background:var(--card)}
 .who{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
 .who span{font-size:12px;border-radius:999px;padding:1px 8px;background:var(--good-soft);color:var(--good)}
@@ -109,7 +112,8 @@ table.lg tr.me td{font-weight:700}
 .sheet{background:var(--paper);width:100%;max-width:520px;max-height:88vh;overflow-y:auto;border-radius:18px 18px 0 0;border-top:1.5px solid var(--ink);padding:14px max(18px,env(safe-area-inset-left,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-right,0px))}
 .sheet .grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 8px}
 .sheet h2{font-family:var(--f-display);font-weight:400;font-size:22px;margin:4px 0 4px;text-wrap:balance}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:999px;font-size:14px;max-width:calc(100% - 32px);text-align:center}
+.toast{position:fixed;left:12px;right:12px;margin:0 auto;max-width:520px;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 8px);z-index:30;background:var(--ink);color:var(--paper);padding:10px 14px;border-radius:10px;font-size:14px;line-height:1.35;pointer-events:none;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+body:has(#toasts .toast) #app:has(> nav.tabs){padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 72px)}
 .darkall{position:fixed;inset:0;z-index:40;background:var(--night);color:var(--night-ink);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px max(24px,env(safe-area-inset-left,0px))}
 .darkall .clock{font-family:var(--f-mono);font-size:52px;font-weight:600;color:#ECEEE7;margin:12px 0}
 .darkall p{max-width:34ch;margin:0 0 10px}

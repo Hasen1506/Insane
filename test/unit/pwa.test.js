@@ -26,7 +26,7 @@ module.exports = async function (t) {
 
   const html = fs.readFileSync(path.join(ROOT, 'app', 'index.html'), 'utf8');
   t.ok('starts with <!doctype html> and <html lang="en"> (C03)', /^<!doctype html>\s*<html lang="en">/i.test(html));
-  t.ok('viewport meta: device width, scale 1, viewport-fit=cover (C01)', /<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">/.test(html));
+  t.ok('viewport meta: device width, scale 1, viewport-fit=cover (C01)', /<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover(,interactive-widget=resizes-content)?">/.test(html));
   t.ok('manifest, apple-touch-icon and theme-color (light + dark) are linked (C02)', /<link rel="manifest" href="\/manifest\.webmanifest">/.test(html) && /<link rel="apple-touch-icon" href="\/apple-touch-icon\.png"/.test(html) && (html.match(/<meta name="theme-color"/g) || []).length === 2 && /apple-mobile-web-app-capable/.test(html));
   const linked = [...html.matchAll(/<link rel="(?:icon|apple-touch-icon|manifest)" href="\/([^"]+)"/g)].map(x => x[1]);
   t.ok('every icon the head links is in server/public', linked.every(f => fs.existsSync(path.join(PUB, f))), linked.join(','));

@@ -48,7 +48,10 @@ async function pushOn(){
 }
 async function checkPush(){if(S.backend!=='server'||!('serviceWorker' in navigator)||!('Notification' in window))return;try{const reg=await navigator.serviceWorker.getRegistration('/sw.js');const sub=reg&&await reg.pushManager.getSubscription();S.pushOn=!!sub;S.pushState=Notification.permission;render()}catch(e){}}
 
+// C73: one snackbar region (#toasts, aria-live, outside the redrawn screen), one line at a time: a new one
+// replaces the last, it goes after 3.2 s, and it never follows you to another tab. Nothing that has to be kept
+// (a code) goes in one. S.toast is the one showing.
 let toastT=null;
-function toast(m){S.toast=m;clearTimeout(toastT);toastT=setTimeout(()=>{S.toast=null;render()},3200);render()}
-const toastHtml=()=>S.toast?`<div class="toast" role="status">${esc(S.toast)}</div>`:'';
+function toast(m){S.toast=m?String(m):null;S.toastTab=S.ui.tab;clearTimeout(toastT);if(m)toastT=setTimeout(()=>toast(null),3200);const r=$('#toasts');if(r)r.innerHTML=S.toast?`<div class="toast">${esc(S.toast)}</div>`:''}
+const toastHtml=()=>{if(S.toast&&S.toastTab!==S.ui.tab)toast(null);return ''};
 
