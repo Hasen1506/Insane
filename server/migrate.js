@@ -24,6 +24,10 @@ const SCHEMA = [
   `CREATE TABLE IF NOT EXISTS server_content(k TEXT PRIMARY KEY, v TEXT NOT NULL);
    CREATE TABLE IF NOT EXISTS funnel(day TEXT NOT NULL, step TEXT NOT NULL, n INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(day, step));
    CREATE TABLE IF NOT EXISTS funnel_seen(day TEXT NOT NULL, h TEXT NOT NULL, PRIMARY KEY(day, h));`,
+  // 3: v0.9 safety (WS-D, server/moderation.js): reports (C87) and the owner's audit log (C89). IF NOT EXISTS, so a
+  //    dev database where an earlier v0.9 build made these tables ad hoc passes through unchanged.
+  `CREATE TABLE IF NOT EXISTS reports(id TEXT PRIMARY KEY, at INTEGER, by TEXT, kind TEXT, target TEXT, path TEXT, cid TEXT, category TEXT, note TEXT, status TEXT);
+   CREATE TABLE IF NOT EXISTS audit(at INTEGER, actor TEXT, action TEXT, target TEXT, note TEXT);`,
 ];
 const SCHEMA_VERSION = SCHEMA.length;
 

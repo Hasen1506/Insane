@@ -23,7 +23,7 @@ module.exports = async function (t) {
   let S = await start({ dir, db, env: { DEFAULT_TZ: 'Asia/Kolkata' } });
   try {
     const h = (await S.get('health')).body;
-    t.ok('boots on the v0.8 file and reports schema 2, store v9', h && h.ok && h.schema === 2 && h.store === 9, JSON.stringify(h));
+    t.ok('boots on the v0.8 file and reports schema 3, store v9', h && h.ok && h.schema === 3 && h.store === 9, JSON.stringify(h));
     const snap = path.join(dir, 'backups', 'backup-pre-v9.db');
     t.ok('snapshot backup-pre-v9.db written before migrating', fs.existsSync(snap));
     t.ok('the snapshot is the untouched v0.8 data', fs.existsSync(snap) && JSON.stringify(dump(snap)) === JSON.stringify(before));
@@ -63,6 +63,25 @@ module.exports = async function (t) {
   try { t.ok('second boot is healthy', (await S.get('health')).body.store === 9); } finally { await S.stop(); }
   const again = dump(db);
   t.ok('a second boot changes no doc (idempotent)', JSON.stringify(again) === JSON.stringify(after));
+  // schema step 3 (int-1): WS-D's reports + audit tables come from the migration, not from server/moderation.js
+  const cols = (f, tb) => { const d = new DatabaseSync(f, { readOnly: true }); try { return d.prepare(`PRAGMA table_info(${tb})`).all().map(c => c.name).join(','); } finally { d.close(); } };
+  t.ok('schema step 3 made WS-D\'s reports and audit tables', cols(db, 'reports') === 'id,at,by,kind,target,path,cid,category,note,status' && cols(db, 'audit') === 'at,actor,action,target,note', cols(db, 'reports') + ' | ' + cols(db, 'audit'));
   t.ok('a second boot takes no second snapshot', fs.readdirSync(path.join(dir, 'backups')).filter(f => f.startsWith('backup-pre-v9')).length === 1);
   fs.rmSync(dir, { recursive: true, force: true });
+
+  // Step 3 is idempotent, and passes through a dev database where an earlier v0.9 build made the tables ad hoc
+  // (user_version 2, reports already holding a row): the row survives, the version moves to 3, a rerun is a no-op.
+  const M = require('../../server/migrate');
+  const mem = new DatabaseSync(':memory:'), quiet = () => { };
+  for (let v = 0; v < 2; v++) mem.exec(M.SCHEMA[v]);
+  mem.exec('PRAGMA user_version=2');
+  mem.exec('CREATE TABLE reports(id TEXT PRIMARY KEY, at INTEGER, by TEXT, kind TEXT, target TEXT, path TEXT, cid TEXT, category TEXT, note TEXT, status TEXT); CREATE TABLE audit(at INTEGER, actor TEXT, action TEXT, target TEXT, note TEXT);');
+  mem.prepare("INSERT INTO reports(id,at,by,kind,status) VALUES('r1',1,'u','post','open')").run();
+  const r1 = M.migrate(mem, { log: quiet });
+  const r2 = M.migrate(mem, { log: quiet });
+  t.ok('step 3 over ad hoc tables: version 3, the existing report kept', r1.sql[0] === 2 && r1.sql[1] === 3 && M.schemaVersion(mem) === 3 && mem.prepare('SELECT COUNT(*) n FROM reports').get().n === 1);
+  t.ok('step 3 rerun is a no-op', r2.sql[0] === 3 && r2.sql[1] === 3 && mem.prepare('SELECT COUNT(*) n FROM reports').get().n === 1);
+  const fresh = new DatabaseSync(':memory:'); M.migrate(fresh, { log: quiet });
+  t.ok('a fresh database gets reports and audit from the migration', ['reports', 'audit'].every(tb => fresh.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?").get(tb)));
+  mem.close(); fresh.close();
 };
