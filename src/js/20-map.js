@@ -235,6 +235,7 @@ class MapView{
     for(const c of cl){if(c.members.length<2)continue;const n=c.members.length;if(c.members.some(i=>cand[i].hot))hot=true;g.fillStyle=col.ink;g.strokeStyle=col.paper;g.lineWidth=2.5;g.beginPath();g.arc(c.x,c.y,15+Math.min(8,n),0,7);g.fill();g.stroke();g.font='700 13px "Instrument Sans",system-ui,sans-serif';g.textAlign='center';g.fillStyle=col.paper;g.fillText(String(n),c.x,c.y+4.5);g.textAlign='start'}
     // the pulse: only markers repaint (the basemap is cached), ~12 fps, only while this map is visible
     if(hot&&!reducedMotion()&&!this.pt)this.pt=setTimeout(()=>{this.pt=0;this.redraw()},80);
+    else if(!hot&&this.pt){clearTimeout(this.pt);this.pt=0} // int-1: the pulse ended (drop closed, cluster gone): no leftover frame
   }
 }
 const dark=()=>document.documentElement.dataset.theme==='dark'||(document.documentElement.dataset.theme!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);
