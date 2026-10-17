@@ -489,7 +489,16 @@ async function circleCode(who) { return evalIn(who, () => S.circle && S.circle.c
   await tab('alice', 'circle'); await tap('alice', '[data-act=cseg][data-v=people]'); await tap('alice', '.thr:has-text("Carol")');
   await type('alice', '#m-text', 'good to meet you at the drop!'); await enter('alice', '#m-text');
   await tab('carol', 'circle'); await tap('carol', '[data-act=cseg][data-v=people]');
-  await ok('direct messages work only after meeting', async () => (await until('carol', async () => { await tap('carol', '.thr:has-text("Alice")').catch(() => { }); return (await screen('carol')).includes('good to meet you'); })));
+  // Wait on the real conditions in order, never on a tap's timeout: Carol's People list shows the DM row named
+  // Alice (her met push and Alice's profile have landed), she opens it once, then Alice's message is on screen.
+  // The old poll re-tapped the row on every pass; once Carol was inside the DM there is no row, so each pass
+  // spent tapOnce's 5 s + 3 s force fallback and the 8 s poll ran out on a loaded box before a second read.
+  const dmRow = '.thr[data-type=dm]:has-text("Alice")';
+  await ok('direct messages work only after meeting', async () => {
+    const inDm = await evalIn('carol', () => !!(S.ui.open && S.ui.open.type === 'dm'));
+    if (!inDm) { if (await PEOPLE.carol.page.locator(dmRow).count()) await tap('carol', dmRow); return false; }
+    return (await screen('carol')).includes('good to meet you');
+  }, async () => JSON.stringify(await evalIn('carol', () => ({ open: S.ui.open, met: S.met.map(m => m.ids.map(nameOf)), msgs: (S.msgs || []).map(m => m.text) }))));
   log('Alice', 'Met Carol from the other circle. Scanned her QR with the phone camera; INSANE opened with the code and connected them. A MET stamp, then a first direct message.');
 
   /* ===== Day 6, Sunday: the week in review ===== */
@@ -570,8 +579,12 @@ async function circleCode(who) { return evalIn(who, () => S.circle && S.circle.c
   await shot('alice', 'p16b-mole');
   log('Bob', 'Sunday 21:00 he revealed himself: tasks done, one vote out of three. He got away with it.');
   await shot('alice', 'p16-results');
+  // Read Mariana's uid before she deletes: deleting signs her out and reloads the page, so S is gone (or not yet
+  // defined) on her page afterwards. Then wait for the signed-out screen, the real end of the delete.
+  const marianaUid = await evalIn('mariana', () => S.uid);
   await tab('mariana', 'you'); await tap('mariana', '[data-act=del-ask]'); await tap('mariana', '[data-act=del-yes]');
-  { const r = await api('alice', 'get', { path: 'people/' + (await evalIn('mariana', () => S.uid)) }); ok('delete removes Mariana’s profile from the server', r.status === 200 && r.body.doc === null); }
+  await PEOPLE.mariana.page.waitForSelector('#si-email');
+  { const r = await api('alice', 'get', { path: 'people/' + marianaUid }); ok('delete removes Mariana’s profile from the server', r.status === 200 && r.body.doc === null); }
   await tab('yui', 'you'); await tap('yui', '[data-act=signout]'); await PEOPLE.yui.page.waitForSelector('#si-email');
   ok('sign out returns to the email screen', true);
 
