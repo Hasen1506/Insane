@@ -5,13 +5,26 @@
 'use strict';
 const MAX = () => Math.max(1, +process.env.MAX_CIRCLES || 3);
 const ID = /^[A-Za-z0-9_\-:.@]{1,64}$/;
+const { clip } = require('../text');
+const NAME_MAX = 40, HANDLE_MAX = 16; // C20: the page's maxlength; trimmed at a word, never mid-grapheme
 module.exports = ({ Refuse, safe }) => {
   // WS-I's circle/circles mirroring runs first, so a primary-circle change made through `circles` is a `circle`
   // change too; WS-D's rule (server/moderation.js) then checks age + consent on sign-up and moves membership.
   const rule = { write(op, p, s, data, u, old) {
     data = mirror(op, p, s, data, u, old);
+    if (s.length === 2 && data && typeof data === 'object') {
+      if (typeof data.name === 'string') data = { ...data, name: clip(data.name, NAME_MAX) };
+      if (typeof data.handle === 'string') data = { ...data, handle: clip(data.handle, HANDLE_MAX) };
+      if ('showSquare' in data) data = { ...data, showSquare: data.showSquare === true };
+    }
     const sd = safe().beforeWrite(op, p, data, u, old);
     return sd === undefined ? data : sd;
+  },
+  // C44: your square (cell) reaches nobody else unless you opted in ("Show my square to my circle");
+  // WS-D's filter after this one still drops it for anyone outside your circles.
+  read(p, s, d, u) {
+    if (s.length !== 2 || !d || d.showSquare === true || (u && s[1] === u.uid) || !('cell' in d)) return d;
+    const { cell, ...rest } = d; return rest;
   } };
   function mirror(op, p, s, data, u, old) {
     if (s.length !== 2 || op === 'delete') return data;
