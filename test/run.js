@@ -14,8 +14,9 @@
 'use strict';
 const fs = require('fs'), path = require('path'), { spawn } = require('child_process');
 const ROOT = path.resolve(__dirname, '..');
+const PKG = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
 const SUITES = {
-  build: { budget: 2, files: () => ['tools/build.js'], script: ['tools/build.js', '--check'] },
+  build: { budget: 2, script: PKG.scripts.check.replace(/^node\s+/, '').split(/\s+/) }, // package.json scripts.check
   unit: { budget: 10, dir: 'test/unit' },
   pbt: { budget: 10, dir: 'test/pbt' },
   diff: { budget: 10, dir: 'test/diff' },
@@ -45,6 +46,8 @@ async function runDir(dir) {
   return results;
 }
 
+module.exports = { SUITES };
+if (require.main !== module) return;
 (async () => {
   const want = process.argv.slice(2).length ? process.argv.slice(2) : Object.keys(SUITES);
   for (const w of want) if (!SUITES[w]) { console.error('unknown suite ' + w + '; have ' + Object.keys(SUITES).join(', ')); process.exit(2); }

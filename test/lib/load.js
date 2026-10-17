@@ -52,12 +52,19 @@ function makeContext() {
   return { ctx, clock };
 }
 
+// The app's code runs inside one function scope, not as vm globals: every global lookup in a vm context
+// goes through the sandbox interceptor, which made the 69,818-town scans ~50x slower than in a browser.
+// Hot builtins are bound as locals for the same reason. `run` is a direct eval in that scope, so it
+// sees the app's top-level names exactly as code in the page does (the app never reads its own
+// names off `window`).
+const HOT = ['Math', 'Date', 'JSON', 'Object', 'Array', 'String', 'Number', 'Set', 'Map', 'RegExp', 'isFinite', 'parseInt', 'parseFloat'];
 function app(code, label) {
   const { ctx, clock } = makeContext();
-  vm.runInContext(code, ctx, { filename: label });
+  const wrapped = `(function(${HOT.join(',')}){${code}\n;return function(__c){return eval(__c)};})(${HOT.join(',')})`;
+  const evalIn = vm.runInContext(wrapped, ctx, { filename: label });
   const cache = new Map();
-  const get = name => { if (!cache.has(name)) cache.set(name, vm.runInContext(name, ctx)); return cache.get(name); };
-  const run = c => vm.runInContext(c, ctx);
+  const get = name => { if (!cache.has(name)) cache.set(name, evalIn(name)); return cache.get(name); };
+  const run = c => evalIn(c);
   return {
     label, ctx, get, run,
     setNow: t => { clock.now = +t; },

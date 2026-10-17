@@ -1,6 +1,8 @@
 // WS-0 proof, part 1: every extracted pure function gives the same answer in v0.8 (fac3720),
 // in v0.9's src/ modules and in the built app/index.html, on the same seeded inputs.
-// 5,000 cases per function by default (DIFF_RUNS), fewer for the place-file scans, which walk 69,818 towns per call.
+// 5,000 cases per function by default (DIFF_RUNS), fewer for the place-file scans, which walk 69,818 towns per call
+// on three sides (searchPlaces with a region costs ~80 ms a call, as in the browser): DIFF_PLACES_RUNS (40),
+// DIFF_AREA_RUNS (60, areaFor + areaChoices) and DIFF_NEAR_RUNS (40, nearName) raise them for a soak.
 'use strict';
 const H = require('./harness');
 const { G } = require('../pbt/runner');
@@ -67,11 +69,11 @@ module.exports = async function (t) {
   const P = h.sides['v0.8'].run('GEO.places');
   t.ok('places.tsv loaded on every side (' + P.length + ' towns)', P.length > 60000 && h.all.every(a => a.run('GEO.places.length') === P.length));
   const NAMES = G.map(G.tuple(G.int(0, P.length - 1), G.pick(['', 'prefix', 'lower', 'region'])), ([i, how]) => { const p = P[i]; return how === 'prefix' ? p.n.slice(0, Math.max(1, p.n.length >> 1)) : how === 'lower' ? p.n.toLowerCase() : how === 'region' ? p.n + ', ' + (p.a || p.cc) : p.n; });
-  same('searchPlaces', NAMES, q => app => app.get('searchPlaces')(q).map(p => [p.n, p.cc, p.a]), { runs: +process.env.DIFF_PLACES_RUNS || 2000 });
+  same('searchPlaces', NAMES, q => app => app.get('searchPlaces')(q).map(p => [p.n, p.cc, p.a]), { runs: +process.env.DIFF_PLACES_RUNS || 40 });
   const NEAR = G.map(G.tuple(G.int(0, P.length - 1), G.float(-.3, .3), G.float(-.3, .3)), ([i, a, b]) => [P[i].lat + a, P[i].lon + b]);
-  same('areaFor', NEAR, ([a, b]) => app => app.get('areaFor')(a, b), { runs: +process.env.DIFF_AREA_RUNS || 150 });
-  same('nearName', NEAR, ([a, b]) => app => app.get('nearName')(a, b), { runs: +process.env.DIFF_AREA_RUNS || 150 });
-  same('areaChoices', NEAR, ([a, b]) => app => app.get('areaChoices')(a, b), { runs: +process.env.DIFF_AREA_RUNS || 150 });
+  same('areaFor', NEAR, ([a, b]) => app => app.get('areaFor')(a, b), { runs: +process.env.DIFF_AREA_RUNS || 60 });
+  same('nearName', NEAR, ([a, b]) => app => app.get('nearName')(a, b), { runs: +process.env.DIFF_NEAR_RUNS || 40 });
+  same('areaChoices', NEAR, ([a, b]) => app => app.get('areaChoices')(a, b), { runs: +process.env.DIFF_AREA_RUNS || 60 });
 
   // the registries: every v0.8 action name and sheet still resolves, and nothing new appeared
   const v08 = require('fs').readFileSync(require('../lib/load').v08Dir() + '/app/index.html', 'utf8');
