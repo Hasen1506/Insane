@@ -4,6 +4,7 @@
 // server.js calls in through canRead / canWrite / beforeWrite / readFilter / route; nothing here listens.
 'use strict';
 const { nameHit, unsafeDare } = require('./names');
+const { clip } = require('./text'); // C20: whole graphemes, word boundary
 
 const CONSENT_VERSION = '2026-10-draft';
 const REPORT_CATS = ['harassment', 'hate', 'unsafe', 'sexual', 'spam', 'impersonation', 'underage', 'other'];
@@ -134,7 +135,7 @@ module.exports = function moderation(ctx) {
       if (op === 'delete') throw new Refuse('permission_denied', 'Only the owner can close a circle, from Circle settings.');
       if (!old) {
         if (op !== 'set') throw new Refuse('invalid_argument', 'Document does not exist');
-        return { name: String(data.name || 'Circle').slice(0, 28), code: String(data.code || ''), city: data.city ?? null, createdAt: now(), by: u.uid, owner: u.uid, members: [u.uid], removed: {} };
+        return { name: clip(data.name || 'Circle', 28), code: String(data.code || ''), city: data.city ?? null, createdAt: now(), by: u.uid, owner: u.uid, members: [u.uid], removed: {} };
       }
       const keep = {};
       if (Array.isArray(data.members)) keep.members = (old.members || []).slice(); // membership is people/{uid}.circle's job
@@ -143,13 +144,13 @@ module.exports = function moderation(ctx) {
         for (const [k, x] of Object.entries(data.verified)) if (x === true && mem.has(k)) v[k] = true;
         keep.verified = v;
       }
-      if ('name' in data && ownerOf(old) === u.uid) keep.name = String(data.name || old.name).slice(0, 28);
+      if ('name' in data && ownerOf(old) === u.uid) keep.name = clip(data.name || old.name, 28);
       if (op === 'set') return { ...old, ...keep };
       return keep;
     }
     if (s[0] === 'circles' && s[2] === 'midnight' && s.length === 4) {
       if (op === 'set') {
-        const text = String(data.text || '').slice(0, 400);
+        const text = clip(data.text, 400);
         const mem = membersOf(s[1]);
         const others = mem.filter(m => m.id !== u.uid), hit = nameHit(text, others);
         if (hit) { const who = others.find(m => nameHit(text, [m])) || {}; throw new Refuse('failed_precondition', `Midnight is about you. Take out ${who.name ? '“' + who.name + '”' : 'their name'} and say it about yourself.`, 'names_blocked'); }
@@ -284,7 +285,7 @@ module.exports = function moderation(ctx) {
     if (r.startsWith('circle/')) {
       const cid = String(b.cid || circleOf(u.uid) || '');
       const c = ownedCircle(u, cid);
-      if (r === 'circle/rename') { const name = String(b.name || '').trim().slice(0, 28); if (!name) throw new Refuse('invalid_argument', 'Give it a name.'); putDoc('circles/' + cid, { ...c, name }); audit(u.uid, 'rename', cid, name); touched(['circles/' + cid]); return { ok: true, name }; }
+      if (r === 'circle/rename') { const name = clip(b.name, 28); if (!name) throw new Refuse('invalid_argument', 'Give it a name.'); putDoc('circles/' + cid, { ...c, name }); audit(u.uid, 'rename', cid, name); touched(['circles/' + cid]); return { ok: true, name }; }
       if (r === 'circle/remove') {
         const who = String(b.uid || '');
         if (who === u.uid) throw new Refuse('invalid_argument', 'Transfer the circle first, then leave.');

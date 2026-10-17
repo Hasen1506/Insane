@@ -47,13 +47,13 @@ module.exports = async function (t) {
         // R-C73
         await p.evaluate(() => act('tab', { v: 'today' })); await E.idle(p);
         await p.evaluate(() => toast('Plan sent. Everyone taps in or out.')); await E.idle(p);
-        const tb = await p.evaluate(() => { const x = document.querySelector('.toast'), n = document.querySelector('nav.tabs'); return x && { role: x.getAttribute('role'), bottom: x.getBoundingClientRect().bottom, navTop: n.getBoundingClientRect().top, lines: Math.round(x.scrollHeight / parseFloat(getComputedStyle(x).lineHeight)) }; });
+        const tb = await p.evaluate(() => { const x = document.querySelector('.toast'), n = document.querySelector('nav.tabs'); return x && { role: (x.closest('[role]') || x).getAttribute('role'), bottom: x.getBoundingClientRect().bottom, navTop: n.getBoundingClientRect().top, lines: Math.round(x.scrollHeight / parseFloat(getComputedStyle(x).lineHeight)) }; });
         t.ok(P + 'R-C73 the snackbar is role=status and sits above the tab bar', tb && tb.role === 'status' && tb.bottom <= tb.navTop, JSON.stringify(tb));
-        await p.evaluate(() => { toastAt -= 1000; act('tab', { v: 'circle' }); }); await E.idle(p);
+        await p.evaluate(() => act('tab', { v: 'circle' })); await E.idle(p);
         t.ok(P + 'R-C73 changing tab clears a toast from the last screen', await p.locator('.toast').count() === 0);
         await p.evaluate(() => { act('tab', { v: 'city' }); toast('Posted.'); }); await E.idle(p);
         t.ok(P + 'R-C73 a toast set by the tap that changed screen stays', await p.locator('.toast').count() === 1);
-        await p.evaluate(() => { S.toast = null; render(); }); await E.idle(p);
+        await p.evaluate(() => toast(null)); await E.idle(p);
 
         // R-C78 keyboard
         await p.evaluate(() => act('tab', { v: 'today' })); await E.idle(p);

@@ -26,7 +26,7 @@ main{min-width:0}
 header.top{position:sticky;top:var(--sat);z-index:5;background:var(--paper);display:flex;align-items:center;gap:10px;padding:14px 0 10px;border-bottom:1.5px solid var(--ink)}
 .mark{font-family:var(--f-display);font-weight:900;font-size:24px;letter-spacing:.04em;line-height:1}
 .mark i{font-style:normal;color:var(--stamp)}
-.where{font-size:var(--t2);font-weight:600;color:var(--muted);margin-left:auto;text-align:right;line-height:1.3;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.where{background:none;border:0;padding:0;min-height:var(--tap);font-family:inherit;font-size:var(--t2);font-weight:600;color:var(--muted);margin-left:auto;text-align:right;line-height:1.3;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .live{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--good);margin-right:5px;vertical-align:1px}
 .live.demo{background:var(--haz)}
 .banner{font-size:var(--t2);border:1.5px dashed var(--haz);background:var(--haz-soft);border-radius:10px;padding:8px 10px;margin:12px 0 0}

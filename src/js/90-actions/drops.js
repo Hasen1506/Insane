@@ -1,8 +1,8 @@
 /* drops */
-ACT["dkind"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["dkind"]=async(d)=>{
   F.dkind=d.v;render();return;
 };
-ACT["dlen"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["dlen"]=async(d)=>{
   F.dlen=+d.v;render();return;
 };
 ACT["d-create"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
@@ -14,16 +14,16 @@ ACT["d-create"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
     if(S.backend==='server')dd.code=code;else{dd.seedHash=seedHash;dd.hostCircle=me.circle||null}
     if(await W(async()=>{if(S.backend!=='server'){await db.doc(`data/users/${uid}/codes`).set(Object.assign({},S.priv.codes||{},{[ref.id]:code}));await db.doc(`data/users/${uid}/seeds`).set(Object.assign({},S.priv.seeds||{},{[ref.id]:seed}))}await ref.set(dd)},'Drop published. Your door code is in the drop.')){Object.assign(F,{dvenue:'',daddr:'',dprize:'',ddare:''});S.ui.dloc=null;S.ui.sheet={t:'drop',id:ref.id};wire2();render();logMine('Hosted a drop at '+venue)}return}
 };
-ACT["d-del"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["d-del"]=async(d)=>{const db=S.db;
   await W(()=>db.doc('drops/'+d.v).delete(),'Drop cancelled.');closeSheet();return;
 };
-ACT["checkin"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["checkin"]=async(d)=>{const db=S.db,uid=S.uid,me=S.me;
   {const dr=S.drops.find(x=>x.id===d.id);const code=(F.dcode||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(code.length!==6){toast('Door codes are 6 letters and numbers.');return}if(dropPhase(dr)!=='open'){toast('This drop isn’t open right now.');return}
     if(S.backend!=='server'&&await codeHash(code,dr.id)!==dr.codeHash){toast('That’s not the door code. Ask at the counter.');return}
     const ci={drop:dr.id,city:me.city,week:weekKey(),uid,name:pubName(),circle:me.circle,cname:S.circle?.name||'',venue:dr.venue,kind:dr.kind,at:now()};if(S.backend==='server')ci.code=code;
     if(await W(()=>db.doc('checkins/'+dr.id+'_'+uid).set(ci))){F.dcode='';mark('checkin');logMine('Turned up at '+dr.venue);celebrate('HERE','Checked in. +10 for '+(S.circle?.name||'your circle'))}return}
 };
-ACT["swap"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["swap"]=async(d)=>{const db=S.db,uid=S.uid;
   {const dr=S.drops.find(x=>x.id===d.id);const left_=(F.sleft||'').trim();if(!left_){toast('Say what you left.');return}const took=dr.item||'nothing';
     if(await W(async()=>{await db.doc('drops/'+dr.id).update({item:left_.slice(0,60),swaps:[...(dr.swaps||[]),{took,left:left_.slice(0,60),cname:S.circle?.name||'',at:now()}].slice(-30)});await db.doc('checkins/'+dr.id+'_'+uid).update({swapped:true})},'Swapped. You took '+took+'.')){F.sleft='';logMine('Swapped '+left_+' for '+took)}return}
 };

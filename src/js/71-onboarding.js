@@ -12,7 +12,7 @@ function onboarding(){
     body=`${o.invName?`<div class="card stamp" style="margin-top:18px"><div class="meta">INVITE</div><p><b>${esc(o.invName)} brought you in.</b> You’ll join them in step 3.</p></div>`:''}
     <h1 class="v">Make plans, take dares, trade favours. With your people (3–8).</h1>
     <p class="lede">${S.backend==='claude'?`You’re signed in through Claude${S.realName?` as <b>${esc(S.realName)}</b>`:''}.`:S.backend==='server'?`You’re signed in as <b>${esc(S.email||'')}</b>.`:'This is the demo on this device.'}</p>
-    <label class="f" for="ob-name">Your name <small>your circle sees this</small></label><input class="in-t" id="ob-name" data-ob="name" maxlength="24" value="${esc(o.name)}" placeholder="Meera" autocomplete="nickname"><p class="cnt-n" id="ob-name-n" aria-live="polite">${[...(o.name||'')].length}/24</p>
+    <label class="f" for="ob-name">Your name <small>your circle sees this</small></label><input class="in-t" id="ob-name" data-ob="name" maxlength="40" value="${esc(o.name)}" placeholder="Meera" autocomplete="nickname"><p class="cnt-n" id="ob-name-n" aria-live="polite">${[...(o.name||'')].length}/40</p>
     <label class="f" for="ob-handle">Your handle <small>public</small></label><p class="ob-hint">Strangers in the City see this, never your name. Pick one or make your own.</p><div class="chips">${hs.map(h=>`<button class="chip ${o.handle===h?'on':''}" data-act="ob-handle" data-v="${esc(h)}">${esc(h)}</button>`).join('')}<button class="chip shuf" data-act="ob-shuffle" aria-label="Shuffle handles">🔀 Shuffle</button></div>
     <input class="in-t" id="ob-handle" data-ob="handle" maxlength="16" value="${esc(o.handle)}" style="margin-top:6px;text-transform:uppercase;font-family:var(--f-mono);letter-spacing:.08em" aria-label="Or type your own handle">
     <div class="hprev" aria-label="How a City post looks"><div class="meta">HOW A CITY POST LOOKS</div><p><b id="ob-hprev">${esc((o.handle||'').toUpperCase()||'YOUR HANDLE')}</b> <span class="meta">· made</span><br>First dosa that didn’t stick to the pan.</p></div>
@@ -52,44 +52,58 @@ async function finishOnboarding(mode){
   const o=S.ui.ob,st=lpState('home');if(S.deep&&S.deep.kind==='c')S.deep=null;
   await lpReady(st);const f=homeFields(st);const how=o.how||'skip';const withMind=mode!=='skip'&&(o.mind||'').trim();
   const ok=await W(async()=>{
-    await S.db.doc('people/'+S.uid).set(Object.assign({name:o.name.trim().slice(0,24),handle:(o.handle||'').trim().toUpperCase().slice(0,16)||null,circle:null,joined:now(),seen:now(),quiet:{from:23,to:8},tz:tzName()},f,consentFields()));
+    await S.db.doc('people/'+S.uid).set(Object.assign({name:clip(o.name,40),handle:clip((o.handle||'').toUpperCase(),16)||null,circle:null,circles:[],joined:now(),seen:now(),quiet:{from:23,to:8},tz:tzName()},f,consentFields()));
     if(st.prec==='exact')await S.db.doc(`data/users/${S.uid}/loc`).set({lat:+st.lat.toFixed(6),lon:+st.lon.toFixed(6),src:st.src,acc:st.acc||null,at:now()});
     if(withMind)await addJourney(o.lane||'need',o.mind,STAKES[o.stake||0]);
     await S.db.doc(`data/users/${S.uid}/age`).set({adult:true,min:ageMin(ageCountry()),at:o.ageAt||now()}); // C17: the attestation only, never the date of birth
   });
   if(!ok)return;
   mark('named');mark('city');if(withMind)mark('nwu');
-  S.me=Object.assign({name:o.name.trim(),circle:null},f);
+  S.me=Object.assign({name:clip(o.name,40),circle:null,circles:[]},f);
   if(how==='create')await createCircle(o.cname.trim());
   else if(how==='join')await joinCircle(o.code.trim().toUpperCase());
   obClear();tourBegin();
   S.ui.tab='today';render();scrollTo(0,0);
 }
+// C36: a person is in up to maxCircles() circles (the server's MAX_CIRCLES); `circle` is the one on screen.
+// Starting or joining one adds it to `circles` and puts it on screen; the others stay as they were.
+const fullUp=()=>myCircles().length>=maxCircles()&&(toast(maxCircles()>1?`You’re in ${maxCircles()} circles, the most there is. Leave one first.`:'You’re already in a circle. Leave it first.'),1);
+const inCircles=cid=>({circle:cid,circles:[cid,...myCircles().filter(x=>x!==cid)]});
 async function createCircle(name){
-  const cid=rnd(10);let code='';
+  if(fullUp())return;
+  const cid=rnd(10),n=clip(name,28);let code='';
   for(let i=0;i<5;i++){code=rnd(6,CODEA);const s=await S.db.doc('codes/'+code).get();if(!s.exists)break}
   const ok=await W(async()=>{
-    await S.db.doc('circles/'+cid).set({name:name.slice(0,28),code,city:S.me.city,members:[S.uid],createdAt:now(),by:S.uid});
+    await S.db.doc('circles/'+cid).set({name:n,code,city:S.me.city,members:[S.uid],createdAt:now(),by:S.uid});
     await S.db.doc('codes/'+code).set({cid,at:now()});
     await S.db.doc(`circles/${cid}/threads/general`).set({kind:'talk',title:'General',by:S.uid,at:now(),muted:true});
-    await S.db.doc('people/'+S.uid).update({circle:cid});
-  },'Circle started. Send your friends the code '+code);
-  if(ok){mark('circle');logMine('Started '+name);pushProgress()}
+    await S.db.doc('people/'+S.uid).update(inCircles(cid));
+  },n!==name.trim()?`Circle started as “${n}”. Names stop at 28 characters.`:'Circle started. Your invite is on Home.'); // C73: the code lives on the invite card, never only in a toast
+  if(ok){S.cnames[cid]=n;mark('circle');logMine('Started '+n);pushProgress()}
 }
 async function joinCircle(code){
   const s=await S.db.doc('codes/'+code).get().catch(()=>null);
   if(!s||!s.exists){toast('No circle has the code '+code+'. Check it with whoever sent it.');return}
-  const cid=s.data().cid;const c=await S.db.doc('circles/'+cid).get();
+  const cid=s.data().cid;if(myCircles().includes(cid))return switchCircle(cid);
+  if(fullUp())return;
+  const c=await S.db.doc('circles/'+cid).get();
   if(!c.exists){toast('That circle has closed.');return}
-  const cd=c.data();const mem=(await S.db.collection('people').where('circle','==',cid).get()).size;
+  const cd=c.data();const mem=(await S.db.collection('people').where('circles','array-contains',cid).get()).size;
   if(mem>=8){toast(cd.name+' is full. Circles stop at 8.');return}
   const ok=await W(async()=>{
-    await S.db.doc('people/'+S.uid).update({circle:cid});
+    await S.db.doc('people/'+S.uid).update(inCircles(cid));
     await S.db.doc('circles/'+cid).update({members:[...new Set([...(cd.members||[]),S.uid])]});
   },'You’re in '+cd.name+'.');
-  if(ok){mark('circle');logMine('Joined '+cd.name);setTimeout(pushProgress,400)}
+  if(ok){S.cnames[cid]=cd.name;mark('circle');logMine('Joined '+cd.name);setTimeout(pushProgress,400)}
 }
-
+// Put another of your circles on screen. Everything circle-shaped is dropped first (wire2), so nothing from
+// the last one is ever drawn under this one's name.
+async function switchCircle(cid){
+  const prev=S.me;if(!myCircles().includes(cid))return;closeSheet();if(cid===prev.circle)return;
+  S.me=Object.assign({},prev,inCircles(cid));wire2();render();
+  if(await W(()=>S.db.doc('people/'+S.uid).update(inCircles(cid)),'Now in '+(S.cnames[cid]||'that circle')+'.'))pushProgress();
+  else{S.me=prev;wire2();render()}
+}
 
 /* ---------- v0.9 onboarding pieces (WS-B) ---------- */
 // C17: age from month and year of birth. India: 18+ (DPDP Act: a child is under 18 and needs verifiable
@@ -134,7 +148,7 @@ ACT_B['ob-own']=async()=>{S.ui.ob.own=true;render()};
 ACT_B['ob-age-redo']=async()=>{const o=S.ui.ob;o.age=false;o.ageAt=null;render()};
 document.addEventListener('input',e=>{const el=e.target;if(!el.dataset||!el.dataset.ob)return;const o=S.ui.ob,k=el.dataset.ob;
   if(k==='dobM'||k==='dobY'){o[k]=el.value;const ok=ageOK({m:o.dobM,y:o.dobY},ageCountry(),now())===true;if(ok&&!o.age)o.ageAt=now();o.age=ok;render();return}
-  if(k==='name'||k==='cname'){const n=document.getElementById('ob-'+k+'-n');if(n)n.textContent=[...el.value].length+'/'+(k==='name'?24:28)}
+  if(k==='name'||k==='cname'){const n=document.getElementById('ob-'+k+'-n');if(n)n.textContent=[...el.value].length+'/'+(k==='name'?40:28)}
   if(k==='handle'){const p=document.getElementById('ob-hprev');if(p)p.textContent=el.value.toUpperCase()||'YOUR HANDLE'}
   if(k==='mind'){o.mind=el.value;const c=document.getElementById('ob-chip');if(c)c.innerHTML=obChip(readUrge(o.lane||'need',el.value),o)}
   o[k]=el.type==='checkbox'?el.checked:el.value;

@@ -1,42 +1,42 @@
 /* feed */
-ACT["pkind"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["pkind"]=async(d)=>{
   F.pkind=d.v;render();return;
 };
-ACT["post"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["post"]=async()=>{const db=S.db,uid=S.uid,me=S.me;
   {const text=(F.ptext||'').trim();if(!text)return;if(await W(()=>db.collection('posts').add({city:me.city,circle:me.circle,cname:S.circle?.name||'',by:uid,name:pubName(),kind:F.pkind||'Made',text:text.slice(0,400),at:now(),flags:[]}),'Posted.')){F.ptext='';mark('post');logMine('Posted to the '+me.cityName+' feed');render()}return}
 };
-ACT["pdel"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["pdel"]=async(d)=>{const db=S.db;
   await W(()=>db.doc('posts/'+d.v).delete(),'Deleted.');return;
 };
-ACT["phide"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["phide"]=async(d)=>{const db=S.db,uid=S.uid;
   {const ids=[...new Set([...(S.priv.hidden?.ids||[]),d.v])];await W(()=>db.doc(`data/users/${uid}/hidden`).set({ids}),'Hidden for you.');return}
 };
-ACT["pflag"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["pflag"]=async(d)=>{const db=S.db,uid=S.uid;
   {const p=S.posts.find(x=>x.id===d.v);if((p.flags||[]).includes(uid))return;await W(()=>db.doc('posts/'+p.id).update({flags:[...(p.flags||[]),uid]}),'Reported. Three reports hide it for everyone.');return}
 };
 /* calls */
 ACT["call"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
   {const ask=(F.cask||'').trim();if(!ask)return;if(await W(()=>db.collection('calls').add({city:me.city,circle:me.circle,cname:S.circle?.name||'',by:uid,ask:ask.slice(0,140),at:now(),answered:null,room:null}),'Call sent to '+me.cityName+'.')){F.cask='';logMine('Sent a call: '+ask);render()}return}
 };
-ACT["cdel"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["cdel"]=async(d)=>{const db=S.db;
   await W(()=>db.doc('calls/'+d.v).delete(),'Withdrawn.');return;
 };
-ACT["answer"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["answer"]=async(d)=>{const db=S.db,me=S.me;
   {const c=S.calls.find(x=>x.id===d.v);if(c.answered){toast('Someone got there first.');return}const rref=db.collection('rooms').doc();
     if(await W(async()=>{await rref.set({circles:[c.circle,me.circle],names:{[c.circle]:c.cname,[me.circle]:S.circle?.name||''},title:c.ask.slice(0,40),ask:c.ask,at:now(),closesAt:now()+3*DAY,callId:c.id});await db.doc('calls/'+c.id).update({answered:{circle:me.circle,name:S.circle?.name||''},answeredAt:now(),room:rref.id})},'Room open with '+c.cname+' for 3 days.')){logMine('Answered '+c.cname+'’s call');S.ui.tab='circle';S.ui.open={type:'room',id:rref.id};wire2();render()}return}
 };
 /* City map (WS-F): List / Map, and the distance filter */
-ACT["city-view"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["city-view"]=async(d)=>{
   {const v=d.v==='list'?'list':'map';S.ui.cityView=v;try{localStorage.setItem('insane.cityView',v)}catch(e){}render();return}
 };
-ACT["city-r"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["city-r"]=async(d)=>{
   {S.ui.cityR=+d.v||null;render();return}
 };
 /* the Mission and trail wizards (C51) */
-ACT["ms-step"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["ms-step"]=async(d)=>{
   {const n=+d.v,cur=F.msStep||1;if(n>cur){if(cur===1&&(!(F.mstitle||'').trim()||!(F.msdesc||'').trim())){toast('Name it and say what happens.');return}if(cur===2&&lpState('drop').lat==null){toast('Put the area on the map.');return}}F.msStep=n;render();return}
 };
-ACT["tr-step"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["tr-step"]=async(d)=>{
   {const n=+d.v,cur=F.trStep||1;if(n>cur){if(cur===1&&!(F.trtitle||'').trim()){toast('Name the trail.');return}if(cur===2&&(F.trstops||[]).length<3){toast('Add at least 3 stops.');return}}F.trStep=n;render();return}
 };
 /* Missions */
@@ -48,33 +48,33 @@ ACT["ms-create"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
     const ref=db.collection('missions').doc();
     if(await W(()=>ref.set({city:me.city,cid:me.circle,cname:S.circle?.name||'',by:uid,title:title.slice(0,40),desc:desc.slice(0,240),roles,spot:(F.msspot||'').trim().slice(0,80),area,...(S.backend==='server'?{pin:{lat:+loc.lat.toFixed(5),lon:+loc.lon.toFixed(5)}}:{}),when:w,at:now(),confirms:{},ins:{[uid]:{circle:me.circle,cname:S.circle?.name||''}},verdict:{}}),'Sent to '+me.cityName+'. It goes live when three other circles confirm.')){Object.assign(F,{mstitle:'',msdesc:'',msroles:'',msspot:'',msStep:1});S.ui.dloc=null;S.ui.sheet={t:'mission',id:ref.id};wire2();render();logMine('Proposed a Mission: '+title)}return}
 };
-ACT["ms-confirm"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["ms-confirm"]=async(d)=>{const db=S.db,me=S.me;
   {const m=S.missions.find(x=>x.id===d.v);if(await W(()=>db.doc('missions/'+m.id).update({confirms:{[me.circle]:S.circle?.name||''}}))){const n=Object.keys(Object.assign({},m.confirms,{[me.circle]:1})).filter(c=>c!==m.cid).length;if(n===3)celebrate('LIVE',m.title+' is live.');else toast('Confirmed for '+(S.circle?.name||'your circle')+'. '+n+' of 3.');logMine('Confirmed the Mission '+m.title)}return}
 };
-ACT["ms-in"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["ms-in"]=async(d)=>{const db=S.db,uid=S.uid,me=S.me;
   {const m=S.missions.find(x=>x.id===d.v);if(await W(()=>db.doc('missions/'+m.id).update({ins:{[uid]:{circle:me.circle||null,cname:S.circle?.name||''}}}))){celebrate('IN',(m.roles||[]).length?'You’re in. Your briefing is on the card: keep it secret.':'You’re in. The exact spot comes 2 hours before.');logMine('In for '+m.title)}return}
 };
-ACT["ms-out"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["ms-out"]=async(d)=>{const db=S.db,uid=S.uid;
   await W(()=>db.doc('missions/'+d.v).update({ins:{[uid]:null}}),'Out, no penalty. Missions are never owed.');return;
 };
-ACT["ms-verdict"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["ms-verdict"]=async(d)=>{const db=S.db,uid=S.uid;
   await W(()=>db.doc('missions/'+d.v).update({verdict:{[uid]:d.x==='y'}}),'Thanks. If most people say it didn’t happen, the hosts lose their stake.');return;
 };
-ACT["ms-del"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["ms-del"]=async(d)=>{const db=S.db;
   await W(()=>db.doc('missions/'+d.v).delete(),'Withdrawn.');closeSheet();return;
 };
 /* trails */
-ACT["tr-add"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["tr-add"]=async()=>{
   {const loc=lpState('drop');const name=(F.trsname||'').trim();if(!name){toast('Name the stop.');return}if(loc.lat==null){toast('Put the stop on the map.');return}F.trstops=[...(F.trstops||[]),{name:name.slice(0,40),dare:(F.trsdare||'').trim().slice(0,80),lat:+loc.lat.toFixed(5),lon:+loc.lon.toFixed(5)}];F.trsname='';F.trsdare='';S.ui.dloc=null;render();return}
 };
-ACT["tr-rm"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["tr-rm"]=async(d)=>{
   F.trstops=(F.trstops||[]).filter((_,i)=>i!==+d.i);render();return;
 };
 ACT["tr-create"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
   {const title=(F.trtitle||'').trim(),stops=F.trstops||[];if(!title){toast('Name the trail.');return}if(stops.length<3){toast('Add at least 3 stops.');return}const day=F.trdate||today();const start=new Date(day+'T'+(F.trfrom||'12:00')).getTime(),end=new Date(day+'T'+(F.trto||'14:00')).getTime();if(!(end>start)){toast('The end has to be after the start.');return}if(end<now()){toast('That window has passed.');return}
     const ref=db.collection('trails').doc();if(await W(()=>ref.set({city:me.city,cid:me.circle,cname:S.circle?.name||'',by:uid,title:title.slice(0,40),stops,start,end,at:now()}),'Trail published.')){Object.assign(F,{trtitle:'',trstops:[],trStep:1});S.ui.sheet={t:'trail',id:ref.id};wire2();render();logMine('Made a trail: '+title)}return}
 };
-ACT["tr-stamp"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["tr-stamp"]=async(d)=>{const db=S.db,uid=S.uid,me=S.me;
   {const tr=S.trails.find(x=>x.id===d.v);const i=+d.i;const st=tr.stops[i];let how='word';
     // A pending permission prompt never times out on its own, so give up after 8 s and stamp on your word.
     const perm=await (navigator.permissions?.query({name:'geolocation'}).then(r=>r.state).catch(()=>'')??'');

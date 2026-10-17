@@ -358,7 +358,7 @@ async function api(req, res, url) {
   if (req.method === 'GET' && r === 'health') { const n = db.prepare('SELECT COUNT(*) n FROM docs').get().n; return json(res, 200, { ok: true, build: BUILD_ID, schema: MIGRATION.sql[1], store: MIGRATION.store.to, docs: n }); }
   if (req.method === 'GET' && r === 'hello') {
     if (u) dayOneReturn(u);
-    return json(res, 200, { insane: true, version: '0.8', build: BUILD_ID, minBuild: MIN_CLIENT_BUILD || null, google: GOOGLE_CLIENT_ID || null, signedIn: !!u, uid: u?.uid || null, email: u?.email || null, isOwner: isOwner(u), tiles: TILE_URL, attr: TILE_ATTR, tileKind: TILE_KIND, tileDark: TILE_DARK, tileMaxZ: TILE_MAXZ, vapid: vapidPublic, dev: DEV, now: now(), consent: SAFE.CONSENT_VERSION });
+    return json(res, 200, { insane: true, version: '0.8', build: BUILD_ID, minBuild: MIN_CLIENT_BUILD || null, google: GOOGLE_CLIENT_ID || null, signedIn: !!u, uid: u?.uid || null, email: u?.email || null, isOwner: isOwner(u), tiles: TILE_URL, attr: TILE_ATTR, tileKind: TILE_KIND, tileDark: TILE_DARK, tileMaxZ: TILE_MAXZ, vapid: vapidPublic, dev: DEV, now: now(), consent: SAFE.CONSENT_VERSION, maxCircles: Math.max(1, +process.env.MAX_CIRCLES || 3) }); // C36: the page's circle switcher follows this
   }
   if (req.method === 'GET' && r === 'stream') {
     if (!u) return json(res, 401, { code: 'unauthenticated' });

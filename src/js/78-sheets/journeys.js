@@ -3,7 +3,7 @@ SHEETS["add-j"]=(sh,close)=>{
     return `<h2>Add a need, want or urge</h2><div class="chips" style="margin:8px 0">${['need','want','urge'].map(k=>`<button class="chip ${lane===k?'on':''}" data-act="jlane" data-v="${k}">${LANES[k].k}: ${LANES[k].hz}</button>`).join('')}</div>
     <label class="f" for="j-text">${esc(L.lead)}</label><input class="in-t" id="j-text" data-f="jtext" data-read="sheet" value="${esc(F.jtext||'')}" placeholder="${esc(L.ph)}" maxlength="90">
     <div class="ex">${L.ex.map(e=>`<button data-act="j-ex" data-v="${esc(e)}">${esc(e)}</button>`).join('')}</div><div id="read-sheet">${readCard(readUrge(lane,F.jtext))}</div>
-    <div class="btns"><button class="btn" data-act="j-add">Start it</button><button class="btn ghost" data-act="sheet-close">Cancel</button></div>`}
+    <div class="btns"><button class="btn" data-act="j-add">Start it</button>${CANCEL}</div>`}
 };
 SHEETS["j-menu"]=(sh,close)=>{
   {const j=journeys().find(x=>x.id===sh.id);if(!j)return close;

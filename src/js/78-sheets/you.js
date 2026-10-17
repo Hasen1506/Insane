@@ -6,5 +6,5 @@ SHEETS["profile"]=(sh,close)=>{
   return `<h2>Edit profile</h2><label class="f" for="pf-name">Name</label><input class="in-t" id="pf-name" data-f="pfname" value="${esc(F.pfname??S.me.name)}" maxlength="24"><label class="f" for="pf-handle">Handle <small>what the city sees</small></label><input class="in-t" id="pf-handle" data-f="pfhandle" value="${esc(F.pfhandle??(S.me.handle||''))}" maxlength="16" style="text-transform:uppercase;font-family:var(--f-mono)">
     <div class="eyebrow">Your place</div>${picker('home')}
     <p class="meta">Changing city changes your feed, Decode and league. Your circle stays as it is.</p>
-    <div class="btns"><button class="btn" data-act="pf-save">Save</button><button class="btn ghost" data-act="sheet-close">Cancel</button></div>`;
+    <div class="btns"><button class="btn" data-act="pf-save">Save</button>${CANCEL}</div>`;
 };

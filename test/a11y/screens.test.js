@@ -62,7 +62,7 @@ async function run(browser, scheme) {
     await run('pl-create', { plwhat: 'Dinner at Murugan Idli', plwhen: 'Fri 8 pm', plwhere: 'T Nagar', plmoney: 'split', pleach: '300' });
     await run('fv-ask', { fvwhat: 'Help me move a sofa' });
     await run('post', { ptext: 'Made filter coffee for the floor', pkind: 'Made' });
-    S.toast = null; render();
+    toast(null); render();
   });
   await E.idle(a);
   const members = await a.evaluate(() => S.members.map(m => m.name));
@@ -77,7 +77,7 @@ async function run(browser, scheme) {
   // every sheet that opens with no arguments
   const names = await a.evaluate(() => Object.keys(SHEETS));
   for (const n of names) {
-    await a.evaluate(n => { try { S.toast = null; openSheet(n); } catch (e) { S.ui.sheet = null; render(); } }, n);
+    await a.evaluate(n => { try { toast(null); openSheet(n); } catch (e) { S.ui.sheet = null; render(); } }, n);
     await E.idle(a);
     const ok = await E.until(() => a.evaluate(() => { const s = document.querySelector('.sheet'); return !!s && s.innerText.replace(/\s*Close\s*$/, '').trim().length > 12; }), { timeout: 1500, what: 'sheet ' + n }).catch(() => false);
     if (ok) await shot(a, 'sheet-' + n);
@@ -91,7 +91,7 @@ async function run(browser, scheme) {
   await state('circle-plan-form', () => { S.ui.tab = 'circle'; S.ui.cseg = 'plans'; act('np-toggle', {}); });
   await state('thread-general', () => act('open', { type: 'thread', v: 'general' }));
   await state('toast', () => { act('tab', { v: 'today' }); toast('Plan sent. Everyone taps in or out.'); }, null);
-  await a.evaluate(() => { S.toast = null; act('tab', { v: 'you' }); }); await E.idle(a);
+  await a.evaluate(() => { toast(null); act('tab', { v: 'you' }); }); await E.idle(a);
   await a.evaluate(async () => { Object.assign(F, { darkH: 1, darkAt: 0 }); await act('dark-go', {}); }); await E.idle(a);
   if (await a.locator('.darkall').count()) await shot(a, 'gone-dark', { scope: '.darkall' });
   await ctx.close(); await srv.close();

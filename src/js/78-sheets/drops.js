@@ -10,7 +10,7 @@ SHEETS["host"]=(sh,close)=>{
     <label class="f" for="d-prize">${k==='swap'?'What’s in the box to start':k==='cash'?'Cash prize, put up by':'Prize'}</label><input class="in-t" id="d-prize" data-f="dprize" value="${esc(F.dprize||'')}" maxlength="60" placeholder="${k==='swap'?'A signed Pulp 7-inch':k==='cash'?'£50 from The Book Nook':k==='dare'?'Free coffee for the whole circle':'10% off for everyone, a £20 voucher drawn'}">
     ${k==='dare'?`<label class="f" for="d-dare">The dare</label><input class="in-t" id="d-dare" data-f="ddare" value="${esc(F.ddare||'')}" maxlength="80" placeholder="Read the first page of any book out loud">`:''}
     ${k==='cash'?'<p class="meta">Free entry only. Nobody pays to take part, so it’s a free draw, not a lottery. Check your local rules on prize draws.</p>':''}
-    <div class="btns"><button class="btn" data-act="d-create">Publish the drop</button><button class="btn ghost" data-act="sheet-close">Cancel</button></div>`}
+    <div class="btns"><button class="btn" data-act="d-create">Publish the drop</button>${CANCEL}</div>`}
 };
 SHEETS["drop"]=(sh,close)=>{
   {const d=S.drops.find(x=>x.id===sh.id);if(!d)return `<p>This drop has gone.</p>${close}`;

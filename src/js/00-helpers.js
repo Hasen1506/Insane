@@ -4,6 +4,7 @@ const $=s=>document.querySelector(s);
 // C21: a name with right-to-left letters is isolated (U+2068 … U+2069, what <bdi> does), so "Ask كافيا Kavya: Help…" keeps its order
 const bidi=s=>/[\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/.test(s)?'\u2068'+s+'\u2069':s;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const CANCEL='<button class="btn ghost" data-act="sheet-close">Cancel</button>'; // the Cancel in a sheet's buttons (13 sheets; int-2 bundle)
 let CLOCK_SKEW=0; // server mode: the server's clock minus this phone's, when they disagree by more than 5 s (C61)
 const now=()=>Date.now()+CLOCK_SKEW;
 const MIN=6e4,HOUR=36e5,DAY=864e5;
@@ -25,3 +26,6 @@ const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 function when(t){const d=new Date(t),td=dayStart(now()),dd=dayStart(t);const hm=d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});if(dd===td)return 'Today '+hm;if(dd===td+DAY)return 'Tomorrow '+hm;if(dd===td-DAY)return 'Yesterday '+hm;return DOW[d.getDay()]+' '+d.getDate()+' '+d.toLocaleString([],{month:'short'})+', '+hm}
 const ordinal=n=>n+(['th','st','nd','rd'][(n%100-20)%10]||['th','st','nd','rd'][n%100]||'th');
 
+// C20: cut to n UTF-16 units, whole graphemes only (emoji, Tamil, Arabic), at a word when one is in the second half. Same rule as server/text.js.
+const SEG=typeof Intl!=='undefined'&&Intl.Segmenter?new Intl.Segmenter():null;
+function clip(s,n){s=String(s??'').trim();if(s.length<=n)return s;let o='';for(const c of SEG?Array.from(SEG.segment(s),x=>x.segment):Array.from(s)){if(o.length+c.length>n)break;o+=c}const w=o.lastIndexOf(' ');return (w>n/2&&!/\s/.test(s[o.length])?o.slice(0,w):o).trim()}

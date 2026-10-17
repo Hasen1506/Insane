@@ -89,7 +89,8 @@ const inIN = c => c && c[0] > IN_BB[0] && c[0] < IN_BB[2] && c[1] > IN_BB[1] && 
     const pub = await q.evaluate(async uid => { const x = await fetch('/api/get', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ path: `people/${uid}` }) }); return x.json(); }, uid);
     const doc = JSON.stringify(pub);
     R.ok('Meera\'s exact pin is refused to Ravi by the server', r.status >= 400 || !/13\.073|80\.244/.test(r.body), r.status + ' ' + r.body.slice(0, 120));
-    R.ok('her public profile holds only the 1 km² square (no pin anywhere in it)', /"cell"/.test(doc) && !/13\.0732|80\.2441/.test(doc), doc.slice(0, 300)); }
+    // WS-C (C44): a circle-mate gets her square only once she turns on "Show my square to my circle"
+    R.ok('her public profile holds no pin anywhere, and no square until she opts in', !/"cell"/.test(doc) && !/13\.0732|80\.2441/.test(doc), doc.slice(0, 300)); }
   /* ---------- City, map first ---------- */
   await E.gone(p, '.toast', { timeout: 8000 }).catch(() => { });
   await tap(p, 'nav [data-v="city"]'); await p.waitForSelector('[data-map="city"] canvas');

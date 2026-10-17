@@ -62,13 +62,16 @@ textarea.in-t{min-height:72px;resize:vertical}
 .thr .last{display:block;font-size:var(--t2);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .thr .un{width:9px;height:9px;border-radius:50%;background:var(--stamp);margin-top:6px;flex:0 0 auto}
 .av{width:var(--tap);height:var(--tap);border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:var(--t3);background:var(--cell2);color:var(--ink);flex:0 0 auto}
-.chat{display:flex;flex-direction:column;gap:6px;padding:10px 0;min-height:200px}
+.chat{display:flex;flex-direction:column;gap:6px;padding:10px 0;min-height:max(200px,calc(100dvh - var(--nav-h) - 330px))}
 .msg{max-width:84%;align-self:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px 14px 14px 4px;padding:6px 11px;font-size:14.5px;overflow-wrap:anywhere}
 .msg small{display:block;font-size:var(--t1);color:var(--muted)}
 .msg.me{align-self:flex-end;background:var(--ink);color:var(--paper);border-color:var(--ink);border-radius:14px 14px 4px 14px}
 .msg.me small{color:inherit;opacity:.85}
-.compose{position:sticky;bottom:calc(64px + var(--sab));background:var(--paper);display:flex;gap:8px;padding:8px 0}
+.msg .mt{white-space:pre-wrap}.msg.no{background:var(--card);color:var(--stamp);border:1px dashed var(--stamp)}.msg.no small,.msg.no .link{color:inherit;opacity:1}.msg.sending{opacity:.6}
+.compose{position:sticky;z-index:5;bottom:calc(var(--nav-h) + var(--sab));background:var(--paper);display:flex;gap:8px;padding:8px 0}
 .compose input{flex:1;min-width:0}
+/* C38: while the keyboard is up (.kb, from visualViewport) the tab bar steps aside and the composer rides it (--kb: iOS) */
+.kb nav.tabs{display:none}.kb .compose{bottom:var(--kb,0px)}
 .panel{border:1.5px solid var(--ink);border-radius:14px;padding:10px 12px;margin-top:10px;background:var(--card)}
 .who{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
 .who span{font-size:var(--t1);border-radius:999px;padding:1px 8px;background:var(--good-soft);color:var(--good)}
@@ -107,6 +110,7 @@ table.lg tr.me td{font-weight:700}
 .sheet h2{font-family:var(--f-display);font-weight:900;font-size:22px;margin:4px 0 4px;text-wrap:balance}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + var(--sab));z-index:30;background:var(--ink);color:var(--paper);padding:0 16px;border-block:10px solid transparent;border-radius:12px;font-size:var(--t3);line-height:1.4;width:min(428px,calc(100% - 32px));box-shadow:0 4px 16px rgba(0,0,0,.18);display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;pointer-events:none}
 body:has(nav.tabs) .toast{bottom:calc(var(--nav-h) + var(--sab) + 10px)}
+body:has(#toasts .toast) #app:has(> nav.tabs){padding-bottom:calc(var(--nav-h) + var(--sab) + 72px)}
 .darkall{position:fixed;inset:0;z-index:40;background:var(--night);color:var(--night-ink);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px max(24px,var(--sal))}
 .darkall .clock{font-family:var(--f-mono);font-size:52px;font-weight:600;color:var(--mn-ink);margin:12px 0}
 .darkall p{max-width:34ch;margin:0 0 10px}

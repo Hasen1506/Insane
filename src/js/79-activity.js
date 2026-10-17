@@ -52,12 +52,16 @@ async function pushOn(){
 }
 async function checkPush(){if(S.backend!=='server'||!('serviceWorker' in navigator)||!('Notification' in window))return;try{const reg=await navigator.serviceWorker.getRegistration('/sw.js');const sub=reg&&await reg.pushManager.getSubscription();S.pushOn=!!sub;S.pushState=Notification.permission;render()}catch(e){}}
 
-// C73: one snackbar above the tab bar, two lines at most, gone after 3 s or as soon as the person moves to
-// another screen (a toast set by the tap that moved them stays). role=status, so it is read out once.
-let toastT=null,toastAt=0,toastOn='';
+// C73 (WS-C + WS-H): one snackbar region (#toasts, role=status, aria-live, outside the redrawn screen), one
+// message at a time (a new one replaces the last), two lines at most, above the tab bar, never in the way of a
+// tap (pointer-events:none), gone after 3.2 s or as soon as the person moves to another screen (tab, segment,
+// open thread, sheet). A toast set by the tap that moved them stays: the screen it belongs to is the one it is
+// first drawn on, and every tap's changes land before the next draw. Nothing that has to be kept (a code) goes in one.
+let toastT=null,toastOn=null;
 const screenKey=()=>{const u=S.ui||{};return [u.tab,u.cseg,u.sseg,u.lseg,u.open&&u.open.id,u.sheet&&u.sheet.t].join('|')};
-function toast(m){S.toast=m;toastAt=Date.now();toastOn=screenKey();clearTimeout(toastT);toastT=setTimeout(()=>{S.toast=null;render()},3000);render()}
-function toastHtml(){if(S.toast&&screenKey()!==toastOn){if(Date.now()-toastAt>600)S.toast=null;else toastOn=screenKey()}return S.toast?`<div class="toast" role="status">${esc(S.toast)}</div>`:''}
+const toastPaint=()=>{const r=$('#toasts');if(r)r.innerHTML=S.toast?`<div class="toast">${esc(S.toast)}</div>`:''};
+function toast(m){S.toast=m?String(m):null;toastOn=null;clearTimeout(toastT);if(m)toastT=setTimeout(()=>toast(null),3200);toastPaint();if(m)render()}
+const toastHtml=()=>{if(S.toast){const k=screenKey();if(toastOn==null)toastOn=k;else if(k!==toastOn)toast(null)}return ''};
 
 /* ---------- C77/C78/C21: after every draw ---------- */
 // Sheets: focus moves into a sheet when it opens (its heading, or the sheet), Tab and Shift+Tab stay inside

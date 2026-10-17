@@ -1,0 +1,26 @@
+{
+  "_": "WS-C (Home, Circle, invite, share, multi-circle, chat, pacts, calls): what differs from v0.8 on purpose.",
+  "newActions": {
+    "c-switch": "C36: put another of your circles on screen (people.circle, with circles[] reordered); every circle-scoped list is emptied first",
+    "share": "C28: invite through navigator.share, else a wa.me link, else copy the link",
+    "send-retry": "C38: resend a message that failed (it stays on screen as 'Not sent · Retry')"
+  },
+  "newSheets": {
+    "circles": "C36: your circles (up to the server's MAX_CIRCLES), the one on screen marked, and start or join another while there is room"
+  },
+  "changedSheets": {
+    "invite": "C28: Share invite / WhatsApp / Copy link under the QR; the QR and link use the same invite URL"
+  },
+  "screens": {
+    "tab-today": "C27/C29/C30/C32/C33: invite card on top until 3 members, then Needs you, own items, daily dare, a one-line Decode teaser, circle news, a one-line drops row; the lede counts the rows that need you",
+    "tab-circle": "C36/C40: 'N circles · switch' in the lede when you are in more than one; pacts show this week as M T W T F S S",
+    "tab-city": "C33: the Decode card on the map is the one-line teaser",
+    "sheet-invite": "C28: share row"
+  },
+  "behaviour": {
+    "send": "C38: a message shows as Sending… at once; if it fails it stays with Retry instead of vanishing; the same text can't be sent twice while the first is in flight",
+    "leave": "C36: leaving the circle on screen puts your next circle on screen (people.circle = the next of circles[]), instead of leaving you in none",
+    "join": "C36: joining a circle while in one adds it (up to MAX_CIRCLES) instead of refusing; a code for a circle you are already in switches to it",
+    "names": "C20: names are trimmed to 40 (people) and 28 (circles) at a word and never mid-grapheme, page and server; v0.8 cut people at 24 code units"
+  }
+}

@@ -35,9 +35,9 @@ const ok = async (name, fn, extra = '', timeout = 8000) => R.ok(name, await E.un
     page.on('response', async r => { if (!/\/api\/(?!stream)/.test(r.url())) return; try { bodies.push([r.url(), await r.text()]); } catch (e) { } });
     await page.clock.setFixedTime(T);
     await page.goto(A.base + '/');
-    await ok('Home shows this week’s Chennai Decode clue', async () => (await page.locator('#app').innerText()).includes(clue.q.slice(0, 40)));
+    // WS-C (C33): Home has a one-line teaser; the clue itself is in the Decode sheet it opens
+    await ok('Home shows this week’s Chennai Decode teaser, and its sheet the clue', async () => { if (!(await page.locator('.sheet').count())) { if (!/Decode · week \d+/.test(await page.locator('#app').innerText())) return false; await E.tapOnce(page, '[data-act=sheet][data-v=decode]'); await E.idle(page); } return (await page.locator('.sheet').innerText()).includes(clue.q.slice(0, 40)); });
     await page.screenshot({ path: require('path').join(E.REPO, 'test', 'out', 'e2e-decode-home.png') });
-    await E.tapOnce(page, '[data-act=sheet][data-v=decode]'); await E.idle(page);
     const sh = () => page.locator('.sheet').innerText().catch(() => '');
     await ok('the sheet shows the clue and the hints that are out (Wednesday: the first)', async () => { const s = await sh(); return s.includes(clue.q.slice(0, 40)) && s.includes(clue.h[0]) && /Hint 2 unlocks/.test(s); });
     await page.fill('#dec-a', 'chennai'); await page.press('#dec-a', 'Enter'); await E.idle(page);
@@ -79,7 +79,8 @@ const ok = async (name, fn, extra = '', timeout = 8000) => R.ok(name, await E.un
     // a week later, on Meera's phone
     const nt = T + 7 * DAY; await A.clock(nt); await page.clock.setFixedTime(nt);
     await page.reload(); await E.idle(page); await E.tapOnce(page, '[data-act="tab"][data-v="today"]'); await E.idle(page);
-    await ok('a week later Meera’s Home shows the owner’s puzzle', async () => (await page.locator('#app').innerText()).includes('Some Light Over Ancient Kovalam'));
+    await E.tapOnce(page, '[data-act=sheet][data-v=decode]'); await E.idle(page);
+    await ok('a week later Meera’s Decode (from Home) is the owner’s puzzle', async () => (await page.locator('.sheet').innerText()).includes('Some Light Over Ancient Kovalam'));
     // non-owners
     const mctx = await browser.newContext(BR.profile('Pixel 7')); await BR.blockExternal(mctx);
     await mctx.addCookies([{ name: 'insane_s', value: meera.cookie().split('=')[1], domain: 'localhost', path: '/' }]);
