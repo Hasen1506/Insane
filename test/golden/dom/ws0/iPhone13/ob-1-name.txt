@@ -1,0 +1,30 @@
+main#app role=main
+  span.mark "INSANE"
+  i.on
+  i
+  i
+  i
+  h1.v role=heading "Make plans, take dares, trade favours. With your five."
+  p.lede "This is the demo on this device."
+  b "What it’s for"
+  ul.rl role=list
+    li role=listitem "Plans, pots and favors with the people you live and hang out with"
+    li role=listitem "Pacts: the things you keep saying you’ll do, with your circle checking in"
+    li role=listitem "The stupid stuff you’d never do alone: dares, Midnight, the Mole, Missions"
+  label.f role=label "Your name"
+    small "your circle sees this"
+  input#ob-name.in-t role=textbox placeholder="Maya" value=""
+  label.f role=label "Your handle"
+    small "what the rest of the city sees"
+  button.chip.on role=button act="ob-handle" v="NIGHT BUS" "NIGHT BUS"
+  button.chip role=button act="ob-handle" v="STATIC" "STATIC"
+  button.chip role=button act="ob-handle" v="LOW TIDE" "LOW TIDE"
+  button.chip role=button act="ob-handle" v="PAPERCUT" "PAPERCUT"
+  button.chip role=button act="ob-handle" v="SLOW HAND" "SLOW HAND"
+  button.chip role=button act="ob-handle" v="PIGEON" "PIGEON"
+  input#ob-handle.in-t role=textbox aria-label="Or type your own handle" value="NIGHT BUS"
+  label.chk role=label
+    input#ob-age role=checkbox checked=false
+    span "I’m 16 or over. INSANE is built for meeting people in real places, so it isn’t for under-16s."
+  button.btn.wide role=button act="ob-next" disabled="" "Next"
+div#layer

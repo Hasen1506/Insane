@@ -1,0 +1,153 @@
+main#app role=main
+  header.top role=banner
+    span.mark "INSANE"
+    button.bell role=button act="sheet" v="activity" aria-label="What’s new"
+      svg
+    span.where "Third Floor Chennai · 4 km² square"
+      span.live.demo
+      br
+    button.me-btn.on role=button act="tab" v="you" aria-label="You: profile, journeys, settings" "M"
+  div.banner "Nothing leaves this browser. Open the shared link signed in to play with other people."
+    b "Demo on this device."
+  div#v
+    h1.v role=heading "Meera"
+    p.lede "in the city · Chennai · 4 km² square near Mīnjūr · Third Floor"
+      b "NIGHT BUS"
+      button.link role=button act="sheet" v="profile" "Edit"
+    div.eyebrow "Your journeys"
+      button role=button act="sheet" v="add-j" "+ Add"
+    p.meta "Needs you keep doing, wants you reach over weeks, urges you do once. Your circle sees the counts, never your words."
+    span.tag.need "Need"
+    span.meta "Pact"
+    h3 role=heading "Run"
+    svg
+    div.meta "0 of 3 this week · 3 a week"
+    i.t
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    p.meta "If you miss: i cook for the circle"
+    button.btn.s role=button act="tick" v="j_u3eu3sdmbb" "Done today"
+    button.btn.s.ghost role=button act="j-menu" v="j_u3eu3sdmbb" "More"
+    div.eyebrow "Passport · 0 stamps"
+    p.meta "Check in at a drop, meet someone, solve a Decode or finish a journey, and it gets stamped here."
+    div.eyebrow "Your story so far"
+    ul.tl role=list
+      li role=listitem "Started Third Floor"
+        small "just now"
+    div.eyebrow "Go dark"
+    p "1 to 24 hours, now or later, alone or with the circle. INSANE goes blank and holds every notification."
+    button.btn.s role=button act="dark-setup" "Set it up"
+    div.eyebrow "Calm"
+    label.chk role=label
+      input role=checkbox checked=false
+      span "No red dots or counts, no confetti or sounds, and Today shows less."
+        b "Calm mode."
+    label.chk role=label
+      input role=checkbox checked=false
+      span "A soft click when you tick, solve or check in."
+        b "Sounds."
+    label.f role=label "Quiet hours"
+      small "no badges, no notifications"
+    select.in-t role=combobox aria-label="Quiet from" value="23"
+      option "Off"
+      option "20:00"
+      option "21:00"
+      option "22:00"
+      option "23:00"
+      option "00:00"
+    span.meta "to"
+    select.in-t role=combobox aria-label="Quiet until" value="8"
+      option "06:00"
+      option "07:00"
+      option "08:00"
+      option "09:00"
+      option "10:00"
+    div.eyebrow "Notifications"
+    p.meta "Notifications need the INSANE server."
+    div.eyebrow "Your data"
+    p "Saved: your name, a 4 km² square and your city, your journeys and timeline (private to you), what you post, and the steps you’ve reached (for example, “joined a circle”) with the days you opened the app, to learn what works. No location history. No contacts."
+    button.btn.s.ghost role=button act="export" "Download my data"
+    button.btn.s.ghost role=button act="del-ask" "Delete everything"
+    div.eyebrow "How this copy works"
+    b.y "Demo"
+    span "Everything stays in this browser. Open the shared link, or run the INSANE server, to play with other people."
+  nav.tabs role=navigation aria-label="Sections"
+    button role=button act="tab" v="today" aria-current="false" "Home"
+      svg
+    button role=button act="tab" v="circle" aria-current="false" "Circle"
+      svg
+    button.plus role=button act="make" aria-label="Make something"
+      span "+"
+    button role=button act="tab" v="city" aria-current="false" "City"
+      svg
+    button role=button act="tab" v="ledger" aria-current="false" "Ledger"
+      svg
+div#layer
+  div.sheet-bg act="sheet-bg"
+    div.sheet role=dialog
+      div.grab
+      h2 role=heading "Make something"
+      button.sh-i role=button act="mk" v="check"
+        span.grow "Check in on a pact"
+          small "Your ticks for today"
+      button.sh-i role=button act="mk" v="dark"
+        span.grow "Go dark for a while"
+          small "1 to 24 hours, alone or with the circle"
+      button.sh-i role=button act="mk" v="seal"
+        span.grow "Seal a message for later"
+          small "Signed, opens on a date you pick"
+      button.sh-i role=button act="mk" v="midnight"
+        span.grow "Write for Midnight"
+          small "Unsigned, out at 00:00"
+      button.sh-i role=button act="mk" v="dare"
+        span.grow "Dare someone, or fill the jar"
+          small "Tomorrow’s daily dare comes from the jar"
+      button.sh-i role=button act="mk" v="favor"
+        span.grow "Ask a favor"
+          small "Paid back in hours"
+      button.sh-i role=button act="mk" v="plan"
+        span.grow "Plan something"
+          small "Everyone taps in or out"
+      button.sh-i role=button act="mk" v="pot"
+        span.grow "Start a pot"
+          small "Pledge, then pay"
+      button.sh-i role=button act="mk" v="fpost"
+        span.grow "Post to the City feed"
+          small "What your circle did or made"
+      button.sh-i role=button act="mk" v="call"
+        span.grow "Post a Call"
+          small "Ask other circles for a hand"
+      button.sh-i role=button act="mk" v="mission"
+        span.grow "Propose a Mission"
+          small "Needs three other circles to confirm"
+      button.sh-i role=button act="mk" v="trail"
+        span.grow "Make a trail"
+          small "Stops on the map, walked in any order"
+      button.sh-i role=button act="mk" v="drop"
+        span.grow "Host a drop"
+          small "For a shop, stall, club or circle"
+      button.sh-i role=button act="mk" v="meet"
+        span.grow "Meet someone"
+          small "Scan each other’s phones"
+      button.sh-i role=button act="mk" v="addj"
+        span.grow "Add a need, want or urge"
+          small "Say it in your own words"
+      button.btn.ghost.wide role=button act="sheet-close" "Close"

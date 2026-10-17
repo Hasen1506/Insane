@@ -1,0 +1,68 @@
+main#app role=main
+  header.top role=banner
+    span.mark "INSANE"
+    button.bell role=button act="sheet" v="activity" aria-label="What’s new"
+      svg
+    span.where "Third Floor Chennai · 4 km² square"
+      span.live.demo
+      br
+    button.me-btn role=button act="tab" v="you" aria-label="You: profile, journeys, settings" "M"
+  div.banner "Nothing leaves this browser. Open the shared link signed in to play with other people."
+    b "Demo on this device."
+  div#v
+    h1.v role=heading "Monday"
+    p.lede "· Chennai"
+      b "2 things today"
+    span.tag.need "Need"
+    span.meta "Pact"
+    h3 role=heading "Run"
+    svg
+    div.meta "0 of 3 this week · 3 a week"
+    i.t
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    i
+    p.meta "If you miss: i cook for the circle"
+    button.btn.s role=button act="tick" v="j_u3eu3sdmbb" "Done today"
+    button.card.ball role=button act="sheet" v="decode"
+      div.meta "Decode · week 42"
+      h3 role=heading "Change one letter at a time: COLD → ? → ? → WARD → WARM. What’s the third word?"
+      div.meta "0 solved in Chennai · answer out in"
+        span "6d 14h"
+    div.k "DAILY DARE · FROM THE STARTER JAR · 2/10"
+    div.q "Compliment a stranger’s shoes, and mean it"
+    button.btn.s role=button act="sheet" v="proof" "I did it"
+    button.btn.s.ghost role=button act="sheet" v="dare" "Add to the jar"
+    h3 role=heading "No drops within 5 km yet"
+    p.meta "Run a shop, a stall or a club night? Host one: a swap box, a dare at the counter, an offer for whoever turns up."
+    button.btn.s.ghost role=button act="sheet" v="host" "Host a drop"
+    p.formula "One list. Whatever needs you today is here; everything else waits in Circle, City and Ledger."
+  nav.tabs role=navigation aria-label="Sections"
+    button.on role=button act="tab" v="today" aria-current="page" "Home"
+      svg
+    button role=button act="tab" v="circle" aria-current="false" "Circle"
+      svg
+    button.plus role=button act="make" aria-label="Make something"
+      span "+"
+    button role=button act="tab" v="city" aria-current="false" "City"
+      svg
+    button role=button act="tab" v="ledger" aria-current="false" "Ledger"
+      svg
+div#layer

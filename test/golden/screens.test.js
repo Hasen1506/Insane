@@ -1,16 +1,18 @@
-// WS-0 acceptance (PLAN-V09 §2): the same ten-plus screens, driven the same way with a frozen start
-// clock and seeded randomness, give an identical DOM snapshot and the same pixels in v0.8 (fac3720)
-// and in the built v0.9 app/index.html. The v0.9 snapshots are also kept as goldens for later work.
-// Local mode (the claude.ai store), Pixel 7 profile.
+// Golden screens (PLAN-V09 §5.d): the same ten-plus screens, driven the same way with a frozen start
+// clock and seeded randomness, compared with the DOM and pixel goldens in test/golden/ (GOLDEN_UPDATE=1
+// rewrites them after a reviewed change). Local mode (the claude.ai store), Pixel 7 and iPhone 13.
+// WS-0 proved these screens identical to v0.8 (fac3720) at 888f1fd. Since WS-A (C01: the viewport meta)
+// phones lay out at their real width, so v0.8 is no longer a pixel reference; GOLDEN_V08=1 still drives
+// v0.8 alongside and reports how far each screen has moved from it, without failing.
 'use strict';
 const fs = require('fs'), path = require('path');
 const BR = require('../lib/browser'), E = require('../lib/e2e'), GD = require('../lib/golden');
 const { v08Dir } = require('../lib/load');
 
 const T0 = Date.UTC(2026, 9, 12, 3, 30); // Mon 12 Oct 2026, 09:00 in Chennai
-const PROFILE = process.env.GOLDEN_PROFILE || 'Pixel 7';
+const PROFILES = (process.env.GOLDEN_PROFILE || 'Pixel 7,iPhone 13').split(',').map(s => s.trim());
 
-async function screens(browser, file) {
+async function screens(browser, file, PROFILE) {
   const srv = await E.serveStatic({ file, port: +process.env.GOLDEN_PORT || 8777 }); // same origin both runs: links carry it
   const ctx = await browser.newContext(BR.profile(PROFILE, { timezoneId: 'Asia/Kolkata', locale: 'en-GB', colorScheme: 'light', reducedMotion: 'reduce' }));
   await BR.blockExternal(ctx); await GD.seedRandom(ctx, 9);
@@ -46,22 +48,23 @@ async function screens(browser, file) {
 module.exports = async function (t) {
   const browser = await BR.launch();
   try {
-    const v08 = await screens(browser, path.join(v08Dir(), 'app', 'index.html'));
-    const v09 = await screens(browser, E.APP());
-    t.ok('both runs drove the same screens', JSON.stringify(v08.out.map(s => s.name)) === JSON.stringify(v09.out.map(s => s.name)), v09.out.map(s => s.name).join(','));
-    t.ok('no script errors in either', !v08.errors.length && !v09.errors.length, [...v08.errors, ...v09.errors].join(' | '));
     const helper = await browser.newPage();
-    for (let i = 0; i < v09.out.length; i++) {
-      const a = v08.out[i], b = v09.out[i];
-      t.ok(`${b.name}: DOM identical to v0.8`, a.dom === b.dom, a.dom === b.dom ? '' : GD.lineDiff(a.dom, b.dom));
-      const r = await GD.pixelDiff(helper, a.img, b.img);
-      t.ok(`${b.name}: pixels match v0.8 (${(r * 100).toFixed(3)}% differ, tolerance 0.1%)`, r <= 0.001);
-      const g = GD.matchDom(`ws0/${PROFILE.replace(/\s/g, '')}/${b.name}`, b.dom); t.ok(`${b.name}: DOM golden ${g.created ? 'written' : 'matches'}`, g.ok, g.diff);
-      const p = await GD.matchPixels(helper, `ws0/${PROFILE.replace(/\s/g, '')}/${b.name}`, b.img); t.ok(`${b.name}: pixel golden ${p.created ? 'written' : 'matches (' + (p.ratio * 100).toFixed(3) + '%)'}`, p.ok);
+    for (const PROFILE of PROFILES) {
+      const dir = `ws0/${PROFILE.replace(/\s/g, '')}`, P = PROFILE + ': ';
+      const v09 = await screens(browser, E.APP(), PROFILE);
+      t.ok(P + 'drove all 11 screens', v09.out.length === 11, v09.out.map(s => s.name).join(','));
+      t.ok(P + 'no script errors', !v09.errors.length, v09.errors.join(' | '));
+      const v08 = process.env.GOLDEN_V08 ? await screens(browser, path.join(v08Dir(), 'app', 'index.html'), PROFILE) : null;
+      for (let i = 0; i < v09.out.length; i++) {
+        const b = v09.out[i];
+        const g = GD.matchDom(`${dir}/${b.name}`, b.dom); t.ok(P + `${b.name}: DOM golden ${g.created ? 'written' : 'matches'}`, g.ok, g.diff);
+        const p = await GD.matchPixels(helper, `${dir}/${b.name}`, b.img); t.ok(P + `${b.name}: pixel golden ${p.created ? 'written' : 'matches (' + (p.ratio * 100).toFixed(3) + '%)'}`, p.ok);
+        if (v08) console.log(`  ${P}${b.name}: ${v08.out[i].dom === b.dom ? 'DOM same as v0.8' : 'DOM differs from v0.8'}, ${((await GD.pixelDiff(helper, v08.out[i].img, b.img)) * 100).toFixed(1)}% pixels differ`);
+      }
+      // the snapshot helper must actually see a difference when there is one
+      const home = v09.out.find(s => s.name === 'home').dom;
+      t.ok(P + 'DOM snapshot detects a one-word change', home.replace('Third Floor', 'Fourth Floor') !== home);
+      t.ok(P + 'pixel diff detects a different screen', (await GD.pixelDiff(helper, v09.out[0].img, v09.out[4].img)) > 0.01);
     }
-    // the snapshot helper must actually see a difference when there is one
-    const tweak = v09.out.find(s => s.name === 'home').dom.replace('Third Floor', 'Fourth Floor');
-    t.ok('DOM snapshot detects a one-word change', tweak !== v09.out.find(s => s.name === 'home').dom);
-    t.ok('pixel diff detects a different screen', (await GD.pixelDiff(helper, v09.out[0].img, v09.out[4].img)) > 0.01);
   } finally { await browser.close(); }
 };

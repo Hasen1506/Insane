@@ -1,0 +1,20 @@
+main#app role=main
+  span.mark "INSANE"
+  i.on
+  i.on
+  i.on
+  i
+  h1.v role=heading "Your circle"
+  p.lede "Up to 8 people you actually see. Next time you’re in the same room, : that proves you’re real people who’ve met, which a bot farm can’t fake, and it unlocks posting in the City."
+    b "scan each other’s phones"
+  h3 role=heading "Start a circle"
+  label.f role=label "Circle name"
+  input#ob-cname.in-t role=textbox placeholder="Third Floor" value="Third Floor"
+  button.btn role=button act="ob-circle" v="create" "Start it"
+  h3 role=heading "Join with a code"
+  label.f role=label "6-letter code"
+  input#ob-code.in-t role=textbox placeholder="K7QF2M" value=""
+  button.btn role=button act="ob-circle" v="join" disabled="" "Join"
+  button.btn.ghost role=button act="ob-back" "Back"
+  button.link role=button act="ob-circle" v="skip" "Look around first"
+div#layer

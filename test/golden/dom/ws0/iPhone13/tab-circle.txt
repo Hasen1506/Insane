@@ -1,0 +1,41 @@
+main#app role=main
+  header.top role=banner
+    span.mark "INSANE"
+    button.bell role=button act="sheet" v="activity" aria-label="What’s new"
+      svg
+    span.where "Third Floor Chennai · 4 km² square"
+      span.live.demo
+      br
+    button.me-btn role=button act="tab" v="you" aria-label="You: profile, journeys, settings" "M"
+  div.banner "Nothing leaves this browser. Open the shared link signed in to play with other people."
+    b "Demo on this device."
+  div#v
+    h1.v role=heading "Third Floor"
+    p.lede "1 of 8 · not met in person yet · code"
+      b "7W9SPX"
+    button.av.me role=button act="cseg" v="people" aria-label="Meera" "M"
+    button.av.add role=button act="sheet" v="invite" aria-label="Bring someone in" "+"
+    div.seg.n5 role=tablist
+      button.on role=tab act="cseg" v="chat" "Chat"
+      button role=tab act="cseg" v="plans" "Plans"
+      button role=tab act="cseg" v="pacts" "Pacts"
+      button role=tab act="cseg" v="midnight" "Midnight"
+      button role=tab act="cseg" v="mole" "Mole"
+    div.eyebrow "Threads"
+      button role=button act="sheet" v="thread-new" "+ New"
+    button.thr role=button act="open" v="general"
+      b "General"
+      span.meta "Muted unless someone @s you · muted"
+    p.formula "Every plan, pot and pact has its own thread and only pings the people in it. General is muted unless someone @s you."
+  nav.tabs role=navigation aria-label="Sections"
+    button role=button act="tab" v="today" aria-current="false" "Home"
+      svg
+    button.on role=button act="tab" v="circle" aria-current="page" "Circle"
+      svg
+    button.plus role=button act="make" aria-label="Make something"
+      span "+"
+    button role=button act="tab" v="city" aria-current="false" "City"
+      svg
+    button role=button act="tab" v="ledger" aria-current="false" "Ledger"
+      svg
+div#layer

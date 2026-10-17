@@ -1,0 +1,62 @@
+main#app role=main
+  header.top role=banner
+    span.mark "INSANE"
+    button.bell role=button act="sheet" v="activity" aria-label="What’s new"
+      svg
+    span.where "Third Floor Chennai · 4 km² square"
+      span.live.demo
+      br
+    button.me-btn role=button act="tab" v="you" aria-label="You: profile, journeys, settings" "M"
+  div.banner "Nothing leaves this browser. Open the shared link signed in to play with other people."
+    b "Demo on this device."
+  div#v
+    h1.v role=heading "Chennai"
+    p.lede "Drops within 5 km, Missions, trails, the Decode, the feed, and calls from other circles."
+    div.seg role=tablist
+      button.on role=tab act="sseg" v="map" "Map"
+      button role=tab act="sseg" v="feed" "Feed"
+      button role=tab act="sseg" v="calls" "Calls"
+      button role=tab act="sseg" v="league" "League"
+    button.card.ball role=button act="sheet" v="decode"
+      div.meta "Decode · week 42"
+      h3 role=heading "Change one letter at a time: COLD → ? → ? → WARD → WARM. What’s the third word?"
+      div.meta "0 solved in Chennai · answer out in"
+        span "6d 14h"
+    canvas name="Map of drops near you"
+    button role=button aria-label="Zoom in" "+"
+    button role=button aria-label="Zoom out" "−"
+    button role=button aria-label="Back to the middle" "◎"
+    div.mapattr "Streets:"
+      a role=link href="https://www.openstreetmap.org/?mlat=13.28602&mlon=80.25622#map=12/13.28602/80.25622" "open this spot in OpenStreetMap ↗"
+    span "You"
+      i
+    span "Drops"
+      i
+    span "Missions"
+      i
+    span "Trails · circle"
+      i
+    p.meta "Dashed ring: 5 km. Tap a stamp to open it."
+      button.link role=button act="sheet" v="profile" "Change distance"
+    div.eyebrow "Drops near you"
+      button role=button act="sheet" v="host" "+ Host a drop"
+    p.meta "No drops within 5 km yet. Shops, stalls, clubs and circles can host one: a swap box, a counter dare, an offer for whoever turns up, or a two-key that only opens when two circles arrive together."
+    div.eyebrow "Missions"
+      button role=button act="sheet" v="propose" "+ Propose"
+    p.meta "No Missions in Chennai yet. A Mission is a harmless bit of public theatre: forty people freezing mid-step in a square for a minute. A circle that has met in person proposes one; three other circles confirm it."
+    div.eyebrow "Trails"
+      button role=button act="sheet" v="trail-new" "+ Make a trail"
+    p.meta "No trails yet. A trail is 3 to 6 stops your circle likes, walked in any order inside a window, with a 10-second dare at each."
+    p.formula "The map never shows people, only squares. Missions show an area until two hours before."
+  nav.tabs role=navigation aria-label="Sections"
+    button role=button act="tab" v="today" aria-current="false" "Home"
+      svg
+    button role=button act="tab" v="circle" aria-current="false" "Circle"
+      svg
+    button.plus role=button act="make" aria-label="Make something"
+      span "+"
+    button.on role=button act="tab" v="city" aria-current="page" "City"
+      svg
+    button role=button act="tab" v="ledger" aria-current="false" "Ledger"
+      svg
+div#layer
