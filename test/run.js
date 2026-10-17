@@ -10,8 +10,8 @@
 // In-process suites export `async t => { t.ok(name, cond, extra) }`. Script suites are run as child
 // processes and pass when they exit 0. Time budgets (PLAN-V09 §5.0) are reported per suite; set
 // BUDGETS=strict to fail a suite that runs over 1.5x its budget. The legacy e2e ports have no fixed sleeps,
-// but e2e:server still waits out the server's real 20 s sweep twice (no /api/dev/tick until WS-I/J), so
-// its budget is informational for now.
+// and e2e:server runs the server's sweep on demand (POST /api/dev/tick, WS-I) instead of waiting it out;
+// their budgets are informational until the flows are ported (they still drive 7 and 11 browsers).
 'use strict';
 const fs = require('fs'), path = require('path'), { spawn } = require('child_process');
 const ROOT = path.resolve(__dirname, '..');
