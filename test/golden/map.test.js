@@ -10,6 +10,8 @@ async function run(browser, scheme) {
   const ctx = await browser.newContext(BR.profile('Pixel 7', { timezoneId: 'Asia/Kolkata', locale: 'en-GB', colorScheme: scheme, reducedMotion: 'reduce' }));
   await BR.blockExternal(ctx); await GD.seedRandom(ctx, 11); await E.actProbe(ctx);
   await ctx.addInitScript(() => document.addEventListener('DOMContentLoaded', () => { if (!document.querySelector('meta[name=viewport]')) document.head.insertAdjacentHTML('afterbegin', '<meta name="viewport" content="width=device-width, initial-scale=1">'); }));
+  // WS-B's welcome, intro and tour have their own goldens (firstrun.test.js); these screens start past them
+  await ctx.addInitScript(() => { try { localStorage.setItem('insane_intro', '1'); localStorage.setItem('insane_tour', 'done'); } catch (e) { } });
   const page = await ctx.newPage(); const errors = []; page.on('pageerror', e => errors.push(e.message));
   await page.clock.install({ time: T0 });
   const out = [];

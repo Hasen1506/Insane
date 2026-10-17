@@ -14,7 +14,7 @@ async function run(browser, { check, snap = async () => { }, port = 0, origin = 
   const srv = await E.serveStatic({ port });
   const ctx = await browser.newContext(BR.profile(profile, { timezoneId: 'Asia/Kolkata', locale: 'en-GB', colorScheme: 'light', reducedMotion: 'reduce' }));
   await BR.blockExternal(ctx); const base = origin ? await BR.aliasOrigin(ctx, srv.url, origin) : srv.url; await GD.seedRandom(ctx, 7); await E.actProbe(ctx);
-  await ctx.addInitScript(() => { try { localStorage.setItem('insane_intro', '1'); localStorage.setItem('insane_tour', 'done'); } catch (e) { } }); // past WS-B's welcome/tour if present
+  await ctx.addInitScript(() => { try { localStorage.setItem('insane_intro', '1'); localStorage.setItem('insane_tour', 'done'); localStorage.setItem('insane_unlock_all', '1'); } catch (e) { } }); // past WS-B's welcome/tour; pots unlocked (the gradual unlock of a pot after the first plan is tested in e2e:flows, firstrun-server)
   await ctx.clock.install({ time: T0 });
   const errors = [];
   const open = async who => { const p = await ctx.newPage(); p.on('pageerror', e => errors.push(who + ': ' + e.message)); await p.goto(base + '/?as=' + who); await GD.freeze(p); return p; };
@@ -28,7 +28,8 @@ async function run(browser, { check, snap = async () => { }, port = 0, origin = 
     if (await p.locator('#ob-consent').count()) await p.check('#ob-consent');
     await tap(p, '[data-act="ob-next"]');
     await p.waitForSelector('#lp-q-home'); await p.fill('#lp-q-home', 'Chennai'); await p.waitForSelector('.res'); await tap(p, '.res');
-    await tap(p, '[data-act="lp-paste"]'); await p.waitForSelector('#lp-p-home'); await p.fill('#lp-p-home', ll); await tap(p, 'form[data-form="lp-use"] button');
+    // WS-F: no "Paste a maps link" button; a link or plain coordinates go in the search box and come back as a link result
+    await p.fill('#lp-q-home', ll); await p.waitForSelector('.res[data-src="link"]'); await tap(p, '.res[data-src="link"]');
     await E.until(async () => (await p.locator('[data-act="lp-size"]').count()) > 0, { what: 'precision chips' });
     await tap(p, '[data-act="lp-size"][data-v="2"]'); await tap(p, '[data-act="lp-radius"][data-v="5"]');
     await tap(p, '[data-act="ob-next"]');

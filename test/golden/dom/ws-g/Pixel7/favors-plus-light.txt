@@ -15,6 +15,9 @@ main#app role=main
     div.seg role=tablist
       button.on role=tab act="lseg" v="favors" "Favors"
       button role=tab act="lseg" v="pots" "Pots"
+    span "Help is paid back in hours, not money. Nobody can go below −5 h, so it stays fair."
+    button.qi.new role=button act="gloss" v="favor" aria-label="What’s Favor hours?"
+      span "?"
     div.meta "YOUR BALANCE"
     div.bigh "+2 h"
     p.bl "The circle owes you 2 h of help. Limit −5 h."

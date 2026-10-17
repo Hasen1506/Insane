@@ -16,6 +16,9 @@ main#app role=main
     div.seg role=tablist
       button role=tab act="lseg" v="favors" "Favors"
       button.on role=tab act="lseg" v="pots" "Pots"
+    span "Money for a shared plan. People pledge, then pay, and the organiser ticks who’s paid."
+    button.qi.new role=button act="gloss" v="pot" aria-label="What’s Pot?"
+      span "?"
     div.safe "Pots track who’s in and who’s paid. You pay each other, or the shop, with whatever you already use."
       b "INSANE never holds your money."
     div.meta "WHO OWES WHAT"
