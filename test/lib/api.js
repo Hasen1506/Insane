@@ -5,7 +5,7 @@
 'use strict';
 const E = require('./e2e');
 async function open({ port = 0, owner = 'owner@x.com', env = {} } = {}) {
-  port = port || 8800 + Math.floor(Math.random() * 900);
+  if (!port) port = await new Promise(r => { const s = require('net').createServer().listen(0, () => { const p = s.address().port; s.close(() => r(p)); }); }); // a free port, so parallel runs never share a server
   const srv = await E.startServer({ port, owner, env: { SEED: 'test-seed', ...env } });
   const base = srv.url, seen = [];
   const keep = (where, body) => { seen.push({ where, body }); return body; };
