@@ -1,0 +1,1017 @@
+<title>INSANE</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* One phone-width column, a rail of build notes beside it on wide screens. Paper, ink, a rubber stamp and a ballpoint. */
+:root{
+  --paper:#ECEEE7;--card:#F9FAF6;--ink:#151D36;--muted:#596277;--line:#CDD2C8;
+  --stamp:#C8214B;--ball:#2443C4;--haz:#8A6A00;--good:#1F7A4D;
+  --stamp-soft:rgba(200,33,75,.10);--ball-soft:rgba(36,67,196,.10);--haz-soft:rgba(217,164,0,.16);--good-soft:rgba(31,122,77,.12);
+  --cell:#E2E6DC;--cell2:#D7DCD0;--night:#05070D;--night-ink:#C9CED9;
+  --f-display:"Dela Gothic One","Arial Black",Impact,sans-serif;
+  --f-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0E1320;--card:#161D2D;--ink:#E5E8E0;--muted:#8C95A8;--line:#2B3550;
+  --stamp:#FF5A7E;--ball:#8197FF;--haz:#F2C53D;--good:#4CC38A;
+  --stamp-soft:rgba(255,90,126,.14);--ball-soft:rgba(129,151,255,.14);--haz-soft:rgba(242,197,61,.14);--good-soft:rgba(76,195,138,.14);
+  --cell:#1A2233;--cell2:#212B40;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0E1320;--card:#161D2D;--ink:#E5E8E0;--muted:#8C95A8;--line:#2B3550;
+  --stamp:#FF5A7E;--ball:#8197FF;--haz:#F2C53D;--good:#4CC38A;
+  --stamp-soft:rgba(255,90,126,.14);--ball-soft:rgba(129,151,255,.14);--haz-soft:rgba(242,197,61,.14);--good-soft:rgba(76,195,138,.14);
+  --cell:#1A2233;--cell2:#212B40;color-scheme:dark}
+html,body{background:var(--paper);color:var(--ink)}
+body{font-family:var(--f-body);font-size:15px;line-height:1.45;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+*{box-sizing:border-box}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--ball);outline-offset:2px}
+.wrap{display:grid;grid-template-columns:minmax(0,460px);justify-content:center;gap:40px;padding-block:0 96px}
+@media (min-width:980px){.wrap{grid-template-columns:260px minmax(0,460px)}.rail{display:block!important}}
+.rail{display:none;position:sticky;top:24px;align-self:start;padding-top:28px;font-size:13px;color:var(--muted)}
+.rail h2{font-family:var(--f-display);font-weight:400;font-size:22px;color:var(--ink);margin:0 0 4px;letter-spacing:.02em}
+.rail h3{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);margin:18px 0 6px}
+.rail p{margin:0 0 8px}
+.real{display:grid;grid-template-columns:auto 1fr;gap:4px 8px;align-items:baseline}
+.real b{font-family:var(--f-mono);font-size:10px;letter-spacing:.06em;padding:1px 6px;border-radius:4px;text-transform:uppercase}
+.real b.y{background:var(--good-soft);color:var(--good)}.real b.p{background:var(--haz-soft);color:var(--haz)}
+main{min-width:0}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);display:flex;align-items:center;gap:10px;padding:14px 0 10px;border-bottom:1.5px solid var(--ink)}
+.mark{font-family:var(--f-display);font-size:24px;letter-spacing:.04em;line-height:1}
+.mark i{font-style:normal;color:var(--stamp)}
+.where{font-family:var(--f-mono);font-size:11px;color:var(--muted);margin-left:auto;text-align:right;line-height:1.3;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.live{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--good);margin-right:5px;vertical-align:1px}
+.live.demo{background:var(--haz)}
+.banner{font-size:12.5px;border:1.5px dashed var(--haz);background:var(--haz-soft);border-radius:10px;padding:8px 10px;margin:12px 0 0}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1.5px solid var(--ink);padding:6px max(16px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+nav.tabs .in{max-width:460px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+@media (min-width:980px){nav.tabs .in{max-width:760px;padding-left:300px}}
+nav.tabs button{border:0;background:none;padding:6px 0 4px;border-radius:10px;font-size:12px;font-weight:600;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;position:relative}
+nav.tabs button svg{width:22px;height:22px}
+nav.tabs button.on{color:var(--ink);background:var(--paper)}
+.dot{position:absolute;top:4px;right:calc(50% - 18px);width:8px;height:8px;border-radius:50%;background:var(--stamp)}
+h1.v{font-family:var(--f-display);font-weight:400;font-size:28px;line-height:1.1;margin:22px 0 6px;text-wrap:balance}
+.lede{color:var(--muted);margin:0 0 16px}
+.eyebrow{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:22px 0 8px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.eyebrow button{font-family:var(--f-body);letter-spacing:0;text-transform:none;font-size:13px;font-weight:600;color:var(--ball);background:none;border:0;padding:0}
+.stack{display:flex;flex-direction:column;gap:10px}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;min-width:0}
+.card h3{font-size:16px;margin:0 0 2px;line-height:1.25}
+.card p{margin:4px 0 0}
+.card.hot{border-color:var(--ink)}
+.card.ball{border-color:var(--ball)}
+.card.stamp{border-color:var(--stamp)}
+.card.dash{border-style:dashed;background:transparent}
+.meta{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.tag{display:inline-block;font-family:var(--f-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;border:1px solid currentColor;border-radius:4px;padding:0 5px;margin-right:6px;vertical-align:1px}
+.tag.need{color:var(--good)}.tag.want{color:var(--ball)}.tag.urge{color:var(--stamp)}.tag.k{color:var(--muted)}
+.row{display:flex;align-items:center;gap:10px;min-width:0}
+.row .grow{flex:1;min-width:0}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.btn{border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:999px;padding:8px 16px;font-weight:600;font-size:14px;min-height:40px}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.s{padding:5px 12px;min-height:32px;font-size:13px}
+.btn.red{background:var(--stamp);border-color:var(--stamp);color:#fff}
+.btn.wide{width:100%}
+.btn:disabled{opacity:.45;cursor:default}
+.link{background:none;border:0;padding:0;color:var(--ball);font-weight:600;font-size:inherit;text-decoration:underline;text-underline-offset:2px}
+label.f{display:block;font-size:13px;font-weight:600;margin:12px 0 4px}
+label.f small{font-weight:400;color:var(--muted)}
+.in-t,textarea.in-t,select.in-t{width:100%;border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:9px 11px;font-size:16px;min-height:42px}
+textarea.in-t{min-height:72px;resize:vertical}
+.in-t:focus{border-color:var(--ink);outline:none}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;margin:12px 0}
+.chk input{width:18px;height:18px;margin:1px 0 0;accent-color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:5px 11px;font-size:13px}
+.chip.on{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;background:var(--cell);border-radius:12px;padding:4px;margin:16px 0 4px}
+.seg button{border:0;background:none;border-radius:9px;padding:7px 4px;font-weight:600;font-size:13.5px;color:var(--muted);position:relative}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 0 var(--line)}
+.seg .dot{top:5px;right:8px}
+.steps{display:flex;gap:6px;margin:18px 0 0}
+.steps i{flex:1;height:4px;border-radius:2px;background:var(--line)}
+.steps i.on{background:var(--ink)}
+.read{border:1.5px solid var(--good);background:var(--good-soft);border-radius:12px;padding:9px 11px;margin-top:8px;font-size:13.5px}
+.read.empty{border-style:dashed;border-color:var(--line);background:transparent;color:var(--muted)}
+.read.warn{border-color:var(--haz);background:var(--haz-soft)}
+.read .rk{font-family:var(--f-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--good);margin-bottom:3px}
+.read.warn .rk{color:var(--haz)}
+.rr{display:flex;justify-content:space-between;gap:10px;padding:2px 0;border-bottom:1px dashed var(--line)}
+.rr span{font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}.rr b{text-align:right;font-weight:600}
+.lane{margin-top:18px}
+.lane h3{font-size:17px;margin:0;display:flex;gap:8px;align-items:baseline}
+.lane h3 small{font-family:var(--f-mono);font-size:10.5px;font-weight:400;color:var(--muted)}
+.ex{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.ex button{border:1px dashed var(--line);background:none;border-radius:999px;padding:2px 9px;font-size:12px;color:var(--muted)}
+.zones{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;max-width:300px}
+.zones button{aspect-ratio:1.4;max-width:100%;border:1.5px solid var(--line);background:var(--cell);border-radius:8px;font-size:12px;font-weight:600}
+.zones button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.thr{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:10px 12px}
+.thr .grow{flex:1;min-width:0}
+.thr b{display:block;font-size:15px}
+.thr .meta{display:block}
+.thr .last{display:block;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.thr .un{width:9px;height:9px;border-radius:50%;background:var(--stamp);margin-top:6px;flex:0 0 auto}
+.av{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;background:var(--cell2);color:var(--ink);flex:0 0 auto}
+.chat{display:flex;flex-direction:column;gap:6px;padding:10px 0;min-height:200px}
+.msg{max-width:84%;align-self:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px 14px 14px 4px;padding:6px 11px;font-size:14.5px;overflow-wrap:anywhere}
+.msg small{display:block;font-family:var(--f-mono);font-size:10px;color:var(--muted)}
+.msg.me{align-self:flex-end;background:var(--ink);color:var(--paper);border-color:var(--ink);border-radius:14px 14px 4px 14px}
+.msg.me small{color:inherit;opacity:.7}
+.compose{position:sticky;bottom:calc(64px + env(safe-area-inset-bottom,0px));background:var(--paper);display:flex;gap:8px;padding:8px 0}
+.compose input{flex:1;min-width:0}
+.panel{border:1.5px solid var(--ink);border-radius:14px;padding:10px 12px;margin-top:10px;background:var(--card)}
+.who{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.who span{font-size:12px;border-radius:999px;padding:1px 8px;background:var(--good-soft);color:var(--good)}
+.who span.no{background:var(--cell);color:var(--muted)}
+.bar{height:6px;border-radius:3px;background:var(--cell);overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--good)}
+.days{display:flex;gap:3px;margin-top:8px;flex-wrap:wrap}
+.days i{width:11px;height:11px;border-radius:3px;background:var(--cell)}
+.days i.y{background:var(--good)}.days i.t{outline:1.5px solid var(--ink)}
+.mapbox{background:var(--card);border:1.5px solid var(--ink);border-radius:14px;padding:8px;margin-top:10px}
+.mapbox svg{display:block;width:100%;height:auto;max-width:100%}
+.mapbox text{font-family:var(--f-mono)}
+.drop{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:10px 12px}
+.drop .grow{flex:1;min-width:0}
+.drop .when{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.drop.open{border-color:var(--stamp)}
+.drop.open .when{color:var(--stamp)}
+.dk{width:34px;height:34px;flex:0 0 auto;border-radius:9px;display:grid;place-items:center;font-family:var(--f-mono);font-weight:600;font-size:11px;border:1.5px solid currentColor}
+.k-offer{color:var(--good)}.k-cash{color:var(--haz)}.k-swap{color:var(--ball)}.k-twokey{color:var(--stamp)}.k-dare{color:var(--ink)}
+.clue{font-size:17px;font-weight:600;line-height:1.35;margin:4px 0 8px}
+.hint{font-family:var(--f-mono);font-size:12px;border:1px dashed var(--line);border-radius:8px;padding:4px 8px;color:var(--muted);margin-top:4px}
+.hint.on{border-style:solid;border-color:var(--ball);color:var(--ball);background:var(--ball-soft)}
+.big{font-family:var(--f-mono);font-weight:600;font-size:40px;letter-spacing:.18em;text-align:center;margin:10px 0 2px}
+.post{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:10px 12px}
+.post .txt{margin:4px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.post .act{display:flex;gap:14px;margin-top:6px;font-size:12px}
+.post .act button{background:none;border:0;padding:0;color:var(--muted);font-size:12px}
+table.lg{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+table.lg td,table.lg th{padding:7px 4px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}
+table.lg th{font-family:var(--f-mono);font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+table.lg td.n,table.lg th.n{text-align:right}
+table.lg tr.me td{font-weight:700}
+.tl{list-style:none;margin:0;padding:0;border-left:2px solid var(--line);padding-left:12px}
+.tl li{position:relative;padding:4px 0;font-size:14px}
+.tl li::before{content:"";position:absolute;left:-18px;top:11px;width:10px;height:10px;border-radius:50%;background:var(--card);border:2px solid var(--ink)}
+.tl li small{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);margin-left:4px}
+.sheet-bg{position:fixed;inset:0;z-index:20;background:rgba(5,7,13,.45);display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--paper);width:100%;max-width:520px;max-height:88vh;overflow-y:auto;border-radius:18px 18px 0 0;border-top:1.5px solid var(--ink);padding:14px max(18px,env(safe-area-inset-left,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-right,0px))}
+.sheet .grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 8px}
+.sheet h2{font-family:var(--f-display);font-weight:400;font-size:22px;margin:4px 0 4px;text-wrap:balance}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:999px;font-size:14px;max-width:calc(100% - 32px);text-align:center}
+.darkall{position:fixed;inset:0;z-index:40;background:var(--night);color:var(--night-ink);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px max(24px,env(safe-area-inset-left,0px))}
+.darkall .clock{font-family:var(--f-mono);font-size:52px;font-weight:600;color:#ECEEE7;margin:12px 0}
+.darkall p{max-width:34ch;margin:0 0 10px}
+.darkall .btn{background:transparent;border-color:#3A4566;color:var(--night-ink)}
+.darkall .dk2{font-family:var(--f-mono);letter-spacing:.4em;font-size:11px;color:#6B7389}
+.boot{padding:80px 0;text-align:center;color:var(--muted)}
+.boot .mark{font-size:44px;display:block;margin-bottom:10px;color:var(--ink)}
+.stat{display:grid;grid-template-columns:1fr auto auto;gap:4px 12px;font-variant-numeric:tabular-nums;font-size:14px}
+.stat span:nth-child(3n+2),.stat span:nth-child(3n){text-align:right}
+.stat .h{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);text-transform:uppercase}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (prefers-reduced-motion:no-preference){.pulse{animation:pulse 1.6s ease-in-out infinite}@keyframes pulse{50%{opacity:.35}}}
+</style>
+
+<div class="wrap">
+  <aside class="rail" aria-label="How this build works">
+    <h2>INSANE <span style="font-family:var(--f-mono);font-size:12px;color:var(--muted)">v0.7</span></h2>
+    <p>The barter-and-dare app for the five people you actually see. This is the working build, not the mock-up: everything you do here is saved and shared with everyone you invite.</p>
+    <h3>What's real here</h3>
+    <div class="real">
+      <b class="y">Real</b><span>Sign-in. You're you through your Claude account.</span>
+      <b class="y">Real</b><span>Circles, threads, plans, pots, journeys, feed, calls, Decode, drops. Live between everyone invited.</span>
+      <b class="y">Real</b><span>Draws are worked out in the open from who turned up, so anyone can check them.</span>
+      <b class="p">Stand-in</b><span>Map: drawn 3 km zones. Map tiles can't load in this frame. The phone app uses MapLibre with OpenStreetMap.</span>
+      <b class="p">Stand-in</b><span>Location: you pick your area. The phone app checks GPS only at a drop.</span>
+      <b class="p">Stand-in</b><span>Meeting in person: a 6-digit code valid for 2 minutes. The phone app adds a QR scan and a Bluetooth check.</span>
+      <b class="p">Stand-in</b><span>Go dark covers this app only. The phone app uses Screen Time to cover the apps you pick.</span>
+      <b class="p">Stand-in</b><span>No push notifications. Badges show what's new.</span>
+    </div>
+    <h3>Playing with friends</h3>
+    <p>Invite each person by email from the Share menu. Anyone who can only view can look around but can't post.</p>
+  </aside>
+  <main id="app" aria-live="polite"></main>
+</div>
+<div id="layer"></div>
+
+<script>
+'use strict';
+/* ---------- tiny helpers ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const now=()=>Date.now();
+const MIN=6e4,HOUR=36e5,DAY=864e5;
+const ALPH='abcdefghijkmnpqrstuvwxyz23456789',CODEA='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const rnd=(n,a=ALPH)=>Array.from(crypto.getRandomValues(new Uint8Array(n)),x=>a[x%a.length]).join('');
+const fnv=s=>{let h=0x811c9dc5;for(const c of String(s)){h^=c.charCodeAt(0);h=Math.imul(h,0x01000193)>>>0}return h.toString(16)};
+const fnvN=s=>parseInt(fnv(s),16);
+const pairId=(a,b)=>[a,b].sort().join('__');
+const initials=n=>(String(n||'?').trim()[0]||'?').toUpperCase();
+const ymd=t=>{const d=new Date(t);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const today=()=>ymd(now());
+const dayStart=t=>{const d=new Date(t);d.setHours(0,0,0,0);return d.getTime()};
+function weekStart(t=now()){const d=new Date(dayStart(t));const wd=(d.getDay()+6)%7;return d.getTime()-wd*DAY}
+function weekKey(t=now()){const d=new Date(t);d.setHours(0,0,0,0);d.setDate(d.getDate()+3-((d.getDay()+6)%7));const w1=new Date(d.getFullYear(),0,4);const n=1+Math.round(((d-w1)/DAY-3+((w1.getDay()+6)%7))/7);return d.getFullYear()+'-W'+String(n).padStart(2,'0')}
+const weekNum=()=>+weekKey().split('W')[1];
+function ago(t){const s=(now()-t)/1000;if(s<60)return 'just now';if(s<3600)return Math.floor(s/60)+' min ago';if(s<86400)return Math.floor(s/3600)+' h ago';const d=Math.floor(s/86400);return d===1?'yesterday':d+' days ago'}
+function left(ms){if(ms<=0)return '0:00';const s=Math.floor(ms/1000),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),x=s%60;if(d)return d+'d '+h+'h';if(h)return h+'h '+String(m).padStart(2,'0')+'m';return m+':'+String(x).padStart(2,'0')}
+const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function when(t){const d=new Date(t),td=dayStart(now()),dd=dayStart(t);const hm=d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});if(dd===td)return 'Today '+hm;if(dd===td+DAY)return 'Tomorrow '+hm;if(dd===td-DAY)return 'Yesterday '+hm;return DOW[d.getDay()]+' '+d.getDate()+' '+d.toLocaleString([],{month:'short'})+', '+hm}
+const ordinal=n=>n+(['th','st','nd','rd'][(n%100-20)%10]||['th','st','nd','rd'][n%100]||'th');
+
+/* ---------- the place data ---------- */
+const CITIES=[['London',51.507,-0.128],['Manchester',53.481,-2.243],['Birmingham',52.486,-1.890],['Glasgow',55.861,-4.250],['Edinburgh',55.953,-3.189],['Bristol',51.454,-2.588],['Leeds',53.801,-1.549],['Liverpool',53.408,-2.991],['Cardiff',51.481,-3.179],['Belfast',54.597,-5.930],['Dublin',53.349,-6.260],['Paris',48.857,2.352],['Berlin',52.520,13.405],['Amsterdam',52.370,4.895],['Lisbon',38.722,-9.139],['Madrid',40.417,-3.704],['Barcelona',41.385,2.173],['Rome',41.903,12.496],['Milan',45.464,9.190],['Stockholm',59.329,18.069],['Copenhagen',55.676,12.568],['Warsaw',52.230,21.012],['Istanbul',41.008,28.978],['New York',40.713,-74.006],['Los Angeles',34.052,-118.244],['Chicago',41.878,-87.630],['San Francisco',37.775,-122.419],['Toronto',43.653,-79.383],['Mexico City',19.433,-99.133],['São Paulo',-23.551,-46.633],['Buenos Aires',-34.604,-58.382],['Lagos',6.524,3.379],['Nairobi',-1.292,36.822],['Cape Town',-33.925,18.424],['Cairo',30.044,31.236],['Dubai',25.205,55.271],['Mumbai',19.076,72.878],['Delhi',28.614,77.209],['Bengaluru',12.972,77.595],['Karachi',24.861,67.010],['Dhaka',23.810,90.413],['Singapore',1.352,103.820],['Jakarta',-6.208,106.846],['Manila',14.599,120.984],['Tokyo',35.676,139.650],['Seoul',37.567,126.978],['Sydney',-33.869,151.209],['Melbourne',-37.814,144.963],['Auckland',-36.848,174.763]];
+const ZN=['North-west','North','North-east','West','Centre','East','South-west','South','South-east'];
+const cityOf=n=>CITIES.find(c=>c[0]===n);
+function zoneLL(city,z,fx=.5,fy=.5){const c=cityOf(city);if(!c)return null;const dx=(z%3)-1+(fx-.5),dy=1-Math.floor(z/3)-(fy-.5);const lat=c[1]+dy*3/111;return [lat,c[2]+dx*3/(111*Math.cos(lat*Math.PI/180))]}
+const osm=(ll)=>ll?`https://www.openstreetmap.org/?mlat=${ll[0].toFixed(5)}&mlon=${ll[1].toFixed(5)}#map=16/${ll[0].toFixed(5)}/${ll[1].toFixed(5)}`:'';
+const slug=s=>String(s||'').normalize('NFD').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-|-$/g,'').toLowerCase()||'somewhere';
+
+/* ---------- needs, wants, urges ---------- */
+const LANES={
+ need:{k:'Need',lead:'I need to…',hz:'keep doing · this month',ph:'run three times a week',ex:['run 3 times a week','call home every Sunday','be in bed by 1 every night','read 10 pages a day']},
+ want:{k:'Want',lead:'I want to…',hz:'reach · this season',ph:'go to Lisbon with the flat',ex:['go to Lisbon in May','learn to cook one proper dish','see a gig every month','save £300 for a bike']},
+ urge:{k:'Urge',lead:'I’ve got an urge to…',hz:'do once · this week',ph:'sing karaoke in public',ex:['sing karaoke in public','tell someone how I feel','swim in the sea in winter','pull a harmless prank']}};
+const NUM={one:1,once:1,two:2,twice:2,three:3,four:4,five:5,six:6,seven:7};
+const DAYS=['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+// Rules, not AI: your words never leave the page to be read. Returns what the line becomes and how it's checked.
+function readUrge(lane,raw){
+  let t=String(raw||'').trim().replace(/^(i\s+(really\s+)?(need|want|have|’ve got|'ve got|got)\s+(an\s+urge\s+)?to\s+|to\s+)/i,'').replace(/[.!]+$/,'');
+  if(!t)return null;const l=t.toLowerCase();
+  if(/suicid|kill myself|hurt myself|harm myself|cut myself|end it all|self.?harm|not be here/.test(l))return {kind:'Support',what:t};
+  if(/\b(hurt|beat|kill|stab|steal|rob|revenge|stalk|weapon|drunk driv|drive drunk|fight someone|break in)\b/.test(l))return {kind:'No',what:t};
+  let how='',goal=3;const m=l.match(/\b(\d+|one|two|three|four|five|six|seven|once|twice)\s*(x|times?)?\s*(a|per|each)\s*(week|wk)/);
+  if(m){goal=Math.min(7,NUM[m[1]]||+m[1]||3);how=goal+' a week'}else if(/every\s*(day|night|morning)|daily|each day|a day\b/.test(l)){how='every day';goal=7}
+  else{const d=DAYS.find(x=>l.includes(x));if(d){how='every '+d[0].toUpperCase()+d.slice(1,3);goal=1}else if(/month/.test(l)){how='once a month';goal=1}}
+  const clean=t.replace(/\s*(\d+|one|two|three|four|five|six|seven|once|twice)\s*(x|times?)?\s*(a|per|each)\s*(week|wk)/i,'').replace(/\s*(every\s*(day|night|morning)|daily|each day)/i,'').trim()||t;
+  const what=clean.charAt(0).toUpperCase()+clean.slice(1);
+  if(lane==='urge'){
+    if(/tell|confess|admit|how i feel|say (it|sorry)|apologi/.test(l))return {kind:'Midnight',what,how:'a night you pick',proof:'nothing to prove',note:'Send it unsigned at Midnight, or sealed with your name to open later.'};
+    if(/scared|afraid|fear|nervous|terrif|heights|cold|sea|swim|jump|public|karaoke|sing|stage|speak|dance|ask (her|him|them|someone) out/.test(l))
+      return {kind:'Ladder',what,how:'5 rungs, one a week',rungs:5,proof:'your circle’s tick',note:'You write the rungs. Your circle only sees “rung 2 of 5”.'};
+    return {kind:'Dare',what,how:'this week',proof:'your circle’s tick',note:/prank/.test(l)?'Harmless only: nothing with money, phones, bedrooms or strangers.':'One go. Start small and climb.'}}
+  if(lane==='want'){
+    if(/£|\$|€|\bbuy\b|\bsave\b|tickets?|trip|holiday|flight|festival|\bgo to [a-z]/i.test(t))return {kind:'Plan + pot',what,how:'3 steps, the circle picks a date',proof:'pledge, then pay',note:'Nobody pays unless enough of you pledge. INSANE never holds the money.'};
+    if(how)return {kind:'Pact',what,how,goal,proof:'a tick a time',note:'21 days, two free misses a week.'};
+    return {kind:'Plan',what,how:'3 steps, the circle picks a date',proof:'who turns up',note:'Becomes a plan with its own thread when you’re ready.'}}
+  return {kind:'Pact',what,how:how||'3 a week',goal:how?goal:3,proof:'a tick a time',note:'21 days, two free misses a week. Your circle sees the count, not the details.'};
+}
+function readCard(r){
+  if(!r)return '<div class="read empty">Type a line, or tap an example. You’ll see what it turns into before anything starts.</div>';
+  if(r.kind==='Support')return `<div class="read warn"><div class="rk">This one needs a person, not a pact</div>If you’re thinking about hurting yourself, talk to someone today. In the UK and Ireland, Samaritans answer any time on <b>116 123</b>. Elsewhere, findahelpline.com lists free lines near you. This line won’t be saved.</div>`;
+  if(r.kind==='No')return `<div class="read warn"><div class="rk">INSANE won’t turn this into anything</div>Nothing that could hurt someone, break the law or follow a person. Try it another way.</div>`;
+  return `<div class="read"><div class="rk">How INSANE reads it</div><div class="rr"><span>Becomes</span><b>${esc(r.kind)}</b></div><div class="rr"><span>What</span><b>${esc(r.what)}</b></div><div class="rr"><span>How</span><b>${esc(r.how)}</b></div><div class="rr"><span>Proof</span><b>${esc(r.proof)}</b></div><div class="meta" style="margin-top:5px">${esc(r.note)}</div></div>`;
+}
+
+/* ---------- Decode: one city puzzle a week ---------- */
+const CLUES=[
+ {q:'Shift every letter back three places in the alphabet: ZDWHUORR',h:['It’s on maps, and on a famous song list.','D becomes A, E becomes B, A becomes X.','Napoleon would rather not talk about it.'],a:'d891582a'},
+ {q:'Take the first letters: Mangoes Always Ripen Kindly Every Tuesday.',h:['It’s a place, not a fruit.','Six letters. Stalls, not shelves.','Farmers’ ___.'],a:'b33f86f1'},
+ {q:'Change one letter at a time: COLD → ? → ? → WARD → WARM. What’s the third word?',h:['The second word is CORD.','Change the O next.','You play it, deal it, or pay with it.'],a:'857abc9f'},
+ {q:'A=1, B=2 … Z=26. Decode: 13 · 21 · 19 · 5 · 21 · 13',h:['Six letters, starts and ends the same.','13 is M.','Free on Sundays in a lot of cities.'],a:'b0d0bc95'},
+ {q:'A place is hiding in this line: “the cab ridge road”.',h:['Ignore the spaces.','It crosses something.','Six letters, starts with B.'],a:'bac85190'},
+ {q:'Old phone keypad: 7 · 8 · 2 · 8 · 4 · 6 · 6',h:['2 is ABC, 7 is PQRS.','It starts with S.','Trains stop here.'],a:'41d62ef3'},
+ {q:'Rearrange DANGER into somewhere things grow.',h:['Six letters.','It starts with G.','Sheds and allotments.'],a:'19bded74'},
+ {q:'Morse code: - --- .-- . .-.',h:['A dash is a long beep. - is T.','Five letters.','London has a famous one with ravens.'],a:'37d4eb02'}];
+const ANS=['WATERLOO','MARKET','CARD','MUSEUM','BRIDGE','STATION','GARDEN','TOWER'];
+const HINT_AT=[3,8,15],HINT_DAY=[1,3,5];
+const clueIdx=()=>weekNum()%CLUES.length;
+function decodeState(solves){
+  const ws=weekStart(),n=solves.length,t=now();
+  const hints=HINT_AT.map((k,i)=>n>=k||t>=ws+HINT_DAY[i]*DAY);
+  const reveal=Math.max(ws+4*DAY,ws+7*DAY-Math.min(n,24)*3*HOUR);
+  return {n,hints,nh:hints.filter(Boolean).length,reveal,revealed:t>=reveal};
+}
+const decPts=(rank,nh)=>Math.max(5,Math.max(10,100-8*(rank-1))-15*nh);
+
+/* ---------- drops ---------- */
+const DK={
+ offer:{n:'Shop offer',s:'OFR',d:'Everyone who turns up in the hour gets the offer. One circle is drawn for the bigger prize.'},
+ cash:{n:'Cash draw',s:'£',d:'A sponsor puts up the cash. It’s drawn among circles that turned up and split inside the winning circle. Free to enter, always.'},
+ swap:{n:'Swap box',s:'SWP',d:'Bring something, take what’s in the box. The box keeps a log of every swap.'},
+ twokey:{n:'Two-key',s:'2K',d:'Opens only when two different circles check in during the hour. Then everyone there gets the prize.'},
+ dare:{n:'Counter dare',s:'DAR',d:'Do the dare at the counter, then check in with the door code to get the prize.'}};
+function dropPhase(d,t=now()){return t<d.start?'soon':t<d.end?'open':'over'}
+function drawWinner(d,ins){const cs=[...new Set(ins.map(i=>i.circle).filter(Boolean))].sort();if(!cs.length)return null;return cs[fnvN(d.id+'|'+cs.join(','))%cs.length]}
+
+/* ---------- local store: demo on one device, and the test harness ---------- */
+function LocalDB(){
+  const KEY='insane_local_db';let mem={};
+  const load=()=>{try{mem=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){mem=mem||{}}};load();
+  const subs=new Set();let bc=null;try{bc=new BroadcastChannel('insane_local')}catch(e){}
+  const fire=()=>{for(const f of [...subs])f()};
+  if(bc)bc.onmessage=()=>{load();fire()};
+  addEventListener('storage',e=>{if(e.key===KEY){load();fire()}});
+  const changed=()=>{try{localStorage.setItem(KEY,JSON.stringify(mem))}catch(e){}if(bc)bc.postMessage(1);setTimeout(fire,0)};
+  const clone=o=>JSON.parse(JSON.stringify(o));
+  const snap=p=>{const d=mem[p];return {id:p.split('/').pop(),exists:!!d,data:()=>d?clone(d):undefined,metadata:{fromCache:false,hasPendingWrites:false}}};
+  const merge=(a,b)=>{for(const k in b){const v=b[k];if(v&&typeof v==='object'&&!Array.isArray(v)&&a[k]&&typeof a[k]==='object'&&!Array.isArray(a[k]))merge(a[k],v);else a[k]=v}return a};
+  const test=(x,op,v)=>({'==':x===v,'!=':x!==v,'<':x<v,'<=':x<=v,'>':x>v,'>=':x>=v,'in':Array.isArray(v)&&v.includes(x),'not-in':Array.isArray(v)&&!v.includes(x),'array-contains':Array.isArray(x)&&x.includes(v)})[op];
+  function docRef(p){return {id:p.split('/').pop(),path:p,get:async()=>snap(p),
+    set:async d=>{mem[p]=clone(d);changed()},
+    update:async d=>{if(!mem[p])throw {code:'invalid_argument',message:'Document does not exist'};merge(mem[p],clone(d));changed()},
+    delete:async()=>{delete mem[p];changed()},
+    onSnapshot(next){let last=null;const f=()=>{const j=JSON.stringify(mem[p]??null);if(j!==last){last=j;next(snap(p))}};subs.add(f);setTimeout(f,0);return()=>subs.delete(f)},
+    collection:c=>colRef(p+'/'+c)}}
+  function query(p,fl,ord,lim){
+    const run=()=>{const segs=p.split('/').length+1;let docs=Object.keys(mem).filter(k=>k.startsWith(p+'/')&&k.split('/').length===segs).map(snap);
+      for(const [f,op,v] of fl)docs=docs.filter(s=>test(s.data()[f],op,v));
+      if(ord){const [f,dir]=ord;docs.sort((a,b)=>{const x=a.data()[f],y=b.data()[f];if(x===undefined)return 1;if(y===undefined)return -1;return (x<y?-1:x>y?1:0)*(dir==='desc'?-1:1)})}else docs.sort((a,b)=>a.id<b.id?-1:1);
+      if(lim)docs=docs.slice(0,lim);return {docs,size:docs.length,empty:!docs.length,docChanges:()=>[],metadata:{fromCache:false,hasPendingWrites:false}}};
+    return {where:(f,op,v)=>query(p,[...fl,[f,op,v]],ord,lim),orderBy:(f,d)=>query(p,fl,[f,d||'asc'],lim),limit:n=>query(p,fl,ord,n),get:async()=>run(),
+      onSnapshot(next){let last=null;const f=()=>{const r=run();const j=JSON.stringify(r.docs.map(d=>[d.id,d.data()]));if(j!==last){last=j;next(r)}};subs.add(f);setTimeout(f,0);return()=>subs.delete(f)}}}
+  function colRef(p){return Object.assign(query(p,[],null,0),{path:p,doc:id=>docRef(p+'/'+(id||rnd(16))),add:async d=>{const r=docRef(p+'/'+rnd(16));await r.set(d);return r}})}
+  return {doc:docRef,collection:colRef};
+}
+function localUid(){
+  const m=/[?&]as=([a-z0-9_-]+)/i.exec(location.search);if(m)return 'local_'+m[1];
+  try{let u=localStorage.getItem('insane_uid');if(!u){u='local_'+rnd(10);localStorage.setItem('insane_uid',u)}return u}catch(e){return 'local_guest'}
+}
+
+/* ---------- state ---------- */
+const S={mode:'boot',db:null,uid:null,user:null,canWrite:true,isOwner:false,realName:'',
+  me:undefined,priv:{},ev:null,circle:null,threads:[],members:[],progress:{},midnight:[],sealed:[],msgs:[],
+  solves:[],drops:[],checkins:[],posts:[],calls:[],rooms:[],met:[],people:{},dropIns:[],
+  ui:{tab:'today',cseg:'chat',sseg:'map',open:null,sheet:null,f:{},ob:{step:0,zone:4,cq:''},zoneFilter:null,confirm:null,readonly:false}};
+let downloads=null;
+try{const t=localStorage.getItem('insane_tab');if(t)S.ui.tab=t}catch(e){}
+const F=S.ui.f;
+
+/* ---------- subscriptions: one per group, swapped when the key changes ---------- */
+const SUBS={};
+function want(group,key,make,fn){
+  if(SUBS[group]&&SUBS[group].key===key)return;drop(group);if(!key)return;
+  let u=()=>{};try{u=make().onSnapshot(fn,e=>{console.warn('sub',group,e&&e.code);if(e&&e.code==='revoked')toast('Access to this app changed. Reload to continue.')})}catch(e){console.warn(group,e)}
+  SUBS[group]={key,u};
+}
+function drop(group){if(SUBS[group]){SUBS[group].u();delete SUBS[group]}}
+const docs=snap=>snap.docs.map(d=>Object.assign({id:d.id},d.data()));
+
+function wire(){
+  const db=S.db,uid=S.uid;
+  want('me','me',()=>db.doc('people/'+uid),s=>{S.me=s.exists?s.data():null;wire2();render()});
+  want('priv','priv',()=>db.collection('data/users/'+uid),s=>{const p={};for(const d of s.docs)p[d.id]=d.data();S.priv=p;render()});
+  want('ev','ev',()=>db.doc('ev/'+uid),s=>{S.ev=s.exists?s.data():{first:{},days:[]};S.evLoaded=true;dailyVisit()});
+}
+function wire2(){
+  const db=S.db,me=S.me,uid=S.uid;
+  const cid=me&&me.circle,city=me&&me.city,wk=weekKey();
+  want('circle',cid,()=>db.doc('circles/'+cid),s=>{S.circle=s.exists?Object.assign({id:cid},s.data()):null;render()});
+  want('threads',cid,()=>db.collection(`circles/${cid}/threads`),s=>{S.threads=docs(s);render()});
+  want('progress',cid,()=>db.collection(`circles/${cid}/progress`),s=>{S.progress={};for(const d of s.docs)S.progress[d.id]=d.data();render()});
+  want('members',cid,()=>db.collection('people').where('circle','==',cid),s=>{S.members=docs(s);for(const m of S.members)S.people[m.id]=m;render()});
+  want('midnight',cid,()=>db.collection(`circles/${cid}/midnight`),s=>{S.midnight=docs(s);render()});
+  want('sealed',cid,()=>db.collection(`circles/${cid}/sealed`),s=>{S.sealed=docs(s);render()});
+  want('rooms',cid,()=>db.collection('rooms').where('circles','array-contains',cid),s=>{S.rooms=docs(s);render()});
+  want('solves',city&&city+wk,()=>db.collection('solves').where('week','==',wk).where('city','==',city),s=>{S.solves=docs(s).sort((a,b)=>a.at-b.at);render()});
+  want('drops',city,()=>db.collection('drops').where('city','==',city),s=>{S.drops=docs(s);render()});
+  want('checkins',city&&city+wk,()=>db.collection('checkins').where('city','==',city).where('week','==',wk),s=>{S.checkins=docs(s);render()});
+  want('posts',city,()=>db.collection('posts').where('city','==',city).orderBy('at','desc').limit(80),s=>{S.posts=docs(s);render()});
+  want('calls',city,()=>db.collection('calls').where('city','==',city),s=>{S.calls=docs(s);render()});
+  want('met',me?'met':null,()=>db.collection('met').where('ids','array-contains',uid),s=>{const prev=new Set(S.met.map(m=>m.id));S.met=docs(s);
+    for(const m of S.met){const o=m.ids.find(x=>x!==uid);person(o);if(S.metLoaded&&!prev.has(m.id))S.db.doc('people/'+o).get().then(ps=>{const nm=(ps.exists&&ps.data().name)||'someone';if(ps.exists)S.people[o]=ps.data();toast('You met '+nm+'. You can message each other now.');logMine('Met '+nm+' in person');mark('met')}).catch(()=>{})}S.metLoaded=true;render()});
+  const o=S.ui.open;
+  want('msgs',o&&openPath(o),()=>db.collection(openPath(o)+'/msgs').orderBy('at','asc').limit(300),s=>{S.msgs=docs(s);render(true)});
+  const sd=S.ui.sheet&&S.ui.sheet.t==='drop'?S.ui.sheet.id:null;
+  want('dropIns',sd,()=>db.collection('checkins').where('drop','==',sd),s=>{S.dropIns=docs(s);render()});
+}
+function openPath(o){if(!o)return null;if(o.type==='thread')return `circles/${S.me&&S.me.circle}/threads/${o.id}`;if(o.type==='room')return 'rooms/'+o.id;if(o.type==='dm')return 'dms/'+o.id;return null}
+const pending={};
+function person(id){if(!id||S.people[id]||pending[id])return S.people[id];pending[id]=1;S.db.doc('people/'+id).get().then(s=>{S.people[id]=s.exists?s.data():{name:'Someone'};render()}).catch(()=>{});return null}
+const nameOf=id=>id===S.uid?'You':(S.people[id]?.name||person(id)?.name||'Someone');
+
+/* ---------- writes ---------- */
+async function W(fn,okMsg){
+  if(S.ui.readonly){toast('You can look around, but you need Contributor or Editor access to take part.');return false}
+  try{await fn();if(okMsg)toast(okMsg);return true}
+  catch(e){console.warn(e);const c=e&&e.code;
+    if(c==='invalid_argument'&&S.mode==='live'){S.ui.readonly=true;toast('This link lets you look, not post. Ask the owner to invite you as an Editor.')}
+    else if(c==='quota_exceeded')toast('The app’s storage is full. The owner needs to clear old messages.');
+    else if(c==='resource_exhausted')toast('Too fast. Give it a few seconds and try again.');
+    else toast('That didn’t save. Check your connection and try again.');
+    render();return false}
+}
+async function mark(step){
+  if(!S.evLoaded||!S.ev||(S.ev.first&&S.ev.first[step]))return;
+  S.ev.first=Object.assign({},S.ev.first,{[step]:now()});
+  try{await S.db.doc('ev/'+S.uid).set({first:S.ev.first,days:S.ev.days||[]})}catch(e){}
+}
+let visited=false;
+async function dailyVisit(){
+  if(visited||!S.evLoaded)return;visited=true;const d=today();const days=S.ev.days||[];
+  if(!days.includes(d)){S.ev.days=[...days,d].slice(-90);S.ev.first=Object.assign({signedIn:now()},S.ev.first||{});try{await S.db.doc('ev/'+S.uid).set({first:S.ev.first,days:S.ev.days})}catch(e){}}
+  if(S.me&&(!S.me.seen||now()-S.me.seen>HOUR)){try{await S.db.doc('people/'+S.uid).update({seen:now()})}catch(e){}}
+}
+// Timeline writes go one at a time and merge with what this tab already wrote, so two quick events can't overwrite each other.
+let logQ=Promise.resolve(),logMem=[];
+function logMine(text){
+  const entry={t:text,at:now()};
+  logQ=logQ.then(async()=>{
+    const seen=new Set();const items=[entry,...logMem,...(S.priv.log?.items||[])].filter(i=>{const k=i.at+'|'+i.t;if(seen.has(k))return false;seen.add(k);return true}).sort((a,b)=>b.at-a.at).slice(0,300);
+    logMem=items;try{await S.db.doc(`data/users/${S.uid}/log`).set({items})}catch(e){}
+  });
+  return logQ;
+}
+async function setSeen(key){
+  const cur=S.priv.seen||{};if(cur[key]&&now()-cur[key]<3000)return;
+  try{await S.db.doc(`data/users/${S.uid}/seen`).set(Object.assign({},cur,{[key]:now()}))}catch(e){}
+}
+async function pushProgress(){
+  if(!S.me?.circle)return;
+  const items=journeys().filter(j=>j.status==='active').map(j=>({kind:j.read.kind,lane:j.lane,label:j.read.kind==='Ladder'?'Ladder':j.read.kind==='Midnight'?'Something to say':j.read.what,count:jCount(j),goal:jGoal(j)}));
+  try{await S.db.doc(`circles/${S.me.circle}/progress/${S.uid}`).set({items,at:now()})}catch(e){}
+}
+
+/* ---------- journeys ---------- */
+const journeys=()=>Object.entries(S.priv).filter(([k])=>k.startsWith('j_')).map(([id,v])=>Object.assign({id},v)).sort((a,b)=>b.created-a.created);
+function jCount(j){const k=j.read.kind;if(k==='Pact'){const ws=weekStart();return (j.ticks||[]).filter(d=>new Date(d+'T12:00').getTime()>=ws).length}if(k==='Ladder')return j.rung||0;if(k==='Plan'||k==='Plan + pot')return (j.steps||[]).filter(s=>s.done).length;return j.status==='done'?1:0}
+function jGoal(j){const k=j.read.kind;if(k==='Pact')return j.read.goal||3;if(k==='Ladder')return j.read.rungs||5;if(k==='Plan'||k==='Plan + pot')return (j.steps||[]).length||3;return 1}
+async function addJourney(lane,text){
+  const r=readUrge(lane,text);if(!r||r.kind==='Support'||r.kind==='No')return false;
+  const id='j_'+rnd(10);
+  const d={lane,text:text.trim(),read:r,created:now(),status:'active',ticks:[],rung:0};
+  if(r.kind==='Plan'||r.kind==='Plan + pot')d.steps=(r.kind==='Plan + pot'?['Pick a date','Get two people in','Everyone pledges','Book it']:['Pick a date','Get two people in','Do it']).map(t=>({t,done:false}));
+  if(r.kind==='Ladder')d.rungsText=['','','','',''];
+  await S.db.doc(`data/users/${S.uid}/${id}`).set(d);
+  return true;
+}
+
+/* ---------- boot ---------- */
+async function boot(){
+  draw();
+  let db=null,user=null;
+  try{if(window.claude&&typeof claude.use==='function'){[db,user]=await Promise.all([claude.use('db'),claude.use('user')]);downloads=await claude.use('downloads').catch(()=>null)}}catch(e){}
+  let uid=null;if(user){try{uid=await user.id()}catch(e){}}
+  if(db&&uid){
+    S.mode='live';S.db=db;S.uid=uid;S.user=user;
+    try{S.isOwner=!!(await user.isOwner())}catch(e){}
+    try{const w=await user.can('data.write');if(w===false)S.ui.readonly=true}catch(e){}
+    try{const m=await user.me();S.realName=m.name||''}catch(e){}
+  }else{S.mode='demo';S.db=LocalDB();S.uid=localUid();S.isOwner=!/[?&]as=/.test(location.search)||/[?&]as=alice\b/.test(location.search)}
+  wire();render();
+}
+
+/* ---------- rendering ---------- */
+let rq=0,stick=false,lastV='',lastL='';
+function render(scrollChat){if(scrollChat)stick=true;if(rq)return;rq=requestAnimationFrame(()=>{rq=0;draw()})}
+function draw(){
+  const a=document.activeElement,fid=a&&a.id,ss=a&&a.selectionStart,se=a&&a.selectionEnd;
+  const chat=$('.chat'),nearBottom=chat?(innerHeight+scrollY>=document.body.scrollHeight-120):true;
+  // Countdowns are filled by tick(), so an unchanged screen keeps its DOM and a tap mid-update isn't lost.
+  const strip=h=>h.replace(/(data-until="\d+"[^>]*>)[^<]*/g,'$1');
+  const hv=strip(view()),hl=strip(layer());
+  if(hv!==lastV){$('#app').innerHTML=hv;lastV=hv}
+  if(hl!==lastL){$('#layer').innerHTML=hl;lastL=hl}
+  if(fid){const el=document.getElementById(fid);if(el&&el!==document.activeElement){el.focus({preventScroll:true});try{if(ss!=null)el.setSelectionRange(ss,se)}catch(e){}}}
+  if(stick&&nearBottom&&$('.chat'))scrollTo(0,document.body.scrollHeight);stick=false;
+  tick();
+}
+function view(){
+  if(S.mode==='boot'||S.me===undefined)return `<div class="boot"><span class="mark">INSANE</span><span class="pulse">Signing you in…</span></div>`;
+  if(S.me===null)return onboarding();
+  const t=S.ui.tab;
+  return header()+`<div id="v">${t==='today'?vToday():t==='circle'?vCircle():t==='city'?vCity():vYou()}</div>`+nav();
+}
+function header(){
+  const me=S.me,c=S.circle;
+  const where=`${esc(c?c.name:'No circle yet')}<br>${esc(me.city)} · ${esc(ZN[me.zone]||'')}`;
+  return `<header class="top"><span class="mark">INSANE</span><span class="where"><span class="live ${S.mode==='demo'?'demo':''}" aria-hidden="true"></span>${where}</span></header>`+
+   (S.mode==='demo'?`<div class="banner"><b>Demo on this device.</b> Nothing leaves this browser. Open the shared link signed in to play with other people.</div>`:'')+
+   (S.ui.readonly?`<div class="banner"><b>Look-only access.</b> To post, check in or join a circle, ask the owner to invite you by email as an Editor.</div>`:'');
+}
+const ICON={
+ today:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>',
+ circle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="4" r="1.6" fill="currentColor"/><circle cx="19" cy="15" r="1.6" fill="currentColor"/><circle cx="5" cy="15" r="1.6" fill="currentColor"/></svg>',
+ city:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg>',
+ you:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>'};
+function nav(){
+  const b=badges();
+  return `<nav class="tabs" aria-label="Sections"><div class="in">${[['today','Today'],['circle','Circle'],['city','City'],['you','You']].map(([k,n])=>`<button data-act="tab" data-v="${k}" class="${S.ui.tab===k?'on':''}" aria-current="${S.ui.tab===k?'page':'false'}">${ICON[k]}${n}${b[k]?'<span class="dot" aria-label="new"></span>':''}</button>`).join('')}</div></nav>`;
+}
+function unreadThreads(){
+  const seen=S.priv.seen||{};const out=[];
+  for(const t of S.threads)if(t.last&&t.last.by!==S.uid&&t.last.at>(seen['t:'+t.id]||0)&&!t.muted)out.push({type:'thread',id:t.id,title:t.title,last:t.last});
+  for(const r of S.rooms)if(r.last&&r.last.by!==S.uid&&r.last.at>(seen['r:'+r.id]||0)&&r.closesAt>now())out.push({type:'room',id:r.id,title:roomTitle(r),last:r.last});
+  return out;
+}
+function badges(){const seen=S.priv.seen||{};const midNew=S.midnight.some(m=>m.releaseAt<=now()&&m.releaseAt>(seen.midnight||0));
+  return {circle:unreadThreads().length>0||midNew,city:S.posts.some(p=>p.at>(seen.feed||0)&&p.by!==S.uid)&&S.ui.tab!=='city'}}
+
+/* ---------- onboarding ---------- */
+function onboarding(){
+  const o=S.ui.ob,st=o.step;
+  const steps=`<div class="steps" aria-label="Step ${st+1} of 4">${[0,1,2,3].map(i=>`<i class="${i<=st?'on':''}"></i>`).join('')}</div>`;
+  let body='';
+  if(st===0){
+    if(o.name==null)o.name=(S.realName||'').split(' ')[0]||'';
+    body=`<h1 class="v">Make plans, take dares, trade favours. With your five.</h1>
+    <p class="lede">${S.mode==='live'?`You’re signed in through Claude${S.realName?` as <b>${esc(S.realName)}</b>`:''}. Pick the name your circle will see.`:'This is the demo on this device. Pick a name to try it.'}</p>
+    <label class="f" for="ob-name">Your name in INSANE</label><input class="in-t" id="ob-name" data-ob="name" maxlength="24" value="${esc(o.name)}" placeholder="Maya" autocomplete="nickname">
+    <label class="chk"><input type="checkbox" id="ob-age" data-ob="age" ${o.age?'checked':''}> <span>I’m 16 or over. INSANE is built for meeting people in real places, so it isn’t for under-16s.</span></label>
+    <div class="btns"><button class="btn wide" data-act="ob-next" ${(o.name||'').trim()&&o.age?'':'disabled'}>Next</button></div>`;
+  }else if(st===1){
+    const q=(o.cq||'').toLowerCase();const list=CITIES.filter(c=>!q||c[0].toLowerCase().includes(q)).slice(0,q?12:10);
+    body=`<h1 class="v">Where’s home?</h1><p class="lede">Your city sets your feed, drops and Decode. Only the 3 km area is saved, never where you are.</p>
+    <label class="f" for="ob-cq">City</label><input class="in-t" id="ob-cq" data-ob="cq" value="${esc(o.cq||'')}" placeholder="Search, or type any city" autocomplete="address-level2">
+    <div class="chips" style="margin-top:8px" id="ob-cities">${list.map(c=>`<button class="chip ${o.city===c[0]?'on':''}" data-act="ob-city" data-v="${esc(c[0])}">${esc(c[0])}</button>`).join('')}${q&&!list.some(c=>c[0].toLowerCase()===q)?`<button class="chip ${o.city===o.cq.trim()?'on':''}" data-act="ob-city" data-v="${esc(o.cq.trim())}">Use “${esc(o.cq.trim())}”</button>`:''}</div>
+    <label class="f">Which part of ${esc(o.city||'town')}? <small>3 km squares around the centre</small></label>
+    <div class="zones">${ZN.map((z,i)=>`<button class="${o.zone===i?'on':''}" data-act="ob-zone" data-v="${i}" aria-pressed="${o.zone===i}">${z}</button>`).join('')}</div>
+    <div class="btns"><button class="btn ghost" data-act="ob-back">Back</button><button class="btn" style="flex:1" data-act="ob-next" ${o.city?'':'disabled'}>Next</button></div>`;
+  }else if(st===2){
+    body=`<h1 class="v">What do you need, want, and have an urge to do?</h1><p class="lede">One line each, in your own words. Any or none. Your circle sees progress, never these words.</p>`+
+    ['need','want','urge'].map(k=>{const L=LANES[k];return `<div class="lane"><h3><span class="tag ${k}">${L.k}</span>${L.lead} <small>${L.hz}</small></h3>
+      <input class="in-t" id="ob-${k}" data-ob="${k}" data-read="${k}" value="${esc(o[k]||'')}" placeholder="${esc(L.ph)}" maxlength="90" style="margin-top:6px">
+      <div class="ex">${L.ex.map(e=>`<button data-act="ob-ex" data-k="${k}" data-v="${esc(e)}">${esc(e)}</button>`).join('')}</div>
+      <div id="read-${k}">${readCard(readUrge(k,o[k]))}</div></div>`}).join('')+
+    `<div class="btns"><button class="btn ghost" data-act="ob-back">Back</button><button class="btn" style="flex:1" data-act="ob-next">${['need','want','urge'].some(k=>(o[k]||'').trim())?'Next':'Skip for now'}</button></div>`;
+  }else{
+    body=`<h1 class="v">Your circle</h1><p class="lede">Up to 8 people you actually see. Start one and send the code, or join with a friend’s code.</p>
+    <div class="stack">
+      <div class="card hot"><h3>Start a circle</h3><label class="f" for="ob-cname">Circle name</label><input class="in-t" id="ob-cname" data-ob="cname" maxlength="28" value="${esc(o.cname||'')}" placeholder="Third Floor"><div class="btns"><button class="btn" data-act="ob-finish" data-v="create" ${(o.cname||'').trim()?'':'disabled'}>Start it</button></div></div>
+      <div class="card"><h3>Join with a code</h3><label class="f" for="ob-code">6-letter code</label><input class="in-t" id="ob-code" data-ob="code" maxlength="6" value="${esc(o.code||'')}" placeholder="K7QF2M" autocapitalize="characters" style="text-transform:uppercase;letter-spacing:.2em;font-family:var(--f-mono)"><div class="btns"><button class="btn" data-act="ob-finish" data-v="join" ${(o.code||'').trim().length===6?'':'disabled'}>Join</button></div></div>
+    </div>
+    <div class="btns"><button class="btn ghost" data-act="ob-back">Back</button><button class="link" data-act="ob-finish" data-v="skip" style="margin-left:auto">Look around first</button></div>`;
+  }
+  return `<div style="padding-top:18px"><span class="mark">INSANE</span>${steps}${body}</div>`;
+}
+async function finishOnboarding(how){
+  const o=S.ui.ob;
+  const ok=await W(async()=>{
+    await S.db.doc('people/'+S.uid).set({name:o.name.trim().slice(0,24),city:o.city,zone:o.zone,circle:null,joined:now(),seen:now()});
+    for(const k of ['need','want','urge'])if((o[k]||'').trim())await addJourney(k,o[k]);
+  });
+  if(!ok)return;
+  mark('named');mark('city');if(['need','want','urge'].some(k=>(o[k]||'').trim()))mark('nwu');
+  S.me={name:o.name.trim(),city:o.city,zone:o.zone,circle:null};
+  if(how==='create')await createCircle(o.cname.trim());
+  else if(how==='join')await joinCircle(o.code.trim().toUpperCase());
+  S.ui.tab='today';render();
+}
+async function createCircle(name){
+  const cid=rnd(10);let code='';
+  for(let i=0;i<5;i++){code=rnd(6,CODEA);const s=await S.db.doc('codes/'+code).get();if(!s.exists)break}
+  const ok=await W(async()=>{
+    await S.db.doc('circles/'+cid).set({name:name.slice(0,28),code,city:S.me.city,members:[S.uid],createdAt:now(),by:S.uid});
+    await S.db.doc('codes/'+code).set({cid,at:now()});
+    await S.db.doc(`circles/${cid}/threads/general`).set({kind:'talk',title:'General',by:S.uid,at:now(),muted:true});
+    await S.db.doc('people/'+S.uid).update({circle:cid});
+  },'Circle started. Send your friends the code '+code);
+  if(ok){mark('circle');logMine('Started '+name);pushProgress()}
+}
+async function joinCircle(code){
+  const s=await S.db.doc('codes/'+code).get().catch(()=>null);
+  if(!s||!s.exists){toast('No circle has the code '+code+'. Check it with whoever sent it.');return}
+  const cid=s.data().cid;const c=await S.db.doc('circles/'+cid).get();
+  if(!c.exists){toast('That circle has closed.');return}
+  const cd=c.data();const mem=(await S.db.collection('people').where('circle','==',cid).get()).size;
+  if(mem>=8){toast(cd.name+' is full. Circles stop at 8.');return}
+  const ok=await W(async()=>{
+    await S.db.doc('people/'+S.uid).update({circle:cid});
+    await S.db.doc('circles/'+cid).update({members:[...new Set([...(cd.members||[]),S.uid])]});
+  },'You’re in '+cd.name+'.');
+  if(ok){mark('circle');logMine('Joined '+cd.name);setTimeout(pushProgress,400)}
+}
+
+/* ---------- Today ---------- */
+function vToday(){
+  const me=S.me,d=new Date();
+  let out=`<h1 class="v">${DOW[d.getDay()]==='Sat'||DOW[d.getDay()]==='Sun'?'Weekend':'Today'}, ${esc(me.name)}</h1><p class="lede">${d.toLocaleDateString([],{weekday:'long',day:'numeric',month:'long'})} · ${esc(me.city)}</p><div class="stack">`;
+  if(!me.circle)out+=`<div class="card stamp"><h3>Start a circle, or join one</h3><p>Most of INSANE happens with the people you actually see.</p><div class="btns"><button class="btn" data-act="sheet" data-v="circle-start">Start or join</button></div></div>`;
+  // journeys due
+  const act=journeys().filter(j=>j.status==='active');
+  for(const j of act.slice(0,3))out+=jCard(j,true);
+  if(!act.length)out+=`<div class="card dash"><h3>Nothing on the go</h3><p class="meta">Add a need, want or urge and it shows up here.</p><div class="btns"><button class="btn s ghost" data-act="sheet" data-v="add-j">Add one</button></div></div>`;
+  // unread
+  const un=unreadThreads();
+  if(un.length)out+=`<div class="card hot"><div class="meta">New in your circle</div>${un.slice(0,3).map(u=>`<button class="thr" style="border:0;padding:6px 0;background:none" data-act="open" data-type="${u.type}" data-v="${esc(u.id)}"><span class="av">${initials(u.last.name)}</span><span class="grow"><b>${esc(u.title)}</b><span class="last">${esc(u.last.name)}: ${esc(u.last.text)}</span></span><span class="un"></span></button>`).join('')}</div>`;
+  // decode
+  out+=decodeCard(true);
+  // next drop
+  const nd=S.drops.filter(x=>x.end>now()).sort((a,b)=>a.start-b.start)[0];
+  if(nd)out+=dropRow(nd);
+  else out+=`<div class="card dash"><h3>No drops in ${esc(me.city)} yet</h3><p class="meta">Run a shop, a stall or a club night? Host one: a swap box, a dare at the counter, an offer for whoever turns up.</p><div class="btns"><button class="btn s ghost" data-act="sheet" data-v="host">Host a drop</button></div></div>`;
+  // sealed opening soon
+  const soon=S.sealed.filter(x=>x.openAt>now()).sort((a,b)=>a.openAt-b.openAt)[0];
+  if(soon)out+=`<div class="card" style="background:var(--ink);color:var(--paper);border-color:var(--ink)"><div class="meta" style="color:inherit;opacity:.7">Sealed by ${esc(nameOf(soon.by))}</div><h3>Opens ${esc(when(soon.openAt))}</h3><p style="opacity:.8">Nobody can read it before then.</p></div>`;
+  return out+'</div>';
+}
+function jCard(j,compact){
+  const k=j.read.kind,c=jCount(j),g=jGoal(j);let body='',btn='';
+  if(k==='Pact'){const done=(j.ticks||[]).includes(today());body=`<div class="meta">${c} of ${g} this week · ${esc(j.read.how)}</div>${days21(j)}`;btn=done?`<button class="btn s ghost" data-act="untick" data-v="${j.id}">Done today ✓ (undo)</button>`:`<button class="btn s" data-act="tick" data-v="${j.id}">Done today</button>`}
+  else if(k==='Ladder'){body=`<div class="meta">Rung ${c} of ${g}</div><div class="bar"><i style="width:${c/g*100}%"></i></div>${j.rungsText&&j.rungsText[c]?`<p class="meta">Next: ${esc(j.rungsText[c])}</p>`:''}`;btn=c<g?`<button class="btn s" data-act="rung" data-v="${j.id}">Climbed rung ${c+1}</button>`:''}
+  else if(k==='Plan'||k==='Plan + pot'){const steps=j.steps||[];const nx=steps.find(s=>!s.done);body=`<div class="meta">${c} of ${g} steps${nx?' · next: '+esc(nx.t):''}</div><div class="bar"><i style="width:${g?c/g*100:0}%"></i></div>`;btn=nx?`<button class="btn s" data-act="step" data-v="${j.id}">Done: ${esc(nx.t)}</button>`:'';if(S.me.circle&&!j.thread)btn+=`<button class="btn s ghost" data-act="j-plan" data-v="${j.id}">Make it a circle ${k==='Plan + pot'?'pot':'plan'}</button>`}
+  else if(k==='Midnight'){body=`<div class="meta">Say it unsigned at midnight, or sealed with your name.</div>`;btn=S.me.circle?`<button class="btn s" data-act="sheet" data-v="midnight">Write it</button>`:''}
+  else{body=`<div class="meta">${esc(j.read.how)} · ${esc(j.read.note)}</div>`;btn=`<button class="btn s" data-act="j-done" data-v="${j.id}">Done it</button>`}
+  return `<div class="card"><div class="row"><span class="grow"><span class="tag ${j.lane}">${LANES[j.lane].k}</span><span class="meta">${esc(k)}</span><h3 style="margin-top:3px">${esc(j.read.what)}</h3></span></div>${body}<div class="btns">${btn}${compact?'':`<button class="btn s ghost" data-act="j-menu" data-v="${j.id}">More</button>`}</div></div>`;
+}
+function days21(j){const set=new Set(j.ticks||[]);const start=dayStart(j.created);let h='';for(let i=0;i<21;i++){const d=ymd(start+i*DAY+HOUR*12);h+=`<i class="${set.has(d)?'y':''} ${d===today()?'t':''}" title="${d}"></i>`}return `<div class="days" aria-label="21 days">${h}</div>`}
+
+/* ---------- Circle ---------- */
+function vCircle(){
+  const c=S.circle;
+  if(!S.me.circle||!c)return `<h1 class="v">No circle yet</h1><p class="lede">A circle is up to 8 people you actually see. Threads, plans, pots and Midnight all happen inside it.</p>${circleStartForm()}`;
+  const seen=S.priv.seen||{};const midNew=S.midnight.some(m=>m.releaseAt<=now()&&m.releaseAt>(seen.midnight||0));
+  if(S.ui.open)return vThread();
+  const seg=S.ui.cseg;
+  let out=`<h1 class="v">${esc(c.name)}</h1><p class="lede">${S.members.length} of 8 · code <b style="font-family:var(--f-mono);letter-spacing:.1em">${esc(c.code)}</b> <button class="link" data-act="copy" data-v="${esc(c.code)}">Copy</button></p>
+  <div class="seg" role="tablist">${[['chat','Chat',unreadThreads().length],['midnight','Midnight',midNew],['people','People',0]].map(([k,n,d])=>`<button role="tab" data-act="cseg" data-v="${k}" class="${seg===k?'on':''}" aria-selected="${seg===k}">${n}${d?'<span class="dot"></span>':''}</button>`).join('')}</div>`;
+  if(seg==='chat')out+=circleChat();else if(seg==='midnight')out+=circleMidnight();else out+=circlePeople();
+  return out;
+}
+function circleStartForm(){return `<div class="stack"><div class="card hot"><h3>Start a circle</h3><label class="f" for="cs-name">Circle name</label><input class="in-t" id="cs-name" data-f="csname" value="${esc(F.csname||'')}" maxlength="28" placeholder="Third Floor"><div class="btns"><button class="btn" data-act="cs-create">Start it</button></div></div>
+  <div class="card"><h3>Join with a code</h3><label class="f" for="cs-code">6-letter code</label><input class="in-t" id="cs-code" data-f="cscode" value="${esc(F.cscode||'')}" maxlength="6" style="text-transform:uppercase;letter-spacing:.2em;font-family:var(--f-mono)" placeholder="K7QF2M"><div class="btns"><button class="btn" data-act="cs-join">Join</button></div></div></div>`}
+const roomTitle=r=>{const other=r.circles.find(x=>x!==S.me.circle);return (r.names&&r.names[other]||'Another circle')+' · '+(r.title||'room')};
+function circleChat(){
+  const seen=S.priv.seen||{};const order={talk:0,plan:1,pot:2};
+  const th=[...S.threads].sort((a,b)=>(b.last?.at||b.at)-(a.last?.at||a.at));
+  const row=(type,id,title,sub,last,un,extra='')=>`<button class="thr" data-act="open" data-type="${type}" data-v="${esc(id)}"><span class="grow"><b>${esc(title)}</b><span class="meta">${sub}</span>${last?`<span class="last">${esc(last.by===S.uid?'You':last.name)}: ${esc(last.text)}</span>`:''}${extra}</span>${un?'<span class="un" aria-label="unread"></span>':''}</button>`;
+  let out=`<div class="eyebrow">Threads <button data-act="sheet" data-v="thread-new">+ New</button></div><div class="stack">`;
+  for(const t of th){const un=t.last&&t.last.by!==S.uid&&t.last.at>(seen['t:'+t.id]||0)&&!t.muted;
+    const sub=t.kind==='plan'?`Plan · ${esc(t.when||'date to pick')} · ${Object.values(t.going||{}).filter(Boolean).length} going`:t.kind==='pot'?`Pot · £${esc(t.per)} each · ${Object.values(t.pledges||{}).filter(Boolean).length} of ${esc(t.min)} pledged`:t.muted?'Muted: no badges':'Talk';
+    out+=row('thread',t.id,t.title,sub,t.last,un)}
+  out+='</div>';
+  const rooms=S.rooms.filter(r=>r.closesAt>now());
+  if(rooms.length){out+=`<div class="eyebrow">With other circles</div><div class="stack">${rooms.map(r=>row('room',r.id,roomTitle(r),`Closes in <span data-until="${r.closesAt}">${left(r.closesAt-now())}</span>`,r.last,r.last&&r.last.by!==S.uid&&r.last.at>(seen['r:'+r.id]||0))).join('')}</div>`}
+  const pr=Object.entries(S.progress).filter(([u])=>S.members.some(m=>m.id===u));
+  if(pr.length){out+=`<div class="eyebrow">What everyone’s on</div><div class="card">${pr.map(([u,p])=>`<div class="row" style="padding:5px 0;border-bottom:1px dashed var(--line)"><span class="av">${initials(nameOf(u))}</span><span class="grow"><b style="font-size:14px">${esc(nameOf(u))}</b>${(p.items||[]).length?(p.items||[]).map(i=>`<div class="meta">${esc(i.label)} · ${i.count} of ${i.goal}${i.kind==='Pact'?' this week':i.kind==='Ladder'?' rungs':''}</div>`).join(''):'<div class="meta">Nothing on right now</div>'}</span></div>`).join('')}</div>`}
+  return out;
+}
+function vThread(){
+  const o=S.ui.open;let title='',panel='',sub='';
+  if(o.type==='thread'){const t=S.threads.find(x=>x.id===o.id);if(!t)return `<button class="link" data-act="close">← Back</button><p>Loading…</p>`;title=t.title;sub=t.kind==='talk'?(t.muted?'Muted thread. It never badges.':'Only the people in it get badges.'):'';panel=threadPanel(t)}
+  else if(o.type==='room'){const r=S.rooms.find(x=>x.id===o.id);if(!r)return `<button class="link" data-act="close">← Back</button><p>This room has closed.</p>`;title=roomTitle(r);sub=`A room for both circles. It closes in <span data-until="${r.closesAt}">${left(r.closesAt-now())}</span>, and people who meet in person can keep talking.`;if(r.ask)panel=`<div class="panel"><div class="meta">The call</div>${esc(r.ask)}</div>`}
+  else{const m=S.met.find(x=>x.id===o.id);const other=m?m.ids.find(x=>x!==S.uid):null;title=other?nameOf(other):'Message';sub=m?`You met ${m.zone!=null?'in '+esc(ZN[m.zone]):''} ${esc(ago(m.at))}. Only the two of you see this.`:''}
+  const closed=o.type==='room'&&(S.rooms.find(x=>x.id===o.id)?.closesAt||0)<now();
+  const msgs=S.msgs.map(m=>`<div class="msg ${m.by===S.uid?'me':''}"><small>${esc(m.by===S.uid?'You':m.name)}${m.cname&&o.type==='room'?' · '+esc(m.cname):''} · ${esc(ago(m.at))}</small>${esc(m.text)}</div>`).join('');
+  return `<div style="padding-top:14px"><button class="link" data-act="close">← ${o.type==='dm'?'People':'Threads'}</button></div><h1 class="v" style="margin-top:10px">${esc(title)}</h1>${sub?`<p class="lede" style="margin:0">${sub}</p>`:''}${panel}
+  <div class="chat" aria-label="Messages">${msgs||'<p class="meta" style="text-align:center;padding:30px 0">No messages yet. Say something.</p>'}</div>
+  ${closed?'<p class="meta">This room has closed.</p>':`<form class="compose" data-form="send"><label class="sr" for="m-text">Message</label><input class="in-t" id="m-text" data-f="msg" value="${esc(F.msg||'')}" placeholder="Message" maxlength="600" autocomplete="off"><button class="btn" type="submit">Send</button></form>`}`;
+}
+function threadPanel(t){
+  if(t.kind==='plan'){const g=t.going||{};const ids=S.members.map(m=>m.id);const me=g[S.uid];
+    return `<div class="panel"><div class="meta">Plan</div><b>${esc(t.when||'Date to pick')}${t.where?' · '+esc(t.where):''}</b><div class="who">${ids.map(u=>`<span class="${g[u]?'':'no'}">${esc(nameOf(u))}${g[u]?' ✓':''}</span>`).join('')}</div><div class="btns"><button class="btn s ${me?'ghost':''}" data-act="going" data-v="${t.id}">${me?'Can’t make it':'I’m in'}</button></div></div>`}
+  if(t.kind==='pot'){const p=t.pledges||{};const n=Object.values(p).filter(Boolean).length;const on=n>=(t.min||2);const mine=p[S.uid];
+    return `<div class="panel"><div class="meta">Pot · nobody pays unless ${esc(t.min)} pledge${t.by_when?' by '+esc(t.by_when):''}</div><b>£${esc(t.per)} each · ${n} of ${esc(t.min)} pledged</b><div class="bar"><i style="width:${Math.min(100,n/(t.min||2)*100)}%;background:${on?'var(--good)':'var(--ball)'}"></i></div>
+    ${on?`<p><b>It’s on.</b> Pay ${esc(nameOf(t.by))} directly${t.pay?': '+esc(t.pay):'. They’ll post how.'} INSANE never holds the money.</p>`:''}
+    <div class="btns"><button class="btn s ${mine?'ghost':''}" data-act="pledge" data-v="${t.id}">${mine?'Take back my pledge':'Pledge £'+esc(t.per)}</button>${t.by===S.uid?`<button class="btn s ghost" data-act="sheet" data-v="pay-note" data-id="${t.id}">How to pay you</button>`:''}</div></div>`}
+  return '';
+}
+function circleMidnight(){
+  const rel=S.midnight.filter(m=>m.releaseAt<=now()&&(m.flags||[]).length<2).sort((a,b)=>b.releaseAt-a.releaseAt);
+  const mineQ=(S.priv.log?.items||[]).filter(i=>/^Midnight message queued/.test(i.t)&&i.at>now()-7*DAY).length;
+  const pend=S.midnight.filter(m=>m.releaseAt>now()).length;
+  let out=`<p class="lede" style="margin-top:12px">Unsigned messages go out at midnight. Nobody, the app included, keeps who wrote them. Sealed ones carry your name and open when you choose.</p>
+  <div class="btns" style="margin-top:0"><button class="btn" data-act="sheet" data-v="midnight">Write unsigned</button><button class="btn ghost" data-act="sheet" data-v="seal">Seal one</button></div>`;
+  out+=`<div class="eyebrow">Out so far</div>`;
+  if(pend)out+=`<p class="meta">${pend} unsigned message${pend>1?'s':''} waiting for midnight${mineQ?` (you wrote ${mineQ} this week)`:''}.</p>`;
+  out+=rel.length?`<div class="stack">${rel.map(m=>`<div class="post"><div class="meta">Midnight · ${esc(when(m.releaseAt))}</div><p class="txt">${esc(m.text)}</p><div class="act"><button data-act="mflag" data-v="${m.id}">${(m.flags||[]).includes(S.uid)?'Flagged':'Flag as unkind'}</button><span class="meta">Two flags hide it.</span></div></div>`).join('')}</div>`:`<div class="card dash"><p class="meta">Nothing has gone out yet.</p></div>`;
+  const se=[...S.sealed].sort((a,b)=>a.openAt-b.openAt);
+  if(se.length)out+=`<div class="eyebrow">Sealed</div><div class="stack">${se.map(s=>s.openAt>now()?`<div class="card" style="background:var(--ink);color:var(--paper);border-color:var(--ink)"><div class="meta" style="color:inherit;opacity:.7">Sealed by ${esc(nameOf(s.by))} · ${esc(s.label||'')}</div><b>Opens ${esc(when(s.openAt))}</b> · <span data-until="${s.openAt}">${left(s.openAt-now())}</span></div>`:`<div class="post"><div class="meta">From ${esc(nameOf(s.by))}, sealed ${esc(ago(s.at))}, opened ${esc(when(s.openAt))}</div><p class="txt">${esc(s.text)}</p></div>`).join('')}</div>`;
+  return out;
+}
+function circlePeople(){
+  const c=S.circle;
+  let out=`<div class="eyebrow">In ${esc(c.name)}</div><div class="card">${S.members.map(m=>{const dark=m.darkUntil>now();return `<div class="row" style="padding:6px 0"><span class="av">${initials(m.name)}</span><span class="grow"><b>${esc(m.id===S.uid?m.name+' (you)':m.name)}</b><div class="meta">${dark?`Dark for <span data-until="${m.darkUntil}">${left(m.darkUntil-now())}</span>`:m.seen&&now()-m.seen<DAY?'Here today':m.seen?'Last here '+esc(ago(m.seen)):''} · ${esc(ZN[m.zone]||'')}</div></span></div>`}).join('')}</div>
+  <div class="btns"><button class="btn ghost s" data-act="copy" data-v="${esc(c.code)}">Copy invite code ${esc(c.code)}</button></div>`;
+  out+=`<div class="eyebrow">People you’ve met <button data-act="sheet" data-v="meet">Meet someone</button></div>`;
+  out+=S.met.length?`<div class="stack">${S.met.map(m=>{const o=m.ids.find(x=>x!==S.uid);return `<button class="thr" data-act="open" data-type="dm" data-v="${esc(m.id)}"><span class="av">${initials(nameOf(o))}</span><span class="grow"><b>${esc(nameOf(o))}</b><span class="meta">Met ${esc(ago(m.at))}</span></span></button>`}).join('')}</div>`:`<div class="card dash"><p class="meta">Message someone from another circle after you’ve met in person. Swap a 6-digit code face to face and you can message each other. No cold messages from strangers.</p></div>`;
+  out+=`<div class="btns" style="margin-top:22px"><button class="link" data-act="leave">Leave ${esc(c.name)}</button></div>`;
+  return out;
+}
+
+/* ---------- City ---------- */
+function vCity(){
+  const seg=S.ui.sseg;
+  let out=`<h1 class="v">${esc(S.me.city)}</h1><p class="lede">Drops, Decode, the feed and calls from other circles in your city.</p>
+  <div class="seg" role="tablist">${[['map','Map'],['feed','Feed'],['calls','Calls'],['league','League']].map(([k,n])=>`<button role="tab" data-act="sseg" data-v="${k}" class="${seg===k?'on':''}" aria-selected="${seg===k}">${n}</button>`).join('')}</div>`;
+  if(seg==='map')out+=cityMap();else if(seg==='feed')out+=cityFeed();else if(seg==='calls')out+=cityCalls();else out+=cityLeague();
+  return out;
+}
+function decodeCard(compact){
+  const st=decodeState(S.solves),cl=CLUES[clueIdx()];const mine=S.solves.find(s=>s.uid===S.uid);
+  const circ=S.me.circle&&S.solves.find(s=>s.circle===S.me.circle);
+  let status=mine?`<b>Solved, ${ordinal(S.solves.indexOf(mine)+1)} in ${esc(S.me.city)}</b> · ${decPts(S.solves.indexOf(mine)+1,mine.hints)} points`:st.revealed?`The answer was <b>${ANS[clueIdx()]}</b>`:circ?`${esc(nameOf(circ.uid))} solved it for your circle. You can still solve it yourself.`:'';
+  const info=`<div class="meta">${st.n} solved in ${esc(S.me.city)} · ${st.revealed?'answer is out':`answer out in <span data-until="${st.reveal}">${left(st.reveal-now())}</span>`}</div>`;
+  if(compact)return `<button class="card ball" style="text-align:left;width:100%" data-act="sheet" data-v="decode"><div class="meta" style="color:var(--ball)">Decode · week ${weekNum()}</div><h3>${esc(cl.q)}</h3>${info}${status?`<p style="font-size:14px">${status}</p>`:''}</button>`;
+  return {st,cl,mine,status,info};
+}
+function cityMap(){
+  const t=now(),zf=S.ui.zoneFilter;const live=S.drops.filter(d=>d.end>t-6*HOUR).sort((a,b)=>a.start-b.start);
+  const cell=100,pad=18;
+  let svg=`<svg viewBox="0 0 ${cell*3+pad*2} ${cell*3+pad*2+22}" role="img" aria-label="Zone map of ${esc(S.me.city)}: 3 kilometre squares, your zone highlighted, drops marked">`;
+  svg+=`<defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--stamp-soft)"/><line x1="0" y1="0" x2="0" y2="6" stroke="var(--stamp)" stroke-width="1" opacity=".35"/></pattern></defs>`;
+  for(let z=0;z<9;z++){const x=pad+(z%3)*cell,y=pad+Math.floor(z/3)*cell;const mine=z===S.me.zone;const n=live.filter(d=>d.zone===z).length;
+    svg+=`<g data-act="zone" data-v="${z}" style="cursor:pointer"><rect x="${x+2}" y="${y+2}" width="${cell-4}" height="${cell-4}" rx="6" fill="${mine?'url(#hatch)':(z%2?'var(--cell)':'var(--cell2)')}" stroke="${zf===z?'var(--ink)':mine?'var(--stamp)':'var(--line)'}" stroke-width="${zf===z||mine?2:1}"/><text x="${x+8}" y="${y+16}" font-size="9" fill="var(--muted)">${ZN[z].toUpperCase()}</text>${mine?`<text x="${x+8}" y="${y+cell-10}" font-size="9" fill="var(--stamp)">YOU’RE HERE</text>`:''}${n?`<text x="${x+cell-8}" y="${y+16}" font-size="9" text-anchor="end" fill="var(--ink)">${n}</text>`:''}</g>`}
+  live.forEach(d=>{const h=fnvN(d.id);const fx=.25+(h%100)/200,fy=.3+((h>>8)%100)/200;const x=pad+(d.zone%3)*cell+fx*cell,y=pad+Math.floor(d.zone/3)*cell+fy*cell;const ph=dropPhase(d);
+    svg+=`<g data-act="sheet" data-v="drop" data-id="${esc(d.id)}" style="cursor:pointer"><circle cx="${x}" cy="${y}" r="13" fill="var(--card)" stroke="${ph==='open'?'var(--stamp)':'var(--ink)'}" stroke-width="2" ${ph==='open'?'class="pulse"':''}/><text x="${x}" y="${y+3.5}" font-size="8.5" text-anchor="middle" font-weight="600" fill="var(--ink)">${esc(DK[d.kind]?.s||'?')}</text></g>`});
+  const by=pad+cell*3+14;svg+=`<line x1="${pad}" y1="${by}" x2="${pad+cell}" y2="${by}" stroke="var(--ink)" stroke-width="1.5"/><line x1="${pad}" y1="${by-4}" x2="${pad}" y2="${by+4}" stroke="var(--ink)"/><line x1="${pad+cell}" y1="${by-4}" x2="${pad+cell}" y2="${by+4}" stroke="var(--ink)"/><text x="${pad+cell+6}" y="${by+3}" font-size="9" fill="var(--muted)">3 km</text><text x="${pad+cell*3}" y="${by+3}" font-size="10" text-anchor="end" fill="var(--ink)" font-weight="600">N ↑</text></svg>`;
+  const list=live.filter(d=>zf==null||d.zone===zf);
+  return `<div style="margin-top:12px">${decodeCard(true)}</div>`+
+   `<div class="mapbox">${svg}</div><p class="meta" style="margin:6px 2px 0">Zone map, 3 km squares. Tap a square to filter, a stamp to open the drop.${cityOf(S.me.city)?' Each drop links to OpenStreetMap.':''}</p>
+   <div class="eyebrow">${zf==null?'Drops this week':'Drops in '+ZN[zf]+' · <button data-act="zone" data-v="'+zf+'">show all</button>'}<button data-act="sheet" data-v="host">+ Host a drop</button></div>
+   <div class="stack">${list.length?list.map(dropRow).join(''):`<div class="card dash"><p class="meta">${zf==null?'No drops yet. Shops, stalls, clubs and circles can host one: a swap box, a counter dare, an offer for whoever turns up, or a two-key that only opens when two circles arrive together.':'Nothing in this zone yet.'}</p></div>`}</div>`;
+}
+function dropRow(d){const ph=dropPhase(d);const k=DK[d.kind]||DK.offer;
+  const w=ph==='soon'?`${when(d.start)} · opens in <span data-until="${d.start}">${left(d.start-now())}</span>`:ph==='open'?`Open now · <span data-until="${d.end}">${left(d.end-now())}</span> left`:'Over · '+when(d.end);
+  return `<button class="drop ${ph==='open'?'open':''}" data-act="sheet" data-v="drop" data-id="${esc(d.id)}"><span class="dk k-${d.kind}">${k.s}</span><span class="grow"><span class="when">${w}</span><b style="display:block">${esc(d.venue)}</b><span class="meta">${esc(k.n)} · ${esc(ZN[d.zone])} · ${esc(d.prize)}</span></span></button>`}
+function cityFeed(){
+  const canPost=!!S.me.circle;const hidden=new Set((S.priv.hidden?.ids)||[]);
+  const ps=S.posts.filter(p=>!hidden.has(p.id)&&(p.flags||[]).length<3);
+  const kinds=['Made','Did','Found','Ask'];const fk=F.pkind||'Made';
+  return `<p class="lede" style="margin-top:12px">What circles in ${esc(S.me.city)} are up to. No likes, no follower counts, no comments from strangers. If you want to talk to someone, answer a call or meet them.</p>
+  ${canPost?`<form class="card" data-form="post"><div class="chips">${kinds.map(k=>`<button type="button" class="chip ${fk===k?'on':''}" data-act="pkind" data-v="${k}">${k}</button>`).join('')}</div><label class="sr" for="p-text">Post</label><textarea class="in-t" id="p-text" data-f="ptext" maxlength="400" style="margin-top:8px" placeholder="Built a cardboard arcade cabinet. It works. Barely.">${esc(F.ptext||'')}</textarea><div class="btns"><button class="btn s" type="submit">Post as ${esc(S.circle?.name||'your circle')}</button></div></form>`:`<div class="card dash"><p class="meta">Join a circle to post. Posts go out under the circle’s name.</p></div>`}
+  <div class="stack" style="margin-top:12px">${ps.length?ps.map(p=>`<div class="post"><div class="meta"><span class="tag k">${esc(p.kind)}</span>${esc(p.cname)} · ${esc(p.by===S.uid?'you':p.name)} · ${esc(ago(p.at))}</div><p class="txt">${esc(p.text)}</p><div class="act">${p.by===S.uid||S.isOwner?`<button data-act="pdel" data-v="${p.id}">Delete</button>`:`<button data-act="phide" data-v="${p.id}">Hide</button><button data-act="pflag" data-v="${p.id}">${(p.flags||[]).includes(S.uid)?'Reported':'Report'}</button>`}</div></div>`).join(''):`<div class="card dash"><p class="meta">Nothing posted in ${esc(S.me.city)} yet. Be first.</p></div>`}</div>`;
+}
+function cityCalls(){
+  const t=now();const open=S.calls.filter(c=>c.at>t-3*DAY).sort((a,b)=>b.at-a.at);
+  return `<p class="lede" style="margin-top:12px">Ask the city for a hand: a 4th for quiz night, someone to trade a bike pump. Another circle answers and you get a room together for 3 days.</p>
+  ${S.me.circle?`<form class="card" data-form="call"><label class="f" for="c-ask" style="margin-top:0">Your circle needs…</label><input class="in-t" id="c-ask" data-f="cask" value="${esc(F.cask||'')}" maxlength="140" placeholder="a 4th for the pub quiz on Thursday"><div class="btns"><button class="btn s" type="submit">Send the call</button></div></form>`:''}
+  <div class="stack" style="margin-top:12px">${open.length?open.map(c=>{const mine=c.circle===S.me.circle;return `<div class="post"><div class="meta">${esc(c.cname)} · ${esc(ago(c.at))}</div><p class="txt">${esc(c.ask)}</p><div class="btns">${c.answered?`<span class="meta">Answered by ${esc(c.answered.name)}</span>${(mine||c.answered.circle===S.me.circle)&&c.room?`<button class="btn s" data-act="open" data-type="room" data-v="${esc(c.room)}">Open the room</button>`:''}`:mine?`<span class="meta">Waiting for an answer</span><button class="link" data-act="cdel" data-v="${c.id}">Withdraw</button>`:S.me.circle?`<button class="btn s" data-act="answer" data-v="${c.id}">We can help</button>`:''}</div></div>`}).join(''):`<div class="card dash"><p class="meta">No open calls in ${esc(S.me.city)}.</p></div>`}</div>`;
+}
+function cityLeague(){
+  const pts={},names={};
+  const firstByCircle={};S.solves.forEach((s,i)=>{if(s.circle&&!firstByCircle[s.circle]){firstByCircle[s.circle]=1;pts[s.circle]=(pts[s.circle]||0)+decPts(i+1,s.hints);names[s.circle]=s.cname}});
+  const seen=new Set();for(const c of S.checkins){const k=c.circle+'|'+c.drop;if(!c.circle||seen.has(k))continue;seen.add(k);pts[c.circle]=(pts[c.circle]||0)+10;names[c.circle]=c.cname}
+  const rows=Object.entries(pts).sort((a,b)=>b[1]-a[1]);
+  return `<p class="lede" style="margin-top:12px">Week ${weekNum()}. Points for the first Decode solve in each circle (by solve order) and 10 for each drop a circle turns up to. Resets Monday.</p>
+  ${rows.length?`<div class="card"><table class="lg"><thead><tr><th>#</th><th>Circle</th><th class="n">Points</th></tr></thead><tbody>${rows.map(([c,p],i)=>`<tr class="${c===S.me.circle?'me':''}"><td>${i+1}</td><td>${esc(names[c]||'A circle')}</td><td class="n">${p}</td></tr>`).join('')}</tbody></table></div>`:`<div class="card dash"><p class="meta">No points yet this week. Solve the Decode or turn up to a drop.</p></div>`}`;
+}
+
+/* ---------- You ---------- */
+function vYou(){
+  const me=S.me;const js=journeys();const act=js.filter(j=>j.status==='active'),past=js.filter(j=>j.status!=='active');
+  const log=(S.priv.log?.items||[]).slice(0,30);
+  let out=`<h1 class="v">${esc(me.name)}</h1><p class="lede">${esc(me.city)} · ${esc(ZN[me.zone])}${S.circle?' · '+esc(S.circle.name):''} <button class="link" data-act="sheet" data-v="profile">Edit</button></p>`;
+  out+=`<div class="eyebrow">Your journeys <button data-act="sheet" data-v="add-j">+ Add</button></div><p class="meta" style="margin:-4px 0 8px">Needs you keep doing, wants you reach over weeks, urges you do once. Your circle sees the counts, never your words.</p><div class="stack">${act.length?act.map(j=>jCard(j,false)).join(''):'<div class="card dash"><p class="meta">Nothing on the go.</p></div>'}</div>`;
+  if(past.length)out+=`<div class="eyebrow">Finished and dropped</div><div class="stack">${past.slice(0,12).map(j=>`<div class="card"><span class="tag ${j.lane}">${LANES[j.lane].k}</span><span class="meta">${esc(j.status==='done'?'Done':'Dropped')} · ${esc(ago(j.ended||j.created))}</span><h3 style="margin-top:3px">${esc(j.read.what)}</h3></div>`).join('')}</div>`;
+  out+=`<div class="eyebrow">Your story so far</div>${log.length?`<ul class="tl">${log.map(i=>`<li>${esc(i.t)}<small>${esc(ago(i.at))}</small></li>`).join('')}</ul>`:'<p class="meta">Everything you do here lands on this timeline: ticks, rungs, drops, Decode, things you said. Only you see it.</p>'}`;
+  out+=`<div class="eyebrow">Go dark</div><div class="card hot"><h3>Put the phone down for a bit</h3><p class="meta">1 to 24 hours. This app goes blank with a countdown. Your circle sees you’re dark, nothing else. Calls and emergency numbers are never blocked.</p>
+   <div class="chips" style="margin-top:8px">${[1,3,6,12,24].map(h=>`<button class="chip ${(F.darkH||3)===h?'on':''}" data-act="darkH" data-v="${h}">${h} h</button>`).join('')}</div>
+   <label class="chk"><input type="checkbox" id="dark-with" data-f="darkWith" ${F.darkWith?'checked':''}> <span>Ask my circle to go dark with me</span></label>
+   <div class="btns"><button class="btn" data-act="dark-go">Go dark for ${F.darkH||3} h</button></div>
+   <p class="meta">On a phone, the full app uses Screen Time (iPhone) or usage access (Android) to cover the apps you pick too. No app can lock the whole phone.</p></div>`;
+  out+=`<div class="eyebrow">Your data</div><div class="card"><p style="margin-top:0">Saved: your name, city and 3 km area, your journeys and timeline (private to you), what you post, and the steps you’ve reached (for example, “joined a circle”) with the days you opened the app, to learn what works. No location history. No contacts.</p>
+   <div class="btns"><button class="btn s ghost" data-act="export">Download my data</button><button class="btn s ghost" data-act="del-ask">Delete everything</button></div>
+   ${S.ui.confirm==='delete'?`<div class="panel" style="border-color:var(--stamp)"><b>Delete everything?</b><p class="meta">Your journeys, timeline, profile and posts go for good. Messages you sent stay in their threads, signed with your name.</p><div class="btns"><button class="btn s red" data-act="del-yes">Delete for good</button><button class="btn s ghost" data-act="del-no">Keep it</button></div></div>`:''}
+   ${S.exportText?`<label class="f" for="exp">Your data as JSON</label><textarea class="in-t" id="exp" readonly style="min-height:140px;font-family:var(--f-mono);font-size:12px">${esc(S.exportText)}</textarea>`:''}</div>`;
+  out+=`<div class="eyebrow">How this build works</div><div class="card"><div class="real" style="font-size:13px">
+   <b class="y" style="font-family:var(--f-mono);font-size:10px">Real</b><span>Sign-in, circles, threads, plans, pots, journeys, Decode, drops, feed, calls. Live for everyone invited.</span>
+   <b class="p" style="font-family:var(--f-mono);font-size:10px">Stand-in</b><span>Map tiles, GPS, QR and Bluetooth, push, and Screen Time need the phone app. Here: zones you pick, 6-digit codes, badges.</span></div></div>`;
+  if(S.isOwner)out+=`<div class="eyebrow">Test results <button data-act="stats">${S.stats?'Refresh':'Load'}</button></div>${S.stats?statsView():'<p class="meta">Only you see this. It counts how far each person got, from the step records above.</p>'}`;
+  return out;
+}
+function statsView(){
+  const st=S.stats;const steps=[['signedIn','Opened the app'],['named','Picked a name'],['nwu','Typed a need, want or urge'],['circle','In a circle'],['msg','Sent a message'],['tick','Ticked a journey'],['decodeTry','Tried the Decode'],['decodeSolve','Solved the Decode'],['checkin','Checked in at a drop'],['post','Posted to the feed'],['met','Met someone in person'],['dark','Went dark']];
+  const n=st.length||1;
+  const ret=k=>st.filter(e=>{const f=e.first?.signedIn;if(!f)return false;const d0=dayStart(f);return (e.days||[]).some(d=>{const t=new Date(d+'T12:00').getTime();return t>=d0+k*DAY&&t<d0+(k+1)*DAY})}).length;
+  const old=k=>st.filter(e=>e.first?.signedIn&&now()-e.first.signedIn>(k+1)*DAY).length;
+  const med=arr=>{if(!arr.length)return '–';arr.sort((a,b)=>a-b);const m=arr[Math.floor(arr.length/2)];return m<HOUR?Math.round(m/MIN)+' min':(m/HOUR).toFixed(1)+' h'};
+  const tCircle=med(st.filter(e=>e.first?.circle&&e.first?.signedIn).map(e=>e.first.circle-e.first.signedIn));
+  return `<div class="card"><div class="stat"><span class="h">Step</span><span class="h">People</span><span class="h">Share</span>${steps.map(([k,l])=>{const c=st.filter(e=>e.first&&e.first[k]).length;return `<span>${l}</span><span>${c}</span><span>${Math.round(c/n*100)}%</span>`}).join('')}</div>
+  <p class="meta" style="margin-top:10px">${st.length} people. Typical time from opening to joining a circle: ${tCircle}. Came back the next day: ${ret(1)} of ${old(1)} who’ve had a day. Came back on day 7: ${ret(7)} of ${old(7)}.</p></div>`;
+}
+
+/* ---------- sheets ---------- */
+function layer(){
+  let h='';
+  if(S.me&&S.me.darkUntil>now()){const back=F.darkBack;h+=`<div class="darkall" role="dialog" aria-label="Gone dark"><div class="dk2">GONE DARK</div><div class="clock" data-until="${S.me.darkUntil}">${left(S.me.darkUntil-now())}</div><p>INSANE is blank until then. Go and do the thing.</p><p style="font-size:13px;opacity:.75">${S.me.darkWith?'You asked your circle to go dark with you.':''} Calls and emergency numbers always work.</p>${back?`<p>Come back early? Your circle will see you came back after ${esc(left(now()-(S.me.darkFrom||now())))} of ${S.me.darkH||'?'} h. No penalty.</p><div class="btns" style="justify-content:center"><button class="btn" data-act="dark-end">Come back now</button><button class="btn" data-act="dark-stay">Stay dark</button></div>`:`<div class="btns" style="justify-content:center"><button class="btn" data-act="dark-back">Come back early</button></div>`}</div>`}
+  const sh=S.ui.sheet;if(!sh)return h+toastHtml();
+  return h+`<div class="sheet-bg" data-act="sheet-bg"><div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${sheetBody(sh)}</div></div>`+toastHtml();
+}
+function sheetBody(sh){
+  const close=`<div class="btns"><button class="btn ghost wide" data-act="sheet-close">Close</button></div>`;
+  switch(sh.t){
+  case 'circle-start':return `<h2>Your circle</h2>${circleStartForm()}${close}`;
+  case 'add-j':{const lane=F.jlane||'need';const L=LANES[lane];
+    return `<h2>Add a need, want or urge</h2><div class="chips" style="margin:8px 0">${['need','want','urge'].map(k=>`<button class="chip ${lane===k?'on':''}" data-act="jlane" data-v="${k}">${LANES[k].k}: ${LANES[k].hz}</button>`).join('')}</div>
+    <label class="f" for="j-text">${esc(L.lead)}</label><input class="in-t" id="j-text" data-f="jtext" data-read="sheet" value="${esc(F.jtext||'')}" placeholder="${esc(L.ph)}" maxlength="90">
+    <div class="ex">${L.ex.map(e=>`<button data-act="j-ex" data-v="${esc(e)}">${esc(e)}</button>`).join('')}</div><div id="read-sheet">${readCard(readUrge(lane,F.jtext))}</div>
+    <div class="btns"><button class="btn" data-act="j-add">Start it</button><button class="btn ghost" data-act="sheet-close">Cancel</button></div>`}
+  case 'thread-new':{const k=F.tkind||'plan';
+    return `<h2>New thread</h2><div class="chips" style="margin:8px 0">${[['talk','Just talk'],['plan','Plan'],['pot','Pot']].map(([v,n])=>`<button class="chip ${k===v?'on':''}" data-act="tkind" data-v="${v}">${n}</button>`).join('')}</div>
+    <label class="f" for="t-title">${k==='pot'?'What’s the money for?':k==='plan'?'What’s the plan?':'Topic'}</label><input class="in-t" id="t-title" data-f="ttitle" value="${esc(F.ttitle||'')}" maxlength="40" placeholder="${k==='pot'?'Lisbon flights':k==='plan'?'Quiz night':'Flat stuff'}">
+    ${k==='plan'?`<label class="f" for="t-when">When</label><input class="in-t" id="t-when" data-f="twhen" value="${esc(F.twhen||'')}" maxlength="40" placeholder="Thu 7pm"><label class="f" for="t-where">Where <small>optional</small></label><input class="in-t" id="t-where" data-f="twhere" value="${esc(F.twhere||'')}" maxlength="60" placeholder="The Loading Dock">`:''}
+    ${k==='pot'?`<label class="f" for="t-per">£ each</label><input class="in-t" id="t-per" data-f="tper" inputmode="numeric" value="${esc(F.tper||'')}" placeholder="80"><label class="f" for="t-min">Goes ahead if this many pledge</label><input class="in-t" id="t-min" data-f="tmin" inputmode="numeric" value="${esc(F.tmin||'')}" placeholder="4"><label class="f" for="t-by">Pledge by <small>optional</small></label><input class="in-t" id="t-by" data-f="tby" value="${esc(F.tby||'')}" maxlength="30" placeholder="Friday">`:''}
+    <p class="meta">${k==='talk'?'Only people who open it get badges.':k==='plan'?'Everyone taps in or out. The thread pings only the people going.':'Nobody pays unless enough pledge. Then everyone pays the organiser directly. INSANE never holds money.'}</p>
+    <div class="btns"><button class="btn" data-act="t-create">Create</button><button class="btn ghost" data-act="sheet-close">Cancel</button></div>`}
+  case 'pay-note':return `<h2>How to pay you</h2><label class="f" for="pay">A payment link or sort code people can use</label><input class="in-t" id="pay" data-f="pay" value="${esc(F.pay||'')}" maxlength="80" placeholder="monzo.me/maya"><div class="btns"><button class="btn" data-act="pay-save" data-v="${esc(sh.id)}">Save</button><button class="btn ghost" data-act="sheet-close">Cancel</button></div>`;
+  case 'decode':{const d=decodeCard(false);const st=d.st;const tried=(S.priv.dec&&S.priv.dec[weekKey()])||0;
+    return `<div class="meta" style="color:var(--ball)">Decode · week ${weekNum()} · ${esc(S.me.city)}</div><h2>${esc(d.cl.q)}</h2>${d.info}
+    <div style="margin-top:8px">${d.cl.h.map((h,i)=>`<div class="hint ${st.hints[i]?'on':''}">${st.hints[i]?esc(h):`Hint ${i+1} unlocks at ${HINT_AT[i]} solves in the city, or on ${['Tuesday','Thursday','Saturday'][i]}`}</div>`).join('')}</div>
+    ${d.status?`<p>${d.status}</p>`:''}
+    ${!d.mine&&!st.revealed?`<form data-form="decode" class="row" style="margin-top:12px"><label class="sr" for="dec-a">Answer</label><input class="in-t grow" id="dec-a" data-f="deca" value="${esc(F.deca||'')}" placeholder="One word" autocomplete="off" autocapitalize="characters"><button class="btn" type="submit">Try</button></form><p class="meta">${tried?tried+' tr'+(tried>1?'ies':'y')+' so far. ':''}Points go by solve order and drop by 15 for each hint that’s out when you solve. Every solve brings the answer 3 hours closer for everyone, so waiting gets you the answer, not the points.</p>`:''}
+    ${close}`}
+  case 'host':{const k=F.dkind||'swap';const z=F.dzone??S.me.zone;
+    return `<h2>Host a drop</h2><p class="meta">For shops, stalls, clubs and circles. One hour, one place. You get a door code to show people who turn up.</p>
+    <label class="f">Type</label><div class="chips">${Object.entries(DK).map(([v,o])=>`<button class="chip ${k===v?'on':''}" data-act="dkind" data-v="${v}">${o.n}</button>`).join('')}</div><p class="meta">${esc(DK[k].d)}</p>
+    <label class="f" for="d-venue">Place</label><input class="in-t" id="d-venue" data-f="dvenue" value="${esc(F.dvenue||'')}" maxlength="40" placeholder="The Book Nook">
+    <label class="f" for="d-addr">Address or how to find it</label><input class="in-t" id="d-addr" data-f="daddr" value="${esc(F.daddr||'')}" maxlength="80" placeholder="14 Market Row, by the clock">
+    <label class="f">Zone</label><div class="zones" style="max-width:240px">${ZN.map((n,i)=>`<button class="${z===i?'on':''}" data-act="dzone" data-v="${i}">${n}</button>`).join('')}</div>
+    <div class="row" style="gap:8px"><div class="grow"><label class="f" for="d-date">Day</label><input class="in-t" type="date" id="d-date" data-f="ddate" value="${esc(F.ddate||today())}"></div><div class="grow"><label class="f" for="d-time">Starts</label><input class="in-t" type="time" id="d-time" data-f="dtime" value="${esc(F.dtime||'18:00')}"></div></div>
+    <label class="f">Length</label><div class="chips">${[30,60,120].map(m=>`<button class="chip ${(F.dlen||60)===m?'on':''}" data-act="dlen" data-v="${m}">${m<60?m+' min':m/60+' h'}</button>`).join('')}</div>
+    <label class="f" for="d-prize">${k==='swap'?'What’s in the box to start':k==='cash'?'Cash prize, put up by':'Prize'}</label><input class="in-t" id="d-prize" data-f="dprize" value="${esc(F.dprize||'')}" maxlength="60" placeholder="${k==='swap'?'A signed Pulp 7-inch':k==='cash'?'£50 from The Book Nook':k==='dare'?'Free coffee for the whole circle':'10% off for everyone, a £20 voucher drawn'}">
+    ${k==='dare'?`<label class="f" for="d-dare">The dare</label><input class="in-t" id="d-dare" data-f="ddare" value="${esc(F.ddare||'')}" maxlength="80" placeholder="Read the first page of any book out loud">`:''}
+    ${k==='cash'?'<p class="meta">Free entry only. Nobody pays to take part, so it’s a free draw, not a lottery. Check your local rules on prize draws.</p>':''}
+    <div class="btns"><button class="btn" data-act="d-create">Publish the drop</button><button class="btn ghost" data-act="sheet-close">Cancel</button></div>`}
+  case 'drop':{const d=S.drops.find(x=>x.id===sh.id);if(!d)return `<p>This drop has gone.</p>${close}`;
+    const ph=dropPhase(d),k=DK[d.kind]||DK.offer,ins=S.dropIns,circles=[...new Set(ins.map(i=>i.circle))];const mineIn=ins.find(i=>i.uid===S.uid);const ll=zoneLL(S.me.city,d.zone,.25+(fnvN(d.id)%100)/200,.3+((fnvN(d.id)>>8)%100)/200);
+    let state='';
+    if(d.kind==='twokey')state=circles.length>=2?'<b style="color:var(--good)">Unlocked.</b> Two circles are here. Everyone checked in gets the prize.':`<b>Locked.</b> ${circles.length} circle${circles.length===1?'':'s'} here. It needs 2.`;
+    if(ph==='over'&&(d.kind==='offer'||d.kind==='cash')){const w=drawWinner(d,ins);state=w?`<b>Drawn: ${esc(ins.find(i=>i.circle===w)?.cname||'a circle')}.</b> Worked out from the ${circles.length} circle${circles.length>1?'s':''} who turned up, so anyone can check it.`:'Nobody turned up, so nothing was drawn.'}
+    return `<div class="meta"><span class="tag k">${esc(k.n)}</span>${esc(ZN[d.zone])}</div><h2>${esc(d.venue)}</h2><p style="margin:0">${esc(d.addr||'')}</p>${ll?`<p style="margin:4px 0 0"><a href="${osm(ll)}" target="_blank" rel="noopener">Open the area in OpenStreetMap</a></p>`:''}
+    <div class="panel"><div class="meta">${ph==='soon'?`${esc(when(d.start))} · opens in <span data-until="${d.start}">${left(d.start-now())}</span>`:ph==='open'?`Open now · <span data-until="${d.end}">${left(d.end-now())}</span> left`:'Over'}</div><b>${esc(d.prize)}</b>${d.dare?`<p><b>The dare:</b> ${esc(d.dare)}</p>`:''}${d.kind==='swap'&&d.item?`<p>In the box now: <b>${esc(d.item)}</b></p>`:''}<p class="meta">${esc(k.d)}</p>${state?`<p>${state}</p>`:''}</div>
+    <p class="meta">${circles.length} circle${circles.length===1?'':'s'} checked in${circles.length?': '+circles.map(c=>esc(ins.find(i=>i.circle===c)?.cname||'')).join(', '):''}.</p>
+    ${d.host===S.uid?`<div class="panel" style="border-color:var(--stamp)"><div class="meta">You’re hosting · show this at the door</div><div class="big">${esc(d.code)}</div><button class="link" data-act="d-del" data-v="${esc(d.id)}">Cancel this drop</button></div>`:''}
+    ${ph==='open'&&!mineIn&&d.host!==S.uid?(S.me.circle?`<form data-form="checkin" data-id="${esc(d.id)}"><label class="f" for="d-code">Door code <small>ask at the counter</small></label><div class="row"><input class="in-t grow" id="d-code" data-f="dcode" inputmode="numeric" maxlength="6" value="${esc(F.dcode||'')}" placeholder="6 digits" autocomplete="off"><button class="btn" type="submit">Check in</button></div></form>`:'<p class="meta">Join a circle to check in.</p>'):''}
+    ${mineIn?`<p><b>You’re checked in.</b> ${esc(ago(mineIn.at))}</p>`:''}
+    ${d.kind==='swap'&&mineIn&&!mineIn.swapped?`<form data-form="swap" data-id="${esc(d.id)}"><label class="f" for="s-left">What did you leave in the box?</label><div class="row"><input class="in-t grow" id="s-left" data-f="sleft" maxlength="60" value="${esc(F.sleft||'')}" placeholder="A Polaroid camera"><button class="btn" type="submit">Swap</button></div></form>`:''}
+    ${d.kind==='swap'&&(d.swaps||[]).length?`<div class="eyebrow">The box’s log</div><ul class="tl">${(d.swaps||[]).slice().reverse().map(s=>`<li>${esc(s.cname)} took ${esc(s.took)}, left ${esc(s.left)}<small>${esc(ago(s.at))}</small></li>`).join('')}</ul>`:''}
+    ${close}`}
+  case 'meet':{const code=S.pair;
+    return `<h2>Meet someone</h2><p class="meta">Face to face, one of you shows a code and the other types it in. It works for 2 minutes. Then you can message each other.</p>
+    ${code&&code.exp>now()?`<div class="panel" style="text-align:center"><div class="meta">Your code</div><div class="big">${esc(code.code)}</div><div class="meta">Expires in <span data-until="${code.exp}">${left(code.exp-now())}</span></div></div>`:`<div class="btns"><button class="btn" data-act="pair-show">Show my code</button></div>`}
+    <form data-form="pair" style="margin-top:14px"><label class="f" for="pair-in">Or type theirs</label><div class="row"><input class="in-t grow" id="pair-in" data-f="pairin" inputmode="numeric" maxlength="6" value="${esc(F.pairin||'')}" placeholder="6 digits" autocomplete="off"><button class="btn" type="submit">Connect</button></div></form>
+    <p class="meta">The phone app does this with a QR scan plus a Bluetooth check that you’re in the same room.</p>${close}`}
+  case 'midnight':return `<h2>Write it unsigned</h2><p class="meta">Goes to ${esc(S.circle?.name||'your circle')} at midnight. Your name isn’t saved anywhere, not even by INSANE. Two flags from the circle hide it.</p>
+    <label class="sr" for="mn-text">Message</label><textarea class="in-t" id="mn-text" data-f="mntext" maxlength="400" placeholder="Whoever keeps doing the washing up at 2am: thank you.">${esc(F.mntext||'')}</textarea>
+    <label class="f">When</label><div class="chips">${[['tonight','Tonight at midnight'],['week','Some night this week']].map(([v,n])=>`<button class="chip ${(F.mnwhen||'week')===v?'on':''}" data-act="mnwhen" data-v="${v}">${n}</button>`).join('')}</div>
+    <p class="meta">“Some night this week” picks the night at random, so nobody can match the timing to you.</p>
+    <div class="btns"><button class="btn" data-act="mn-send">Queue it</button><button class="btn ghost" data-act="sheet-close">Cancel</button></div>`;
+  case 'seal':{const opts=sealOpts();const sel=F.sealw??0;
+    return `<h2>Seal a message</h2><p class="meta">Signed with your name. Nobody can read it before it opens, you included.</p>
+    <label class="sr" for="seal-text">Message</label><textarea class="in-t" id="seal-text" data-f="sealtext" maxlength="600" placeholder="By the time you read this, I’ll have run my first 10k.">${esc(F.sealtext||'')}</textarea>
+    <label class="f">Opens</label><div class="chips">${opts.map((o,i)=>`<button class="chip ${sel===i?'on':''}" data-act="sealw" data-v="${i}">${esc(o[0])}</button>`).join('')}</div><p class="meta">${esc(when(opts[sel][1]))}</p>
+    <div class="btns"><button class="btn" data-act="seal-send">Seal it</button><button class="btn ghost" data-act="sheet-close">Cancel</button></div>`}
+  case 'profile':return `<h2>Edit profile</h2><label class="f" for="pf-name">Name</label><input class="in-t" id="pf-name" data-f="pfname" value="${esc(F.pfname??S.me.name)}" maxlength="24">
+    <label class="f">Zone in ${esc(S.me.city)}</label><div class="zones">${ZN.map((n,i)=>`<button class="${(F.pfzone??S.me.zone)===i?'on':''}" data-act="pfzone" data-v="${i}">${n}</button>`).join('')}</div>
+    <p class="meta">To change city, delete your data and start again. Your circle stays where it is.</p>
+    <div class="btns"><button class="btn" data-act="pf-save">Save</button><button class="btn ghost" data-act="sheet-close">Cancel</button></div>`;
+  case 'j-menu':{const j=journeys().find(x=>x.id===sh.id);if(!j)return close;
+    return `<h2>${esc(j.read.what)}</h2><p class="meta">You wrote: “${esc(j.text)}”</p>
+    ${j.read.kind==='Ladder'?`<label class="f">Your rungs <small>only you see these</small></label>${(j.rungsText||[]).map((r,i)=>`<input class="in-t" style="margin-top:6px" id="rung-${i}" data-rung="${i}" value="${esc(F['rung'+i]??r)}" placeholder="Rung ${i+1}" maxlength="60">`).join('')}<div class="btns"><button class="btn s" data-act="rungs-save" data-v="${j.id}">Save rungs</button></div>`:''}
+    <div class="btns"><button class="btn" data-act="j-done" data-v="${j.id}">Mark as done</button><button class="btn ghost" data-act="j-drop" data-v="${j.id}">Drop it</button></div>${close}`}
+  }
+  return close;
+}
+function sealOpts(){const t=now();const ny=new Date(new Date().getFullYear()+(new Date().getMonth()===11&&new Date().getDate()===31?1:0),11,31,23,59).getTime();
+  const c=S.circle?.createdAt||t;let bd=new Date(c);bd.setFullYear(bd.getFullYear()+1);
+  return [['In 3 months',t+91*DAY],['New Year’s Eve',ny],['A year from now',t+365*DAY],['Our circle’s first birthday',Math.max(bd.getTime(),t+DAY)]]}
+let toastT=null;
+function toast(m){S.toast=m;clearTimeout(toastT);toastT=setTimeout(()=>{S.toast=null;render()},3200);render()}
+const toastHtml=()=>S.toast?`<div class="toast" role="status">${esc(S.toast)}</div>`:'';
+
+/* ---------- ticking clocks ---------- */
+function tick(){document.querySelectorAll('[data-until]').forEach(el=>{el.textContent=left(+el.dataset.until-now())})}
+setInterval(tick,1000);
+let lastMin=0;setInterval(()=>{const m=Math.floor(now()/MIN);if(m!==lastMin){lastMin=m;if(S.me&&S.me.darkUntil&&S.me.darkUntil<now()+MIN)render();else if(!document.activeElement||!/INPUT|TEXTAREA/.test(document.activeElement.tagName))render()}},5000);
+
+/* ---------- input ---------- */
+document.addEventListener('input',e=>{
+  const el=e.target;
+  if(el.dataset.ob){const o=S.ui.ob,k=el.dataset.ob;o[k]=el.type==='checkbox'?el.checked:el.value;
+    if(el.dataset.read){const box=document.getElementById('read-'+k);if(box)box.innerHTML=readCard(readUrge(k,el.value));const nb=$('[data-act="ob-next"]');if(nb&&o.step===2)nb.textContent=['need','want','urge'].some(x=>(o[x]||'').trim())?'Next':'Skip for now';return}
+    if(k==='cq'){render();return}
+    const nb=$('[data-act="ob-next"]');if(nb&&o.step===0)nb.disabled=!((o.name||'').trim()&&o.age);
+    const fb=document.querySelectorAll('[data-act="ob-finish"]');fb.forEach(b=>{if(b.dataset.v==='create')b.disabled=!(o.cname||'').trim();if(b.dataset.v==='join')b.disabled=(o.code||'').trim().length!==6});return}
+  if(el.dataset.f){F[el.dataset.f]=el.type==='checkbox'?el.checked:el.value;if(el.dataset.read==='sheet'){const b=document.getElementById('read-sheet');if(b)b.innerHTML=readCard(readUrge(F.jlane||'need',el.value))}return}
+  if(el.dataset.rung!=null)F['rung'+el.dataset.rung]=el.value;
+});
+document.addEventListener('change',e=>{const el=e.target;if(el.type==='checkbox'&&el.dataset.ob){S.ui.ob[el.dataset.ob]=el.checked;const nb=$('[data-act="ob-next"]');if(nb)nb.disabled=!((S.ui.ob.name||'').trim()&&S.ui.ob.age)}});
+document.addEventListener('submit',e=>{e.preventDefault();const f=e.target.dataset.form;if(f)act(f,e.target.dataset,e.target)});
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-act]');if(!el)return;
+  if(el.dataset.act==='sheet-bg'&&e.target!==el)return;
+  e.preventDefault();act(el.dataset.act,el.dataset,el);
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&S.ui.sheet){S.ui.sheet=null;wire2();render()}});
+
+function openSheet(t,extra){S.ui.sheet=Object.assign({t},extra||{});if(t==='decode')mark('decodeOpen');wire2();render();setTimeout(()=>{const i=$('.sheet input:not([type=checkbox]),.sheet textarea');if(i&&!/drop|meet|decode/.test(t))i.focus()},60)}
+function closeSheet(){S.ui.sheet=null;wire2();render()}
+
+async function act(a,d,el){
+  const db=S.db,uid=S.uid,me=S.me;
+  switch(a){
+  /* onboarding */
+  case 'ob-next':S.ui.ob.step++;render();scrollTo(0,0);return;
+  case 'ob-back':S.ui.ob.step--;render();return;
+  case 'ob-city':S.ui.ob.city=d.v;render();return;
+  case 'ob-zone':S.ui.ob.zone=+d.v;render();return;
+  case 'ob-ex':S.ui.ob[d.k]=d.v;render();return;
+  case 'ob-finish':el.disabled=true;await finishOnboarding(d.v);return;
+  /* nav */
+  case 'tab':S.ui.tab=d.v;S.ui.open=null;try{localStorage.setItem('insane_tab',d.v)}catch(e){}if(d.v==='city'&&S.ui.sseg==='feed')setSeen('feed');wire2();render();scrollTo(0,0);return;
+  case 'cseg':S.ui.cseg=d.v;if(d.v==='midnight')setSeen('midnight');render();return;
+  case 'sseg':S.ui.sseg=d.v;if(d.v==='feed')setSeen('feed');render();return;
+  case 'sheet':openSheet(d.v,{id:d.id});return;
+  case 'sheet-close':case 'sheet-bg':closeSheet();return;
+  case 'open':S.ui.tab='circle';S.ui.open={type:d.type,id:d.v};S.msgs=[];setSeen((d.type==='thread'?'t:':d.type==='room'?'r:':'d:')+d.v);S.ui.sheet=null;wire2();render(true);return;
+  case 'close':S.ui.open=null;drop('msgs');render();return;
+  case 'copy':try{await navigator.clipboard.writeText(d.v);toast('Copied '+d.v)}catch(e){toast('Code: '+d.v)}return;
+  case 'zone':S.ui.zoneFilter=S.ui.zoneFilter===+d.v?null:+d.v;render();return;
+  /* circle */
+  case 'cs-create':{const n=(F.csname||'').trim();if(!n){toast('Give the circle a name.');return}closeSheet();await createCircle(n);F.csname='';return}
+  case 'cs-join':{const c=(F.cscode||'').trim().toUpperCase();if(c.length!==6){toast('Codes are 6 letters.');return}closeSheet();await joinCircle(c);F.cscode='';return}
+  case 'leave':if(S.ui.confirm!=='leave'){S.ui.confirm='leave';toast('Tap “Leave” again to leave '+S.circle.name+'.');setTimeout(()=>{S.ui.confirm=null},4000);return}
+    S.ui.confirm=null;{const c=S.circle;await W(async()=>{await db.doc('people/'+uid).update({circle:null});await db.doc('circles/'+c.id).update({members:(c.members||[]).filter(x=>x!==uid)});await db.doc(`circles/${c.id}/progress/${uid}`).delete()},'You left '+c.name+'.');logMine('Left '+c.name)}return;
+  case 'tkind':F.tkind=d.v;render();return;
+  case 't-create':{const k=F.tkind||'plan',title=(F.ttitle||'').trim();if(!title){toast('Give it a title.');return}
+    const t={kind:k,title:title.slice(0,40),by:uid,at:now()};
+    if(k==='plan'){t.when=(F.twhen||'').trim();t.where=(F.twhere||'').trim();t.going={[uid]:true}}
+    if(k==='pot'){t.per=Math.max(1,Math.round(+F.tper||0));t.min=Math.max(2,Math.round(+F.tmin||2));t.by_when=(F.tby||'').trim();t.pledges={[uid]:true};if(!F.tper){toast('Say how much each person puts in.');return}}
+    const ref=db.collection(`circles/${me.circle}/threads`).doc();
+    if(await W(()=>ref.set(t))){Object.assign(F,{ttitle:'',twhen:'',twhere:'',tper:'',tmin:'',tby:''});S.ui.sheet=null;S.ui.open={type:'thread',id:ref.id};S.ui.tab='circle';wire2();render();logMine('Started '+(k==='pot'?'a pot':k==='plan'?'a plan':'a thread')+': '+title)}return}
+  case 'send':{const text=(F.msg||'').trim();if(!text)return;const o=S.ui.open,p=openPath(o);const m={by:uid,name:me.name,text:text.slice(0,600),at:now()};if(o.type==='room')Object.assign(m,{circle:me.circle,cname:S.circle?.name||''});
+    F.msg='';const inp=$('#m-text');if(inp)inp.value='';
+    if(await W(async()=>{await db.collection(p+'/msgs').add(m);const last={by:uid,name:me.name,text:text.slice(0,80),at:m.at};
+      if(o.type==='thread')await db.doc(p).update({last});else if(o.type==='room')await db.doc(p).update({last});else{const ref=db.doc(p);const s=await ref.get();if(s.exists)await ref.update({last});else await ref.set({ids:S.met.find(x=>x.id===o.id)?.ids||[uid],last})}})){mark('msg');setSeen((o.type==='thread'?'t:':o.type==='room'?'r:':'d:')+o.id);render(true)}return}
+  case 'going':{const t=S.threads.find(x=>x.id===d.v);const v=!(t.going||{})[uid];await W(()=>db.doc(`circles/${me.circle}/threads/${t.id}`).update({going:{[uid]:v}}),v?'You’re in.':'Marked as can’t make it.');if(v)logMine('Said yes to '+t.title);return}
+  case 'pledge':{const t=S.threads.find(x=>x.id===d.v);const v=!(t.pledges||{})[uid];await W(()=>db.doc(`circles/${me.circle}/threads/${t.id}`).update({pledges:{[uid]:v}}),v?'Pledged £'+t.per+'. Nobody pays unless '+t.min+' pledge.':'Pledge taken back.');if(v)logMine('Pledged £'+t.per+' to '+t.title);return}
+  case 'pay-save':await W(()=>db.doc(`circles/${me.circle}/threads/${d.v}`).update({pay:(F.pay||'').trim().slice(0,80)}),'Saved.');closeSheet();return;
+  /* journeys */
+  case 'jlane':F.jlane=d.v;render();return;
+  case 'j-ex':F.jtext=d.v;render();return;
+  case 'j-add':{const lane=F.jlane||'need',r=readUrge(lane,F.jtext);if(!r){toast('Type a line first.');return}if(r.kind==='Support'||r.kind==='No'){toast(r.kind==='No'?'INSANE won’t turn that into anything.':'Please talk to someone today. Samaritans: 116 123.');return}
+    if(await W(()=>addJourney(lane,F.jtext),'Started: '+r.what)){mark('nwu');logMine('Started '+LANES[lane].k.toLowerCase()+': '+r.what);F.jtext='';closeSheet();setTimeout(pushProgress,300)}return}
+  case 'tick':case 'untick':{const j=journeys().find(x=>x.id===d.v);const t=today();const ticks=a==='tick'?[...new Set([...(j.ticks||[]),t])]:(j.ticks||[]).filter(x=>x!==t);
+    if(await W(()=>db.doc(`data/users/${uid}/${j.id}`).update({ticks}))){if(a==='tick'){mark('tick');logMine('Ticked: '+j.read.what);toast('Ticked. '+(jCount(Object.assign({},j,{ticks})))+' of '+jGoal(j)+' this week.')}setTimeout(pushProgress,300)}return}
+  case 'rung':{const j=journeys().find(x=>x.id===d.v);const r=(j.rung||0)+1;if(await W(()=>db.doc(`data/users/${uid}/${j.id}`).update(Object.assign({rung:r},r>=jGoal(j)?{status:'done',ended:now()}:{})),r>=jGoal(j)?'Top rung. Done.':'Rung '+r+' climbed.')){mark('tick');logMine('Climbed rung '+r+' of '+j.read.what);setTimeout(pushProgress,300)}return}
+  case 'step':{const j=journeys().find(x=>x.id===d.v);const steps=(j.steps||[]).map(s=>Object.assign({},s));const nx=steps.find(s=>!s.done);if(!nx)return;nx.done=true;const all=steps.every(s=>s.done);
+    if(await W(()=>db.doc(`data/users/${uid}/${j.id}`).update(Object.assign({steps},all?{status:'done',ended:now()}:{})),all?'All done. That’s a want reached.':'Done: '+nx.t)){mark('tick');logMine(nx.t+' for '+j.read.what);setTimeout(pushProgress,300)}return}
+  case 'j-done':case 'j-drop':{const j=journeys().find(x=>x.id===d.v);if(await W(()=>db.doc(`data/users/${uid}/${j.id}`).update({status:a==='j-done'?'done':'dropped',ended:now()}),a==='j-done'?'Done. It’s on your timeline.':'Dropped. No penalty.')){logMine((a==='j-done'?'Finished: ':'Dropped: ')+j.read.what);closeSheet();setTimeout(pushProgress,300)}return}
+  case 'j-menu':openSheet('j-menu',{id:d.v});return;
+  case 'rungs-save':{const j=journeys().find(x=>x.id===d.v);const rt=(j.rungsText||[]).map((r,i)=>(F['rung'+i]??r).slice(0,60));await W(()=>db.doc(`data/users/${uid}/${j.id}`).update({rungsText:rt}),'Rungs saved.');return}
+  case 'j-plan':{const j=journeys().find(x=>x.id===d.v);const pot=j.read.kind==='Plan + pot';const ref=db.collection(`circles/${me.circle}/threads`).doc();
+    const t={kind:pot?'pot':'plan',title:j.read.what.slice(0,40),by:uid,at:now()};if(pot){t.per=20;t.min=3;t.pledges={[uid]:true}}else{t.going={[uid]:true};t.when=''}
+    if(await W(async()=>{await ref.set(t);await db.doc(`data/users/${uid}/${j.id}`).update({thread:ref.id})},pot?'Pot started. Set the amount in the thread.':'Plan started.')){S.ui.tab='circle';S.ui.open={type:'thread',id:ref.id};wire2();render()}return}
+  /* decode */
+  case 'decode':{const g=(F.deca||'').toUpperCase().replace(/[^A-Z]/g,'');if(!g)return;const k=weekKey();const dec=Object.assign({},S.priv.dec||{});dec[k]=(dec[k]||0)+1;
+    try{await db.doc(`data/users/${uid}/dec`).set(dec)}catch(e){}mark('decodeTry');
+    if(fnv(g)!==CLUES[clueIdx()].a){toast('Not it. Try again.');return}
+    const st=decodeState(S.solves);if(st.revealed){toast('Right, but the answer is already out.');return}
+    if(await W(()=>db.doc('solves/'+k+'_'+uid).set({week:k,city:me.city,uid,name:me.name,circle:me.circle||null,cname:S.circle?.name||null,at:now(),hints:st.nh}))){mark('decodeSolve');F.deca='';const rank=S.solves.length+1;toast('Solved. '+ordinal(rank)+' in '+me.city+', '+decPts(rank,st.nh)+' points.');logMine('Solved Decode week '+weekNum())}return}
+  /* drops */
+  case 'dkind':F.dkind=d.v;render();return;
+  case 'dzone':F.dzone=+d.v;render();return;
+  case 'dlen':F.dlen=+d.v;render();return;
+  case 'd-create':{const k=F.dkind||'swap';const venue=(F.dvenue||'').trim(),prize=(F.dprize||'').trim();if(!venue||!prize){toast('Add the place and the prize.');return}if(k==='dare'&&!(F.ddare||'').trim()){toast('Write the dare.');return}
+    const start=new Date((F.ddate||today())+'T'+(F.dtime||'18:00')).getTime();if(!start||isNaN(start)){toast('Check the day and time.');return}if(start<now()-30*MIN){toast('That time has passed.');return}
+    const dd={city:me.city,zone:F.dzone??me.zone,venue:venue.slice(0,40),addr:(F.daddr||'').trim().slice(0,80),kind:k,prize:prize.slice(0,60),dare:k==='dare'?(F.ddare||'').trim().slice(0,80):'',item:k==='swap'?prize.slice(0,60):'',swaps:[],start,end:start+(F.dlen||60)*MIN,host:uid,hostName:me.name,code:String(100000+(crypto.getRandomValues(new Uint32Array(1))[0]%900000)),at:now()};
+    const ref=db.collection('drops').doc();if(await W(()=>ref.set(dd),'Drop published. Your door code is in the drop.')){Object.assign(F,{dvenue:'',daddr:'',dprize:'',ddare:''});S.ui.sheet={t:'drop',id:ref.id};wire2();render();logMine('Hosted a drop at '+venue)}return}
+  case 'd-del':await W(()=>db.doc('drops/'+d.v).delete(),'Drop cancelled.');closeSheet();return;
+  case 'checkin':{const dr=S.drops.find(x=>x.id===d.id);const code=(F.dcode||'').replace(/\D/g,'');if(code!==dr.code){toast('That’s not the door code. Ask at the counter.');return}if(dropPhase(dr)!=='open'){toast('This drop isn’t open right now.');return}
+    if(await W(()=>db.doc('checkins/'+dr.id+'_'+uid).set({drop:dr.id,city:me.city,week:weekKey(),uid,name:me.name,circle:me.circle,cname:S.circle?.name||'',at:now()}),'Checked in. +10 for '+(S.circle?.name||'your circle'))){F.dcode='';mark('checkin');logMine('Turned up at '+dr.venue)}return}
+  case 'swap':{const dr=S.drops.find(x=>x.id===d.id);const left_=(F.sleft||'').trim();if(!left_){toast('Say what you left.');return}const took=dr.item||'nothing';
+    if(await W(async()=>{await db.doc('drops/'+dr.id).update({item:left_.slice(0,60),swaps:[...(dr.swaps||[]),{took,left:left_.slice(0,60),cname:S.circle?.name||'',at:now()}].slice(-30)});await db.doc('checkins/'+dr.id+'_'+uid).update({swapped:true})},'Swapped. You took '+took+'.')){F.sleft='';logMine('Swapped '+left_+' for '+took)}return}
+  /* feed */
+  case 'pkind':F.pkind=d.v;render();return;
+  case 'post':{const text=(F.ptext||'').trim();if(!text)return;if(await W(()=>db.collection('posts').add({city:me.city,circle:me.circle,cname:S.circle?.name||'',by:uid,name:me.name,kind:F.pkind||'Made',text:text.slice(0,400),at:now(),flags:[]}),'Posted.')){F.ptext='';mark('post');logMine('Posted to the '+me.city+' feed');render()}return}
+  case 'pdel':await W(()=>db.doc('posts/'+d.v).delete(),'Deleted.');return;
+  case 'phide':{const ids=[...new Set([...(S.priv.hidden?.ids||[]),d.v])];await W(()=>db.doc(`data/users/${uid}/hidden`).set({ids}),'Hidden for you.');return}
+  case 'pflag':{const p=S.posts.find(x=>x.id===d.v);if((p.flags||[]).includes(uid))return;await W(()=>db.doc('posts/'+p.id).update({flags:[...(p.flags||[]),uid]}),'Reported. Three reports hide it for everyone.');return}
+  /* calls */
+  case 'call':{const ask=(F.cask||'').trim();if(!ask)return;if(await W(()=>db.collection('calls').add({city:me.city,circle:me.circle,cname:S.circle?.name||'',by:uid,ask:ask.slice(0,140),at:now(),answered:null,room:null}),'Call sent to '+me.city+'.')){F.cask='';logMine('Sent a call: '+ask);render()}return}
+  case 'cdel':await W(()=>db.doc('calls/'+d.v).delete(),'Withdrawn.');return;
+  case 'answer':{const c=S.calls.find(x=>x.id===d.v);if(c.answered){toast('Someone got there first.');return}const rref=db.collection('rooms').doc();
+    if(await W(async()=>{await rref.set({circles:[c.circle,me.circle],names:{[c.circle]:c.cname,[me.circle]:S.circle?.name||''},title:c.ask.slice(0,40),ask:c.ask,at:now(),closesAt:now()+3*DAY,callId:c.id});await db.doc('calls/'+c.id).update({answered:{circle:me.circle,name:S.circle?.name||''},room:rref.id})},'Room open with '+c.cname+' for 3 days.')){logMine('Answered '+c.cname+'’s call');S.ui.tab='circle';S.ui.open={type:'room',id:rref.id};wire2();render()}return}
+  /* meeting in person */
+  case 'pair-show':{const code=String(100000+(crypto.getRandomValues(new Uint32Array(1))[0]%900000));const p={code,exp:now()+2*MIN,at:now()};if(await W(()=>db.doc('pair/'+uid).set(p))){S.pair=p;render()}return}
+  case 'pair':{const code=(F.pairin||'').replace(/\D/g,'');if(code.length!==6){toast('Codes are 6 digits.');return}
+    const r=await db.collection('pair').where('code','==',code).get().catch(()=>null);const hit=r&&r.docs.map(x=>Object.assign({id:x.id},x.data())).find(x=>x.exp>now()&&x.id!==uid);
+    if(!hit){toast('That code has expired or doesn’t exist. Ask for a fresh one.');return}
+    const id=pairId(uid,hit.id);person(hit.id);if(await W(()=>db.doc('met/'+id).set({ids:[uid,hit.id].sort(),at:now(),zone:me.zone,city:me.city}))){F.pairin='';closeSheet()}return}
+  /* midnight and sealed */
+  case 'mnwhen':F.mnwhen=d.v;render();return;
+  case 'mn-send':{const text=(F.mntext||'').trim();if(!text){toast('Write something first.');return}const mid=dayStart(now())+DAY;const k=(F.mnwhen||'week')==='tonight'?0:crypto.getRandomValues(new Uint8Array(1))[0]%7;
+    if(await W(()=>db.collection(`circles/${me.circle}/midnight`).add({text:text.slice(0,400),releaseAt:mid+k*DAY,flags:[]}),(F.mnwhen||'week')==='tonight'?'Queued for midnight. Unsigned.':'Queued for a random night this week. Unsigned.')){F.mntext='';logMine('Midnight message queued');closeSheet()}return}
+  case 'mflag':{const m=S.midnight.find(x=>x.id===d.v);if((m.flags||[]).includes(uid))return;await W(()=>db.doc(`circles/${me.circle}/midnight/${m.id}`).update({flags:[...(m.flags||[]),uid]}),'Flagged.');return}
+  case 'sealw':F.sealw=+d.v;render();return;
+  case 'seal-send':{const text=(F.sealtext||'').trim();if(!text){toast('Write something first.');return}const o=sealOpts()[F.sealw??0];
+    if(await W(()=>db.collection(`circles/${me.circle}/sealed`).add({by:uid,text:text.slice(0,600),openAt:o[1],label:o[0],at:now()}),'Sealed. It opens '+when(o[1])+'.')){F.sealtext='';logMine('Sealed a message: opens '+o[0].toLowerCase());closeSheet()}return}
+  /* go dark */
+  case 'darkH':F.darkH=+d.v;render();return;
+  case 'dark-go':{const h=F.darkH||3;if(await W(()=>db.doc('people/'+uid).update({darkUntil:now()+h*HOUR,darkFrom:now(),darkH:h,darkWith:!!F.darkWith}))){mark('dark');logMine('Went dark for '+h+' h');if(F.darkWith&&me.circle){const g=S.threads.find(t=>t.id==='general');if(g)db.collection(`circles/${me.circle}/threads/general/msgs`).add({by:uid,name:me.name,text:`Going dark for ${h} h. Join me? You → Go dark.`,at:now()}).catch(()=>{})}}return}
+  case 'dark-back':F.darkBack=true;render();return;
+  case 'dark-stay':F.darkBack=false;render();return;
+  case 'dark-end':{const h=me.darkH,spent=now()-(me.darkFrom||now());F.darkBack=false;if(await W(()=>db.doc('people/'+uid).update({darkUntil:0,darkBack:{planned:h,after:Math.round(spent/MIN)}}))){logMine(`Came back after ${left(spent)} of ${h} h dark`)}return}
+  /* profile and data */
+  case 'pfzone':F.pfzone=+d.v;render();return;
+  case 'pf-save':{const n=(F.pfname??me.name).trim();if(!n){toast('Name can’t be empty.');return}if(await W(()=>db.doc('people/'+uid).update({name:n.slice(0,24),zone:F.pfzone??me.zone}),'Saved.')){delete F.pfname;delete F.pfzone;closeSheet()}return}
+  case 'export':{const out={profile:me,journeys:journeys(),timeline:S.priv.log?.items||[],decodeTries:S.priv.dec||{},myPosts:S.posts.filter(p=>p.by===uid),steps:S.ev,exportedAt:new Date().toISOString()};const txt=JSON.stringify(out,null,2);
+    if(downloads){try{await downloads.save({filename:'insane-my-data.json',data:txt});return}catch(e){}}S.exportText=txt;render();return}
+  case 'del-ask':S.ui.confirm='delete';render();return;
+  case 'del-no':S.ui.confirm=null;render();return;
+  case 'del-yes':{S.ui.confirm=null;logMem=[];await W(async()=>{for(const k of Object.keys(S.priv))await db.doc(`data/users/${uid}/${k}`).delete();for(const p of S.posts.filter(p=>p.by===uid))await db.doc('posts/'+p.id).delete();if(me.circle){await db.doc(`circles/${me.circle}/progress/${uid}`).delete().catch(()=>{});if(S.circle)await db.doc('circles/'+me.circle).update({members:(S.circle.members||[]).filter(x=>x!==uid)}).catch(()=>{})}await db.doc('ev/'+uid).delete();await db.doc('people/'+uid).delete()},'Deleted. Everything of yours is gone.');S.ui.ob={step:0,zone:4,cq:''};return}
+  case 'stats':{try{const r=await db.collection('ev').get();S.stats=docs(r)}catch(e){toast('Couldn’t load the results.')}render();return}
+  }
+}
+boot();
+</script>
