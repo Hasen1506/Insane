@@ -9,7 +9,7 @@ body.mapfull{overflow:hidden}
 .mapv.full .mapctl{top:max(10px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right))}
 .mapattr{position:absolute;left:6px;bottom:4px;font:12px var(--f-body,system-ui);color:var(--ink);background:var(--card);opacity:.9;padding:2px 6px;border-radius:5px;max-width:calc(100% - 64px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mapnote{position:absolute;left:8px;top:8px;right:62px;font:600 13px var(--f-body,system-ui);color:var(--ink);background:var(--card);border:1.5px solid var(--ink);border-radius:10px;padding:6px 9px;width:max-content;max-width:calc(100% - 70px)}
-.maphint{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.72);color:#fff;font:600 14px var(--f-body,system-ui);padding:10px 14px;border-radius:12px;text-align:center;pointer-events:none;max-width:80%}
+.maphint{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.72);color:var(--on-dark);font:600 14px var(--f-body,system-ui);padding:10px 14px;border-radius:12px;text-align:center;pointer-events:none;max-width:80%}
 .results{display:flex;flex-direction:column;border:1.5px solid var(--line);border-radius:12px;margin-top:6px;background:var(--card);overflow:hidden}
 .res{display:flex;align-items:center;gap:10px;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:9px 11px;min-width:0;min-height:48px;width:100%;color:var(--ink)}
 .res:last-child{border-bottom:0}.res b{font-size:15px;display:block}.res .grow{min-width:0;flex:1}.res .meta{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -30,7 +30,7 @@ body.mapfull{overflow:hidden}
 .ctog button.on{background:var(--ink);color:var(--paper)}
 .maplegend{display:flex;flex-wrap:wrap;gap:6px 12px;margin:8px 2px 0;font:13px var(--f-body,system-ui);color:var(--muted)}
 .maplegend span{display:inline-flex;align-items:center;gap:6px}.maplegend i{width:12px;height:12px;border-radius:50%;display:inline-block;border:1.5px solid var(--ink)}
-.maplegend i.sq{border-radius:3px;background:rgba(200,33,75,.16);border-color:var(--stamp)}
+.maplegend i.sq{border-radius:3px;background:var(--stamp-soft);border-color:var(--stamp)}
 .cdchip{display:inline-block;font:600 13px var(--f-body,system-ui);border-radius:999px;padding:3px 10px;background:var(--paper);border:1px solid var(--good);color:var(--ink)}
 .wiz{display:flex;gap:6px;margin:6px 0 10px}.wiz span{flex:1;height:4px;border-radius:2px;background:var(--line)}.wiz span.on{background:var(--ink)}
 .wizlbl{font:600 13px var(--f-body,system-ui);color:var(--muted)}

@@ -33,7 +33,7 @@ function relocate(){return `<div style="padding-top:18px"><span class="mark">INS
 
 function header(){
   const me=S.me,c=S.circle,n=activity().filter(a=>a.fresh).length;
-  const where=`${esc(c?c.name:'No circle yet')}<br>${esc(me.cityName||'')} · ${esc(cellText(me.cell))}`;
+  const where=esc(c?c.name:'No circle yet'); // C74: the circle in the header; place and square are on You
   return `<header class="top"><span class="mark">INSANE</span><button class="bell" data-act="sheet" data-v="activity" aria-label="What’s new${n?': '+n:''}">${ICON.bell}${n&&!calmNow()?`<span class="cnt">${n>9?'9+':n}</span>`:''}</button><span class="where"><span class="live ${S.mode==='demo'?'demo':''}" aria-hidden="true"></span>${where}</span><button class="me-btn ${S.ui.tab==='you'?'on':''}" data-act="tab" data-v="you" aria-label="You: profile, journeys, settings">${esc(initials(me.name))}</button></header>`+
    (S.mode==='demo'?`<div class="banner"><b>Demo on this device.</b> Nothing leaves this browser. Open the shared link signed in to play with other people.</div>`:'')+
    offlineBanner()+a2hsCard()+
