@@ -1,18 +1,18 @@
 /* ---------- what's new, calm, presence, celebrations ---------- */
 function activity(){
-  if(!S.me)return [];const seen=(S.priv.seen||{}).act||0,out=[],t=now();
+  if(!S.me)return [];const seen=(S.priv.seen||{}).act||0,out=[],tn=now();
   for(const u of unreadThreads())out.push({title:u.title,sub:(u.last.name||'')+': '+u.last.text,at:u.last.at,act:'open',data:{type:u.type,v:u.id}});
-  for(const m of S.midnight)if(m.releaseAt<=t&&m.releaseAt>t-2*DAY&&(m.flags||[]).length<2)out.push({title:'Midnight went out',sub:'An unsigned message in your circle',at:m.releaseAt,act:'cseg-go',data:{v:'midnight'}});
-  for(const d of nearDrops())if(d.end>t&&d.start<t+6*HOUR)out.push({title:d.venue+(dropPhase(d)==='open'?' is open now':' opens '+when(d.start)),sub:(DK[d.kind]?.n||'Drop')+' · '+fmtKm(d._km)+' away',at:Math.min(t,d.start-HOUR),act:'sheet',data:{v:'drop',id:d.id}});
-  for(const m of S.met)if(m.at>t-3*DAY)out.push({title:'You met '+nameOf(m.ids.find(x=>x!==S.uid)),sub:'You can message each other now',at:m.at,act:'open',data:{type:'dm',v:m.id}});
-  for(const c of S.calls)if(c.circle===S.me.circle&&c.answered&&c.room)out.push({title:c.answered.name+' answered your call',sub:c.ask,at:c.answeredAt||c.at,act:'open',data:{type:'room',v:c.room}});
-  for(const s of S.sealed)if(s.openAt<=t&&s.openAt>t-3*DAY)out.push({title:'A sealed message opened',sub:'From '+nameOf(s.by),at:s.openAt,act:'cseg-go',data:{v:'midnight'}});
-  for(const c of S.cheers)if(c.to===S.uid&&c.at>t-3*DAY)out.push({title:nameOf(c.from)+' cheered you',sub:c.label,at:c.at,act:'cseg-go',data:{v:'pacts'}});
-  for(const d of S.dares)if(d.to===S.uid&&(!d.status||d.status==='open')&&d.at>t-3*DAY)out.push({title:nameOf(d.by)+' dared you',sub:d.text,at:d.at,act:'tab',data:{v:'today'}});
-  for(const f of S.favors){if(f.status==='done'&&f.asker===S.uid)out.push({title:nameOf(f.doer)+' did your favor',sub:f.what+' · confirm to log it',at:f.doneAt||f.at,act:'tab',data:{v:'ledger'}});if(f.status==='claimed'&&f.asker===S.uid&&f.claimedAt>t-3*DAY)out.push({title:nameOf(f.doer)+' will do your favor',sub:f.what,at:f.claimedAt,act:'tab',data:{v:'ledger'}})}
-  for(const p of pots())if(p.by===S.uid)for(const [x,v] of Object.entries(p.paid||{}))if(v==='wait')out.push({title:nameOf(x)+' paid into '+p.title,sub:'Check it landed, then confirm',at:p.at,act:'pot-go',data:{v:p.id}});
-  if(S.mole&&S.mole.revealed&&S.mole.revealed.at>t-2*DAY)out.push({title:'The Mole was '+nameOf(S.mole.revealed.uid),sub:S.mole.revealed.done+' of 3 tasks',at:S.mole.revealed.at,act:'cseg-go',data:{v:'mole'}});
-  for(const m of S.missions)if(m.at>t-3*DAY&&m.cid!==S.me.circle)out.push({title:'New Mission: '+m.title,sub:'Proposed by '+m.cname+' · '+when(m.when),at:m.at,act:'sheet',data:{v:'mission',id:m.id}});
+  for(const m of S.midnight)if(m.releaseAt<=tn&&m.releaseAt>tn-2*DAY&&(m.flags||[]).length<2)out.push({title:t('midOut'),sub:t('midSub'),at:m.releaseAt,act:'cseg-go',data:{v:'midnight'}});
+  for(const d of nearDrops())if(d.end>tn&&d.start<tn+6*HOUR)out.push({title:t(dropPhase(d)==='open'?'dropOpen':'dropOpens',{v:d.venue,w:when(d.start)}),sub:(DK[d.kind]?.n||t('drop'))+' · '+t('away',{d:fmtKm(d._km)}),at:Math.min(tn,d.start-HOUR),act:'sheet',data:{v:'drop',id:d.id}});
+  for(const m of S.met)if(m.at>tn-3*DAY)out.push({title:t('met',{n:nameOf(m.ids.find(x=>x!==S.uid))}),sub:t('metSub'),at:m.at,act:'open',data:{type:'dm',v:m.id}});
+  for(const c of S.calls)if(c.circle===S.me.circle&&c.answered&&c.room)out.push({title:t('answered',{n:bidi(c.answered.name)}),sub:c.ask,at:c.answeredAt||c.at,act:'open',data:{type:'room',v:c.room}});
+  for(const s of S.sealed)if(s.openAt<=tn&&s.openAt>tn-3*DAY)out.push({title:t('sealed'),sub:t('from',{n:nameOf(s.by)}),at:s.openAt,act:'cseg-go',data:{v:'midnight'}});
+  for(const c of S.cheers)if(c.to===S.uid&&c.at>tn-3*DAY)out.push({title:t('cheered',{n:nameOf(c.from)}),sub:c.label,at:c.at,act:'cseg-go',data:{v:'pacts'}});
+  for(const d of S.dares)if(d.to===S.uid&&(!d.status||d.status==='open')&&d.at>tn-3*DAY)out.push({title:t('dared',{n:nameOf(d.by)}),sub:d.text,at:d.at,act:'tab',data:{v:'today'}});
+  for(const f of S.favors){if(f.status==='done'&&f.asker===S.uid)out.push({title:t('fvDone',{n:nameOf(f.doer)}),sub:t('fvConfirm',{w:f.what}),at:f.doneAt||f.at,act:'tab',data:{v:'ledger'}});if(f.status==='claimed'&&f.asker===S.uid&&f.claimedAt>tn-3*DAY)out.push({title:t('fvClaimed',{n:nameOf(f.doer)}),sub:f.what,at:f.claimedAt,act:'tab',data:{v:'ledger'}})}
+  for(const p of pots())if(p.by===S.uid)for(const [x,v] of Object.entries(p.paid||{}))if(v==='wait')out.push({title:t('paidInto',{n:nameOf(x),p:p.title}),sub:t('paidSub'),at:p.at,act:'pot-go',data:{v:p.id}});
+  if(S.mole&&S.mole.revealed&&S.mole.revealed.at>tn-2*DAY)out.push({title:t('mole',{n:nameOf(S.mole.revealed.uid)}),sub:t('moleSub',{d:S.mole.revealed.done}),at:S.mole.revealed.at,act:'cseg-go',data:{v:'mole'}});
+  for(const m of S.missions)if(m.at>tn-3*DAY&&m.cid!==S.me.circle)out.push({title:t('mission',{t:m.title}),sub:t('missionSub',{c:bidi(m.cname),w:when(m.when)}),at:m.at,act:'sheet',data:{v:'mission',id:m.id}});
   return out.sort((a,b)=>b.at-a.at).slice(0,30).map(x=>Object.assign(x,{fresh:x.at>seen}));
 }
 const prefs=()=>S.priv.prefs||{};
@@ -36,9 +36,9 @@ function celebrate(stamp,msg){
   document.body.appendChild(el);setTimeout(()=>el.remove(),1600);
 }
 function runDraw(id){
-  const d=S.drops.find(x=>x.id===id);const ins=S.dropIns;const names=[...new Set(ins.map(i=>i.circle))].map(c=>ins.find(i=>i.circle===c)?.cname||'a circle');const w=drawWinner(d,ins);const wn=ins.find(i=>i.circle===w)?.cname||'a circle';
+  const d=S.drops.find(x=>x.id===id);const ins=S.dropIns;const names=[...new Set(ins.map(i=>i.circle))].map(c=>ins.find(i=>i.circle===c)?.cname||t('aCircle'));const w=drawWinner(d,ins);const wn=ins.find(i=>i.circle===w)?.cname||t('aCircle');
   const el=$('#draw-name');if(!el||!names.length)return;let i=0,delay=50;const t0=now();
-  const step=()=>{const elx=$('#draw-name');if(!elx)return;if(now()-t0>2400){elx.textContent=wn;elx.classList.add('won');S.ui.drawn=id;render();celebrate('DRAWN',wn+' wins the draw');return}elx.textContent=names[i++%names.length];delay*=1.12;setTimeout(step,delay)};step();
+  const step=()=>{const elx=$('#draw-name');if(!elx)return;if(now()-t0>2400){elx.textContent=wn;elx.classList.add('won');S.ui.drawn=id;render();celebrate(t('drawn'),t('wins',{c:bidi(wn)}));return}elx.textContent=names[i++%names.length];delay*=1.12;setTimeout(step,delay)};step();
 }
 async function pushOn(){
   try{
@@ -46,8 +46,8 @@ async function pushOn(){
     const reg=await swReg();await navigator.serviceWorker.ready;
     const key=Uint8Array.from(atob(S.hello.vapid.replace(/-/g,'+').replace(/_/g,'/')+'=='.slice(0,(4-S.hello.vapid.length%4)%4)),c=>c.charCodeAt(0));
     const sub=await reg.pushManager.getSubscription()||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:key});
-    await S.db.call('push/sub',{subscription:sub.toJSON()});S.pushOn=true;toast('Notifications are on.');
-  }catch(e){console.warn(e);toast('Couldn’t turn notifications on in this browser.')}
+    await S.db.call('push/sub',{subscription:sub.toJSON()});S.pushOn=true;toast(t('pushOn'));
+  }catch(e){console.warn(e);toast(t('pushNo'))}
   render();
 }
 async function checkPush(){if(S.backend!=='server'||!('serviceWorker' in navigator)||!('Notification' in window))return;try{const reg=await navigator.serviceWorker.getRegistration('/sw.js');const sub=reg&&await reg.pushManager.getSubscription();S.pushOn=!!sub;S.pushState=Notification.permission;render()}catch(e){}}

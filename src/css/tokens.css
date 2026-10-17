@@ -11,6 +11,7 @@
   --f-display:"Arial Black","Segoe UI Black",system-ui,-apple-system,Roboto,sans-serif;
   --f-body:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Noto Sans Tamil","Noto Sans Devanagari",sans-serif;
   --f-mono:ui-monospace,SFMono-Regular,Menlo,"Roboto Mono","Droid Sans Mono",monospace;
+  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);--sal:env(safe-area-inset-left,0px);--sar:env(safe-area-inset-right,0px);
   --t1:12px;--t2:13px;--t3:14px;--tap:44px;
 }
 @media (prefers-color-scheme:dark){:root{
