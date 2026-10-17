@@ -23,11 +23,12 @@ const lpReady=st=>st&&st.geoP?st.geoP:Promise.resolve();
 const regionName=cc=>{try{return new Intl.DisplayNames(['en'],{type:'region'}).of(cc)||country(cc)}catch(e){return country(cc)}};
 const publicCell=st=>cellOf(st.lat,st.lon,st.prec==='exact'?1:st.s);
 function guessHome(){const g=tzGuess();return g}
-const RICON={town:'🏙',nbh:'🏘',street:'📍'};
+const SV=d=>`<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">${d}</svg>`;
+const RICON={town:SV('<path d="M3 21V9l5-3v15M8 21V4l8 4v13M16 21v-9l5 2v7M2 21h20"/>'),nbh:SV('<path d="M3 11l5-4 5 4v9H3zM13 13l4-3 4 3v7h-8"/>'),street:SV('<path d="M12 21s-6-6.2-6-11a6 6 0 0 1 12 0c0 4.8-6 11-6 11z"/><circle cx="12" cy="10" r="2.2"/>'),link:SV('<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>')};
 function resRow(k,r){return `<button class="res" data-act="lp-pick" data-k="${k}" data-lat="${r.lat}" data-lon="${r.lon}" data-label="${esc(r.label)}" data-z="${r.z}" data-src="${r.src||'search'}"><span class="ri" aria-hidden="true">${r.icon||RICON[r.g]}</span><span class="grow"><b>${esc(r.n)}</b><span class="meta">${esc(r.sub)}</span></span>${r.km!=null?`<span class="rd">${fmtKm(r.km)}</span>`:''}</button>`}
 function lpResults(k,st){
-  const ll=parseLL(st.q);const g=guessHome();const ref=st.lat!=null?[st.lat,st.lon]:[g.lat,g.lon];
-  if(ll)return `<div class="results">${resRow(k,{g:'street',icon:'📌',n:'This spot',sub:`${ll[0].toFixed(5)}, ${ll[1].toFixed(5)} · from what you pasted`,lat:ll[0],lon:ll[1],z:16,km:distKm(ref,ll),label:'',src:'link'})}</div>`;
+  const ll=parseLL(st.q);const ref=st.lat!=null?[st.lat,st.lon]:null; // no distance from a country-sized guess
+  if(ll)return `<div class="results">${resRow(k,{g:'street',icon:RICON.link,n:'This spot',sub:`${ll[0].toFixed(5)}, ${ll[1].toFixed(5)} · from what you pasted`,lat:ll[0],lon:ll[1],z:16,km:ref?distKm(ref,ll):null,label:'',src:'link'})}</div>`;
   const local=S.backend==='server'?(st.local||[]):searchPlaces(st.q,6);
   const R=groupResults(local,st.remote||[],ref);
   const grp=(t,rows)=>rows.length?`<div class="rgrp">${t}</div>${rows.map(r=>resRow(k,r)).join('')}`:'';
@@ -58,7 +59,9 @@ function picker(k){
   return h;
 }
 function pickSpec(k){const st=lpState(k);const has=st.lat!=null;const g=guessHome();
-  return {home:st.home||(has?[st.lat,st.lon]:[g.lat,g.lon]),zoom:st.zoom||(has?14:g.z),follow:true,v:st.v,label:has?'Map of your pick. Tap to move the pin.':'Map. Zoom in and tap to drop a pin.',
+  // without a street basemap the bundled map has nothing to show past town level, so stop at 12.5 there
+  const zmax=MAPCFG.kind==='none'||MAPCFG.tilesOk===false?12.5:19;
+  return {home:st.home||(has?[st.lat,st.lon]:[g.lat,g.lon]),zoom:Math.min(zmax,st.zoom||(has?14:g.z)),follow:true,v:st.v,label:has?'Map of your pick. Tap to move the pin.':'Map. Zoom in and tap to drop a pin.',
     items:()=>{if(!has)return [];const it=[];
       if(k==='home'){const c=publicCell(st);const nn=(st.geo&&st.geo.near&&st.geo.near[c.s])??nearName(c.lat,c.lon);it.push({type:'radius',ll:[c.lat,c.lon],km:st.r});
         if(st.view==='others')return it.concat({type:'cell',b:c.b,style:'others',label:nn?'near '+nn:''}); // no pin, ever, in what others see

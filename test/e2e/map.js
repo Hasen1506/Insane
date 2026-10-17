@@ -57,7 +57,7 @@ const inIN = c => c && c[0] > IN_BB[0] && c[0] < IN_BB[2] && c[1] > IN_BB[1] && 
   R.ok('C65 one primary "Use my location", with the search box beneath it', await p.locator('.lp-gps').count() === 1 && await p.locator('[data-act="lp-paste"]').count() === 0 && (await p.locator('#lp-q-home').getAttribute('placeholder')).includes('India'));
   // search: towns first, with a distance
   await p.fill('#lp-q-home', 'Minjur'); await p.waitForSelector('.res[data-src="search"]');
-  { const first = await p.locator('.results > *').first().innerText(); const row = await p.locator('.res').first().innerText(); R.ok('C67 search: "Towns and cities" first, the town with a distance', /towns and cities/i.test(first) && /M[iī]nj[uū]r/.test(row) && /\d+ km/.test(row), first + ' | ' + row); }
+  { const first = await p.locator('.results > *').first().innerText(); const row = await p.locator('.res').first().innerText(); R.ok('C67 search: "Towns and cities" first, the town (no distance from a country-sized guess)', /towns and cities/i.test(first) && /M[iī]nj[uū]r/.test(row) && !/\d+ km/.test(row), first + ' | ' + row); }
   await tap(p, '.res[data-src="search"]');
   await E.until(() => p.evaluate(() => !!(lpState('home').geo)), { what: 'area from the server' });
   { const st = await p.evaluate(() => { const s = lpState('home'); return { lat: s.lat, src: s.src, area: s.geo.area.name, prec: s.prec, s: s.s }; }); R.ok('picked by search: pin on Minjur, city Chennai (from /api/place), zone 1 km² by default', Math.abs(st.lat - 13.28) < .02 && st.area === 'Chennai' && st.prec === 'zone' && st.s === 1, JSON.stringify(st)); }

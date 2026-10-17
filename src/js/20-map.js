@@ -204,8 +204,9 @@ class MapView{
     const L=this.labels.slice().sort((a,b)=>a.rank-b.rank);
     for(const l of L){let x=l.u[0]*S-ox,y=l.u[1]*S-oy;if(x<-S/2)x+=S;else if(x>this.w+S/2)x-=S;
       g.font=(l.rank<=1?'600 13px ':'500 12px ')+'"Instrument Sans",system-ui,sans-serif';g.textBaseline='middle';const tw=g.measureText(l.n).width;
-      let tx=x+6;if(tx+tw>this.w-pad)tx=x-6-tw;const b=[tx-2,y-8,tx+tw+2,y+8];
-      if(x<pad||x>this.w-pad||y<pad+8||y>this.h-pad-8||b[0]<pad||b[2]>this.w-pad)continue;
+      const R0=this.w-58; // the control column
+      let tx=x+6;if(tx+tw>R0&&y<250)tx=x-6-tw;else if(tx+tw>this.w-pad)tx=x-6-tw;const b=[tx-2,y-8,tx+tw+2,y+8];const right=y<250?R0:this.w-pad;
+      if(x<pad||x>right||y<pad+8||y>this.h-pad-22||b[0]<pad||b[2]>right)continue;
       if(boxes.some(q=>b[0]<q[2]&&b[2]>q[0]&&b[1]<q[3]&&b[3]>q[1]))continue;boxes.push(b);
       if(l.dot){g.fillStyle=col.ink;g.beginPath();g.arc(x,y,2.2,0,7);g.fill()}
       g.lineWidth=3;g.strokeStyle=col.land;g.strokeText(l.n,tx,y);g.fillStyle=col.ink;g.fillText(l.n,tx,y);if(++n>60)break}}

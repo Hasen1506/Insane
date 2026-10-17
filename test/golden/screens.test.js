@@ -9,8 +9,12 @@ const { v08Dir } = require('../lib/load');
 
 const T0 = Date.UTC(2026, 9, 12, 3, 30); // Mon 12 Oct 2026, 09:00 in Chennai
 const PROFILE = process.env.GOLDEN_PROFILE || 'Pixel 7';
+// Screens changed on purpose since v0.8, with the critique that changed them (reviewed goldens replace the v0.8 match).
+const CHANGED = {
+  'ob-2-place': 'WS-F C64-C67 the shared picker', 'tab-city': 'WS-F C43/C44 City map first',
+};
 
-async function screens(browser, file) {
+async function screens(browser, file, v09) {
   const srv = await E.serveStatic({ file, port: +process.env.GOLDEN_PORT || 8777 }); // same origin both runs: links carry it
   const ctx = await browser.newContext(BR.profile(PROFILE, { timezoneId: 'Asia/Kolkata', locale: 'en-GB', colorScheme: 'light', reducedMotion: 'reduce' }));
   await BR.blockExternal(ctx); await GD.seedRandom(ctx, 9);
@@ -24,7 +28,8 @@ async function screens(browser, file) {
   await snap('ob-1-name');
   await page.fill('#ob-name', 'Meera'); await page.check('#ob-age'); await tap('[data-act="ob-next"]');
   await page.waitForSelector('#lp-q-home'); await page.fill('#lp-q-home', 'Chennai'); await page.waitForSelector('.res'); await tap('.res');
-  await tap('[data-act="lp-paste"]'); await page.waitForSelector('#lp-p-home'); await page.fill('#lp-p-home', '13.2790, 80.2619'); await tap('form[data-form="lp-use"] button');
+  if (v09) { await page.fill('#lp-q-home', '13.2790, 80.2619'); await page.waitForSelector('.res[data-src="link"]'); await tap('.res[data-src="link"]'); } // WS-F (C65): links go in the search box
+  else { await tap('[data-act="lp-paste"]'); await page.waitForSelector('#lp-p-home'); await page.fill('#lp-p-home', '13.2790, 80.2619'); await tap('form[data-form="lp-use"] button'); }
   await E.until(async () => (await page.locator('[data-act="lp-size"]').count()) > 0, { what: 'precision chips' });
   await tap('[data-act="lp-size"][data-v="2"]'); await tap('[data-act="lp-radius"][data-v="5"]');
   await snap('ob-2-place');
@@ -47,15 +52,17 @@ module.exports = async function (t) {
   const browser = await BR.launch();
   try {
     const v08 = await screens(browser, path.join(v08Dir(), 'app', 'index.html'));
-    const v09 = await screens(browser, E.APP());
+    const v09 = await screens(browser, E.APP(), true);
     t.ok('both runs drove the same screens', JSON.stringify(v08.out.map(s => s.name)) === JSON.stringify(v09.out.map(s => s.name)), v09.out.map(s => s.name).join(','));
     t.ok('no script errors in either', !v08.errors.length && !v09.errors.length, [...v08.errors, ...v09.errors].join(' | '));
     const helper = await browser.newPage();
     for (let i = 0; i < v09.out.length; i++) {
       const a = v08.out[i], b = v09.out[i];
-      t.ok(`${b.name}: DOM identical to v0.8`, a.dom === b.dom, a.dom === b.dom ? '' : GD.lineDiff(a.dom, b.dom));
-      const r = await GD.pixelDiff(helper, a.img, b.img);
-      t.ok(`${b.name}: pixels match v0.8 (${(r * 100).toFixed(3)}% differ, tolerance 0.1%)`, r <= 0.001);
+      if (!CHANGED[b.name]) { // screens a workstream changed on purpose are held to their v0.9 goldens only
+        t.ok(`${b.name}: DOM identical to v0.8`, a.dom === b.dom, a.dom === b.dom ? '' : GD.lineDiff(a.dom, b.dom));
+        const r = await GD.pixelDiff(helper, a.img, b.img);
+        t.ok(`${b.name}: pixels match v0.8 (${(r * 100).toFixed(3)}% differ, tolerance 0.1%)`, r <= 0.001);
+      }
       const g = GD.matchDom(`ws0/${PROFILE.replace(/\s/g, '')}/${b.name}`, b.dom); t.ok(`${b.name}: DOM golden ${g.created ? 'written' : 'matches'}`, g.ok, g.diff);
       const p = await GD.matchPixels(helper, `ws0/${PROFILE.replace(/\s/g, '')}/${b.name}`, b.img); t.ok(`${b.name}: pixel golden ${p.created ? 'written' : 'matches (' + (p.ratio * 100).toFixed(3) + '%)'}`, p.ok);
     }

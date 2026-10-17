@@ -1,0 +1,22 @@
+main#app role=main
+  span.mark "INSANE"
+  i.on
+  i.on
+  i
+  i
+  h1.v role=heading "Where’s home?"
+  p.lede "Anywhere on Earth. You choose how exact: a private pin, or just a square of 1 to 9 km²."
+  button.btn.lp-gps role=button act="lp-gps" "Use my location"
+    svg
+  label.f.lp-or role=label "or search your town or area, or paste a maps link"
+  input#lp-q-home.in-t role=textbox placeholder="A town or area in India" value=""
+  canvas name="Map. Zoom in and tap to drop a pin."
+  button role=button aria-label="Zoom in" "+"
+  button role=button aria-label="Zoom out" "−"
+  button role=button aria-label="Recenter the map" "◎"
+  button role=button aria-label="Full-screen map" aria-pressed="false" "⤢"
+  div.mapattr "Natural Earth · GeoNames"
+  p.meta "Use your location, search, or zoom in and tap the map where you mean."
+  button.btn.ghost role=button act="ob-back" "Back"
+  button.btn role=button act="ob-next" disabled="" "Next"
+div#layer

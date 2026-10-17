@@ -79,7 +79,7 @@ module.exports = async function (t) {
   const KIND = G.pick(['road', 'suburb', 'neighbourhood', 'building', 'cafe', 'village', 'house', 'quarter', 'hamlet', 'footway']);
   ok(prop('search results: towns, then neighbourhoods, then streets', G.tuple(G.array(G.record({ n: G.str({ min: 1, max: 10, alphabet: 'abcdefgh' }), lat: LAT, lon: LON, pop: G.int(5000, 9e6), cc: G.pick(['IN', 'PT']), a: G.pick(['', 'Tamil Nadu']) }), { max: 6 }), G.array(G.record({ name: G.str({ min: 1, max: 20, alphabet: 'abcdefgh, ' }), lat: LAT, lon: LON, kind: KIND }), { max: 6 })), ([loc, rem]) => {
     const R = app.get('groupResults')(loc, rem, [13, 80]); const order = { town: 0, nbh: 1, street: 2 };
-    return R.all.every((x, i) => i === 0 || order[R.all[i - 1].g] <= order[x.g]) && R.towns.length === loc.length && R.all.every(x => x.km != null && x.km >= 0);
+    return R.all.every((x, i) => i === 0 || order[R.all[i - 1].g] <= order[x.g]) && R.towns.length === loc.length && R.all.every(x => x.km != null && x.km >= 0) && app.get('groupResults')(loc, rem, null).all.every(x => x.km === null);
   }));
 
   // first view from the timezone (C64): the bundled shortcuts, and every zone in the index table, land in their own country
