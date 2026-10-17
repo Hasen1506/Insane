@@ -137,6 +137,6 @@ div#layer
       p.meta "They scan this with their phone camera, or type the code. Circles stop at 8."
       svg
       div.big "7W9SPX"
-      button.btn.s.ghost role=button act="copy" v="http://localhost:8781/?as=meera#c7W9SPX" "Copy invite link"
+      button.btn.s.ghost role=button act="copy" v="http://localhost:8777/?as=meera#c7W9SPX" "Copy invite link"
       p.meta "Next time you’re together, scan each other’s phones (Meet someone). Two of you meeting in person unlocks posting in the City."
       button.btn.ghost.wide role=button act="sheet-close" "Close"
