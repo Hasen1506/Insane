@@ -9,6 +9,8 @@ const APP_DIR = () => path.resolve(process.env.APP_DIR || path.join(REPO, 'app')
 
 /* ---------- waiting ---------- */
 const tick = () => new Promise(r => setImmediate(r));
+// p, or give up waiting after ms (a timeout: resolves as soon as p does). Resolves undefined on timeout.
+function within(p, ms) { let t; return Promise.race([p, new Promise(done => { t = setTimeout(done, ms); })]).finally(() => clearTimeout(t)); }
 // Poll fn() until it returns truthy. Returns the value; throws with `what` on timeout.
 async function until(fn, { timeout = 10000, every = 25, what = 'condition' } = {}) {
   const end = Date.now() + timeout; let last;
@@ -39,7 +41,7 @@ const actProbe = ctxOrPage => ctxOrPage.addInitScript(() => {
 });
 async function idle(page, { timeout = 8000 } = {}) {
   try { await page.waitForFunction(() => !window.__acts, null, { timeout, polling: 'raf' }); } catch (e) { if (!/Timeout/.test(e.message)) throw e; } // a never-ending act (e.g. waiting on GPS) shouldn't wedge a run
-  let cap; await Promise.race([settled(page).catch(() => { }), new Promise(r => { cap = setTimeout(r, 2000); })]); clearTimeout(cap); // cap: rAF can stall in a hidden tab
+  await within(settled(page).catch(() => { }), 2000); // a bound, not a sleep: ends at the next two frames; rAF can stall in a hidden tab
 }
 // A tap that can't double-fire. Playwright's normal click waits for the target to be stable; on a slow
 // machine that can time out even though the click went through. Fall back to a forced click only if
@@ -101,4 +103,4 @@ function results(prefix = '') {
   return { list, ok, passed: () => list.filter(r => r[0] === 'PASS').length };
 }
 
-module.exports = { REPO, APP, APP_DIR, tick, until, settled, stable, actProbe, idle, tapOnce, textHas, gone, clock, serveStatic, startServer, outboxCode, results };
+module.exports = { REPO, APP, APP_DIR, tick, within, until, settled, stable, actProbe, idle, tapOnce, textHas, gone, clock, serveStatic, startServer, outboxCode, results };

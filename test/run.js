@@ -9,8 +9,9 @@
 //   golden      test/golden/*.test.js     DOM + pixel goldens (GOLDEN_UPDATE=1 rewrites)
 // In-process suites export `async t => { t.ok(name, cond, extra) }`. Script suites are run as child
 // processes and pass when they exit 0. Time budgets (PLAN-V09 §5.0) are reported per suite; set
-// BUDGETS=strict to fail a suite that runs over 1.5x its budget. The two legacy e2e ports keep
-// v0.8's fixed waits until WS-J's F01–F20 replace them, so their budgets are informational for now.
+// BUDGETS=strict to fail a suite that runs over 1.5x its budget. The legacy e2e ports have no fixed sleeps,
+// but e2e:server still waits out the server's real 20 s sweep twice (no /api/dev/tick until WS-I/J), so
+// its budget is informational for now.
 'use strict';
 const fs = require('fs'), path = require('path'), { spawn } = require('child_process');
 const ROOT = path.resolve(__dirname, '..');
@@ -67,7 +68,7 @@ if (require.main !== module) return;
     const over = secs > s.budget * 1.5;
     const budgetFail = over && process.env.BUDGETS === 'strict';
     if (!ok || budgetFail) failed = true;
-    summary.push(`${ok && !budgetFail ? 'ok  ' : 'FAIL'} ${name.padEnd(11)} ${String(pass).padStart(3)}/${String(total).padEnd(3)} ${secs.toFixed(1).padStart(6)} s  (budget ${s.budget} s${over ? ', OVER' + (s.legacy ? ': v0.8 fixed waits, see run.js' : '') : ''})`);
+    summary.push(`${ok && !budgetFail ? 'ok  ' : 'FAIL'} ${name.padEnd(11)} ${String(pass).padStart(3)}/${String(total).padEnd(3)} ${secs.toFixed(1).padStart(6)} s  (budget ${s.budget} s${over ? ', OVER' + (s.legacy ? ': legacy port, see run.js' : '') : ''})`);
     console.log(summary.at(-1)); if (detail) console.log(detail.replace(/^/gm, '    '));
   }
   console.log('\n' + summary.join('\n'));
