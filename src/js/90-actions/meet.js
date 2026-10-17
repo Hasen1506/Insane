@@ -1,5 +1,5 @@
 /* meeting in person */
-ACT["pair-show"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["pair-show"]=async()=>{const db=S.db,uid=S.uid;
   {const code=String(100000+(crypto.getRandomValues(new Uint32Array(1))[0]%900000));const p={code,exp:now()+2*MIN,at:now()};if(await W(()=>db.doc('pair/'+uid).set(p))){S.pair=p;render()}return}
 };
 ACT["pair"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;

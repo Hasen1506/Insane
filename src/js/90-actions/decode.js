@@ -1,5 +1,5 @@
 /* decode */
-ACT["decode"]=async(d,el,a)=>{const db=S.db,uid=S.uid,me=S.me;
+ACT["decode"]=async()=>{const db=S.db,uid=S.uid,me=S.me;
   {const g=decNorm(F.deca);if(!g)return;const k=weekKey();const dec=Object.assign({},S.priv.dec||{});dec[k]=(dec[k]||0)+1;
     try{await db.doc(`data/users/${uid}/dec`).set(dec)}catch(e){}mark('decodeTry');
     const st=decodeState(S.solves);const won=()=>{mark('decodeSolve');F.deca='';const rank=S.solves.length+1;celebrate(ordinal(rank).toUpperCase(),'Solved. '+ordinal(rank)+' in '+me.cityName+', '+decPts(rank,st.nh)+' points.');logMine('Solved Decode week '+weekNum())};

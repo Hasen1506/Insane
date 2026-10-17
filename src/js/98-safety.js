@@ -158,6 +158,7 @@ function safetyCard(){
   const ids=Object.keys(blockedIds()),me=S.me||{};
   return `<div class="eyebrow">Safety</div><div class="card">
    <label class="chk"><input type="checkbox" data-safe="presence" ${me.presenceOff?'':'checked'}> <span><b>Show when I’m here.</b> Only your circle sees “Here now”. Never shown in the City.</span></label>
+   <label class="chk"><input type="checkbox" data-safe="square" ${me.showSquare?'checked':''}> <span><b>Show my square to my circle.</b> Off unless you turn it on. Your circle sees your ${esc(cellText(me.cell))} square on their map, never a dot or a pin. Nobody else, ever.</span></label>
    <label class="f">Blocked</label>${ids.length?ids.map(id=>`<div class="row" style="padding:4px 0"><span class="grow"><bdi>${esc(nameOf(id))}</bdi></span><button class="btn s ghost" data-act="block" data-v="${esc(id)}" data-on="0">Unblock</button></div>`).join(''):'<p class="meta" style="margin:0">Nobody. To block or report someone, tap their name in your circle.</p>'}
    <p class="meta">${legalLinks()}. Grievance officer: <b>to be named (needs Vijay)</b>.</p>
    ${S.isOwner?`<div class="btns"><button class="btn s" data-act="mod-open">Moderation</button></div>`:''}</div>`;
@@ -182,7 +183,7 @@ function setSkew(serverNow){if(!(+serverNow>0))return;const d=+serverNow-Date.no
 setInterval(async()=>{if(S.backend!=='server'||S.mode!=='live'||document.hidden)return;try{const h=await fetch('/api/hello',{credentials:'same-origin'}).then(r=>r.json());if(h&&h.insane&&!h.signedIn)signedOutWith('revoked');else if(h&&h.now)setSkew(h.now)}catch(e){}},60000);
 
 /* ---------- actions ---------- */
-ACT["block"]=async(d,el,a)=>{const on=d.on!=='0',nm=nameOf(d.v);if(await W(()=>setBlock(d.v,on),on?`Blocked ${nm}. They aren’t told.`:`Unblocked ${nm}.`)){if(on)closeSheet();render()}};
+ACT["block"]=async(d)=>{const on=d.on!=='0',nm=nameOf(d.v);if(await W(()=>setBlock(d.v,on),on?`Blocked ${nm}. They aren’t told.`:`Unblocked ${nm}.`)){if(on)closeSheet();render()}};
 ACT["rep-cat"]=async(d)=>{S.ui.rep={...(S.ui.rep||{}),cat:d.v};render()};
 ACT["report"]=async(d)=>{const f=S.ui.rep||{};if(!f.cat)return;if(await W(()=>sendReport({kind:'person',uid:d.v,category:f.cat,note:(F.repnote||'').trim().slice(0,300),block:!!f.block}),'Reported. Thank you.'+(f.block?' They’re blocked too.':''))){S.ui.rep=null;F.repnote='';closeSheet()}};
 const twice=(k,msg)=>{if(S.ui.confirm!==k){S.ui.confirm=k;render();setTimeout(()=>{if(S.ui.confirm===k){S.ui.confirm=null;render()}},4000);return false}S.ui.confirm=null;return true};
@@ -215,6 +216,7 @@ async function deleteMe(){
 }
 addEventListener('change',e=>{const el=e.target;if(!el||!el.dataset)return;
   if(el.dataset.rep==='block'){S.ui.rep={...(S.ui.rep||{}),block:el.checked}}
+  if(el.dataset.safe==='square'&&S.me)W(()=>S.db.doc('people/'+S.uid).update({showSquare:el.checked}),el.checked?'Your circle can see your square on the map.':'Your square is hidden again.');
   if(el.dataset.safe==='presence'&&S.me)W(()=>S.db.doc('people/'+S.uid).update({presenceOff:!el.checked}),el.checked?'Your circle sees when you’re here.':'Nobody sees when you’re here.');
 });
 addEventListener('input',e=>{const el=e.target;if(el&&el.dataset&&el.dataset.chg&&S.ui.chg)S.ui.chg[el.dataset.chg]=el.value});
