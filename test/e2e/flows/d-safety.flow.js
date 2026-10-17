@@ -21,6 +21,8 @@ module.exports = async function run({ ok }) {
     const p = P[who];
     const ctx = await browser.newContext(BR.profile('Pixel 7', { geolocation: { latitude: 13.0827, longitude: 80.2707, accuracy: 15 }, permissions: ['geolocation'], timezoneId: 'Asia/Kolkata', locale: 'en-IN' }));
     await BR.blockExternal(ctx); await E.actProbe(ctx);
+    // past WS-B's intro and tour (their own flows test them)
+    await ctx.addInitScript(() => { try { localStorage.setItem('insane_intro', '1'); localStorage.setItem('insane_tour', 'done'); } catch (e) { } });
     const page = await ctx.newPage(); page.on('pageerror', e => errors.push(who + ': ' + e.message));
     await page.goto(B + '/'); p[key] = page; p[key + 'Ctx'] = ctx; return page;
   }
@@ -33,7 +35,7 @@ module.exports = async function run({ ok }) {
   const uid = who => evalIn(who, () => S.uid);
   async function signIn(who, page = pg(who), email = P[who].email) {
     await page.waitForSelector('#si-email'); await page.fill('#si-email', email); await tap(who, 'button:has-text("Email me a code")', page);
-    await page.waitForSelector('#si-code'); await page.fill('#si-code', await E.outboxCode(B, email)); await tap(who, 'button:has-text("Sign in")', page);
+    await page.waitForSelector('#si-code'); await page.fill('#si-code', await E.outboxCode(B, email)); // v0.9: six digits submit on their own (C13); tapping Sign in would race it
     await page.waitForSelector('#ob-name, nav.tabs', { timeout: 15000 });
   }
   async function onboard(who, { create, join } = {}) {

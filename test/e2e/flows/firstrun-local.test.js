@@ -60,6 +60,12 @@ async function run(t, browser, srv, profile) {
   t.ok(P('R-C16 reload keeps the step (place, 2 of 4) and the picked place'), (await L.text(p)).includes('Where’s home?') && !(await p.isDisabled('[data-act="ob-next"]')));
   await L.tap(p, '[data-act="ob-back"]'); await p.waitForSelector('#ob-name');
   t.ok(P('R-C16 reload keeps the name, the handle and the age answer'), (await p.inputValue('#ob-name')) === 'Meera Krishnamurthy' && (await p.inputValue('#ob-handle')) === h1 && (await L.text(p)).includes('You confirmed you’re 18 or over'));
+  // WS-D (C63): the consent tick is not part of the saved draft (OB_KEYS), so after a reload it is asked again,
+  // and Next says why until it is ticked
+  if (!(await p.isChecked('#ob-consent'))) {
+    t.ok(P('C63 after a reload, consent is asked again and Next says why'), (await p.isDisabled('[data-act="ob-next"]')) && /Agree to the Terms/.test(await p.locator('#ob-why').innerText()));
+    await p.check('#ob-consent'); await E.idle(p);
+  }
   await L.tap(p, '[data-act="ob-next"]'); await L.tap(p, '[data-act="ob-next"]');
 
   // circle step, then C24 lane examples

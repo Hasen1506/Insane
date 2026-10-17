@@ -43,7 +43,7 @@ async function onboard(p, { name = 'Meera', cname = 'Third Floor', beforeFinish 
 }
 async function signIn(p, base, email) {
   await p.waitForSelector('#si-email'); await fill(p, '#si-email', email); await tap(p, 'button:has-text("Email me a code")');
-  await p.waitForSelector('#si-code'); await fill(p, '#si-code', await E.outboxCode(base, email)); await tap(p, 'button:has-text("Sign in")');
+  await p.waitForSelector('#si-code'); await fill(p, '#si-code', await E.outboxCode(base, email)); // v0.9: six digits submit on their own (C13); tapping Sign in would race it
   await p.waitForSelector('#ob-name, nav.tabs', { timeout: 15000 });
 }
 const tabOn = (p, t) => E.until(async () => (await p.locator(`nav.tabs [data-act="tab"][data-v="${t}"].on`).count()) === 1, { what: t + ' tab on' });

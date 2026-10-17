@@ -22,6 +22,8 @@ async function phone(extra = {}) {
   await BR.blockExternal(ctx); await E.actProbe(ctx);
   // the phone layout needs <meta name=viewport> (C01, WS-A); add it until that lands, so the map is measured as on a phone
   await ctx.addInitScript(() => document.addEventListener('DOMContentLoaded', () => { if (!document.querySelector('meta[name=viewport]')) document.head.insertAdjacentHTML('afterbegin', '<meta name="viewport" content="width=device-width, initial-scale=1">'); }));
+  // past WS-B's intro and tour (their own flows test them), as the other suites do
+  await ctx.addInitScript(() => { try { localStorage.setItem('insane_intro', '1'); localStorage.setItem('insane_tour', 'done'); } catch (e) { } });
   const page = await ctx.newPage(); const errors = []; page.on('pageerror', e => errors.push(e.message));
   const net = []; page.on('response', async r => { const h = r.headers(); net.push({ url: r.url(), status: r.status(), bytes: +(h['content-length'] || 0) }); });
   return { ctx, page, errors, net };
@@ -31,7 +33,7 @@ async function signIn(p, email) {
   await p.goto(server.url);
   if (await p.locator('[data-act="wel-start"]').count()) await tap(p, '[data-act="wel-start"]'); // WS-B's welcome, once merged
   await p.waitForSelector('#si-email'); await p.fill('#si-email', email); await p.locator('button:has-text("Email me a code")').click();
-  await p.waitForSelector('#si-code'); await p.fill('#si-code', await E.outboxCode(server.url, email)); await p.locator('button:has-text("Sign in")').click();
+  await p.waitForSelector('#si-code'); await p.fill('#si-code', await E.outboxCode(server.url, email)); // v0.9: six digits submit on their own (C13); tapping Sign in would race it
   await p.waitForSelector('#ob-name', { timeout: 15000 });
 }
 async function toPlace(p, name) {
