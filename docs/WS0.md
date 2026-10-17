@@ -104,6 +104,22 @@ node test/run.js diff  # any suite by name; VERBOSE=1 streams script output; BUD
 - Server mode: the two `wait(21000)` for the server's 20 s sweep are polls (up to 45 s) that end when the sweep has run. `POST /api/dev/tick` (§5.0) would make them instant, but it is a server change, left to WS-I/J.
 - Server mode drops Playwright's fake clock (it fakes every timer and rAF, and across eleven windows its timer loop was a big share of the CPU) for a per-page `Date` offset that `setClock` moves. The harness also paces rAF to 4 fps in the windows the test isn't driving and caps map repaints at 8 a second: v0.8's map repaints the whole vector world every frame while a drop or trail pulses, which on a 2-core box starved taps until they timed out. No app code changes.
 
+### Runtimes (17 Oct 2026, 2-core sandbox shared with other jobs, system Chromium 155)
+
+One `npm test`, all green: 9 min 0 s.
+
+| Suite | Checks | `npm test` run | Other runs | Budget |
+|---|---|---|---|---|
+| build | 1/1 | 0.1 s | 0.1–2.1 s | 2 s |
+| unit | 27/27 | 0.4 s | 0.3–1.3 s | 10 s |
+| pbt | 8/8 | 0.0 s | 0.0 s | 10 s |
+| diff | 37/37 | 8.1 s | 8.1–11.6 s | 10 s |
+| e2e:local | 83/83 | 248.6 s | 115–118 s on a quiet box | 60 s |
+| e2e:server | 92/92 | 247.2 s | 157–301 s | 90 s |
+| golden | 48/48 | 34.2 s | 22.3 s, 23.0 s, 34.3 s (3 runs in a row, goldens unchanged) | 30 s |
+
+The e2e suites are over budget because they still drive v0.8's long scripted flows through 7 and 11 browsers on a loaded 2-core machine, and e2e:server waits out the real 20 s sweep twice. Budgets are reported, not enforced, unless `BUDGETS=strict`.
+
 ### The J foundation (`test/lib`, `test/pbt`, `test/diff`)
 
 - **`test/pbt/runner.js`: a seeded property runner with no deps.**
