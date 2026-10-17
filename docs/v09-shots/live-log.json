@@ -1,0 +1,161 @@
+{
+ "log": [
+  "meera first paint to email box s 1.44",
+  "bad email screen INSANE | Sign in with your email |  | We email you a 6-digit code. No password. New here? The same code makes your account. |  | Email | Email me a code |  | Development server: codes are printed in the server log.",
+  "wrong code INSANE | Sign in with your email |  | We email you a 6-digit code. No password. New here? The same code makes your account. |  | Code sent to mmeera@x.com. Change |  | 6-digit code | Sign in |  | Nothing after a minute? ",
+  "after reload ob-name value = ''",
+  "search Minjur results  your town, city or area | M\u012bnj\u016br | Tamil Nadu, India | Minjur | Foot over bridge, Venkatareddypalayam, Minjur \u00b7 street search | Minjur | Chennai Metropolitan Area, Ponneri, Thiruvallur \u00b7 street search | Use my GPS | Paste a maps link | + | \u2212 | \u25ce | Natural Earth \u00b7 GeoNames |  | Search, use GPS, or tap the map to drop a pin exa",
+  "place picked text INSANE | Where\u2019s home? |  | Anywhere on Earth. You choose how exact: a private pin, or just a square of 1 to 9 km\u00b2. |  | Search your town, city or area | Use my GPS | Paste a maps link | + | \u2212 | \u25ce | Streets: open this spot in OpenStreetMap \u2197 |  | Pin: M\u012bnj\u016br, Tamil Nadu, India \u00b7 13.2800, 80.2580. Tap the map to move it. |  | How exact? | Exact, kept private | A zone only |  | Only a square is saved, not even privately. Distances are worked out from its middle. |  | 1 km\u00b2 | 4 km\u00b2 | 9 km\u00b2 | WHAT OTHER PEOPLE SEE | A 4 km\u00b2 square near M\u012bnj\u016br, nothing finer. Nothing more exact is saved anywhere, so distances are from the middle of the square. | Sho",
+  "circle step INSANE | Your circle |  | Up to 8 people you actually see. Next time you\u2019re in the same room, scan each other\u2019s phones: that proves you\u2019re real people who\u2019ve met, which a bot farm can\u2019t fake, and it unlocks posting in the City. |  | Start a circle | Circle name | Start it | Join with a code | 6-letter code | Join | Back | Look around first",
+  "solo home INSANE | No circle yet | Chennai \u00b7 4 km\u00b2 square | M | Saturday |  | 1 thing today \u00b7 Chennai |  | Start a circle, or join one |  | Most of INSANE happens with the people you actually see. |  | Start or join | URGELadder | Swim in the sea at sunrise | 0/5 | Rung 0 of 5 |  | If you miss: my circle picks a dare from the jar |  | Climbed rung 1 | Decode \u00b7 week 42 | Change one letter at a time: COLD \u2192 ? \u2192 ? \u2192 WARD \u2192 WARM. What\u2019s the third word? | 0 solved in Chennai \u00b7 answer out in 1d 11h | No drops within 5 km yet |  | Run a shop, a stall or a club night? Host one: a swap box, a dare at the counter, an offer for whoever turns up. |  | Host a drop |  | One list. Whatever needs you today is here; everything else waits in Circle, City and Ledger. |  | Home | Circle | + | City | Ledger",
+  "solo circle INSANE | No circle yet | Chennai \u00b7 4 km\u00b2 square | M | No circle yet |  | A circle is up to 8 people you actually see. Threads, plans, pots and Midnight all happen inside it. |  | Start a circle | Circle name | Start it | Join with a code | 6-letter code | Join | Home | Circle | + | City | Ledger",
+  "STEP FAIL circle/plans Locator.click: Timeout 2000ms exceeded.",
+  "STEP FAIL circle/pacts Locator.click: Timeout 2000ms exceeded.",
+  "STEP FAIL circle/midnight Locator.click: Timeout 2000ms exceeded.",
+  "STEP FAIL circle/mole Locator.click: Timeout 2000ms exceeded.",
+  "STEP FAIL circle/people Locator.click: Timeout 2000ms exceeded.",
+  "solo city INSANE | No circle yet | Chennai \u00b7 4 km\u00b2 square | M | Chennai |  | Drops within 5 km, Missions, trails, the Decode, the feed, and calls from other circles. |  | Map | Feed | Calls | League | Decode \u00b7 week 42 | Change one letter at a time: COLD \u2192 ? \u2192 ? \u2192 WARD \u2192 WARM. What\u2019s the third word? | 0 solved in Chennai \u00b7 answer out in 1d 11h | + | \u2212 | \u25ce | Streets: open this spot in OpenStreetMap \u2197 | You | Drops | Missions | Trails \u00b7 circle |  | Dashed ring: 5 km. Tap a stamp to open it. Change distance |  | DROPS NEAR YOU | + Host a drop |  | No drops within 5 ",
+  "solo city feed INSANE | No circle yet | Chennai \u00b7 4 km\u00b2 square | M | Chennai |  | Drops within 5 km, Missions, trails, the Decode, the feed, and calls from other circles. |  | Map | Feed | Calls | League |  | What circles in Chennai are up to. No likes, no follower counts, no comments from strangers. If you want to talk to someone, answer a call or meet them. |  | Join a circle to post. Posts",
+  "solo city calls INSANE | No circle yet | Chennai \u00b7 4 km\u00b2 square | M | Chennai |  | Drops within 5 km, Missions, trails, the Decode, the feed, and calls from other circles. |  | Map | Feed | Calls | League |  | Ask the city for a hand: a 4th for quiz night, someone to trade a bike pump. Another circle answers and you get a room together for 3 days. |  | No open calls in Chennai. |  | ROOMS WITH OTH",
+  "solo city league INSANE | No circle yet | Chennai \u00b7 4 km\u00b2 square | M | Chennai |  | Drops within 5 km, Missions, trails, the Decode, the feed, and calls from other circles. |  | Map | Feed | Calls | League |  | Week 42. Points for the first Decode solve in each circle (by solve order), 10 for each drop a circle turns up to, 15 for each Mission it shows up for, 10 for each trail it finishes.",
+  "solo ledger INSANE | No circle yet | Chennai \u00b7 4 km\u00b2 square | M | Ledger |  | Favors in hours, pots in money. Everything inside your circle. |  | Favors | Pots |  | Favors and pots happen inside a circle. |  | Start or join one | Home | Circle | + | City | Ledger",
+  "solo ledger pots INSANE | No circle yet | Chennai \u00b7 4 km\u00b2 square | M | Ledger |  | Favors in hours, pots in money. Everything inside your circle. |  | Favors | Pots |  | Favors and pots happen inside a circle. |  | Start or join one | Home | Circle | + | City | Ledger",
+  "+ sheet Make something | Check in on a pact | Your ticks for today | Go dark for a while | 1 to 24 hours, alone or with the circle | Seal a message for later | Signed, opens on a date you pick | Write for Midnight | Unsigned, out at 00:00 | Dare someone, or fill the jar | Tomorrow\u2019s daily dare comes from the jar | Ask a favor | Paid back in hours | Plan something | Everyone taps in or out | Start a pot | Pledge, then pay | Post to the City feed | What your circle did or made | Post a Call | Ask other circles for a hand | Propose a Mission | Needs three other circles to confirm | Make a trail | Stops on the map, walked in any order | Host a drop | For a shop, stall, club or circle | Meet someone | Scan each other\u2019s phones | Add a need, want or urge | Say it in your own words | Close",
+  "solo mk mission Propose a Mission | Only circles that have met in person can propose: two of you scan each other\u2019s phones and it unlocks. Anyone can join a Mission. | Meet someone | Close",
+  "solo mk pot INSANE | No circle yet | Chennai \u00b7 4 km\u00b2 square | M | Ledger |  | Favors in hours, pots in money. Everything inside your circle. |  | Favors | Pots |  | Favors and pots happen inside a circle. |  | Start or join one | Home | Circle | + | City | Ledger",
+  "solo mk drop Host a drop |  | For shops, stalls, clubs and circles. One hour, one place. You get a door code to show people who turn up. People within their own distance of the spot see it. |  | Type | Shop offer | Cash draw | Swap box | Two-key | Counter dare |  | Bring something, take what\u2019s in the box. The box keeps a log of every",
+  "you INSANE | No circle yet | Chennai \u00b7 4 km\u00b2 square | M | Meera Krishnamurthy-Venk |  | Chennai \u00b7 4 km\u00b2 square near M\u012bnj\u016br Edit |  | YOUR JOURNEYS | + Add |  | Needs you keep doing, wants you reach over weeks, urges you do once. Your circle sees the counts, never your words. |  | URGELadder | Swim in the sea at sunrise | 0/5 | Rung 0 of 5 |  | If you miss: my circle picks a dare from the jar |  | Climbed rung 1 | More | PASSPORT \u00b7 0 STAMPS |  | Check in at a drop, meet someone, solve a Decode or finish a journey, and it gets stamped here. |  | YOUR STORY SO FAR |  | Everything you do here lands on this timeline: ticks, rungs, drops, Decode, things you said. Only you see it. |  | GO DARK |  | 1 to 24 hours, now or later, alone or with the circle. INSANE goes blank and holds every notification. |  | Set it up | CALM | Calm mode. No red dots or counts, no confetti or sounds, and Today shows less. | Sounds. A soft click when you tick, solve or check in. | Quiet hours no",
+  "STEP FAIL decode Locator.click: Timeout 2000ms exceeded.",
+  "ANS in client source: True",
+  "offline text INSANE | No circle yet | Chennai \u00b7 4 km\u00b2 square | M | Saturday |  | 1 thing today \u00b7 Chennai |  | Start a circle, or join one |  | Most of INSANE happens with the people you actually see. |  | Start or join | URGELadder | Swim in",
+  "arjun gps INSANE | Where\u2019s home? |  | Anywhere on Earth. You choose how exact: a private pin, or just a square of 1 to 9 km\u00b2. |  | Search your town, city or area | Use my GPS | Paste a maps link | + | \u2212 | \u25ce | Streets: open this spot in OpenStreetMap \u2197 |  | Pin: from GPS \u00b7 13.0569, 80.2425 \u00b7 \u00b115 m. Tap the map to move it. |  | How exact? | Exact, kept private | A zone only |  | Only a square is saved, not even privately. Distances are worked out",
+  "creator home INSANE | Mylapore Mad Hatters with a | Chennai \u00b7 1 km\u00b2 square | A | Saturday |  | 2 things today \u00b7 Chennai |  | NEEDPact | Run | 0/3 | 0 of 3 this week \u00b7 3 a week |  | If you miss: i cook for the circle |  | Done today | Decode \u00b7 week 42 | Change one letter at a time: COLD \u2192 ? \u2192 ? \u2192 WARD \u2192 WARM. What\u2019s the third word? | 0 solved in Chennai \u00b7 answer out in 1d 11h | DAILY DARE \u00b7 FROM THE STARTER JAR \u00b7 2/10 | Wear something inside out all afternoon | I did it Add to the jar | No drops within 5 km yet |  | Run a shop, a stall or a club night? Host one: a swap box, a dare at the counter, an offer for whoever turns up. |  | Host a drop |  | One list. Whatever needs you today is here; everything else waits in Circle, City and Ledger. |  | Home | Circle | + | City",
+  "circle code 8JS7MY",
+  "deep link sign-in screen mentions circle? False INSANE | Sign in with your email |  | We email you a 6-digit code. No password. New here? The same code makes your account. |  | Email | Email me a code |  | Development server: codes are printed in the server log.",
+  "deep link ob INSANE | INVITE |  | Mylapore Mad Hatters with a brought you in. You\u2019ll join them in step 3. |  | Make plans, take dares, trade favours. With your five. |  | You\u2019re signed in as mkavya@x.com. |  | What it\u2019s for |  | Plans, pots and favors with the people you live and hang",
+  "deeplink circle step INSANE | Mylapore Mad Hatters with a |  | Up to 8 people you actually see. Next time you\u2019re in the same room, scan each other\u2019s phones: that proves you\u2019re real people who\u2019ve met, which a bot farm can\u2019t fake, and it unlocks posting in the City. |  | Start a circle | Circle name | Start it | Join with a code | 6-letter code | Join | Back | Look around first",
+  "joiner in circle Mylapore Mad Hatters with a",
+  "double send count 1",
+  "pot currency True ['Pondy trip \u00b7 \u20b91500 each']",
+  "STEP FAIL pot pay Locator.click: Timeout 2000ms exceeded.",
+  "midnight with name INSANE | 1 | Mylapore Mad Hatters with a | Chennai \u00b7 1 km\u00b2 square | A | Mylapore Mad Hatters with a |  | 3 of 8 \u00b7 not met in person yet \u00b7 code 8JS7MY |  | A | \u0643 | R | + | Chat | Plans | Pacts | Midnight | Mole | Midnight | 1 waiting for m",
+  "mole 3 people INSANE | 1 | Mylapore Mad Hatters with a | Chennai \u00b7 4 km\u00b2 square | \u0643 | Mylapore Mad Hatters with a |  | 3 of 8 \u00b7 not met in person yet \u00b7 code 8JS7MY |  | A | \u0643 | R | + | Chat | Plans | Pacts | Midnight | Mole |  | The Mole starts once four of you are in the circle. 3 so far. |  | Tasks come from the app\u2019s list, never made up. Nothing invol",
+  "dare sheet Dare someone, or fill the jar | Who | The jar | \u0643\u0627\u0641\u064a\u0627 Kavya | Ravi | The dare | How insane out of 10 | 1 | 2 | 3 | 4 | 5 | 6 |  | The jar feeds the daily dare. Anything you add can come up from tomorrow. Nothing that could hurt anyone, nothing with strangers\u2019 bodies, money or the law. The jar stops at 6: anything wilder needs a venue with staff. |  | Put it in the jar | Cancel",
+  "city map INSANE | 2 | Mylapore Mad Hatters with a | Chennai \u00b7 1 km\u00b2 square | A | Chennai |  | Drops within 5 km, Missions, trails, the Decode, the feed, and calls from other circles. |  | Map | Feed | Calls | League | Decode \u00b7 week 42 | Change one letter at a time: COLD \u2192 ? \u2192 ? \u2192 WARD \u2192 WARM. What\u2019s the third word? | 0 solved in Chennai \u00b7 answer out in 1d 10h | + | \u2212 | \u25ce | Streets: open this spot in OpenStreetMap \u2197 | You | Drops | Missions | Trails \u00b7 circle |  | Dashed ring: 5 km. Tap a stamp to open it. Change distance |  | DROPS NEAR YOU | + Host a drop |  | No",
+  "host sheet Host a drop |  | For shops, stalls, clubs and circles. One hour, one place. You get a door code to show people who turn up. People within their own distance of the spot see it. |  | Type | Shop offer | Cash draw | Swap box | Two-key | Counter dare |  | Bring something, take what\u2019s in the box. The box keeps a log of every swap. |  | Place name | Address or how to find it | Search for the place | Use my GPS | Paste a maps link | + | \u2212 | \u25ce | Streets: open this spot in OpenStreetMap \u2197 |  | Pin: dropped on the map \u00b7 13.0569, 80.2425. Tap the map to move it. |  | Day | Starts | Length | 30 min | 1 h | 2 h | What\u2019s in the box to start | Publish the drop | Cancel",
+  "STEP FAIL toast Locator.click: Timeout 2000ms exceeded.",
+  "day14 home INSANE | 2 | Mylapore Mad Hatters with a | Chennai \u00b7 1 km\u00b2 square | A | Arjun |  | TIN CAN in the city \u00b7 Chennai \u00b7 1 km\u00b2 square near Chetput \u00b7 Mylapore Mad Hatters with a Edit |  | YOUR JOURNEYS | + Add |  | Needs you keep doing, wants you reach over weeks, urges you do once. Your circle sees the counts, never your words. |  | NEEDPact | Run | 1/3 | 1 of 3 this week \u00b7 3 a week |  | If you miss: i cook for the circle |  | Cheered by \u0643\u0627\u0641\u064a\u0627 Kavya |  | Done today \u2713 (undo) | More | PASSPORT \u00b7 1 STAMP | MET | \u0643\u0627\u0641\u064a\u0627 Kavya | met 17 Oct | YOUR STORY SO FAR | Went",
+  "after back url about:blank tab left app",
+  "second tab ok True",
+  "after delete INSANE | Make plans, take dares, trade favours. With your five. |  | You\u2019re signed in as mravi@x.com. |  | What it\u2019s for |  | Plans, pots and favors with the people you live and hang out with | Pacts: the things you ",
+  "slow 3G (400KB/s) time to email box s 0.7",
+  "slow 3G place search results s 1.1",
+  "PAGE ERRORS []"
+ ],
+ "net": {
+  "meera": {
+   "bytes": 4434453,
+   "reqs": 41,
+   "blocked": [
+    "cdnjs.cloudflare.com",
+    "fonts.googleapis.com",
+    "tile.openstreetmap.org"
+   ],
+   "big": [
+    [
+     "/data/places.tsv",
+     1353854
+    ],
+    [
+     "/data/places.tsv",
+     1353854
+    ],
+    [
+     "/data/places.tsv",
+     1353854
+    ]
+   ]
+  },
+  "arjun": {
+   "bytes": 5876167,
+   "reqs": 161,
+   "blocked": [
+    "cdnjs.cloudflare.com",
+    "fonts.googleapis.com",
+    "tile.openstreetmap.org"
+   ],
+   "big": [
+    [
+     "/data/places.tsv",
+     1353854
+    ],
+    [
+     "/data/places.tsv",
+     1353854
+    ],
+    [
+     "/data/places.tsv",
+     1353854
+    ]
+   ]
+  },
+  "kavya": {
+   "bytes": 2995481,
+   "reqs": 75,
+   "blocked": [
+    "cdnjs.cloudflare.com",
+    "fonts.googleapis.com",
+    "tile.openstreetmap.org"
+   ],
+   "big": [
+    [
+     "/data/places.tsv",
+     1353854
+    ],
+    [
+     "/data/places.tsv",
+     1353854
+    ]
+   ]
+  },
+  "ravi": {
+   "bytes": 2995229,
+   "reqs": 87,
+   "blocked": [
+    "cdnjs.cloudflare.com",
+    "fonts.googleapis.com",
+    "tile.openstreetmap.org"
+   ],
+   "big": [
+    [
+     "/data/places.tsv",
+     1353854
+    ],
+    [
+     "/data/places.tsv",
+     1353854
+    ]
+   ]
+  },
+  "slow3g": {
+   "bytes": 2969045,
+   "reqs": 15,
+   "blocked": [
+    "cdnjs.cloudflare.com",
+    "fonts.googleapis.com",
+    "tile.openstreetmap.org"
+   ],
+   "big": [
+    [
+     "/data/places.tsv",
+     1353854
+    ],
+    [
+     "/data/places.tsv",
+     1353854
+    ]
+   ]
+  }
+ },
+ "errors": []
+}
