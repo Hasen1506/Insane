@@ -17,8 +17,9 @@ const files = fs.readdirSync(__dirname).filter(f => (f.endsWith('.flow.js') || f
     try { await require(path.join(__dirname, f))({ ok }); } catch (e) { rec('threw', false, e && e.stack || e); }
     console.log(`${f}: ${((Date.now() - t0) / 1000).toFixed(1)} s`);
   }
-  for (const r of results) console.log(r.join('  '));
   const pass = results.filter(r => r[0] === 'PASS').length;
-  console.log(`\n${pass}/${results.length} passed`);
-  process.exit(pass === results.length && results.length ? 0 : 1);
+  // one write, and exit only once it has drained: process.exit() right after console.log on a pipe cut the
+  // tail off (the "N/M passed" line test/run.js reads went missing, so it reported 1/1)
+  const report = results.map(r => r.join('  ')).join('\n') + `\n\n${pass}/${results.length} passed\n`;
+  process.stdout.write(report, () => process.exit(pass === results.length && results.length ? 0 : 1));
 })();
