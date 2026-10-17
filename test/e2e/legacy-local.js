@@ -26,7 +26,18 @@ const ok = (name, cond, extra = '') => {
 (async () => {
   srv = await E.serveStatic(); BASE = srv.url;
   const browser = await BR.launch();
-  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
+  // A fixed start, so a run means the same thing at any hour: Wed 14 Oct 2026, 07:00 in Lisbon, where the
+  // seven people live. That is inside the default quiet hours (23:00–08:00), so the two quiet-hours checks
+  // always run (v0.8 only ran them at night: 81 or 83 checks), an hour before they end, and far from
+  // midnight, which the Midnight checks move past on purpose. The clock runs on from there. Only Date is
+  // shifted (one offset for every tab); timers stay real, so background tabs idle as they would.
+  const START = Date.UTC(2026, 9, 14, 6, 0), OFFSET = START - Date.now();
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, timezoneId: 'Europe/Lisbon', locale: 'en-GB' });
+  await ctx.addInitScript(off => {
+    const R = Date;
+    class D extends R { constructor(...a) { if (a.length) super(...a); else super(R.now() + off); } static now() { return R.now() + off; } }
+    window.Date = D;
+  }, OFFSET);
   await BR.blockExternal(ctx); await E.actProbe(ctx);
   // Every LocalDB write posts once on BroadcastChannel('insane_local'). An init script wraps postMessage on
   // that channel so each tab also announces "my write number n" on a side channel, and every tab keeps the
@@ -43,6 +54,7 @@ const ok = (name, cond, extra = '') => {
     } catch (e) { }
   });
   const pages = [];
+  const errors = global.ERRS = [];
   // A tab that opens (or reloads) late starts out knowing every other tab's write count as of now: its side
   // channel already exists, so it hears every later write, and every earlier one is in localStorage already.
   const prime = async p => {
