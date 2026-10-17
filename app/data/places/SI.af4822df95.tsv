@@ -1,0 +1,215 @@
+#SI=Slovenia
+#Destrnik|Dobrna|Dol pri Ljubljani|Dolenjske Toplice|Gorje|Grad|Hajdina|Komenda|Ljubljana|Ljutomer|Logatec|Log–Dragomer|Lukovica|Municipality of Ajdovščina|Municipality of Ankaran|Municipality of Apače|Municipality of Beltinci|Municipality of Benedikt|Municipality of Bistrica ob Sotli|Municipality of Bled|Municipality of Bloke|Municipality of Bohinj|Municipality of Borovnica|Municipality of Bovec|Municipality of Braslovče|Municipality of Brda|Municipality of Brezovica|Municipality of Brežice|Municipality of Cankova|Municipality of Cerklje na Gorenjskem|Municipality of Cerknica|Municipality of Cerkno|Municipality of Cerkvenjak|Municipality of Cirkulane|Municipality of Divača|Municipality of Dobje|Municipality of Dobrepolje|Municipality of Dobrova–Polhov Gradec|Municipality of Dobrovnik|Municipality of Domžale|Municipality of Dornava|Municipality of Dravograd|Municipality of Duplek|Municipality of Gorenja Vas–Poljane|Municipality of Gorišnica|Municipality of Gornja Radgona|Municipality of Gornji Grad|Municipality of Gornji Petrovci|Municipality of Grosuplje|Municipality of Hodoš|Municipality of Horjul|Municipality of Hoče–Slivnica|Municipality of Hrastnik|Municipality of Hrpelje–Kozina|Municipality of Idrija|Municipality of Ig|Municipality of Ilirska Bistrica|Municipality of Ivančna Gorica|Municipality of Izola|Municipality of Jesenice|Municipality of Jezersko|Municipality of Juršinci|Municipality of Kamnik|Municipality of Kanal ob Soči|Municipality of Kidričevo|Municipality of Kobarid|Municipality of Kobilje|Municipality of Komen|Municipality of Kostanjevica na Krki|Municipality of Kostel|Municipality of Kozje|Municipality of Kočevje|Municipality of Kranjska Gora|Municipality of Križevci|Municipality of Kungota|Municipality of Kuzma|Municipality of Laško|Municipality of Lenart|Municipality of Lendava|Municipality of Litija|Municipality of Ljubno|Municipality of Lovrenc na Pohorju|Municipality of Loška Dolina|Municipality of Loški Potok|Municipality of Luče|Municipality of Majšperk|Municipality of Makole|Municipality of Markovci|Municipality of Medvode|Municipality of Mengeš|Municipality of Metlika|Municipality of Mežica|Municipality of Miklavž na Dravskem Polju|Municipality of Miren–Kostanjevica|Municipality of Mirna|Municipality of Mirna Peč|Municipality of Mislinja|Municipality of Mokronog–Trebelno|Municipality of Moravske Toplice|Municipality of Moravče|Municipality of Mozirje|Municipality of Muta|Municipality of Naklo|Municipality of Nazarje|Municipality of Odranci|Municipality of Oplotnica|Municipality of Ormož|Municipality of Osilnica|Municipality of Piran|Municipality of Podlehnik|Municipality of Podvelka|Municipality of Podčetrtek|Municipality of Poljčane|Municipality of Polzela|Municipality of Postojna|Municipality of Preddvor|Municipality of Prevalje|Municipality of Puconci|Municipality of Radenci|Municipality of Radeče|Municipality of Radlje ob Dravi|Municipality of Ravne na Koroškem|Municipality of Razkrižje|Municipality of Rače–Fram|Municipality of Renče–Vogrsko|Municipality of Rečica ob Savinji|Municipality of Ribnica|Municipality of Ribnica na Pohorju|Municipality of Rogatec|Municipality of Rogaška Slatina|Municipality of Rogašovci|Municipality of Ruše|Municipality of Selnica ob Dravi|Municipality of Semič|Municipality of Sevnica|Municipality of Sežana|Municipality of Slovenska Bistrica|Municipality of Slovenske Konjice|Municipality of Sodražica|Municipality of Solčava|Municipality of Središče ob Dravi|Municipality of Starše|Municipality of Straža|Municipality of Sveta Ana|Municipality of Sveta Trojica v Slovenskih Goricah|Municipality of Sveti Andraž v Slovenskih Goricah|Municipality of Sveti Jurij ob Ščavnici|Municipality of Sveti Jurij v Slovenskih Goricah|Municipality of Sveti Tomaž|Municipality of Tabor|Municipality of Tišina|Municipality of Tolmin|Municipality of Trbovlje|Municipality of Trnovska Vas|Municipality of Trzin|Municipality of Tržič|Municipality of Turnišče|Municipality of Velika Polana|Municipality of Velike Lašče|Municipality of Veržej|Municipality of Videm|Municipality of Vipava|Municipality of Vitanje|Municipality of Vodice|Municipality of Vojnik|Municipality of Vransko|Municipality of Vrhnika|Municipality of Vuzenica|Municipality of Zagorje ob Savi|Municipality of Zavrč|Municipality of Zreče|Municipality of Črenšovci|Municipality of Črna na Koroškem|Municipality of Črnomelj|Municipality of Šalovci|Municipality of Šempeter–Vrtojba|Municipality of Šentilj|Municipality of Šentjernej|Municipality of Šentrupert|Municipality of Šenčur|Municipality of Škocjan|Municipality of Škofljica|Municipality of Šmarje pri Jelšah|Municipality of Šmarješke Toplice|Municipality of Šmartno ob Paki|Municipality of Šmartno pri Litiji|Municipality of Šoštanj|Municipality of Štore|Municipality of Žalec|Municipality of Železniki|Municipality of Žetale|Municipality of Žiri|Municipality of Žirovnica|Municipality of Žužemberk|Pesnica|Pivka|Prebold|Radovljica|Sentjur|Trebnje|Urban Municipality of Celje|Urban Municipality of Koper|Urban Municipality of Kranj|Urban Municipality of Krško|Urban Municipality of Maribor|Urban Municipality of Murska Sobota|Urban Municipality of Nova Gorica|Urban Municipality of Novo Mesto|Urban Municipality of Ptuj|Urban Municipality of Slovenj Gradec|Urban Municipality of Velenje|Škofja Loka
+Ljubljana	46.051	14.505	SI	8	272220
+Maribor	46.556	15.646	SI	204	96209
+Celje	46.231	15.26	SI	200	38059
+Kranj	46.239	14.356	SI	202	37966
+Koper	45.548	13.73	SI	201	25753
+Novo Mesto	45.804	15.169	SI	207	24446
+Velenje	46.357	15.113	SI	210	24327
+Ptuj	46.42	15.87	SI	208	17984
+Trbovlje	46.154	15.052	SI	152	15163
+Kamnik	46.226	14.612	SI	62	13644
+Jesenice	46.432	14.062	SI	59	13255
+Domžale	46.138	14.594	SI	39	13204
+Nova Gorica	45.956	13.648	SI	206	13031
+Škofja Loka	46.166	14.306	SI	211	11619
+Izola	45.537	13.66	SI	58	11223
+Murska Sobota	46.663	16.166	SI	205	11107
+Postojna	45.774	14.215	SI	114	9605
+Logatec	45.917	14.227	SI	10	8942
+Šentilj v Slov. Goricah	46.682	15.648	SI	176	8452
+Vrhnika	45.964	14.295	SI	166	8413
+Kočevje	45.643	14.86	SI	71	8113
+Slovenska Bistrica	46.393	15.573	SI	136	7454
+Slovenj Gradec	46.511	15.084	SI	209	7249
+Grosuplje	45.956	14.659	SI	48	7098
+Ravne na Koroškem	46.543	14.971	SI	121	6979
+Krško	45.959	15.492	SI	203	6852
+Brežice	45.907	15.593	SI	27	6843
+Ajdovščina	45.886	13.909	SI	13	6843
+Litija	46.06	14.822	SI	79	6505
+Zagorje ob Savi	46.132	14.997	SI	168	6439
+Mengeš	46.169	14.574	SI	89	6112
+Lucija	45.505	13.602	SI	108	6057
+Sežana	45.709	13.873	SI	135	6037
+Idrija	46.003	14.028	SI	54	5955
+Radovljica	46.343	14.175	SI	197	5940
+Hrastnik	46.147	15.085	SI	52	5621
+Črnomelj	45.573	15.192	SI	173	5496
+Medvode	46.142	14.411	SI	88	5380
+Bled	46.369	14.117	SI	19	5181
+Rogaška Slatina	46.237	15.639	SI	129	5111
+Žalec	46.252	15.165	SI	188	4943
+Šentjur	46.217	15.398	SI	198	4940
+Slovenske Konjice	46.337	15.423	SI	137	4869
+Sevnica	46.008	15.316	SI	134	4660
+Prevalje	46.547	14.92	SI	116	4643
+Ilirska Bistrica	45.568	14.246	SI	56	4553
+Ruše	46.54	15.518	SI	131	4503
+Piran	45.528	13.571	SI	108	4192
+Cerknica	45.797	14.363	SI	30	4018
+Trzin	46.136	14.562	SI	154	3925
+Miklavž na Dravskem Polju	46.506	15.697	SI	92	3854
+Šempeter pri Gorici	45.929	13.641	SI	175	3694
+Tržič	46.364	14.31	SI	155	3670
+Preddvor	46.303	14.422	SI	115	3659
+Ribnica	45.739	14.727	SI	126	3604
+Žiri	46.044	14.107	SI	191	3588
+Tolmin	46.183	13.733	SI	151	3534
+Trebnje	45.904	15.022	SI	199	3477
+Ljutomer	46.518	16.198	SI	9	3460
+Laško	46.155	15.236	SI	76	3456
+Dravograd	46.588	15.019	SI	41	3289
+Lenart v Slovenskih Goricah	46.577	15.832	SI	77	3285
+Ankaran	45.579	13.736	SI	14	3278
+Mežica	46.52	14.853	SI	91	3254
+Brezovica pri Ljubljani	46.023	14.415	SI	26	3221
+Metlika	45.65	15.313	SI	90	3206
+Gornja Radgona	46.673	15.992	SI	45	3159
+Šenčur	46.247	14.42	SI	179	3152
+Lendava	46.565	16.451	SI	78	3129
+Železniki	46.225	14.172	SI	189	3075
+Zreče	46.382	15.379	SI	170	2935
+Šoštanj	46.38	15.049	SI	186	2880
+Radlje ob Dravi	46.615	15.225	SI	120	2811
+Rače	46.452	15.681	SI	123	2693
+Spodnje Hoče	46.5	15.649	SI	51	2555
+Črna na Koroškem	46.47	14.85	SI	172	2409
+Beltinci	46.605	16.241	SI	16	2394
+Polzela	46.284	15.065	SI	113	2351
+Muta	46.612	15.166	SI	101	2300
+Vojnik	46.293	15.304	SI	164	2292
+Ig	45.959	14.528	SI	55	2262
+Štore	46.221	15.314	SI	187	2257
+Škofljica	45.984	14.575	SI	181	2209
+Ivančna Gorica	45.937	14.805	SI	57	2205
+Radenci	46.642	16.038	SI	118	2201
+Ormož	46.412	16.152	SI	106	2174
+Radeče	46.066	15.182	SI	119	2168
+Borovnica	45.918	14.364	SI	22	2162
+Pivka	45.683	14.196	SI	195	2088
+Mozirje	46.338	14.965	SI	100	2052
+Semič	45.647	15.181	SI	133	2000
+Straža	45.781	15.076	SI	142	1996
+Lovrenc na Pohorju	46.541	15.392	SI	81	1977
+Mislinja	46.441	15.2	SI	96	1862
+Vipava	45.846	13.962	SI	161	1771
+Bohinjska Bistrica	46.272	13.954	SI	21	1767
+Šmarje pri Jelšah	46.227	15.519	SI	182	1755
+Naklo	46.273	14.317	SI	102	1716
+Cerklje na Gorenjskem	46.25	14.486	SI	29	1710
+Prebold	46.237	15.093	SI	196	1709
+Spodnji Duplek	46.504	15.745	SI	42	1689
+Odranci	46.586	16.28	SI	104	1641
+Bovec	46.338	13.552	SI	23	1631
+Cerkno	46.125	13.983	SI	31	1596
+Vodice	46.19	14.495	SI	163	1589
+Vuzenica	46.597	15.163	SI	167	1580
+Rogatec	46.228	15.699	SI	128	1558
+Turnišče	46.626	16.314	SI	156	1509
+Miren	45.895	13.608	SI	93	1460
+Dragomer	46.016	14.384	SI	11	1446
+Šmartno pri Litiji	46.044	14.845	SI	185	1444
+Kranjska Gora	46.457	13.778	SI	72	1439
+Šentjernej	45.842	15.334	SI	177	1434
+Mirna	45.952	15.062	SI	94	1398
+Divača	45.685	13.97	SI	34	1357
+Oplotnica	46.387	15.446	SI	105	1352
+Selnica ob Dravi	46.552	15.493	SI	132	1348
+Horjul	46.023	14.297	SI	50	1329
+Kanal	46.087	13.635	SI	63	1269
+Dornava	46.436	15.953	SI	40	1267
+Kidričevo	46.403	15.799	SI	64	1253
+Gorenja Vas	46.107	14.148	SI	43	1192
+Črenšovci	46.558	16.304	SI	171	1178
+Poljčane	46.314	15.578	SI	112	1153
+Kobarid	46.248	13.579	SI	65	1121
+Ljubno ob Savinji	46.344	14.834	SI	80	1104
+Žužemberk	45.834	14.928	SI	193	1053
+Gornji Grad	46.295	14.808	SI	46	1048
+Mirna Peč	45.859	15.083	SI	95	990
+Središče ob Dravi	46.394	16.268	SI	140	984
+Dobrovnik	46.651	16.352	SI	38	972
+Moravče	46.137	14.745	SI	99	957
+Benedikt	46.607	15.891	SI	17	955
+Dobrova	46.046	14.392	SI	37	921
+Pesnica	46.607	15.677	SI	194	913
+Veržej	46.583	16.164	SI	159	903
+Dolenjske Toplice	45.757	15.059	SI	3	882
+Komenda	46.205	14.538	SI	7	881
+Nazarje	46.319	14.95	SI	103	872
+Velika Polana	46.572	16.347	SI	157	870
+Vitanje	46.383	15.297	SI	162	859
+Zgornja Hajdina	46.406	15.838	SI	6	858
+Sodražica	45.761	14.636	SI	138	832
+Vransko	46.244	14.951	SI	165	808
+Starše	46.466	15.767	SI	141	803
+Hrpelje	45.607	13.943	SI	53	792
+Gorišnica	46.415	16.014	SI	44	788
+Sv. Trojica v Slov. Goricah	46.577	15.877	SI	144	754
+Moravske Toplice	46.683	16.221	SI	98	735
+Velike Lašče	45.834	14.636	SI	158	729
+Kostanjevica na Krki	45.846	15.42	SI	68	695
+Grad	46.798	16.098	SI	5	686
+Komen	45.816	13.748	SI	67	650
+Šmartno ob Paki	46.333	15.033	SI	184	642
+Mokronog	45.939	15.139	SI	97	637
+Kostel	45.508	14.909	SI	69	637
+Kozje	46.073	15.56	SI	70	634
+Puconci	46.705	16.157	SI	117	633
+Majšperk	46.35	15.734	SI	85	606
+Videm	45.85	14.694	SI	36	590
+Podčetrtek	46.157	15.597	SI	111	578
+Zgornje Jezersko	46.394	14.507	SI	60	568
+Dobrna	46.337	15.226	SI	1	548
+Apače	46.698	15.909	SI	15	543
+Kobilje	46.685	16.394	SI	66	542
+Leskova Dolina	45.621	14.461	SI	82	539
+Zgornja Kungota	46.639	15.615	SI	74	535
+Rečica ob Savinji	46.317	14.917	SI	125	516
+Zgornje Gorje	46.38	14.069	SI	4	500
+Markovci	46.396	15.928	SI	87	495
+Križevci pri Ljutomeru	46.568	16.139	SI	73	490
+Bukovica	45.901	13.667	SI	124	475
+Videm pri Ptuju	46.369	15.906	SI	160	471
+Breznica	46.394	14.154	SI	192	470
+Cankova	46.72	16.022	SI	28	446
+Cirkulane	46.344	15.995	SI	33	434
+Šalovci	46.824	16.298	SI	174	426
+Lukovica pri Domžalah	46.17	14.692	SI	12	419
+Gornji Petrovci	46.804	16.219	SI	47	419
+Luče	46.355	14.748	SI	84	413
+Tišina	46.654	16.094	SI	150	412
+Tabor	46.235	15.017	SI	149	406
+Ribnica na Pohorju	46.535	15.273	SI	127	404
+Žetale	46.274	15.827	SI	190	392
+Jurovski Dol	46.607	15.785	SI	147	385
+Braslovče	46.288	15.04	SI	24	383
+Juršinci	46.486	15.968	SI	61	381
+Podlehnik	46.335	15.879	SI	109	378
+Kuzma	46.835	16.081	SI	75	375
+Hrib-Loški Potok	45.707	14.617	SI	83	373
+Trnovska Vas	46.52	15.887	SI	153	367
+Podvelka	46.588	15.328	SI	110	343
+Dobrovo	45.997	13.527	SI	25	334
+Vitomarci	46.528	15.939	SI	145	329
+Šentrupert na Dolenjskem	45.978	15.093	SI	178	329
+Šmarjeta	45.883	15.25	SI	183	326
+Nova Vas	45.773	14.507	SI	20	293
+Sveti Tomaž	46.484	16.079	SI	148	284
+Rogašovci	46.798	16.036	SI	130	254
+Razkrižje	46.522	16.279	SI	122	252
+Škocjan	45.907	15.291	SI	180	246
+Dol pri Ljubljani	46.089	14.601	SI	2	241
+Bistrica ob Sotli	46.058	15.663	SI	18	235
+Hodoš	46.822	16.326	SI	49	228
+Makole	46.316	15.666	SI	86	221
+Solčava	46.42	14.694	SI	139	214
+Sveti Jurij	46.569	16.023	SI	146	209
+Destrnik	46.493	15.879	SI	0	172
+Sv. Ana v Slov. Goricah	46.649	15.844	SI	143	155
+Cerkvenjak	46.568	15.944	SI	32	135
+Dobje pri Planini	46.137	15.394	SI	35	114
+Osilnica	45.529	14.698	SI	107	87
+Zavrč	46.39	16.05	SI	169	73
