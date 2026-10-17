@@ -28,7 +28,12 @@ module.exports = async function (t) {
   t.ok('remote resources are only Google Fonts (no script from any CDN, C04)', JSON.stringify([...new Set(remote)]) === JSON.stringify(['fonts.googleapis.com', 'fonts.gstatic.com']), remote.join(','));
   t.ok('no external <script src> at all (C04)', !/<script[^>]+src=/i.test(html));
   t.ok('starts with <!doctype html><html lang>, has v0.8\'s <title>, carries a build stamp (C03)', /^<!doctype html>\n<html lang="en">\n/.test(html) && html.includes('<title>INSANE</title>') && new RegExp(`INSANE build ${a.id}`).test(html));
-  t.ok("'use strict' is the script's first statement", /<script>\n\/\* src\/js\/00-helpers\.js \*\/\n'use strict';/.test(html));
+  t.ok("'use strict' is the script's first statement", /<script>\n\/\* src\/js\/00-helpers\.js \*\/\n(['"])use strict\1;/.test(html)); // esbuild writes "use strict"
+  // the minified build (int-1) keeps every top-level name and the Decode pack verbatim; MINIFY=0 is the readable one
+  const plain = spawnSync(process.execPath, [path.join(ROOT, 'tools', 'build.js'), '--stdout'], { env: { ...process.env, MINIFY: '0' }, encoding: 'utf8', maxBuffer: 64 << 20 }).stdout;
+  t.ok('MINIFY=0 gives an unminified build that is larger and still self-contained', plain.length > html.length && (plain.match(/<script>/g) || []).length === 1);
+  const pack = s => (/\/\*@decode-local\*\/[\s\S]*?\/\*@end-decode-local\*\//.exec(s) || [''])[0];
+  t.ok('the local Decode pack is byte-identical in the minified and unminified builds', pack(html).length > 100 && pack(html) === pack(plain));
 
   // layout invariants
   const js = B.jsFiles();

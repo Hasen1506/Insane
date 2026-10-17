@@ -72,5 +72,8 @@ module.exports = async function (t) {
   t.ok(`local pack: all ${n} hashes check and all seals open to the answer`, n === all.length && okHash === n && okSeal === n, `${okHash}/${okSeal}/${n}`);
   t.ok('local pack: every salt is different', new Set(L.packs.flatMap(p => p.puzzles.map(z => z.s))).size === n);
   t.ok('local pack sits between the markers the server strips', (html.match(/\/\*@decode-local\*\//g) || []).length === 1 && (html.match(/\/\*@end-decode-local\*\//g) || []).length === 1);
-  t.ok('the page’s schedule helpers are the server’s, byte for byte', html.includes(/\/\* CLIENT-BEGIN \*\/\n([\s\S]*?)\/\* CLIENT-END \*\//.exec(fs.readFileSync(path.join(REPO, 'server', 'content-core.js'), 'utf8'))[1]));
+  // int-1: app/index.html is minified, so the byte-for-byte check is on src/ (which the build carries) and on the MINIFY=0 build
+  const CLIENT = /\/\* CLIENT-BEGIN \*\/\n([\s\S]*?)\/\* CLIENT-END \*\//.exec(fs.readFileSync(path.join(REPO, 'server', 'content-core.js'), 'utf8'))[1];
+  const plain = require('child_process').spawnSync(process.execPath, [path.join(REPO, 'tools', 'build.js'), '--stdout'], { env: { ...process.env, MINIFY: '0' }, encoding: 'utf8', maxBuffer: 64 << 20 }).stdout;
+  t.ok('the page’s schedule helpers are the server’s, byte for byte', fs.readFileSync(TOOL.OUT, 'utf8').includes(CLIENT) && plain.includes(CLIENT));
 };
