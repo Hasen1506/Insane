@@ -22,7 +22,7 @@ function ruleHolds(k,c){const r=UNLOCK_RULES[k];if(!r)return false;c=c||{};
   if(r.circle&&!c.circle)return false;if(r.members&&!((c.members|0)>=r.members))return false;
   if(r.plans&&!((c.plans|0)>=r.plans))return false;if(r.met&&!c.met)return false;if(r.days&&!((c.days|0)>=r.days))return false;return true}
 // The set of unlocked keys: everything that was unlocked before, plus everything whose rule holds now.
-function unlocks(ctx,prev){const out=new Set((prev||[]).filter(k=>UNLOCK_RULES[k]));if(ctx&&ctx.all)return new Set(UNLOCK_KEYS);for(const k of UNLOCK_KEYS)if(ruleHolds(k,ctx))out.add(k);return out}
+function unlocks(ctx,prev){const out=new Set([...(prev||[])].filter(k=>UNLOCK_RULES[k]));if(ctx&&ctx.all)return new Set(UNLOCK_KEYS);for(const k of UNLOCK_KEYS)if(ruleHolds(k,ctx))out.add(k);return out}
 // Why something is still locked, in words, plus where to go about it. Pure.
 function lockReason(k,c){const r=UNLOCK_RULES[k]||{};c=c||{};
   if(r.circle&&!c.circle)return {why:'Needs a circle',long:'Start a circle or join one with a code first.',go:'circle'};
