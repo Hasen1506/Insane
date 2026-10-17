@@ -14,7 +14,7 @@ async function boot(){
     // No network, but the service worker served the page: this is the server version, cold-started offline (C07).
     if(hello===undefined&&typeof navigator!=='undefined'&&navigator.serviceWorker&&navigator.serviceWorker.controller){S.backend='server';S.mode='offline';render();return}
     if(hello&&hello.insane){
-      S.backend='server';S.hello=hello;MAPCFG.tiles=hello.tiles;MAPCFG.attr=hello.attr;railFor();swInit();
+      S.backend='server';S.hello=hello;MAPCFG.tiles=hello.tiles;MAPCFG.attr=hello.attr;railFor();swLater();
       if(!hello.signedIn){S.mode='signin';render();loadPlaces();return}
       S.mode='live';S.db=RemoteDB();S.uid=hello.uid;S.isOwner=hello.isOwner;S.email=hello.email;
     }else{S.mode='demo';S.backend='local';S.db=LocalDB();S.uid=localUid();S.isOwner=!/[?&]as=/.test(location.search)||/[?&]as=alice\b/.test(location.search)}

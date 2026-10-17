@@ -1,13 +1,14 @@
 // INSANE service worker (C07, C08).
 // The page registers /sw.js?b=<BUILD_ID>, so each build gets its own worker and its own cache,
-// "insane-<BUILD_ID>". Install precaches the shell (index.html, manifest, icons, the world map).
+// "insane-<BUILD_ID>". Install precaches the shell (index.html, manifest, icons); the world map and the other
+// icons are cached the first time they're asked for.
 // Pages are served cache-first from that cache, so a cold start with no signal still opens INSANE and
 // a running session never swaps builds under itself. A new build waits until the page asks it to take
 // over (the "New version ready" bar posts {type:'skip'}), then old caches are deleted.
 // /api/* and everything else go to the network untouched.
 const BUILD = new URL(self.location.href).searchParams.get('b') || 'dev';
 const CACHE = 'insane-' + BUILD;
-const SHELL = ['/', '/manifest.webmanifest', '/icon.svg', '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png', '/data/world.json'];
+const SHELL = ['/', '/manifest.webmanifest', '/icon.svg', '/icon-192.png', '/apple-touch-icon.png']; // world.json (245 KB) is cached the first time the map asks for it
 const ASSET = /^\/(manifest\.webmanifest|icon\.svg|icon-[\w-]+\.png|apple-touch-icon\.png|data\/world\.json)$/;
 
 self.addEventListener('install', e => {

@@ -28,6 +28,8 @@ async function swInit(){
     await swReg();await swCheck();
   }catch(e){}
 }
+// The worker installs (and precaches the shell) once the page is up and idle, so it never competes with sign-in.
+function swLater(){if(!swOK())return;const go=()=>typeof requestIdleCallback==='function'?requestIdleCallback(()=>swInit(),{timeout:4000}):setTimeout(swInit,1500);if(document.readyState==='complete')go();else addEventListener('load',go,{once:true})}
 // Is there a newer build on the server? Asks for "/" past the worker (the HTTP cache revalidates by
 // ETag, so an unchanged build costs a 304). A newer one gets its own worker, which installs and waits.
 async function swCheck(){
