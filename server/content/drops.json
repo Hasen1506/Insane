@@ -1,0 +1,5 @@
+{
+ "version": 1,
+ "note": "Seed drops the owner publishes from /admin/content. Empty on purpose: a seed drop is a real shop's real offer, so it comes from the owner, not from us.",
+ "drops": []
+}
