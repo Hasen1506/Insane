@@ -39,6 +39,10 @@ const ok = (name, cond, extra = '') => {
     window.Date = D;
   }, OFFSET);
   await BR.blockExternal(ctx); await E.actProbe(ctx);
+  // v0.9 first run (WS-B): this port drives v0.8's flows, so it starts on a device that has seen the intro and
+  // the tour, with every feature unlocked (v0.8 had no gradual unlock; its checks use Midnight, the Mole and
+  // drops on day 0 in small circles). The new screens and the unlock rules are tested in test/e2e/flows.
+  await ctx.addInitScript(() => { try { localStorage.setItem('insane_intro', '1'); localStorage.setItem('insane_tour', 'done'); localStorage.setItem('insane_unlock_all', '1'); } catch (e) { } });
   // Every LocalDB write posts once on BroadcastChannel('insane_local'). An init script wraps postMessage on
   // that channel so each tab also announces "my write number n" on a side channel, and every tab keeps the
   // highest n it has heard from each other tab. A tab has caught up when, for every other open tab, it has
@@ -99,7 +103,7 @@ const ok = (name, cond, extra = '') => {
   // Where each person lives: real coordinates, pasted the way someone pastes from their maps app.
   const SPOT = { Alice: '38.7139, -9.1334', Bob: '38.7107, -9.1365', Carol: '38.7069, -9.1600', Erin: '38.7570, -9.2240', Dave: '53.4794, -2.2453', Fay: '38.7160, -9.1400', Gus: '38.7200, -9.1450' };
   async function onboard(p, name, { search = 'Lisbon', size = 2, radius = 5, exact = false, lane = 'need', mind = '', stake = 0, create, join, snap }) {
-    await p.waitForSelector('#ob-name'); await p.fill('#ob-name', name); await p.check('#ob-age');
+    await p.waitForSelector('#ob-name'); await p.fill('#ob-name', name); await p.selectOption('#ob-dobm', '6'); await p.selectOption('#ob-doby', '1990'); await p.waitForSelector('[data-act="ob-next"]:not([disabled])'); // v0.9: month + year of birth (C17) instead of the 16+ checkbox
     if (snap) await shot(p, '01-welcome');
     await click(p, '[data-act="ob-next"]');
     await p.fill('#lp-q-home', search); await p.waitForSelector('.res'); await click(p, '.res');

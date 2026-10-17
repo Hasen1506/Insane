@@ -116,7 +116,7 @@ ACT_B['si-sug']=async()=>{const f=siState();if(f.sug){f.email=f.sug;f.sug=null;f
 ACT_B['si-resend']=async()=>{const f=siState();if(f.sentAt&&now()<f.sentAt+RESEND_MS)return;try{await siCall('start',{email:f.email});f.sentAt=now();armResend();siSave();toast('Sent another code.')}catch(e){f.err=e.message}render()};
 ACT_B['si-back']=async()=>{const f=siState();f.step=0;f.err='';f.code='';siSave();render()};
 ACT_B['si-verify']=async()=>{const f=siState();if(f.busy)return;f.err='';const code=String(f.code||'').replace(/\D/g,'');if(code.length!==6){f.err='The code is 6 digits.';render();return}
-  f.busy=true;render();try{await siCall('verify',{email:f.email,code});ss.set('insane_si',null);location.reload();return}catch(e){f.err=e.message;f.code=''}f.busy=false;render()};
+  f.busy=true;render();try{await siCall('verify',{email:f.email,code});ss.set('insane_si',null);location.reload();return}catch(e){f.err=e.message}f.busy=false;render()};
 ACT_B['si-devcode']=async()=>{const f=siState();try{const j=await (await fetch('/api/dev/outbox?email='+encodeURIComponent(f.email),{credentials:'same-origin'})).json();const m=j.mail&&/code is (\d{6})/.exec(j.mail.text);if(!m){toast('No code in the dev outbox yet.');return}f.code=m[1];render();await ACT_B['si-verify']()}catch(e){toast('Couldn’t read the dev outbox.')}};
 ACT_B['wel-back']=async()=>{S.ui.wel='';ss.set('insane_wel',null);render();scrollTo(0,0)};
 // The code box: digits only (paste "123 456" and it fills), and six digits submit on their own.
