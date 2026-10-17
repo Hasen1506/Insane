@@ -61,20 +61,32 @@ async function setClock(t) {
 const at = (day, h, m = 0) => T0 + day * DAY + (h - 9) * HOUR + m * MIN; // h in UTC
 
 // ---- helpers that act like a person: tap, type, read the screen
+// Eleven people means eleven browser windows, all visible to Chromium. A map with an open drop or a live
+// trail pulses its stamp every frame (v0.8 behaviour), so a few Lisbon phones on the City tab used to
+// starve a 2-core machine until taps timed out. Like phones in pockets, the people the test isn't using
+// draw at 4 frames a second: rAF is paced by the harness (init script below) for every page but the one
+// in front. Timers, SSE and the app itself are untouched.
+let FRONT = null;
+async function front(who) {
+  const p = PEOPLE[who].page;
+  if (FRONT !== who) { const prev = FRONT && PEOPLE[FRONT] && PEOPLE[FRONT].page; FRONT = who; if (prev && !prev.isClosed()) await prev.evaluate(() => { window.__bg = true; }).catch(() => { }); }
+  await p.evaluate(() => { window.__bg = false; }).catch(() => { });
+  await p.bringToFront();
+}
 async function tap(who, sel, opt = {}) {
   const p = PEOPLE[who].page; PEOPLE[who].taps = (PEOPLE[who].taps || 0) + 1;
-  await p.bringToFront(); const l = p.locator(sel).first();
+  await front(who);
   await E.tapOnce(p, sel, { timeout: opt.timeout || 5000, forceTimeout: 3000 }); // WS-0: never fires twice
   await E.idle(p); // WS-0: then wait for the tapped action to finish and draw
 }
-async function type(who, sel, v) { const p = PEOPLE[who].page; await p.bringToFront(); await p.fill(sel, v); }
-async function enter(who, sel) { const p = PEOPLE[who].page; await p.bringToFront(); await p.press(sel, 'Enter'); await E.idle(p); }
-async function screen(who) { const p = PEOPLE[who].page; await p.bringToFront(); await E.idle(p); await E.stable(p); return p.locator('#app').innerText(); }
-async function sheet(who) { const p = PEOPLE[who].page; await p.bringToFront(); await E.idle(p); return p.locator('.sheet').innerText().catch(() => ''); }
+async function type(who, sel, v) { const p = PEOPLE[who].page; await front(who); await p.fill(sel, v); }
+async function enter(who, sel) { const p = PEOPLE[who].page; await front(who); await p.press(sel, 'Enter'); await E.idle(p); }
+async function screen(who) { const p = PEOPLE[who].page; await front(who); await E.idle(p); await E.stable(p); return p.locator('#app').innerText(); }
+async function sheet(who) { const p = PEOPLE[who].page; await front(who); await E.idle(p); return p.locator('.sheet').innerText().catch(() => ''); }
 async function until(who, fn, ms = 8000) { return E.until(fn, { timeout: ms, what: who }).then(() => true, () => false); }
-async function shot(who, name) { const p = PEOPLE[who].page; await p.bringToFront(); await E.idle(p); await E.stable(p); await p.screenshot({ path: path.join(OUT, name + '.png') }); }
+async function shot(who, name) { const p = PEOPLE[who].page; await front(who); await E.idle(p); await E.stable(p); await p.screenshot({ path: path.join(OUT, name + '.png') }); }
 async function tab(who, t) { await tap(who, `[data-act="tab"][data-v="${t}"]`); }
-async function esc(who) { await PEOPLE[who].page.bringToFront(); await PEOPLE[who].page.keyboard.press('Escape'); await E.idle(PEOPLE[who].page); }
+async function esc(who) { await front(who); await PEOPLE[who].page.keyboard.press('Escape'); await E.idle(PEOPLE[who].page); }
 async function meet(a, b) { // face to face: one shows the code, the other types it
   await esc(a); await esc(b);
   await tap(a, '[data-act=make]'); await tap(a, '[data-act=mk][data-v=meet]'); if (await PEOPLE[a].page.locator('[data-act=pair-show]').count()) await tap(a, '[data-act=pair-show]'); await PEOPLE[a].page.waitForSelector('.sheet .big');
@@ -97,6 +109,14 @@ async function open(who) {
   const P = PEOPLE[who];
   P.ctx = await browser.newContext({ viewport: { width: 400, height: 860 }, deviceScaleFactor: 2, geolocation: { latitude: P.geo[0], longitude: P.geo[1], accuracy: 12 }, permissions: ['geolocation'], timezoneId: P.tz, locale: 'en-GB' });
   await BR.blockExternal(P.ctx); await E.actProbe(P.ctx);
+  await P.ctx.addInitScript(() => { // rAF pacing for pages not in front (see front()); installed after the page's own scripts set up
+    window.__bg = true;
+    addEventListener('DOMContentLoaded', () => {
+      const raf = window.requestAnimationFrame.bind(window), caf = window.cancelAnimationFrame.bind(window), T = new Map(); let n = 0;
+      window.requestAnimationFrame = cb => { if (!window.__bg) return raf(cb); const id = -(++n); T.set(id, setTimeout(() => { T.delete(id); cb(performance.now()); }, 250)); return id; };
+      window.cancelAnimationFrame = id => { if (T.has(id)) { clearTimeout(T.get(id)); T.delete(id); } else caf(id); };
+    });
+  });
   P.page = await P.ctx.newPage();
   await P.page.clock.install({ time: NOW });
   P.page.on('pageerror', e => errors.push(who + ': ' + e.message));
@@ -391,8 +411,8 @@ async function circleCode(who) { return evalIn(who, () => S.circle && S.circle.c
     const s2 = await api('bob', 'query', { col: `circles/${cid}/sealed` }); ok('sealed text stays on the server until it opens', s2.body.docs[0].data.text === null && s2.body.docs[0].data.by); }
   await setClock(at(5, 0, 5)); // the sweep releases Midnight within 20 s: the check below polls for it
   { const cid = await evalIn('alice', () => S.me.circle); await ok('after midnight (Lisbon) the text is out', async () => { const r = await api('alice', 'query', { col: `circles/${cid}/midnight` }); return r.body.docs[0].data.text && r.body.docs[0].data.text.includes('boiler'); }, '', 45000); }
-  { const inbox = await evalIn('alice', () => S.priv.inbox?.items || []); const pl = await (await fetch(B + '/api/dev/pushlog')).json();
-    ok('Midnight goes out at 00:00, held for quiet hours (Alice’s are 23:00–08:00)', pl.log.some(l => l.title === 'Midnight' && l.held === 'quiet'), JSON.stringify(pl.log.filter(l => l.title === 'Midnight').slice(0, 2))); }
+  { const pl = async () => (await (await fetch(B + '/api/dev/pushlog')).json()).log; // the sweep that releases it sends the push: poll for it
+    await ok('Midnight goes out at 00:00, held for quiet hours (Alice’s are 23:00–08:00)', async () => (await pl()).some(l => l.title === 'Midnight' && l.held === 'quiet'), async () => JSON.stringify((await pl()).filter(l => l.title === 'Midnight').slice(0, 2)), 45000); }
   log('Bob', 'Wrote an unsigned Midnight message. Until midnight the server sent nobody its text, and it never stored who wrote it. At 00:00 it went out; the notification was held because everyone was in quiet hours.');
 
   /* ===== Day 5, Saturday: a trail and the Mission ===== */
@@ -533,6 +553,7 @@ async function circleCode(who) { return evalIn(who, () => S.circle && S.circle.c
   process.exit(pass === results.length ? 0 : 1);
 })().catch(async e => {
   console.error(e);
+  if (process.env.DEBUG) for (const [k, P] of Object.entries(PEOPLE)) if (P.page) { try { const t = Date.now(); const st = await P.page.evaluate(() => { const b = document.querySelector('[data-act=sseg][data-v=map]'); const r = b && b.getBoundingClientRect(); const top = r && document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); return JSON.stringify({ acts: window.__acts, sheet: S.ui.sheet, top: top && top.outerHTML.slice(0, 120), r }); }); console.log('DEBUG', k, Date.now() - t, 'ms', st); } catch (x) { console.log('DEBUG', k, x.message.slice(0, 200)); } }
   for (const [k, P] of Object.entries(PEOPLE)) if (P.page) { try { console.log('---', k, (await P.page.locator('#app').innerText()).slice(0, 500).replace(/\s+/g, ' ')); await P.page.screenshot({ path: path.join(OUT, 'crash-' + k + '.png') }); } catch (x) { } }
   console.log('ERRORS', errors.join(' | ')); if (server) await server.close(); process.exit(2);
 });
