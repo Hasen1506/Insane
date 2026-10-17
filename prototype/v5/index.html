@@ -1,0 +1,1417 @@
+<title>INSANE</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: same pawn-ticket identity. Phone left (sticky) now opens on a city map; console right argues the road to 90%. Stacks on phones. */
+:root{
+  --paper:#ECEEE7; --card:#F9FAF6; --ink:#151D36; --muted:#596277; --line:#CDD2C8;
+  --stamp:#C8214B; --ballpoint:#2443C4; --hazard:#B98C00; --good:#1F7A4D;
+  --stamp-soft:rgba(200,33,75,.10); --ball-soft:rgba(36,67,196,.10); --haz-soft:rgba(217,164,0,.16); --good-soft:rgba(31,122,77,.13);
+  --screen:#F4F5F0; --bezel:#151D36; --map:#E3E7DE; --road:#FBFCF8; --water:#C9D6E8; --park:#CFE0CC;
+  --f-display:"Dela Gothic One","Arial Black",Impact,sans-serif;
+  --f-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0E1320; --card:#161D2D; --ink:#E5E8E0; --muted:#8C95A8; --line:#283149;
+  --stamp:#FF5A7E; --ballpoint:#8197FF; --hazard:#F2C53D; --good:#4CC38A;
+  --stamp-soft:rgba(255,90,126,.14); --ball-soft:rgba(129,151,255,.14); --haz-soft:rgba(242,197,61,.14); --good-soft:rgba(76,195,138,.14);
+  --screen:#111827; --bezel:#05070D; --map:#1A2233; --road:#26304A; --water:#1E3150; --park:#1F3328; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0E1320; --card:#161D2D; --ink:#E5E8E0; --muted:#8C95A8; --line:#283149;
+  --stamp:#FF5A7E; --ballpoint:#8197FF; --hazard:#F2C53D; --good:#4CC38A;
+  --stamp-soft:rgba(255,90,126,.14); --ball-soft:rgba(129,151,255,.14); --haz-soft:rgba(242,197,61,.14); --good-soft:rgba(76,195,138,.14);
+  --screen:#111827; --bezel:#05070D; --map:#1A2233; --road:#26304A; --water:#1E3150; --park:#1F3328; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--ballpoint);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto}
+.mono{font-family:var(--f-mono)}
+
+.top{padding-block:28px 22px;border-bottom:1.5px dashed var(--line);margin-bottom:24px}
+.brandrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.wordmark{font-family:var(--f-display);font-size:clamp(34px,6vw,56px);line-height:.9;color:var(--stamp);transform:rotate(-2deg);display:inline-block;border:3px solid var(--stamp);padding:6px 12px 2px;border-radius:6px}
+.ver{font-family:var(--f-display);font-size:18px;color:var(--ballpoint);border:2px solid var(--ballpoint);border-radius:4px;padding:2px 8px 0;transform:rotate(3deg)}
+.ticket{font-family:var(--f-mono);font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.top h1{font-weight:700;font-size:clamp(22px,3.2vw,34px);line-height:1.15;margin:18px 0 8px;max-width:26ch;text-wrap:balance}
+.top p{margin:0;max-width:68ch;color:var(--muted)}
+.top p b{color:var(--ink);font-weight:600}
+
+.grid{display:grid;grid-template-columns:380px minmax(0,1fr);gap:32px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+.phone-col{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px)}
+@media (max-width:900px){.phone-col{position:static;display:flex;flex-direction:column;align-items:center}}
+.phone-note{font-family:var(--f-mono);font-size:11.5px;color:var(--muted);margin-top:10px;text-align:center;letter-spacing:.03em}
+
+.phone{width:100%;max-width:372px;height:760px;background:var(--bezel);border-radius:48px;padding:12px;box-shadow:0 30px 60px -30px rgba(10,15,35,.45)}
+.screen{position:relative;height:100%;background:var(--screen);border-radius:38px;overflow:hidden;display:flex;flex-direction:column}
+.status{display:flex;justify-content:space-between;align-items:center;padding:12px 26px 4px;font-family:var(--f-mono);font-size:11px;font-weight:600}
+.notch{width:96px;height:24px;background:var(--bezel);border-radius:14px}
+.hud{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:6px;padding:6px 14px 10px;border-bottom:1px solid var(--line)}
+.hud div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:5px 8px;min-width:0}
+.hud small{display:block;font-family:var(--f-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.hud b{font-family:var(--f-mono);font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.view{flex:1;overflow-y:auto;padding:12px 14px 86px;scrollbar-width:thin}
+.view h2{font-size:17px;margin:2px 0 8px;font-weight:700;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.view h2 span{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);font-weight:500;letter-spacing:.04em}
+.view h3{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:16px 0 6px;font-weight:500}
+.nav{position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(5,1fr);background:var(--card);border-top:1px solid var(--line);padding:6px 6px 18px}
+.nav button{background:none;border:0;padding:6px 0 2px;font-size:11px;font-weight:600;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px;position:relative}
+.nav button[aria-selected="true"]{color:var(--stamp)}
+.nav svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8}
+.badge{position:absolute;top:0;right:24%;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:var(--stamp);color:var(--card);font-size:10px;font-family:var(--f-mono);line-height:16px}
+.toast{position:absolute;left:14px;right:14px;bottom:78px;background:var(--ink);color:var(--paper);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.35;transform:translateY(12px);opacity:0;transition:.25s;pointer-events:none}
+.toast.on{transform:none;opacity:1}
+
+.mapbox{border-radius:16px;overflow:hidden;border:1.5px solid var(--ink);background:var(--map)}
+.mapbox svg{display:block;width:100%;height:auto}
+.mapbox .road{stroke:var(--road);fill:none}
+.mapbox .water{fill:var(--water)}
+.mapbox .park{fill:var(--park)}
+.mapbox .lbl{font-family:var(--f-mono);font-size:8.5px;fill:var(--muted)}
+.mapbox .zl{font-family:var(--f-body);font-size:9.5px;font-weight:700;fill:var(--ink)}
+.mapbox .pin{cursor:pointer}
+.pulse{animation:pulse 1.6s ease-out infinite;transform-origin:center;transform-box:fill-box}
+@keyframes pulse{0%{opacity:.7;transform:scale(.6)}100%{opacity:0;transform:scale(1.8)}}
+.legendrow{display:flex;gap:10px;flex-wrap:wrap;font-family:var(--f-mono);font-size:10px;color:var(--muted);margin:6px 2px 0}
+.legendrow i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;position:relative}
+.card .meta{display:flex;justify-content:space-between;gap:8px;font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}
+.card p{margin:4px 0 0;font-size:13.5px;line-height:1.4}
+.card .sub{font-size:12px;margin-top:4px;color:var(--muted)}
+.card .sub b{color:var(--ink);font-weight:600}
+.card.zone{border:1.5px solid var(--stamp)}
+.card.hunt{border:1.5px dashed var(--ballpoint)}
+.card.drop{border:1.5px solid var(--hazard)}
+.card.done{opacity:.6}
+.kind{font-family:var(--f-mono);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.kind.z{color:var(--stamp)}.kind.h{color:var(--ballpoint)}.kind.d{color:var(--hazard)}.kind.l{color:var(--good)}
+.clues{display:flex;gap:4px;margin-top:8px}
+.clues i{flex:1;height:6px;border-radius:3px;background:var(--line)}
+.clues i.on{background:var(--ballpoint)}
+.btn{border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:10px;padding:8px 12px;font-weight:600;font-size:13px}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.red{background:var(--stamp);border-color:var(--stamp);color:#fff}
+.btn.sm{padding:5px 9px;font-size:12px;border-radius:8px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.dd{border-radius:14px;padding:12px 14px;color:#fff;background:linear-gradient(160deg,#C8214B,#3B1640)}
+.dd .k{font-family:var(--f-mono);font-size:10px;letter-spacing:.08em;opacity:.9}
+.dd .q{font-family:var(--f-display);font-size:18px;line-height:1.12;margin:5px 0 8px;text-wrap:balance}
+.dd .btn{background:#fff;color:#3B1640;border-color:#fff}
+.money{background:var(--card);border:1.5px solid var(--ink);border-radius:14px;padding:12px}
+.money .big{font-family:var(--f-display);font-size:28px;line-height:1}
+.tx{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px}
+.tx small{grid-column:1/-1;font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}
+.tx .amt{font-family:var(--f-mono);font-size:12.5px;font-weight:600}
+.tx .amt.neg{color:var(--stamp)}.tx .amt.pos{color:var(--good)}
+.table{width:100%;border-collapse:collapse;font-size:12.5px}
+.table th,.table td{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left}
+.table th{font-family:var(--f-mono);font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:500}
+.table td.n{font-family:var(--f-mono);text-align:right}
+.table tr.me td{font-weight:700;background:var(--stamp-soft)}
+.lineup{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.lineup button{border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:6px;font-size:12px;text-align:left}
+.lineup button.in{border-color:var(--good);background:var(--good-soft)}
+.lineup small{display:block;font-family:var(--f-mono);font-size:9.5px;color:var(--muted)}
+.formula{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);margin-top:6px;line-height:1.45}
+
+/* console */
+.ptabs{display:flex;gap:4px;border-bottom:1.5px solid var(--ink);margin-bottom:18px;overflow-x:auto}
+.ptabs button{background:none;border:0;padding:10px 14px;font-weight:600;font-size:14px;color:var(--muted);border-radius:8px 8px 0 0;white-space:nowrap}
+.ptabs button[aria-selected="true"]{background:var(--ink);color:var(--paper)}
+.lead{max-width:70ch;color:var(--muted);margin:0 0 16px}
+.lead b{color:var(--ink)}
+.verdict{background:var(--card);border:1.5px solid var(--ink);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+.verdict h3{margin:0 0 6px;font-size:19px;line-height:1.25;text-wrap:balance}
+.verdict p{margin:0;max-width:72ch;font-size:14.5px}
+.verdict p+p{margin-top:8px}
+.chart{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px 10px;min-width:0;margin-bottom:14px}
+.chart h5{margin:0 0 2px;font-size:14px;font-weight:600;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.chart h5 span{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);font-weight:500}
+.chart canvas{width:100%;height:260px;display:block}
+.chart.small canvas{height:160px}
+.ladder{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}
+@media (max-width:760px){.ladder{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.rung{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0}
+.rung small{display:block;font-family:var(--f-mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.rung b{display:block;font-family:var(--f-mono);font-size:22px;font-weight:600;margin-top:2px}
+.rung p{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
+.rung.hi{border:1.5px solid var(--good)}
+.ideas{display:flex;flex-direction:column;gap:14px}
+.idea{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px}
+@media (max-width:760px){.idea{grid-template-columns:minmax(0,1fr)}}
+.idea h4{margin:0;font-size:17px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.idea .st{font-family:var(--f-mono);font-size:10.5px;padding:2px 8px;border-radius:10px;font-weight:600}
+.st.no{background:var(--stamp-soft);color:var(--stamp)}.st.yes{background:var(--good-soft);color:var(--good)}.st.mod{background:var(--haz-soft);color:var(--hazard)}
+.idea p{margin:6px 0 0;font-size:14px}
+.idea .ev{font-size:13px;color:var(--muted)}
+.idea .ev b{color:var(--ink)}
+.idea .num{font-family:var(--f-mono);font-size:12px;background:var(--paper);border-radius:8px;padding:8px 10px;margin-top:8px;line-height:1.6}
+.presets{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.presets button{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600}
+.presets button.on{border-color:var(--stamp);color:var(--stamp);background:var(--stamp-soft)}
+.controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 18px;margin-bottom:14px}
+@media (max-width:760px){.controls{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.controls{grid-template-columns:minmax(0,1fr)}}
+.cgroup{min-width:0}
+.cgroup h4{margin:0 0 4px;font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:500}
+.chip{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13.5px;cursor:pointer}
+.chip input{accent-color:var(--stamp);width:15px;height:15px;margin:0;flex:none}
+.chip .vt{font-family:var(--f-mono);font-size:9.5px;border-radius:4px;padding:0 4px;margin-left:auto;flex:none;border:1px solid}
+.vt.v2{color:var(--ballpoint);border-color:var(--ballpoint)}.vt.v5{color:var(--hazard);border-color:var(--hazard)}.vt.v4{color:var(--good);border-color:var(--good)}.vt.v3{color:var(--stamp);border-color:var(--stamp)}
+.sliders{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin-bottom:16px;font-size:13px}
+.sliders label{display:flex;align-items:center;gap:8px}
+.sliders input[type=range]{accent-color:var(--ink);width:120px}
+.sliders output{font-family:var(--f-mono);min-width:3ch}
+.stats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:16px}
+@media (max-width:1100px){.stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:460px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0}
+.stat small{display:block;font-family:var(--f-mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.stat b{display:block;font-family:var(--f-mono);font-size:22px;font-weight:600;margin-top:2px}
+.pill{display:inline-block;margin-top:4px;font-family:var(--f-mono);font-size:10px;padding:1px 7px;border-radius:10px;font-weight:600}
+.pill.ok{background:var(--good-soft);color:var(--good)}.pill.warn{background:var(--haz-soft);color:var(--hazard)}.pill.bad{background:var(--stamp-soft);color:var(--stamp)}.pill.ref{background:var(--ball-soft);color:var(--ballpoint)}
+.charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:640px){.charts{grid-template-columns:minmax(0,1fr)}}
+.charts .chart{margin-bottom:0}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-family:var(--f-mono);font-size:11px;color:var(--muted);margin:10px 0 0}
+.legend i{display:inline-block;width:16px;height:0;border-top:2px solid var(--stamp);vertical-align:middle;margin-right:5px}
+.legend i.ghost{border-top:2px dashed var(--muted)}
+.story{margin-top:18px;background:var(--card);border:1.5px solid var(--ink);border-radius:14px;padding:14px 18px}
+.story h4{margin:0 0 6px;font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:500}
+.story ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:74ch}
+.story li::marker{color:var(--stamp)}
+.week{display:flex;flex-direction:column;border-top:1.5px solid var(--ink)}
+.wd{display:grid;grid-template-columns:64px 110px minmax(0,1fr);gap:14px;padding:12px 0;border-bottom:1px dashed var(--line)}
+@media (max-width:640px){.wd{grid-template-columns:56px minmax(0,1fr)}.wd .what{grid-column:2}}
+.wd .day{font-family:var(--f-mono);font-weight:600;font-size:13px}
+.wd .day small{display:block;font-weight:400;color:var(--muted)}
+.wd .tag{font-family:var(--f-mono);font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.wd p{margin:0;font-size:14px}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:760px){.two{grid-template-columns:minmax(0,1fr)}}
+.note{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;min-width:0}
+.note h4{margin:0 0 6px;font-size:15px}
+.note p,.note li{font-size:14px;margin:0}
+.note ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px}
+.note a{color:var(--ballpoint);word-break:break-word}
+.note.red{border:1.5px solid var(--stamp)}
+.sec{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:500;margin:24px 0 8px}
+@media (prefers-reduced-motion:reduce){.pulse{animation:none}.toast{transition:none}}
+.next-switch{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 10px}
+.next-switch button{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:5px 12px;font-size:12.5px;font-weight:600}
+.next-switch button.on{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+.chart canvas.tall{height:auto}
+.score{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 10px;margin-bottom:14px}
+.score .table{min-width:720px}
+.score td.v{white-space:nowrap}
+.tag{font-family:var(--f-mono);font-size:10px;padding:1px 7px;border-radius:9px;font-weight:600;white-space:nowrap}
+.tag.build{background:var(--good-soft);color:var(--good)}.tag.cheap{background:var(--ball-soft);color:var(--ballpoint)}.tag.later{background:var(--haz-soft);color:var(--hazard)}.tag.no{background:var(--stamp-soft);color:var(--stamp)}
+.cat{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px;vertical-align:1px}
+.legend i.cat{width:8px;height:8px;border:0}
+.live{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-4px 0 14px;font-size:12.5px;color:var(--muted)}
+.card.mission{border:1.5px dashed var(--good)}
+.card.chap{border:1.5px solid var(--ink)}
+.card.pot{cursor:pointer}
+.card.pot.open{border:1.5px solid var(--good);cursor:default}
+.kind.m{color:var(--good)}.kind.c{color:var(--ink)}
+.btn.good{background:var(--good);border-color:var(--good);color:#fff}
+.link{background:none;border:0;padding:0;color:var(--ballpoint);font-size:12px;font-weight:600;text-decoration:underline}
+.bar{height:6px;border-radius:3px;background:var(--line);margin-top:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--good);border-radius:3px}
+.ppl{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:8px}
+.pp{border:1px solid var(--line);border-radius:8px;padding:3px 6px;font-family:var(--f-mono);font-size:9.5px;color:var(--muted)}
+.pp b{display:block;font-family:var(--f-body);font-size:12px;color:var(--ink)}
+.pp.paid,.pp.pledged{border-color:var(--good);background:var(--good-soft)}
+.pp.topay,.pp.checking{border-color:var(--hazard);background:var(--haz-soft)}
+.pp.out{opacity:.55}
+.payrow{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.safe{background:var(--good-soft);border-radius:12px;padding:9px 11px;font-size:12.5px;margin-bottom:8px;line-height:1.4}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:3px;margin-bottom:10px}
+.seg button{border:0;background:none;border-radius:8px;padding:6px;font-weight:600;font-size:13px;color:var(--muted)}
+.seg button[aria-selected="true"]{background:var(--ink);color:var(--paper)}
+.newpot label{display:block;font-size:11.5px;font-family:var(--f-mono);color:var(--muted);margin-top:8px}
+.newpot input:not([type=radio]),.newpot select{display:block;width:100%;margin-top:3px;border:1.5px solid var(--line);background:var(--screen);border-radius:8px;padding:7px 9px;font-family:var(--f-body);font-size:16px}
+.np2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.newpot fieldset{border:0;padding:0;margin:8px 0 0}
+.newpot legend{font-size:11.5px;font-family:var(--f-mono);color:var(--muted);padding:0}
+.newpot .rad{display:flex;gap:8px;align-items:flex-start;font-family:var(--f-body);font-size:12.5px;color:var(--ink);margin-top:6px;line-height:1.35}
+.newpot .rad input{margin-top:2px;accent-color:var(--good);flex:none}
+.brief{background:var(--ink);color:var(--paper);border-radius:10px;padding:8px 10px;margin-top:8px;font-size:12.5px;line-height:1.4}
+.brief small{display:block;font-family:var(--f-mono);font-size:9.5px;letter-spacing:.08em;opacity:.75;margin-bottom:2px}
+.rules{border-radius:14px;padding:11px 14px;background:#151D36;color:#ECEEE7;margin-bottom:8px}
+.rules .k{font-family:var(--f-mono);font-size:10px;letter-spacing:.1em;opacity:.8}
+.rules ol{margin:5px 0 0;padding-left:18px;font-size:12.5px;line-height:1.45}
+.vault{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.vt-tile{border:0;border-radius:12px;min-height:92px;padding:8px;color:#fff;text-align:left;display:flex;flex-direction:column;justify-content:flex-end;position:relative}
+.vt-tile b{font-size:12.5px;line-height:1.2}
+.vt-tile small{font-family:var(--f-mono);font-size:9.5px;opacity:.85}
+.vt-tile .left{position:absolute;top:7px;right:8px;font-family:var(--f-mono);font-size:9.5px;background:rgba(0,0,0,.35);border-radius:6px;padding:1px 5px}
+.members{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.members div{display:grid;grid-template-columns:auto 1fr;column-gap:7px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:5px 7px;min-width:0}
+.members .av{grid-row:span 2;width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--paper);font-family:var(--f-mono);font-size:9.5px;display:grid;place-items:center}
+.members b{font-size:12.5px;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.members small{font-family:var(--f-mono);font-size:9.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* v0.5 phone */
+.seg.n3{grid-template-columns:repeat(3,1fr)}.seg.n4{grid-template-columns:repeat(4,1fr)}
+.seg.n4 button{font-size:12px;padding:6px 2px}
+.nav .plus{align-self:center}
+.nav .plus span{width:40px;height:40px;border-radius:14px;background:var(--stamp);color:#fff;display:grid;place-items:center;font-size:24px;line-height:1;font-weight:500}
+.screen.obmode .nav,.screen.obmode .hud{display:none}
+.screen.obmode .view{padding-bottom:24px}
+.obdots{display:flex;gap:5px;margin:4px 0 14px}
+.obdots i{flex:1;height:4px;border-radius:2px;background:var(--line)}
+.obdots i.on{background:var(--stamp)}
+.ob p{font-size:14px;line-height:1.45;margin:0 0 10px}
+.obk{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;color:var(--stamp)}
+.view h2.obh{font-family:var(--f-display);font-weight:400;font-size:24px;line-height:1.1;margin:6px 0 10px;display:block}
+.obl{margin:6px 0 0;padding-left:18px;font-size:13px;line-height:1.45}
+.obsmall{font-family:var(--f-mono);font-size:10.5px!important;color:var(--muted);line-height:1.5!important}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
+.chipb{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:600}
+.chipb.on{border-color:var(--stamp);background:var(--stamp-soft);color:var(--stamp)}
+.opts{display:flex;flex-direction:column;gap:6px;margin-bottom:6px}
+.opt{border:1.5px solid var(--line);background:var(--card);border-radius:12px;padding:8px 11px;text-align:left}
+.opt b{display:block;font-size:13.5px}.opt small{font-family:var(--f-mono);font-size:10px;color:var(--muted)}
+.opt.on{border-color:var(--good);background:var(--good-soft)}
+.avs{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 12px}
+.avs .av{width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--paper);font-family:var(--f-mono);font-size:11px;display:grid;place-items:center;border:0}
+.avs .av.me{background:var(--stamp);color:#fff}
+.avs.sm .av{width:30px;height:30px;font-size:10px}
+.avs .av.add{background:transparent;color:var(--ink);border:1.5px dashed var(--muted);font-size:16px}
+.qr{width:120px;height:120px;margin:4px auto 12px;border-radius:14px;background:repeating-conic-gradient(var(--ink) 0 25%,var(--card) 0 50%) 0 0/20px 20px;border:6px solid var(--card);outline:1.5px solid var(--ink);display:grid;place-items:center}
+.qr span{width:56px;height:56px;border-radius:50%;background:var(--good);color:#fff;display:grid;place-items:center;font-size:28px}
+.card.pact{border:1.5px solid var(--good)}
+.card.pact.sm{border:1px solid var(--line)}
+.steps{display:flex;gap:4px;margin-top:8px}
+.steps i{flex:1;height:6px;border-radius:3px;background:var(--line)}
+.steps i.on{background:var(--good)}
+.done-l{font-size:11px;color:var(--good);align-self:center}
+.ok{font-family:var(--f-mono);font-size:10.5px;color:var(--good);font-weight:600}
+.card.mn,.card.mnmsg{background:#151D36;color:#ECEEE7;border-color:#151D36}
+.card.mn .meta,.card.mnmsg .meta{color:#9AA3B8}
+.kind.mnk{color:#B9C3FF}.kind.mk{color:var(--hazard)}
+.card.mn .btn{background:#ECEEE7;color:#151D36;border-color:#ECEEE7}
+.mnhead{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;margin-bottom:6px}
+.mnhead span{font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}
+.card.mnmsg p{font-size:14px;font-style:italic}
+.reacts{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
+.reacts button{border:1px solid #3A4566;background:transparent;color:#ECEEE7;border-radius:999px;padding:2px 9px;font-size:11.5px}
+.reacts button.on{background:#ECEEE7;color:#151D36}
+.reacts .rm{margin-left:auto;border:0;color:#9AA3B8;text-decoration:underline}
+.card.mole{border:1.5px dashed var(--hazard)}
+.tasks{margin:8px 0 0;padding-left:18px;font-size:13px}
+.tasks li{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:4px 0;border-bottom:1px dashed var(--line)}
+.tasks li.done span{text-decoration:line-through;color:var(--muted)}
+.tasks li b{font-family:var(--f-mono);font-size:10.5px;color:var(--good)}
+.trust{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.trust span{font-family:var(--f-mono);font-size:9.5px;border:1px solid var(--good);color:var(--good);border-radius:6px;padding:1px 5px}
+.card.feat{border-left:3px solid var(--good)}
+.card.call{border:1.5px dashed var(--ballpoint)}
+.lock{font-size:12px;background:var(--haz-soft);border-radius:10px;padding:8px 10px;margin-bottom:8px}
+.rl{margin:6px 0 0;padding-left:18px;font-size:12px;line-height:1.45}
+.newpot textarea{display:block;width:100%;margin-top:3px;border:1.5px solid var(--line);background:var(--screen);border-radius:8px;padding:7px 9px;font-family:var(--f-body);font-size:16px;resize:vertical}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--card);border-top:1.5px solid var(--ink);border-radius:18px 18px 0 0;padding:12px 14px 92px;box-shadow:0 -20px 40px -20px rgba(10,15,35,.35);z-index:3}
+.sh-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.sh-i{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:9px 2px;font-size:14px;font-weight:600}
+.phone-note button{background:none;border:0;padding:0;color:var(--ballpoint);text-decoration:underline;font:inherit;cursor:pointer}
+.nav{z-index:4}
+</style>
+
+<header class="top wrap">
+  <div class="brandrow">
+    <span class="wordmark">INSANE</span><span class="ver">v0.5</span>
+    <span class="ticket">Your circle runs on it · the app never holds money</span>
+  </div>
+  <h1>v0.5 makes the everyday stuff the reason to stay, and shows the app a little at a time.</h1>
+  <p><b>Pacts</b> are the things you keep saying you’ll do, with your circle checking in (two free misses a week). <b>Midnight</b> is unsigned messages about yourself, released together at midnight. <b>The Mole</b> is one secret saboteur a week. The City gets a <b>Wall</b> of what other circles did and <b>Calls</b> so circles can work together, and circles that have met in person can propose Missions with their Reliability on the line. Chapters merged into your circle, favors are now hours, and groceries moved to Pots. The phone opens on your first five minutes.</p>
+</header>
+
+<main class="wrap grid">
+  <section class="phone-col" aria-label="App prototype v0.5">
+    <div class="phone">
+      <div class="screen">
+        <div class="status"><span id="clock">18:42</span><span class="notch" aria-hidden="true"></span><span>5G ▮▮▮</span></div>
+        <div class="hud">
+          <div><small>Circle</small><b id="hudC">4B &amp; co</b></div>
+          <div><small>Pact day</small><b id="hudP">4 / 21</b></div>
+          <div><small>Favors</small><b id="balV">+1.5 h</b></div>
+        </div>
+        <div class="view" id="view"></div>
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+        <nav class="nav" role="tablist" aria-label="App sections">
+          <button role="tab" data-tab="home" aria-selected="true"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/></svg>Home<span class="badge" id="bHome">4</span></button>
+          <button role="tab" data-tab="circle"><svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3.2"/><circle cx="16.5" cy="10" r="2.6"/><path d="M3.5 19c.8-3.2 3-5 5.5-5s4.7 1.8 5.5 5M14.5 15.2c.6-.2 1.3-.3 2-.3 2 0 3.6 1.4 4.2 4.1"/></svg>Circle</button>
+          <button class="plus" data-make="1" aria-label="Make something"><span>+</span></button>
+          <button role="tab" data-tab="city"><svg viewBox="0 0 24 24"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg>City</button>
+          <button role="tab" data-tab="ledger"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>Ledger<span class="badge" id="bLed">1</span></button>
+        </nav>
+      </div>
+    </div>
+    <div class="phone-note">v0.5 · <button data-act="replay">replay the first five minutes</button> · <button data-act="skip">skip to Thursday</button></div>
+  </section>
+
+  <section aria-label="Research console">
+    <div class="ptabs" role="tablist">
+      <button role="tab" data-p="v5" aria-selected="true">v0.5, tested</button>
+      <button role="tab" data-p="road" aria-selected="false">Road to 90%</button>
+      <button role="tab" data-p="next" aria-selected="false">What to build next</button>
+      <button role="tab" data-p="ideas" aria-selected="false">Your ideas, tested</button>
+      <button role="tab" data-p="sim" aria-selected="false">Simulator</button>
+      <button role="tab" data-p="week" aria-selected="false">A week on v0.5</button>
+    </div>
+
+    <!-- V5 -->
+    <div id="p-v5">
+      <div class="verdict">
+        <h3>The stupid stuff is why people join. Pacts are why they stay. And showing the app a little at a time matters as much as what's in it.</h3>
+        <p>Every new idea was added to v0.4 on its own, on 32 paired seeds. Two lead by a distance: <b>Pacts</b> (goals your circle checks in on) and <b>the Mole</b> (one secret saboteur a week). Both happen every week, inside the circle, and nobody has to be brave in public. That's the reason to persist you were looking for: you won't do something insane every day, but you will check in on a pact.</p>
+        <p><b>The rules matter more than the idea.</b> Pacts with two free misses a week add <span data-v5="pacts"></span> points. The same pacts with no misses and public strikes <i>lose</i> <span data-v5="pactsHardNeg"></span>. Midnight about yourself adds 2 to 5 points; gossip about other people adds about 1 and hurts four to five times as many people.</p>
+        <p><b>Flow:</b> shown all at once, the new features fall below v0.4 as soon as each new thing to learn costs people a little attention. Merged into fewer nouns and unlocked over the first two weeks, almost all of the gain survives. That's why the phone now has four tabs, a + button, and a first five minutes.</p>
+        <p><b>Read the levels with care.</b> With everything on, the model says close to 90% on day 30. No app has ever done that; the model saturates. Trust the ranking and the comparisons, not the level.</p>
+      </div>
+      <div class="ladder" id="v5Rungs"></div>
+      <div class="chart"><h5>Add one idea to v0.4 <span>32 seeds · paired · whiskers ±2 SE</span></h5>
+        <canvas id="ch-v5add" class="tall" aria-label="Day-30 retention change from each v0.5 idea"></canvas>
+        <div class="legend"><span><i class="cat" style="background:var(--good)"></i>everyday</span><span><i class="cat" style="background:var(--stamp)"></i>the stupid stuff</span><span><i class="cat" style="background:var(--ballpoint)"></i>trust and safety</span><span><i class="cat" style="background:var(--hazard)"></i>no-gos, simulated anyway</span><span><i class="cat" style="background:var(--muted)"></i>a switch that does nothing</span></div>
+      </div>
+      <p class="formula" id="v5Placebo"></p>
+      <div class="chart"><h5>Same features, three ways to show them <span>day-30 retention · 32 seeds</span></h5><canvas id="ch-v5flow" aria-label="Retention against cost per concept for three ways of presenting the features"></canvas>
+        <div class="legend"><span>x-axis: how much attention each concept beyond v0.3's nine costs people</span><span style="color:var(--stamp)">all at once: v0.4 + 7 new things</span><span style="color:var(--ballpoint)">merged into fewer nouns</span><span style="color:var(--good)">merged, unlocked over 2 weeks</span><span>- - v0.4 as built</span></div></div>
+      <h3 class="sec">Midnight: what you send, and when</h3>
+      <div class="score" id="v5Mid"></div>
+      <h3 class="sec">Fake Missions: what stops them</h3>
+      <div class="score" id="v5Def"></div>
+      <h3 class="sec">Ranking</h3>
+      <div class="score" id="v5Rank"></div>
+      <div class="two">
+        <div class="note"><h4>What surprised the model</h4><ul>
+          <li><b>Strict pacts lose users.</b> No misses plus public strikes turns a pact into a debt. Most strict pacts failed, and failing in front of your circle is a reason to leave.</li>
+          <li><b>Letting people pick the exact send time</b> brings back more people, because messages arrive more often, but about five times as many authors get worked out. Picking the night and letting the app pick the moment keeps most of the safety.</li>
+          <li><b>Requiring an in-person scan before you can join anything costs about 2 points.</b> Requiring it only to <i>post</i> costs almost nothing and still blocks most fakes.</li>
+          <li><b>Circle-made Missions add almost nothing to retention.</b> Their value is growth and stories, and their risk is fakes. Worth it only with a stake and a Zone approving them.</li>
+          <li><b>Vanish does nothing for retention.</b> A day off the app is a day off the app. It's a once-a-season story, so it lives in Insane Week, not in the app.</li>
+        </ul></div>
+        <div class="note red"><h4>The no-gos</h4><ul>
+          <li><b>Gossip about other people:</b> about 800 people hurt in 120 days against about 170 for messages about yourself, for no real gain. Sarahah was pulled from both app stores in 2018 after bullying complaints; NGL was banned from under-18s by the FTC in 2024.</li>
+          <li><b>Strict pacts:</b> −4.4 points. Streak pressure works on a number; it backfires when it's your friends watching.</li>
+          <li><b>Money escrow for Missions:</b> fewer fakes than doing nothing, but more than a Reliability stake, it halves the real Missions, and it puts INSANE back in the money-holding business.</li>
+          <li><b>The Hunt</b> (assassin-style chasing) was never simulated. In February 2025 an off-duty state agent in Florida shot an 18-year-old playing Senior Assassin in the arm, mistaking a water gun for a real one. The Mole gives the same secret-target thrill with no chasing.</li>
+        </ul></div>
+        <div class="note" style="grid-column:1/-1"><h4>What the model can't see</h4><ul>
+          <li>It can't see a confusing screen. "Concept load" is a stand-in: every thing a new person has to learn costs a little, more when it all arrives on day one. The real test is watching five people use the phone for the first time.</li>
+          <li>It doesn't know whether a Midnight message is kind or cruel, only how often the rules let a mean one through. The 3% and 15% rates are guesses; the gap between them is the point.</li>
+          <li>Every idea gets the value its rules imply. In real life, the Mole lives or dies on how good the task list is.</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- ROAD -->
+    <div id="p-road" hidden>
+      <div class="verdict">
+        <h3>90% of people opening on exactly day 30 isn't something any app has. 90% still around in month one is, and only apps that are infrastructure get there.</h3>
+        <p>Typical social apps keep 4–10% of users on day 30. The one app reported near 90% month-one retention is WhatsApp, at about 86% (Sensor Tower, via a secondhand report). Nobody gets there with streaks or prizes. WhatsApp got there because leaving means losing the people you talk to.</p>
+        <p>So v0.3 adds two layers. <b>Infrastructure</b>: the ledger becomes the money your circle runs on, and the League gives your circle a fixture every week. <b>Spectacle</b>: Zones, Hunts and Drops get people out into the city together and make the app worth its name. The chart shows what each layer adds, one at a time, in the calibrated simulator.</p>
+        <p>Read the two numbers differently. <b>Day 30</b> is calibrated against published benchmarks. <b>Month one</b> (opened on any day from 23 to 30) is looser: a plain app with no hooks already scores about 39% on it. v0.3 clears 90% on month one; on day 30 it reaches the high 50s, well above every published social-app range, so treat it as the optimistic end.</p>
+      </div>
+      <div class="ladder" id="ladder"><div class="rung"><small>Simulator</small><b>…</b><p>running 21 simulations</p></div></div>
+      <div class="chart"><h5>Building v0.3 one layer at a time <span id="wfnote">day-30 retention · 3-seed average · running…</span></h5><canvas id="ch-wf" aria-label="Retention by layer chart"></canvas><div class="legend"><span><i class="band" style="display:inline-block;width:14px;height:8px;border:0;background:var(--good-soft);outline:1px solid var(--good);margin-right:5px"></i>typical social apps on day 30 (4–10%)</span><span>bars: day-30 retention</span><span>▼ month one (opened any day 23–30)</span><span style="color:var(--stamp)">- - your 90% target</span></div></div>
+      <div class="two">
+        <div class="note"><h4>What carries the number</h4><ul>
+          <li><b>The ledger as money</b> is the biggest single step. When your groceries, dinners and chores are settled in favors, you open the app for the same reason you open a banking app.</li>
+          <li><b>The League</b> works like a five-a-side team. Teammates notice when you're missing and pull you back, which is something no notification can do.</li>
+          <li><b>Zones</b> add a weekly night out with your circle, and give the feed fresh local content so it never goes stale.</li>
+        </ul></div>
+        <div class="note"><h4>What earns the name but not the number</h4><ul>
+          <li><b>Hunts and Drops</b> add only 1–3 points each in the model. They're the stories people tell, the reason a stranger installs, and the screenshot on the poster.</li>
+          <li>That split is normal. Pokémon GO's daily users fell by about a third within weeks of its peak, and HQ Trivia's prize-driven crowd evaporated. Spectacle recruits; obligation retains.</li>
+        </ul></div>
+        <div class="note red" style="grid-column:1/-1"><h4>The two things that would sink it</h4><ul>
+          <li><b>Removing the insanity ceiling.</b> In a network this dense, escalation runs away: the simulator injures about 690 people in 120 days without it, against about 5 with it. Zones allow a higher ceiling (8 instead of 6.5) <i>only</i> because staff, padding and fixed cameras are there.</li>
+          <li><b>Paying drops in favors.</b> That's free issuance, the same mistake as the trueque clubs and Bunz. Confidence in favors falls from 85% to about 50%.</li>
+        </ul></div>
+      </div>
+      <h3 class="sec">Sources</h3>
+      <div class="note"><ul>
+        <li>WhatsApp month-one retention (secondhand, unverified): <a href="https://www.producthunt.com/p/general/if-you-re-building-a-consumer-app-what-does-your-retention-look-like">Product Hunt, citing Sensor Tower</a></li>
+        <li>Retention benchmarks: <a href="https://phiture.com/mobilegrowthstack/managing-retention-rate-benchmarks-and-expectations/">Phiture</a> · <a href="https://www.braze.com/resources/articles/mobile-app-retention">Braze</a> · <a href="https://trysonar.app/blog/app-user-retention-benchmarks-and-what-moves-it">Sonar (Adjust data)</a></li>
+        <li>HQ Trivia: <a href="https://techcrunch.com/2020/02/14/hq-trivia-shuts-down">TechCrunch</a> · <a href="https://www.thedrum.com/news/hq-trivia-shuts-down-after-3-years">The Drum</a></li>
+        <li>Pokémon GO: <a href="https://www.digitaltrends.com/phones/pokemon-go-decline-player-numbers/">Digital Trends</a> · <a href="https://mcvuk.com/pokemon-go-has-lost-around-15m-daily-users/0171558">MCV</a></li>
+        <li>Streaks: <a href="https://www.businessofapps.com/news/duolingos-streak-feature-drives-record-17-million-daus">Business of Apps on Duolingo</a></li>
+        <li>Trueque and Bunz: see <span class="mono">docs/DEEPER.md</span></li>
+      </ul></div>
+    </div>
+
+    <!-- NEXT -->
+    <div id="p-next" hidden>
+      <div class="verdict">
+        <h3>Build three: pledge-then-pay Pots, Chapters and Missions. Add Homework, time-based favors and Duels because they're cheap. Leave out everything that touches money directly or hurts people.</h3>
+        <p>Every idea from <span class="mono">docs/OPTIONS.md</span> was added to v0.3 on its own, on the same 16 seeds, and the difference in day-30 retention measured pair by pair. The same pattern as v0.3 shows up again. The ideas that give a circle a reason to <b>need</b> the app (a shared pot for the trip, a chapter you belong to) beat the ideas that are only fun.</p>
+        <p><b>Pots:</b> the three money options are a statistical tie. A licensed partner holding the money buys a few tenths of a point over pledge-then-pay, and in exchange you get licences plus the risk of a Synapse-style collapse. The ledger-only pledge version wins on everything except a number too small to see.</p>
+        <p><b>Built in v0.4</b> (kept at <span class="mono">prototype/v4/</span>). Since then, v0.5 tested a new round of ideas on top of it: see the first tab. Of the cheap additions, time-based favors went in (favors are now hours), Homework became Ladder pacts, and Duels stayed out.</p>
+        <p><b>Fewer is better.</b> Shipping all ten safe ideas looks best only if extra features cost users nothing. Once each one costs a little attention, the top three hold up and the all-ten build falls below v0.3.</p>
+      </div>
+      <div class="ladder" id="nextRungs"></div>
+      <div class="chart"><h5>Add one idea to v0.3 <span id="addnote">16 seeds · paired · whiskers ±2 SE</span></h5>
+        <div class="next-switch" id="nextSwitch"><button data-b="v3" class="on">on top of v0.3</button><button data-b="v2">on top of v0.2 (no Zones, League or ledger)</button></div>
+        <canvas id="ch-add" class="tall" aria-label="Day-30 retention change from each idea"></canvas>
+        <div class="legend"><span><i class="cat" style="background:var(--good)"></i>pooling money</span><span><i class="cat" style="background:var(--stamp)"></i>Fight Club layer</span><span><i class="cat" style="background:var(--ballpoint)"></i>niche ideas</span><span><i class="cat" style="background:var(--hazard)"></i>no-gos, simulated anyway</span></div>
+      </div>
+      <div class="live"><button class="btn sm ghost" id="liveBtn">Re-run live on 4 new seeds</button><span id="liveMsg">Takes about 15 seconds. Uses the friends' value slider from the Simulator tab.</span></div>
+      <h3 class="sec">Scorecard</h3>
+      <div class="score" id="nextTable"></div>
+      <p class="formula">Day 30, timid third (the least bold third of users), growth (share of the city that joined) and favor confidence are changes against v0.3, in points. "Top 3 under ±50%": in 20 runs where every idea's strength was drawn at random between half and one and a half times its default, how often it landed in the top three. *Legal load and build size are judgment calls from OPTIONS.md, not model outputs.</p>
+      <div class="chart"><h5>More features, less app <span>day-30 retention · 12 seeds</span></h5><canvas id="ch-clut" aria-label="Retention against cost per feature"></canvas>
+        <div class="legend"><span>x-axis: how much attention each extra feature costs users</span><span style="color:var(--good)">top 3</span><span style="color:var(--ballpoint)">top 5 (+ Homework, time-based favors)</span><span style="color:var(--stamp)">all 10 safe ideas</span><span>- - v0.3</span></div></div>
+      <div class="two">
+        <div class="note"><h4>What surprised the model</h4><ul>
+          <li><b>Chapters only work on top of Zones.</b> On v0.2 they add nothing to retention, though they still grow the network. Without chapter nights, a private invite-only club is just a smaller feed.</li>
+          <li><b>Missions are the growth idea.</b> Their retention gain is middling, but they bring in the most new people of anything tested, because a synchronized freeze in a station is the poster.</li>
+          <li><b>Duels are the only trust fix.</b> They barely move retention, but favor confidence rises about 8 points: disputes get settled instead of rotting.</li>
+          <li><b>Homework helps without Zones.</b> It works just as well on v0.2, so it's the cheapest thing to ship first.</li>
+        </ul></div>
+        <div class="note red"><h4>The no-gos, confirmed</h4><ul>
+          <li><b>Favor cash-out</b> is the only idea that loses users: favor confidence falls about 35 points. It's the IOU-selling failure of v0.1 again, with money attached.</li>
+          <li><b>Real fights</b> add about a point and a half of retention and roughly 40 more people hurt in 120 days.</li>
+          <li><b>Pay-to-enter prizes</b> add nothing measurable and turn every Drop into an illegal lottery.</li>
+          <li><b>A money partner that fails</b> wipes out the whole Pots gain and knocks swaps down for weeks.</li>
+        </ul></div>
+        <div class="note" style="grid-column:1/-1"><h4>What the model can't see</h4><ul>
+          <li>It counts opens. It can't tell an evening people loved from one they felt they had to show up to, so the diary test still decides.</li>
+          <li>Every idea gets the value its rules imply. Nothing in the model is a bad execution of a good idea, and in real life most are.</li>
+          <li>Levels above 70% on day 30 have no real-world precedent. Trust the ranking, not the level.</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- IDEAS -->
+    <div id="p-ideas" hidden>
+      <p class="lead">Your three ideas, checked against what happened when someone tried them for real and against the simulator. One is out, one is in with a change, and one is the best idea in the whole project.</p>
+      <div class="ideas" id="ideasList"></div>
+    </div>
+
+    <!-- SIM -->
+    <div id="p-sim" hidden>
+      <p class="lead">Same calibrated model as v0.2: friend groups of 12, invites, daily decisions to open or quit. v0.3 adds the five new layers; the v0.4 and v0.5 ideas are toggles too. <b>The dashed line is v0.2</b>. The checks from v0.2 still hold: the no-hooks version matches published retention, and free credits still collapse confidence.</p>
+      <div class="presets" id="presets">
+        <button data-preset="v2">v0.2</button>
+        <button data-preset="v3">v0.3</button>
+        <button data-preset="cash">v0.3 with cash drops</button>
+        <button data-preset="nocap">v0.3 with no ceiling</button>
+        <button data-preset="decay">v0.3 + trust decay</button>
+        <button data-preset="v4">v0.4</button>
+        <button data-preset="v5">v0.5</button>
+      </div>
+      <div class="controls">
+        <div class="cgroup"><h4>Infrastructure</h4>
+          <label class="chip"><input type="checkbox" id="c-ledger">Ledger is the circle's money<span class="vt v3">v0.3</span></label>
+          <label class="chip"><input type="checkbox" id="c-league">League with weekly fixtures<span class="vt v3">v0.3</span></label>
+          <label class="chip"><input type="checkbox" id="c-circles">Circles unlock at 4<span class="vt v2">v0.2</span></label>
+        </div>
+        <div class="cgroup"><h4>Spectacle</h4>
+          <label class="chip"><input type="checkbox" id="c-zones">Zones, weekly Zone Night<span class="vt v3">v0.3</span></label>
+          <label class="chip"><input type="checkbox" id="c-hunts">Hunts built by circles<span class="vt v3">v0.3</span></label>
+          <label class="chip"><input type="checkbox" id="c-drops">Drops of real stuff<span class="vt v3">v0.3</span></label>
+          <label class="chip"><input type="checkbox" id="c-cashDrops">Drops pay favors instead</label>
+        </div>
+        <div class="cgroup"><h4>Daily (v0.2)</h4>
+          <label class="chip"><input type="checkbox" id="c-daily">Daily Dare<span class="vt v2">v0.2</span></label>
+          <label class="chip"><input type="checkbox" id="c-board">Favor board<span class="vt v2">v0.2</span></label>
+          <label class="chip"><input type="checkbox" id="c-market">Weekly Market Day<span class="vt v2">v0.2</span></label>
+        </div>
+        <div class="cgroup"><h4>Pressure</h4>
+          <label class="chip"><input type="checkbox" id="c-decay">Trust decay</label>
+          <label class="chip"><input type="checkbox" id="c-shortChains">2-hour chain window</label>
+          <label class="chip"><input type="checkbox" id="c-sell">IOUs can be sold</label>
+        </div>
+        <div class="cgroup"><h4>Safety</h4>
+          <label class="chip"><input type="checkbox" id="c-cap">Insanity ceiling (8 in Zones)<span class="vt v2">v0.2</span></label>
+          <label class="chip"><input type="checkbox" id="c-downrank">Danger down-ranking<span class="vt v2">v0.2</span></label>
+        </div>
+        <div class="cgroup"><h4>Credit</h4>
+          <label class="chip"><input type="checkbox" id="c-limit">Credit limit −5<span class="vt v2">v0.2</span></label>
+          <label class="chip"><input type="checkbox" id="c-bonus">Free welcome credits</label>
+        </div>
+        <div class="cgroup"><h4>v0.4 ideas</h4>
+          <label class="chip"><input type="checkbox" id="c-pledge">Pots: pledge, then pay<span class="vt v4">v0.4</span></label>
+          <label class="chip"><input type="checkbox" id="c-chapters">Chapters<span class="vt v4">v0.4</span></label>
+          <label class="chip"><input type="checkbox" id="c-missions">Missions<span class="vt v4">v0.4</span></label>
+          <label class="chip"><input type="checkbox" id="c-homework">Homework</label>
+          <label class="chip"><input type="checkbox" id="c-timebank">Time-based favors</label>
+          <label class="chip"><input type="checkbox" id="c-duels">Duels</label>
+        </div>
+        <div class="cgroup"><h4>v0.5 ideas</h4>
+          <label class="chip"><input type="checkbox" id="c-pacts">Pacts (two free misses a week)<span class="vt v5">v0.5</span></label>
+          <label class="chip"><input type="checkbox" id="c-mole">The Mole<span class="vt v5">v0.5</span></label>
+          <label class="chip"><input type="checkbox" id="c-midnight">Midnight (about you, batched)<span class="vt v5">v0.5</span></label>
+          <label class="chip"><input type="checkbox" id="c-fear">Ladder pacts<span class="vt v5">v0.5</span></label>
+          <label class="chip"><input type="checkbox" id="c-feats">Wall of Feats<span class="vt v5">v0.5</span></label>
+          <label class="chip"><input type="checkbox" id="c-calls">Calls between circles<span class="vt v5">v0.5</span></label>
+        </div>
+        <div class="cgroup"><h4>Circle-made Missions</h4>
+          <label class="chip"><input type="checkbox" id="c-hosted">Circles can propose Missions</label>
+          <label class="chip"><input type="checkbox" id="c-hostStake">Host stakes Reliability<span class="vt v5">v0.5</span></label>
+          <label class="chip"><input type="checkbox" id="c-verifyPost">Met in person to post<span class="vt v5">v0.5</span></label>
+        </div>
+        <div class="cgroup"><h4>No-gos</h4>
+          <label class="chip"><input type="checkbox" id="c-cashOut">Favors can be cashed out</label>
+          <label class="chip"><input type="checkbox" id="c-realFights">Real fights at Zone Night</label>
+          <label class="chip"><input type="checkbox" id="c-payPrize">Pay to enter Drops</label>
+          <label class="chip"><input type="checkbox" id="c-pactsHard">Strict pacts (no misses, public strikes)</label>
+          <label class="chip"><input type="checkbox" id="c-gossip">Anonymous gossip about others</label>
+        </div>
+      </div>
+      <div class="sliders">
+        <label for="s-k">How much friends' activity is worth <input type="range" id="s-k" min="0.4" max="1" step="0.05" value="0.7"><output id="o-k">0.70</output></label>
+        <label for="s-seed">Seed <input type="range" id="s-seed" min="1" max="20" step="1" value="1"><output id="o-seed">1</output></label>
+      </div>
+      <div class="stats" id="stats"></div>
+      <div class="charts">
+        <div class="chart small"><h5>Cohort retention <span>share opening on day N after joining</span></h5><canvas id="ch-ret" aria-label="Cohort retention chart"></canvas></div>
+        <div class="chart small"><h5>Daily opens <span>whole network · 120 days</span></h5><canvas id="ch-dau" aria-label="Daily opens chart"></canvas></div>
+        <div class="chart small"><h5>Favor confidence <span>share of favors honored</span></h5><canvas id="ch-c" aria-label="Favor confidence chart"></canvas></div>
+        <div class="chart small"><h5>People hurt <span>cumulative</span></h5><canvas id="ch-harm" aria-label="Harm chart"></canvas></div>
+      </div>
+      <div class="legend"><span><i></i>this run</span><span><i class="ghost"></i>v0.2</span></div>
+      <div class="story"><h4>What happened in this run</h4><ul id="story"></ul></div>
+    </div>
+
+    <!-- WEEK -->
+    <div id="p-week" hidden>
+      <p class="lead">Same user as the earlier diaries, one week on v0.5. <b>Opened 7 of 7 days, about 5 minutes a day.</b> v0.4 gave the circle things to plan. v0.5 gives every day one small thing: a check-in, a message, a secret.</p>
+      <div class="week">
+        <div class="wd"><div class="day">Mon<small>4 min</small></div><span class="tag" style="color:var(--good)">Pact · Pot</span><p>Ran before work and checked in: one tap, the circle sees a tick. Pia’s groceries pot was £14 each; I paid her from my bank app. Groceries aren’t favors any more, so nobody argues about what half a bag of shopping is worth.</p></div>
+        <div class="wd"><div class="day">Tue<small>6 min</small></div><span class="tag" style="color:var(--ballpoint)">Midnight</span><p>Four unsigned messages from last night. One said “I applied for a job in Lisbon. Haven’t told anyone.” Five people reacted “brave”. I queued my own for Wednesday night. I picked the night; the app picked the moment.</p></div>
+        <div class="wd"><div class="day">Wed<small>5 min</small></div><span class="tag" style="color:var(--hazard)">The Mole</span><p>I’m the Mole this week. Swapped the fridge magnets around while Dev was on the phone. Nobody noticed. Missed my run: one of my two free misses.</p></div>
+        <div class="wd"><div class="day">Thu<small>9 min + 4 h out</small></div><span class="tag" style="color:var(--stamp)">Fixture · Call</span><p>Our lineup was full, so I answered Night Shift’s Call and played as their guest in the first round. Got two people to say “pineapple” at Zone Night. <b>Best night of the month, again.</b></p></div>
+        <div class="wd"><div class="day">Fri<small>3 min</small></div><span class="tag" style="color:var(--good)">Wall</span><p>Allotment 9 finished six pacts out of six. Maya hit “Steal this” and now the whole circle starts one on Monday. Even Rin.</p></div>
+        <div class="wd"><div class="day">Sat<small>2 min + 1 h out</small></div><span class="tag" style="color:var(--good)">Mission</span><p>Mission 07, The Freeze. The exact spot arrived at 11:00. Third Floor all showed up, and it went on the Wall before we got home.</p></div>
+        <div class="wd"><div class="day">Sun<small>7 min + 1 h out</small></div><span class="tag" style="color:var(--hazard)">Mole reveal</span><p>Reveal at 21:00. One vote out of five on me. Got away with it. Market Day in the morning: the camping stove went for two hours of help painting.</p></div>
+      </div>
+      <h3 class="sec">Who v0.5 is not for, and what keeps them anyway</h3>
+      <div class="two">
+        <div class="note"><h4>The trader (41, parent)</h4><p>Skips the Mole and Midnight. Opens most days anyway for a pact (“call my mum on Sundays”) and the school-run rota in favors, now in hours. Pots hold the family holiday.</p></div>
+        <div class="note"><h4>The performer (19, student)</h4><p>Lives for Missions and Zone nights, and found that Midnight is the one place nobody performs. Their Ladder pact is “say no to something every week”.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+(()=>{
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pct=v=>Math.round(v*100)+'%',fmt=n=>Math.round(n).toLocaleString('en-US');
+
+/* ================================================================
+   PHONE v0.5: first five minutes, then Home · Circle · + · City · Ledger
+   Fewer nouns: Circle (vouched, 24h clips), Dares, Favors (hours), Pots (money), Plans,
+   Pacts (habit or ladder), Midnight, the Mole, and the City (Zones, Missions, League, Wall, Calls).
+   ================================================================ */
+const CIRCLE=['You','Maya','Jules','Pia','Dev','Rin'];
+const HANDLES=['STATIC','LOW TIDE','PAPERCUT','NIGHT BUS'];
+const PACT_OPTS=[
+ {n:'Run three times a week',k:'habit',f:'3 a week'},
+ {n:'No phone after midnight',k:'habit',f:'every night'},
+ {n:'Call home on Sundays',k:'habit',f:'weekly'},
+ {n:'Ladder: speaking up',k:'ladder',f:'7 rungs'},
+ {n:'Ladder: cold water',k:'ladder',f:'5 rungs, the last one at a Zone'}];
+const STAKES=['My circle picks a dare from the jar','I cook for the circle','No stake, just the check-ins'];
+const P={tab:'home',ob:0,onboard:true,handle:0,verified:false,pick:0,stake:0,
+  cseg:'week',yseg:'map',lseg:'favors',sel:'mission',sheet:false,
+  checked:false,posted:false,cheer:{},rsvp:{fixture:false,market:true},lineupN:3,
+  mnDraft:'',mnNight:0,mnWaiting:2,mnSent:false,mnRemoved:{},mnReact:{},
+  mole:[false,true,false],pine:1,stolen:{},called:{},missionIn:false,missionN:212,propose:false,proposed:false,
+  pot:'ps5',pay:null,newPot:false,newPlan:false,plans:[],askFavor:false,watched:{}};
+let tx=[
+ {t:'Cooked dinner for four',who:'You → Pia, Dev, Rin',h:+1.5,when:'Tue'},
+ {t:'Signed for Pia’s parcel',who:'You → Pia',h:+.25,when:'Wed'},
+ {t:'Dev fixed my bike brakes',who:'Dev → You',h:-1,when:'Wed'},
+ {t:'Helped Maya move a sofa',who:'You → Maya',h:+.75,when:'Sat'},
+];
+const POTS=[
+ {id:'ps5',name:'PS5 for the flat',mode:'pledge',org:'Dev',payee:'Game Hut',cur:'£',each:75,need:6,due:'Fri 18:00',in:{Maya:1,Pia:1,Dev:1,Rin:1},paid:{}},
+ {id:'lisbon',name:'Lisbon, May bank holiday',mode:'split',org:'Maya',payee:'Maya',cur:'€',each:80,due:'Fri 24th',in:{You:1,Maya:1,Jules:1,Pia:1},paid:{Maya:1,Jules:1}},
+ {id:'groc',name:'Groceries this week',mode:'split',org:'Pia',payee:'Pia',cur:'£',each:14,due:'done',in:{You:1,Maya:1,Jules:1,Pia:1,Dev:1,Rin:1},paid:{You:1,Maya:1,Jules:1,Pia:1,Dev:1,Rin:1}},
+];
+const PACTS=[
+ {who:'Maya',n:'No phone after midnight',p:'day 9 of 21',today:true},
+ {who:'Jules',n:'Ladder: speaking up',p:'rung 4 of 7',today:true,ladder:true},
+ {who:'Dev',n:'10 Spanish words a day',p:'day 14 of 21',today:false,note:'missed yesterday · 1 free miss left this week'},
+ {who:'Pia',n:'Swim on Sundays',p:'week 2 of 3',today:true},
+];
+const LAST_NIGHT=[
+ 'I’ve never actually seen the film I quote every week.',
+ 'I still sleep with the light on when I’m alone in the flat.',
+ 'I applied for a job in Lisbon. Haven’t told anyone yet.',
+ 'I’m the one who keeps finishing the good cereal.'];
+const MOLE_TASKS=['Get three people to say “pineapple” before Sunday','Swap the fridge magnets around without anyone seeing','Borrow someone’s hoodie and wear it to the fixture'];
+const FEATS=[
+ {c:'Third Floor',w:'2 days ago',t:'All six showed up for Mission 07 and froze mid-high-five.',k:'Mission',steal:'Plan: go to the next Mission together'},
+ {c:'Allotment 9',w:'this week',t:'Six pacts, six finished. Their stake was cooking for each other, so they cooked anyway.',k:'Pacts',steal:'Pact: everyone starts one on Monday'},
+ {c:'Night Shift',w:'Sunday',t:'Their Mole got away with it three weeks running. Nobody suspected the quiet one.',k:'The Mole',steal:'Nothing to steal: just admire it'},
+ {c:'The Cousins',w:'yesterday',t:'Cold-water ladder: all four did the last rung together at the Lido Zone.',k:'Ladder',steal:'Pact: Ladder: cold water'},
+];
+const CALLS=[
+ {c:'Night Shift',t:'Need a fourth for Thursday’s fixture. Play as our guest; it doesn’t count against your own lineup.',a:'I’ll play'},
+ {c:'Allotment 9',t:'Building a hunt for May. Want two co-builders from another circle so we can’t cheat.',a:'Co-build'},
+ {c:'Third Floor',t:'Anyone got a projector for a Sunday film night? Two hours of favor back, or come and watch.',a:'Offer it'},
+];
+const VAULT=[
+ {who:'Rin',what:'Movie-trailer coffee order',left:'3 h 12 m',g:'linear-gradient(150deg,#C8214B,#3B1640)'},
+ {who:'Jules',what:'Rung 4: asked a question at the talk',left:'14 h 05 m',g:'linear-gradient(150deg,#1F7A4D,#0E1320)'},
+];
+const myPact=()=>PACT_OPTS[P.pick];
+const bal=()=>tx.reduce((a,x)=>a+x.h,0);
+const hrs=h=>{const a=Math.abs(h),s=h>0?'+':h<0?'−':'';return s+(a%1===0?a:a.toFixed(2).replace(/0$/,''))+' h'};
+const potOf=id=>POTS.find(p=>p.id===id);
+const nIn=p=>Object.keys(p.in).length,nPaid=p=>Object.keys(p.paid).length;
+const met=p=>p.mode==='split'||nIn(p)>=p.need;
+const owesYou=()=>POTS.filter(p=>p.in.You&&!p.paid.You&&met(p)&&p.due!=='done').length;
+function toast(m){const t=$('#toast');t.innerHTML=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),3800)}
+const seg=(name,cur,opts)=>`<div class="seg n${opts.length}" role="tablist">${opts.map(([k,l])=>`<button role="tab" data-seg="${name}" data-v="${k}" aria-selected="${cur===k}">${l}</button>`).join('')}</div>`;
+
+/* ---------- the first five minutes ---------- */
+function onboarding(){
+  const dots=`<div class="obdots" aria-label="Step ${P.ob+1} of 4">${[0,1,2,3].map(i=>`<i class="${i<=P.ob?'on':''}"></i>`).join('')}</div>`;
+  if(P.ob===0)return `${dots}<div class="ob"><div class="obk">INVITE</div><h2 class="obh">Maya brought you in.</h2>
+    <p>INSANE is invite-only. Maya vouched for you, so <b>her Reliability rides on you</b> for your first 21 days.</p>
+    <div class="card"><p><b>What it’s for</b></p><ul class="obl"><li>Plans, pots and favors with the people you live and hang out with</li><li>Pacts: the things you keep saying you’ll do, with your circle checking in</li><li>The stupid stuff you’d never do alone: dares, Midnight, the Mole, Missions</li></ul></div>
+    <p class="obsmall">No chat in here: keep talking in your group chat. INSANE holds the plans, the money tracking and the dares.</p>
+    <div class="btns"><button class="btn red" data-act="obNext">Accept Maya’s invite</button></div></div>`;
+  if(P.ob===1)return `${dots}<div class="ob"><div class="obk">YOUR MASK</div><h2 class="obh">Pick a handle.</h2>
+    <p>Your circle sees your name. At <b>Midnight</b> and at Zone nights you go by your handle.</p>
+    <div class="chips">${HANDLES.map((h,i)=>`<button class="chipb ${P.handle===i?'on':''}" data-act="pickHandle" data-i="${i}">${h}</button>`).join('')}</div>
+    <p class="obsmall">You can change it once a month. Nobody can look up who’s behind a handle, including the people at INSANE who don’t need to.</p>
+    <div class="btns"><button class="btn red" data-act="obNext">I’m ${HANDLES[P.handle]}</button></div></div>`;
+  if(P.ob===2)return `${dots}<div class="ob"><div class="obk">YOUR CIRCLE</div><h2 class="obh">4B &amp; co · 6 people</h2>
+    <div class="avs">${CIRCLE.map(n=>`<span class="av ${n==='You'?'me':''}">${n.slice(0,2).toUpperCase()}</span>`).join('')}</div>
+    <p>Next time you’re in the same room, <b>scan each other’s phones</b>. That proves you’re real people who’ve met, which a bot farm can’t fake. It unlocks posting in the City: Calls, Feats and proposing Missions.</p>
+    <div class="qr" aria-hidden="true">${P.verified?'<span>✓</span>':''}</div>
+    <div class="btns">${P.verified?'<button class="btn red" data-act="obNext">Next</button>':'<button class="btn red" data-act="verify">We’re together: scan</button><button class="btn ghost" data-act="obNext">Later</button>'}</div>
+    <p class="obsmall">${P.verified?'Verified in person, 4 of 6 scanned.':'Until then you can do everything inside the circle, and join anything in the City.'}</p></div>`;
+  return `${dots}<div class="ob"><div class="obk">YOUR FIRST PACT</div><h2 class="obh">What do you keep saying you’ll do?</h2>
+    <div class="opts">${PACT_OPTS.map((o,i)=>`<button class="opt ${P.pick===i?'on':''}" data-act="pickPact" data-i="${i}"><b>${o.n}</b><small>${o.k==='ladder'?'Ladder · ':''}${o.f}</small></button>`).join('')}</div>
+    <h3>If I miss</h3><div class="chips">${STAKES.map((s,i)=>`<button class="chipb ${P.stake===i?'on':''}" data-act="pickStake" data-i="${i}">${s}</button>`).join('')}</div>
+    <p class="obsmall">21 days. Two free misses a week. Four strikes and the pact just ends: no public shaming, ever. ${myPact().k==='ladder'?'Your circle sees which rung you’re on, never what the rungs are.':''}</p>
+    <div class="btns"><button class="btn red" data-act="obDone">Start the pact</button></div></div>`;
+}
+
+/* ---------- shared cards ---------- */
+function potCard(p){const open=P.pot===p.id,n=nIn(p),done=p.due==='done';
+  const prog=p.mode==='pledge'?`${n}/${p.need} pledged`:`${nPaid(p)}/${n} paid`,frac=p.mode==='pledge'?n/p.need:nPaid(p)/n;
+  let body='';
+  if(open){
+    body+=`<div class="ppl">${CIRCLE.map(k=>{const i=p.in[k],pd=p.paid[k];const st=!i?'out':p.mode==='pledge'&&!met(p)?'pledged':pd==='wait'?'checking':pd?'paid':'to pay';return `<span class="pp ${st.replace(' ','')}"><b>${k}</b>${st}</span>`}).join('')}</div>`;
+    const ask=CIRCLE.find(k=>!p.in[k]);
+    if(p.mode==='pledge'&&!met(p))body+=`<div class="sub">Nobody pays anything unless ${p.need} pledge by ${p.due}. If it falls short, the pot just closes: nothing moved, so nothing to refund.</div>`+
+      (p.in.You?`<div class="btns"><button class="btn sm ghost" data-act="unpledge" data-pot="${p.id}">Take back my pledge</button>${ask?`<button class="btn sm ghost" data-act="nudge" data-pot="${p.id}">Ask ${ask}</button>`:''}</div>`:`<div class="btns"><button class="btn sm good" data-act="pledge" data-pot="${p.id}">Pledge ${p.cur}${p.each}</button></div>`);
+    else if(p.in.You&&!p.paid.You&&!done){
+      body+=`<div class="sub">${p.mode==='pledge'?`Goal met. Everyone pays <b>${p.payee}</b> directly, ${p.cur}${p.each} each.`:`Pay <b>${p.payee}</b> ${p.cur}${p.each} with whatever you already use. ${p.org} confirms it landed.`}</div>`+
+        (P.pay===p.id?`<div class="payrow">${['Bank transfer','PayPal','Revolut','Cash in hand'].map(m=>`<button class="btn sm ghost" data-act="payvia" data-pot="${p.id}" data-m="${m}">${m}</button>`).join('')}</div>`:`<div class="btns"><button class="btn sm good" data-act="pay" data-pot="${p.id}">Pay ${esc(p.payee)} ${p.cur}${p.each}</button></div>`);}
+    else if(p.paid.You==='wait')body+=`<div class="sub">You marked it paid. Waiting for ${p.org} to confirm it arrived.</div>`;
+    else if(done)body+=`<div class="sub">Closed. Everyone paid ${p.payee} directly.</div>`;
+    else body+=`<div class="sub">You’re paid up.</div>`;
+  }
+  return `<div class="card pot ${done?'done':''} ${open?'open':''}" data-potcard="${p.id}" ${open?'':'tabindex="0" role="button" aria-label="Open pot: '+esc(p.name)+'"'}><div class="meta"><span class="kind l">${p.mode==='pledge'?'Pledge, then pay':'Split pot'} · ${esc(p.org)}</span><span>${done?'closed':'by '+esc(p.due)}</span></div>
+    <p><b>${esc(p.name)}</b> · ${p.cur}${p.each} each</p><div class="bar"><i style="width:${Math.min(100,frac*100)}%"></i></div><div class="meta" style="margin-top:4px"><span>${prog}</span><span>${open?'':'tap to open'}</span></div>${body}</div>`}
+const pactCard=()=>{const o=myPact();return `<div class="card pact"><div class="meta"><span class="kind m">Your pact · ${o.k==='ladder'?'ladder':'habit'}</span><span>day 4 of 21</span></div>
+  <p><b>${o.n}</b></p><div class="steps">${[...Array(7)].map((_,i)=>`<i class="${i<3||(i===3&&P.checked)?'on':''}"></i>`).join('')}</div>
+  <div class="sub">${o.k==='ladder'?'Rung 2 of '+(o.f.startsWith('7')?7:5)+'. Your spotter this week: Maya.':'This week: '+(P.checked?2:1)+' of 3 · 2 free misses left'} · if you miss: ${STAKES[P.stake].toLowerCase()}</div>
+  <div class="btns">${P.checked?'<span class="mono done-l">Checked in · 5 people saw it</span>':`<button class="btn sm good" data-act="check">${o.k==='ladder'?'I did the rung':'Done today'}</button><button class="btn sm ghost" data-act="checkClip">Done, add a 5 s clip</button>`}</div></div>`};
+const missionCard=()=>`<div class="card mission"><div class="meta"><span class="kind m">Mission 07 · Sat 13:00</span><span>${P.missionN} in</span></div>
+  <p><b>The Freeze.</b> At 13:00 everyone in the square stops mid-motion for 60 seconds, then walks off as if nothing happened.</p>
+  <div class="trust"><span>Hosted by INSANE with The Loading Dock</span><span>permit filed</span><span>public square</span><span>spot revealed 11:00</span></div>
+  ${P.missionIn?`<div class="brief"><small>YOUR BRIEFING · SECRET UNTIL SAT</small>Freeze mid-laugh, phone raised as if taking a selfie with the person to your left. They’re in it too.</div>`:''}
+  <div class="btns">${P.missionIn?'<button class="btn sm ghost" data-act="mOut">Can’t make it</button>':'<button class="btn sm good" data-act="mIn">I’m in</button>'}</div></div>`;
+const communityMission=()=>`<div class="card mission"><div class="meta"><span class="kind m">Proposed by Night Shift · Sun 15:00</span><span>3 circles confirmed</span></div>
+  <p><b>The Slow Walk.</b> Forty people cross the bridge at one step every five seconds, in total silence.</p>
+  <div class="trust"><span>Night Shift: hosted 4, flagged 0</span><span>3 Reliability staked</span><span>Zone partner approved</span><span>area only until 13:00</span></div>
+  <div class="sub">If it doesn’t happen as described, Night Shift loses its stake and can’t host again. Nobody ever pays to join a Mission.</div></div>`;
+
+/* ---------- screens ---------- */
+const mapSVG=()=>`<svg viewBox="0 0 320 250" role="img" aria-label="City map with a Zone, two Mission areas, a hunt route and a drop">
+  <rect width="320" height="250" fill="var(--map)"/>
+  <path class="water" d="M0 178 C70 160 120 200 190 186 S290 160 320 172 L320 214 C270 205 220 230 160 222 S60 205 0 222Z"/>
+  <rect class="park" x="214" y="28" width="78" height="54" rx="8"/>
+  <g class="road" stroke-width="7"><path d="M0 60H320"/><path d="M0 130H320"/><path d="M70 0V250"/><path d="M160 0V178"/><path d="M250 0V178"/></g>
+  <g class="road" stroke-width="3"><path d="M0 95H320"/><path d="M115 0V178"/><path d="M205 0V178"/><path d="M30 0V178"/></g>
+  <path d="M232 168 L232 236" stroke="var(--ink)" stroke-width="5" opacity=".25"/>
+  <text class="lbl" x="232" y="58">Elm Park</text><text class="lbl" x="104" y="242">river steps</text><text class="lbl" x="76" y="56">Market St</text>
+  <path d="M95 112 L140 78 L188 104" fill="none" stroke="var(--ballpoint)" stroke-width="2" stroke-dasharray="5 4"/>
+  ${[[95,112],[140,78],[188,104]].map(([x,y],i)=>`<g class="pin" data-pin="hunt"><circle cx="${x}" cy="${y}" r="7" fill="${i<1?'var(--ballpoint)':'var(--card)'}" stroke="var(--ballpoint)" stroke-width="2"/></g>`).join('')}
+  <g class="pin" data-pin="mission"><circle cx="34" cy="148" r="26" fill="var(--good-soft)" stroke="var(--good)" stroke-width="1.5" stroke-dasharray="4 3"/><circle cx="34" cy="148" r="10" fill="var(--good)"/><text x="34" y="152" text-anchor="middle" style="font:700 12px var(--f-mono);fill:#fff">?</text><text class="zl" x="34" y="186" text-anchor="middle">Mission 07</text></g>
+  <g class="pin" data-pin="community"><circle cx="232" cy="200" r="22" fill="var(--good-soft)" stroke="var(--good)" stroke-width="1.5" stroke-dasharray="4 3"/><circle cx="232" cy="200" r="8" fill="var(--card)" stroke="var(--good)" stroke-width="2"/><text class="zl" x="268" y="236" text-anchor="middle">Slow Walk</text></g>
+  <g class="pin" data-pin="zone"><circle cx="48" cy="34" r="15" fill="var(--stamp)"/><path d="M41 30h10v8H41zM51 32l5-3v10l-5-3" fill="#fff"/><text class="zl" x="48" y="62" text-anchor="middle">The Loading Dock</text></g>
+  <g class="pin" data-pin="drop"><circle class="pulse" cx="150" cy="206" r="14" fill="var(--hazard)"/><circle cx="150" cy="206" r="8" fill="var(--hazard)" stroke="var(--card)" stroke-width="2"/></g>
+</svg>`;
+const DETAIL={
+ mission:missionCard, community:communityMission,
+ zone:()=>`<div class="card zone"><div class="meta"><span class="kind z">Zone · tonight 20:00</span><span>staff on site</span></div><p><b>The Loading Dock</b>. Your fixture against Third Floor, then Zone Night. Cameras, padding and staff: the only place the ceiling goes above 6.5.</p><div class="btns"><button class="btn sm red" data-act="toLeague">Lineup</button></div></div>`,
+ hunt:()=>`<div class="card hunt"><div class="meta"><span class="kind h">Hunt by Third Floor</span><span>1/3 clues</span></div><p><b>The Lost Toaster.</b> Each clue is a 10-second dare at the spot. The last pin opens a box from their Market pool.</p></div>`,
+ drop:()=>`<div class="card drop"><div class="meta"><span class="kind d">Drop · 1 h 52 m</span><span>needs 3 of you</span></div><p><b>Refurbished bike</b> from Spoke &amp; Chain, at the river steps. Real stuff, never favors or cash.</p></div>`,
+};
+const V={
+home(){const ps5=potOf('ps5'),o=myPact(),things=[!P.checked,!P.posted,!ps5.in.You,!P.rsvp.fixture].filter(Boolean).length;
+  return `<h2>Thursday <span>${things?things+' things today':'all done for today'}</span></h2>
+  ${pactCard()}
+  <div class="dd"><div class="k">DAILY DARE · BY RIN</div><div class="q">Order your coffee in the voice of a movie trailer.</div>${P.posted?'<span class="mono" style="font-size:11px">Posted · 5 of 6 · gone in 24 h</span>':'<button class="btn sm" data-act="post">Record 15 s</button>'}</div>
+  <h3>Needs you</h3>
+  ${!ps5.in.You?`<div class="card pot"><div class="meta"><span class="kind l">Pledge pot · Dev</span><span>${nIn(ps5)}/${ps5.need}</span></div><p>PS5 for the flat, £75 each. Nobody pays unless six pledge by Friday.</p><div class="btns"><button class="btn sm good" data-act="openPot" data-pot="ps5">See the pot</button></div></div>`:''}
+  ${owesYou()?`<div class="card pot"><div class="meta"><span class="kind l">Pots</span><span>${owesYou()} to pay</span></div><p>${POTS.filter(p=>p.in.You&&!p.paid.You&&met(p)&&p.due!=='done').map(p=>esc(p.name)).join(' · ')}</p><div class="btns"><button class="btn sm good" data-act="toPots">Open</button></div></div>`:''}
+  <div class="card zone"><div class="meta"><span class="kind z">Tonight 20:00 · Fixture</span><span>${P.lineupN}/4 in lineup</span></div><p>4B &amp; co vs Third Floor at The Loading Dock, then Zone Night.</p><div class="btns">${P.rsvp.fixture?'<span class="mono done-l">You’re in · lineup full</span>':'<button class="btn sm red" data-act="fixtureIn">I’m in</button>'}</div></div>
+  <h3>Your circle</h3>
+  <div class="card mn"><div class="meta"><span class="kind mnk">Midnight</span><span>${P.mnWaiting} waiting for tonight</span></div><p>4 new from last night, unsigned.</p><div class="btns"><button class="btn sm" data-act="toMidnight">Read</button></div></div>
+  <div class="card mole"><div class="meta"><span class="kind mk">The Mole · only you see this</span><span>${P.mole.filter(Boolean).length}/3 tasks</span></div><p>You’re the Mole this week. Reveal on Sunday at 21:00.</p><div class="btns"><button class="btn sm ghost" data-act="toMole">Tasks</button></div></div>
+  <div class="formula">One list. Whatever needs you today is here; everything else waits in Circle and City. It opens up as you go: day one is your circle, dares and favors; pacts and Midnight arrive in the first week; the Mole once four of you are active; the City after two weeks.</div>`},
+circle(){return `<h2>4B &amp; co <span>${P.verified?'met in person ✓':'not verified yet'}</span></h2>
+  <div class="avs sm">${CIRCLE.map(n=>`<span class="av ${n==='You'?'me':''}" title="${n}">${n.slice(0,2).toUpperCase()}</span>`).join('')}<button class="av add" data-act="vouch" aria-label="Vouch for someone">+</button></div>
+  ${seg('c',P.cseg,[['week','Plans'],['pacts','Pacts'],['midnight','Midnight'],['mole','Mole']])}
+  ${CV[P.cseg]()}`},
+city(){return `<h2>City <span>circles near you</span></h2>
+  ${seg('y',P.yseg,[['map','Map'],['wall','Wall'],['calls','Calls'],['league','League']])}
+  ${YV[P.yseg]()}`},
+ledger(){const b=bal();return `<h2>Ledger <span>favors in hours · pots in money</span></h2>
+  ${seg('l',P.lseg,[['favors','Favors'],['pots','Pots']])}
+  ${P.lseg==='favors'?`<div class="money"><div class="mono" style="font-size:10.5px;color:var(--muted);letter-spacing:.06em">YOUR BALANCE</div><div class="big">${hrs(b)}</div>
+   <div class="formula">1 favor = 1 hour of someone’s time, in 15-minute steps. Everyone’s hour is worth the same. Limit −5 h · stays in the circle · can’t be bought or cashed out.</div></div>
+  <h3>This week</h3>
+  ${tx.map(x=>`<div class="tx"><span>${esc(x.t)}</span><span class="amt ${x.h<0?'neg':'pos'}">${hrs(x.h)}</span><small>${esc(x.who)} · ${x.when}</small></div>`).join('')}
+  ${P.askFavor?`<div class="card newpot"><div class="meta"><span class="kind l">Ask a favor</span><button class="link" data-act="cancelAsk">cancel</button></div>
+    <label>What<input id="fv-what" maxlength="50" placeholder="Help me carry a wardrobe upstairs"></label>
+    <label>How long, roughly<select id="fv-h"><option value=".25">15 min</option><option value=".5">30 min</option><option value="1" selected>1 hour</option><option value="2">2 hours</option><option value="4">Half a day</option></select></label>
+    <div class="sub">The circle usually logs moving furniture at 1 h. Whoever helps can adjust it before it’s logged.</div>
+    <div class="btns"><button class="btn sm good" data-act="sendAsk">Post to the circle</button></div></div>`:`<div class="btns"><button class="btn sm" data-act="ask">Ask a favor</button></div>`}
+  <div class="formula">Money never goes in here. Groceries and trips are Pots; favors are only time and effort. That’s why nobody has to guess what a favor is worth.</div>`:
+  `<div class="safe"><b>INSANE never holds your money.</b> Pots track who’s in and who’s paid. You pay each other, or the shop, with whatever you already use.</div>
+  ${POTS.map(potCard).join('')}
+  ${P.newPot?`<div class="card newpot"><div class="meta"><span class="kind l">New pot</span><button class="link" data-act="cancelPot">cancel</button></div>
+    <label>What for<input id="np-name" maxlength="40" placeholder="Festival tickets"></label>
+    <div class="np2"><label>Each<input id="np-each" type="number" min="1" max="2000" value="40" inputmode="numeric"></label><label>By<select id="np-due"><option>Sun</option><option selected>Fri 24th</option><option>end of month</option></select></label></div>
+    <fieldset><legend>How it works</legend><label class="rad"><input type="radio" name="np-mode" value="pledge" checked><span><b>Pledge, then pay.</b> Only goes ahead if enough of you commit.</span></label><label class="rad"><input type="radio" name="np-mode" value="split"><span><b>Split pot.</b> Everyone pays the organizer as they go.</span></label></fieldset>
+    <div class="btns"><button class="btn sm good" data-act="createPot">Create pot</button></div></div>`:`<div class="btns"><button class="btn sm" data-act="newPot">+ New pot</button></div>`}`}`},
+};
+const CV={
+week(){return `${P.newPlan?`<div class="card newpot"><div class="meta"><span class="kind l">Plan something</span><button class="link" data-act="cancelPlan">cancel</button></div>
+    <label>What<input id="pl-what" maxlength="40" placeholder="Climbing, then pho"></label>
+    <div class="np2"><label>When<select id="pl-when"><option>Sat afternoon</option><option>Sun 11:00</option><option>Next Fri night</option></select></label><label>Money?<select id="pl-pot"><option value="">No pot</option><option value="pledge">Pledge pot</option><option value="split">Split pot</option></select></label></div>
+    <div class="btns"><button class="btn sm good" data-act="createPlan">Send to the circle</button></div></div>`:''}
+  ${P.plans.map(p=>`<div class="card plan"><div class="meta"><span class="kind l">${esc(p.when)}</span><span>1 going</span></div><p><b>${esc(p.what)}</b>${p.pot?' · '+(p.pot==='pledge'?'pledge pot':'split pot')+' attached':''}</p></div>`).join('')}
+  <div class="card zone plan"><div class="meta"><span class="kind z">Thu 20:00 · Fixture</span><span>${P.lineupN}/4</span></div><p><b>vs Third Floor</b> at The Loading Dock</p><div class="btns">${P.rsvp.fixture?'<span class="mono done-l">You’re in</span>':'<button class="btn sm red" data-act="fixtureIn">I’m in</button>'}</div></div>
+  <div class="card plan"><div class="meta"><span class="kind l">Sun 11:00 · Market Day</span><span>4 going</span></div><p><b>Swaps at Zone 2</b>. You listed: the camping stove.</p></div>
+  <div class="card plan"><div class="meta"><span class="kind l">May bank holiday</span><span>pot 2/4 paid</span></div><p><b>Lisbon</b></p><div class="btns"><button class="btn sm good" data-act="openPot" data-pot="lisbon">Open the pot</button></div></div>
+  ${P.newPlan?'':'<div class="btns"><button class="btn sm" data-act="newPlan">Plan something</button></div>'}
+  <h3>This week’s clips <span class="mono" style="text-transform:none;letter-spacing:0">· circle only · gone after 24 h</span></h3>
+  <div class="vault">${VAULT.map((v,i)=>`<button class="vt-tile" data-act="watch" data-i="${i}" style="background:${v.g}"><span class="left">${v.left}</span><b>${esc(v.what)}</b><small>${v.who}${P.watched[i]?' · watched':''}</small></button>`).join('')}</div>
+  <div class="formula">Talk it through in your group chat. INSANE holds the date, who’s in and the money tracking.</div>`},
+pacts(){return `${pactCard()}
+  <h3>Everyone’s pacts</h3>
+  ${PACTS.map((p,i)=>`<div class="card pact sm"><div class="meta"><span>${p.who}</span><span>${p.p}</span></div><p><b>${esc(p.n)}</b>${p.today?' <span class="ok">✓ today</span>':''}</p>${p.note?`<div class="sub">${p.note}</div>`:''}${p.ladder?'<div class="sub">The circle sees the rung number, not what the rungs are.</div>':''}<div class="btns"><button class="btn sm ghost" data-act="cheer" data-i="${i}" ${P.cheer[i]?'disabled':''}>${P.cheer[i]?'Cheered':'Cheer'}</button></div></div>`).join('')}
+  <div class="card"><div class="meta"><span>Rin</span><span>no pact</span></div><p>Rin hasn’t started one. Nobody gets nudged about that.</p></div>
+  <div class="formula">Two free misses a week. Four strikes and a pact just ends. Stakes are dares or cooking, never money. Ladders: physical rungs (heights, cold water) only count at a Zone, with staff.</div>`},
+midnight(){const left=LAST_NIGHT.map((t,i)=>[t,i]).filter(([,i])=>!P.mnRemoved[i]);return `<div class="mnhead"><b>Last night at 00:00</b><span>${left.length} unsigned · shuffled</span></div>
+  ${left.map(([t,i])=>`<div class="card mnmsg"><p>${esc(t)}</p><div class="reacts">${['same','brave','❤'].map(r=>`<button data-act="react" data-i="${i}" data-r="${r}" class="${P.mnReact[i]===r?'on':''}">${r}</button>`).join('')}<button class="rm" data-act="mnRemove" data-i="${i}">remove</button></div></div>`).join('')}
+  <h3>Write for Midnight</h3>
+  <div class="card newpot"><label>About you, unsigned<textarea id="mn-text" maxlength="200" rows="3" placeholder="Something you’ve never said out loud">${esc(P.mnDraft)}</textarea></label>
+   <fieldset><legend>Which night</legend><div class="chips">${['Tonight','Tomorrow','Friday'].map((n,i)=>`<button class="chipb ${P.mnNight===i?'on':''}" data-act="mnNight" data-i="${i}">${n}</button>`).join('')}</div></fieldset>
+   <div class="sub">Goes out at 00:00 with everyone else’s, in random order, once at least three are waiting. You pick the night; the app picks the moment, so nobody can match it to when you were on your phone.</div>
+   <div class="btns">${P.mnSent?'<span class="mono done-l">Queued · goes out tonight</span>':'<button class="btn sm" data-act="mnSend">Queue it</button>'}</div></div>
+  <div class="formula">Rules: only about yourself. Names and descriptions of members are blocked before sending. Anyone in the circle can remove a message for everyone, no reason needed. You’re ${HANDLES[P.handle]} here.</div>`},
+mole(){const n=P.mole.filter(Boolean).length;return `<div class="card mole big"><div class="meta"><span class="kind mk">Week 3 · you’re the Mole</span><span>reveal Sun 21:00</span></div>
+   <p>Do three things without getting caught. On Sunday everyone votes. If fewer than half guess you, you got away with it.</p>
+   <ol class="tasks">${MOLE_TASKS.map((t,i)=>`<li class="${P.mole[i]?'done':''}"><span>${t}${i===0?` <span class="mono">(${P.pine}/3)</span>`:''}</span>${P.mole[i]?'<b>done</b>':`<button class="btn sm ghost" data-act="moleDo" data-i="${i}">${i===0?'+1':'Done'}</button>`}</li>`).join('')}</ol>
+   <div class="sub">${n===3?'All three done. Now act normal until Sunday.':'Only you can see this card. Your circle sees “someone is the Mole”.'}</div></div>
+  <h3>Last week</h3>
+  <div class="card"><p><b>Jules was the Mole.</b> 3 of 3 tasks, 1 vote out of 5. Got away with it. It went on the Wall as a Feat.</p></div>
+  <div class="formula">Mole rules: tasks come from the app’s list, never made up. Nothing involving phones, money, bedrooms, or anyone outside the circle. Anyone can sit a week out.</div>`},
+};
+const YV={
+map(){return `<div class="mapbox">${mapSVG()}</div>
+  <div class="legendrow"><span><i style="background:var(--stamp)"></i>Zone</span><span><i style="background:var(--good)"></i>Mission area</span><span><i style="background:var(--ballpoint)"></i>Hunt</span><span><i style="background:var(--hazard)"></i>Drop</span></div>
+  <h3>Selected</h3>${DETAIL[P.sel]()}
+  ${P.proposed?`<div class="card"><div class="meta"><span class="kind m">Your proposal</span><span>with the Zone</span></div><p><b>The Human Tunnel</b>, Sat 14 June. 0 of 3 circles confirmed. Your 3 Reliability is staked.</p></div>`:
+   P.propose?`<div class="card newpot"><div class="meta"><span class="kind m">Propose a Mission</span><button class="link" data-act="cancelPropose">cancel</button></div>
+    <ul class="rl"><li>A public place from the Zone’s list, in daylight</li><li>Nobody is the target and nobody pays</li><li>Your circle stakes 3 Reliability; you lose it if it doesn’t happen as described</li><li>Goes live when 3 other circles confirm; 50+ people needs a permit, filed by the Zone</li><li>The exact spot only goes to people who said yes, 2 hours before</li></ul>
+    <div class="btns"><button class="btn sm good" data-act="sendPropose" ${P.verified?'':'disabled'}>Send to The Loading Dock</button></div>${P.verified?'':'<div class="sub">Scan each other’s phones first: only circles that have met in person can propose.</div>'}</div>`:
+   `<div class="btns"><button class="btn sm" data-act="propose">Propose a Mission</button></div>`}
+  <div class="formula">The map never shows people. Missions show an area until two hours before.</div>`},
+wall(){return `<div class="safe">Feats from circles your size, nearby. Not a feed: one card per thing a circle actually did. Shared to Instagram only if everyone in it says yes, with faces blurred otherwise.</div>
+  ${FEATS.map((f,i)=>`<div class="card feat"><div class="meta"><span class="kind l">${f.k} · ${f.c}</span><span>${f.w}</span></div><p>${esc(f.t)}</p><div class="btns">${f.steal.startsWith('Nothing')?'':`<button class="btn sm ghost" data-act="steal" data-i="${i}" ${P.stolen[i]?'disabled':''}>${P.stolen[i]?'Added to your circle':'Steal this'}</button>`}<button class="btn sm ghost" data-act="share" data-i="${i}">Share</button></div></div>`).join('')}`},
+calls(){return `${P.verified?'':'<div class="lock">Anyone can answer a Call. Posting one needs your circle to have met in person.</div>'}
+  ${CALLS.map((c,i)=>`<div class="card call"><div class="meta"><span class="kind h">Call · ${c.c}</span><span>${i===0?'tonight':'this week'}</span></div><p>${esc(c.t)}</p><div class="btns"><button class="btn sm ${P.called[i]?'ghost':''}" data-act="answer" data-i="${i}" ${P.called[i]?'disabled':''}>${P.called[i]?'Sent: they’ll confirm':c.a}</button></div></div>`).join('')}
+  <div class="btns"><button class="btn sm" data-act="postCall" ${P.verified?'':'disabled'}>Post a Call</button></div>
+  <div class="formula">Calls are how circles work together: a spare player, co-builders, a lend. Favors across circles settle in hours, the same as inside.</div>`},
+league(){return `<div class="card zone"><div class="meta"><span class="kind z">Tonight's fixture</span><span>${P.lineupN}/4</span></div><p><b>4B &amp; co vs Third Floor</b> · 20:00. Three rounds, judged by both circles and the Zone crowd.</p><div class="btns">${P.rsvp.fixture?'<span class="mono done-l">Lineup full</span>':'<button class="btn sm red" data-act="fixtureIn">I’m in</button>'}</div></div>
+  <table class="table"><thead><tr><th>#</th><th>Circle</th><th>P</th><th style="text-align:right">Pts</th></tr></thead><tbody>
+  ${[['Basement Kings',5,18],['Night Shift',5,15],['4B & co',5,14],['Third Floor',5,12],['Allotment 9',5,7],['The Cousins',5,4]].map((r,i)=>`<tr class="${r[0]==='4B & co'?'me':''}"><td>${i+1}</td><td>${esc(r[0])}</td><td>${r[1]}</td><td class="n">${r[2]}</td></tr>`).join('')}</tbody></table>
+  <div class="formula">Short a player? Answer or post a Call: guests from other circles can fill a lineup.</div>`},
+};
+const SHEET=[['check','Check in on your pact'],['dare','Dare someone in the circle'],['favor','Ask a favor'],['plan','Plan something'],['pot','Start a pot'],['midnight','Write for Midnight'],['call','Post a Call'],['mission','Propose a Mission']];
+function sheet(){return `<div class="sheet" role="dialog" aria-label="Make something"><div class="sh-h"><b>Make something</b><button class="link" data-act="closeSheet">close</button></div>${SHEET.map(([k,l])=>`<button class="sh-i" data-act="make" data-k="${k}">${l}</button>`).join('')}</div>`}
+
+function render(){const sc=$('.screen');sc.classList.toggle('obmode',P.onboard);
+  $('#view').innerHTML=P.onboard?onboarding():V[P.tab]()+(P.sheet?sheet():'');
+  document.querySelectorAll('.nav button[data-tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===P.tab));
+  $('#hudC').textContent='4B & co'+(P.verified?' ✓':'');$('#hudP').textContent=P.onboard?'–':'4 / 21';$('#balV').textContent=hrs(bal());
+  const nh=[!P.checked,!P.posted,!potOf('ps5').in.You,!P.rsvp.fixture].filter(Boolean).length;$('#bHome').textContent=nh;$('#bHome').hidden=!nh;
+  $('#bLed').textContent=owesYou();$('#bLed').hidden=!owesYou()}
+const go=(tab,extra)=>{P.tab=tab;P.sheet=false;Object.assign(P,extra||{});$('#view').scrollTop=0;render()};
+document.querySelector('.nav').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||P.onboard)return;if(b.dataset.make){P.sheet=!P.sheet;render();return}go(b.dataset.tab)});
+document.querySelector('.phone-note').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.act==='replay'){Object.assign(P,{onboard:true,ob:0,verified:false,checked:false});render()}else{Object.assign(P,{onboard:false,tab:'home'});render()}});
+$('#view').addEventListener('input',e=>{if(e.target.id==='mn-text')P.mnDraft=e.target.value});
+$('#view').addEventListener('click',e=>{
+  const pin=e.target.closest('[data-pin]');if(pin){P.sel=pin.dataset.pin;render();return}
+  const sg=e.target.closest('[data-seg]');if(sg){P[sg.dataset.seg+'seg']=sg.dataset.v;render();return}
+  const t=e.target.closest('button');
+  if(!t){const pc=e.target.closest('[data-potcard]');if(pc&&!e.target.closest('input,select,label')){P.pot=P.pot===pc.dataset.potcard?null:pc.dataset.potcard;P.pay=null;render()}return}
+  const a=t.dataset.act,i=+t.dataset.i,pot=t.dataset.pot&&potOf(t.dataset.pot);
+  // first five minutes
+  if(a==='obNext'){P.ob++;render();return}
+  if(a==='pickHandle'){P.handle=i;render();return}
+  if(a==='verify'){P.verified=true;render();toast('Scanned with Maya, Pia and Rin. Your circle is verified in person.');return}
+  if(a==='pickPact'){P.pick=i;render();return}
+  if(a==='pickStake'){P.stake=i;render();return}
+  if(a==='obDone'){P.onboard=false;P.tab='home';render();toast('Pact started. Skipping ahead to Thursday: day 4 of 21.');return}
+  // home
+  if(a==='check'||a==='checkClip'){P.checked=true;render();toast(a==='checkClip'?'Checked in with a 5-second clip. It’s gone in 24 hours.':'Checked in. Your circle sees a tick, nothing else.');return}
+  if(a==='post'){P.posted=true;render();toast('Posted to the circle. Gone in 24 hours.');return}
+  if(a==='fixtureIn'){P.rsvp.fixture=true;P.lineupN=4;render();toast('Four of four: the fixture is on.');return}
+  if(a==='toMidnight'){go('circle',{cseg:'midnight'});return}
+  if(a==='toMole'){go('circle',{cseg:'mole'});return}
+  if(a==='toPots'){go('ledger',{lseg:'pots'});return}
+  if(a==='openPot'){go('ledger',{lseg:'pots',pot:t.dataset.pot});return}
+  if(a==='toLeague'){go('city',{yseg:'league'});return}
+  // circle
+  if(a==='vouch'){toast('You have 1 invite this month. You stake 1 Reliability on whoever you bring in, for 21 days.');return}
+  if(a==='cheer'){P.cheer[i]=1;render();toast(`Cheered ${PACTS[i].who}. They see who cheered.`);return}
+  if(a==='newPlan'){P.newPlan=true;render();setTimeout(()=>$('#pl-what')&&$('#pl-what').focus(),0);return}
+  if(a==='cancelPlan'){P.newPlan=false;render();return}
+  if(a==='createPlan'){const what=($('#pl-what').value||'').trim()||'Climbing, then pho',when=$('#pl-when').value,pt=$('#pl-pot').value;P.plans.unshift({what,when,pot:pt});P.newPlan=false;render();toast(pt?'Plan sent with a pot attached. One message to the circle.':'Plan sent. One message to the circle; talk it through in your group chat.');return}
+  if(a==='watch'){P.watched[i]=1;render();toast(`Played “${esc(VAULT[i].what)}”. Gone in ${VAULT[i].left}. No download, no share.`);return}
+  if(a==='react'){P.mnReact[i]=P.mnReact[i]===t.dataset.r?null:t.dataset.r;render();return}
+  if(a==='mnRemove'){P.mnRemoved[i]=1;render();toast('Removed for everyone. Nobody sees who removed it.');return}
+  if(a==='mnNight'){P.mnNight=i;render();return}
+  if(a==='mnSend'){const txt=($('#mn-text').value||'').trim();if(!txt){toast('Write something first.');return}
+    if(CIRCLE.slice(1).some(n=>new RegExp('\\b'+n+'\\b','i').test(txt))){toast('<b>Blocked.</b> Midnight is about you. Take out the name and say it about yourself.');return}
+    P.mnSent=true;P.mnDraft='';if(P.mnNight===0)P.mnWaiting++;render();toast(P.mnNight===0?'Queued. Three are waiting, so tonight’s Midnight goes out.':'Queued for '+['tonight','tomorrow','Friday'][P.mnNight]+'.');return}
+  if(a==='moleDo'){if(i===0){P.pine++;if(P.pine>=3)P.mole[0]=true}else P.mole[i]=true;render();if(P.mole.every(Boolean))toast('All three done. Act normal until Sunday.');return}
+  // city
+  if(a==='steal'){P.stolen[i]=1;render();toast(`Added to your circle: ${esc(FEATS[i].steal)}.`);return}
+  if(a==='share'){toast('Makes a story card for Instagram. Faces are blurred unless everyone in it says yes.');return}
+  if(a==='answer'){P.called[i]=1;render();toast(`${CALLS[i].c} gets your name. They confirm before anything’s set.`);return}
+  if(a==='postCall'){toast('Calls go to circles nearby. One open Call per circle at a time.');return}
+  if(a==='propose'){P.propose=true;render();return}
+  if(a==='cancelPropose'){P.propose=false;render();return}
+  if(a==='sendPropose'){P.proposed=true;P.propose=false;render();toast('Sent to The Loading Dock. It goes live when three other circles confirm.');return}
+  if(a==='mIn'){P.missionIn=true;P.missionN++;render();toast('You’re in. Your briefing is secret until Saturday.');return}
+  if(a==='mOut'){P.missionIn=false;P.missionN--;render();toast('Out, no penalty. Missions are never owed.');return}
+  // ledger
+  if(a==='ask'){P.askFavor=true;render();setTimeout(()=>$('#fv-what')&&$('#fv-what').focus(),0);return}
+  if(a==='cancelAsk'){P.askFavor=false;render();return}
+  if(a==='sendAsk'){const w=($('#fv-what').value||'').trim()||'Help me carry a wardrobe upstairs',h=+$('#fv-h').value;P.askFavor=false;render();toast(`Posted: “${esc(w)}”, about ${hrs(h).slice(1)}. Logged when someone does it.`);return}
+  if(a==='pledge'){pot.in.You=1;render();const left=pot.need-nIn(pot);toast(left>0?`Pledged. ${nIn(pot)} of ${pot.need}: ${left} more and it happens. Nothing is charged.`:'Pledged. Goal met.');return}
+  if(a==='unpledge'){delete pot.in.You;render();toast('Pledge withdrawn. Nothing was charged, so there’s nothing to refund.');return}
+  if(a==='nudge'){const who=CIRCLE.find(k=>!pot.in[k]);if(!who)return;t.disabled=true;toast(`Asked ${who}. They see a nudge from you, not from the app.`);
+    setTimeout(()=>{pot.in[who]=1;const m=met(pot);if(m&&pot.id==='ps5'){pot.paid.Maya=1;pot.paid.Dev=1}render();toast(m?`<b>${who} pledged. ${nIn(pot)} of ${pot.need}: goal met.</b> Everyone now pays ${esc(pot.payee)} directly.`:`${who} pledged. ${nIn(pot)} of ${pot.need}.`)},1600);return}
+  if(a==='pay'){P.pay=pot.id;render();return}
+  if(a==='payvia'){const m=t.dataset.m;pot.paid.You='wait';P.pay=null;render();
+    toast(m==='Cash in hand'?`Marked as cash to ${esc(pot.payee)}. They confirm when they have it.`:`Opens ${m} with ${esc(pot.payee)}’s details filled in. INSANE never sees the money, only the tick.`);
+    setTimeout(()=>{pot.paid.You=1;render();toast(pot.payee===pot.org?`${esc(pot.org)} confirmed your ${pot.cur}${pot.each} arrived.`:`${esc(pot.org)} confirmed ${esc(pot.payee)} has your ${pot.cur}${pot.each}.`)},2200);return}
+  if(a==='newPot'){P.newPot=true;render();setTimeout(()=>$('#np-name')&&$('#np-name').focus(),0);return}
+  if(a==='cancelPot'){P.newPot=false;render();return}
+  if(a==='createPot'){const name=($('#np-name').value||'').trim()||'Festival tickets',each=Math.max(1,Math.min(2000,Math.round(+$('#np-each').value||40))),mode=document.querySelector('input[name=np-mode]:checked').value,due=$('#np-due').value;
+    const id='p'+Date.now();POTS.unshift({id,name,mode,org:'You',payee:'You',cur:'£',each,need:4,due,in:{You:1},paid:mode==='split'?{You:1}:{}});P.newPot=false;P.pot=id;render();
+    toast(mode==='pledge'?'Pot created. Your circle gets one message. It goes ahead if four of you pledge.':'Pot created. Your circle gets one message with your payment details.');return}
+  // + sheet
+  if(a==='closeSheet'){P.sheet=false;render();return}
+  if(a==='make'){const k=t.dataset.k;
+    if(k==='check')go('home');else if(k==='dare'){go('home');toast('Dares go in the circle’s jar. Tomorrow’s Daily Dare is picked from it.')}
+    else if(k==='favor')go('ledger',{lseg:'favors',askFavor:true});else if(k==='plan')go('circle',{cseg:'week',newPlan:true});
+    else if(k==='pot')go('ledger',{lseg:'pots',newPot:true});else if(k==='midnight')go('circle',{cseg:'midnight'});
+    else if(k==='call')go('city',{yseg:'calls'});else if(k==='mission')go('city',{yseg:'map',propose:true});return}
+});
+$('#view').addEventListener('keydown',e=>{const pc=e.target.closest&&e.target.closest('[data-potcard]');if(pc&&e.target===pc&&(e.key==='Enter'||e.key===' ')){e.preventDefault();pc.click()}});
+render();
+
+/* ================================================================
+   SIMULATOR (v0.2 engine + v0.3 layers + v0.4 and v0.5 ideas)
+   ================================================================ */
+const REASONS=['Nothing to do','Trust decay pressure','Blamed for a broken chain','IOU sold to a stranger','Debt stress','Hurt doing a dare','Plans that fell through','Favors nobody would honor','Pressure from a pact','Hurt by an anonymous message','Felt behind other circles'];
+const NA=REASONS.length;
+const V1={circles:0,daily:0,circlePrompts:0,board:0,market:0,decay:1,reminders:1,ladder:1,shortChains:1,sell:1,limit:0,bonus:0,jubilee:0,cap:0,downrank:0};
+const V2={circles:1,daily:1,circlePrompts:1,board:1,market:1,decay:0,reminders:1,ladder:1,shortChains:0,sell:0,limit:1,bonus:0,jubilee:1,cap:1,downrank:1};
+const V2x={...V2,ledger:0,league:0,zones:0,hunts:0,drops:0,cashDrops:0};
+const V3={...V2,ledger:1,league:1,zones:1,hunts:1,drops:1,cashDrops:0};
+const V4={...V3,pledge:1,chapters:1,missions:1};
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const clamp=(x,a,b)=>x<a?a:x>b?b:x;
+const W=(c,k)=>c.w&&c.w[k]!=null?c.w[k]:1;
+
+function simulate(c){
+  if(c.gossip)c={...c,midnight:1,mnAbout:'others',mnTiming:'instant'};   // the no-go version: gossip about other people, sent the moment it's written
+  const K=c.k,R=mulberry(c.seed),gauss=()=>{let u=0;while(!u)u=R();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*R())};
+  const G=c.groups,S=12,D=120,people=[];
+  for(let g=0;g<G;g++)for(let i=0;i<S;i++)people.push({id:people.length,g,joined:-1,on:false,s:clamp(.5+gauss()*.2,0,1),b:R(),r:.3+R()*.7,v:0,ann:new Float32Array(NA),last:-99,opens:new Set(),owe:0,held:0,listed:0,unbacked:0,vouch:-1,inPot:0,pact:null,nextVan:-1,vanDay:-9});
+  const byG=g=>people.slice(g*S,g*S+S),pick=a=>a[Math.floor(R()*a.length)];
+  let debts=[],C=.9,norm=3,harm=0,minor=0,pending=[],fails=0,duelsRun=0,potsDone=0,potsFailed=0,bounties=[],bountyDone=0,partnerFailed=false;
+  let pactsDone=0,pactsFailed=0,mnSent=0,mnHurt=0,mnOut=0,moles=0,vanishes=0,featsAll=0,featsWeek=0,featsLast=0,wasted=0,lured=0,hostedRun=0,mTrust=1,callsAnswered=0;
+  const reasons=new Array(NA).fill(0);
+  const o={dau:[],C:[],swaps:[],atomic:[],harmD:[]};let atomicShare=0;
+  const pot=new Array(G).fill(null),wand=new Array(G).fill(-1),shedG=new Array(G).fill(0);
+  const mnQ=new Array(G).fill(0),mnDay=new Array(G).fill(-9),moleG=new Array(G).fill(-1),vanG=new Array(G).fill(-9),verified=new Array(G).fill(!c.verify),canPost=new Array(G).fill(!c.verifyPost),host=new Array(G).fill(null);
+  const accept=()=>c.chapters?.45+.15*W(c,'chapters'):.45;
+  const load=age=>{if(!c.sched)return 0;let L=0;for(const [a,n] of c.sched)if(age>=a)L=n;return Math.max(0,L-9)};   // concepts beyond the nine v0.3 asked people to learn
+  const mnBad=c.mnAbout==='others'?.15:.03,mnPain=c.mnAbout==='others'?.6:.25,mnOutP=c.mnTiming==='instant'?.12:c.mnTiming==='chosen'?.05:c.mnTiming==='slots'?.03:.01;
+  const hurtOne=(g,except,amt)=>{const q=byG(g).filter(x=>x.on&&x.id!==except);if(q.length){pick(q).ann[9]+=amt;mnHurt++}};
+  const join=(p,d,by)=>{if(p.joined>=0)return;p.joined=d;p.on=true;p.last=d;p.v=.06;if(c.bonus)p.unbacked=5;if(by!=null)p.vouch=by;
+    if(c.vanish)p.nextVan=d+30+Math.floor(R()*30);
+    const fr=byG(p.g).filter(q=>q.joined<0),k=c.circles?3:(R()<.3?1:0);
+    for(let i=0;i<k&&i<fr.length;i++)if(R()<(c.circles?accept():.3))pending.push([pick(fr),d+1+Math.floor(R()*3),p.id])};
+  for(let d=0;d<D;d++){
+    if(d<45){const n=Math.round(G*S*.0045);for(let i=0;i<n;i++)join(pick(people),d)}
+    const missionDay=c.missions&&d%30===20;
+    if(missionDay){let act=0;for(const q of people)if(q.on)act++;const n=Math.round(act*.04*W(c,'missions'));for(let i=0;i<n;i++)join(pick(people),d)}   // missions get seen: word of mouth
+    if(c.feats&&d%7===0&&d>0){featsLast=featsWeek;featsWeek=0;const n=Math.round(featsLast*.03*W(c,'feats'));for(let i=0;i<n;i++)join(pick(people),d)}   // shared to Instagram: the outside sees it
+    pending=pending.filter(([p,t,by])=>{if(t===d){join(p,d,by);return false}return true});
+    const af=new Array(G).fill(0);for(const p of people)if(p.on&&d-p.last<=3)af[p.g]++;
+    if(c.verify)for(let g=0;g<G;g++)if(!verified[g]&&af[g]>=3&&R()<.15)verified[g]=true;     // the circle meets and scans each other's phones
+    if(c.verifyPost)for(let g=0;g<G;g++)if(!canPost[g]&&af[g]>=3&&R()<.15)canPost[g]=true;
+    if(c.placebo)for(let i=0;i<c.placebo;i++)R();                    // does nothing: measures noise from a shifted random stream
+    for(const p of people){p.owe=0;p.held=0}for(const x of debts){people[x.d].owe++;people[x.h].held++}
+    let opens=0,swaps=0,dn=0,wS=0,wI=0,honor=0,tries=0;const market=c.market&&d%7===6;
+    const dropG=new Array(G);for(let g=0;g<G;g++)dropG[g]=c.drops&&verified[g]&&R()<.08;
+    let activeTotal=0;for(const q of people)if(q.on)activeTotal++;
+    const zoneNight=c.zones&&d%7===4,fixture=c.league&&d%7===2,hunts=Math.min(1,atomicShare*4),hwDay=c.homework&&d%7===0,fearDay=c.fear&&d%7===0;
+    if(c.custody&&c.partnerFailDay===d){partnerFailed=true;C*=.4;for(const q of people)if(q.on&&pot[q.g])q.ann[4]+=1.5;pot.fill(null)}   // the Synapse scenario
+    // Midnight: the night's unsigned messages go out together once at least three are waiting
+    if(c.midnight)for(let g=0;g<G;g++){
+      if(c.mnTiming==='batch'||c.mnTiming==='slots'||!c.mnTiming){if(mnQ[g]>=(c.mnTiming==='slots'?2:3)){for(let i=0;i<mnQ[g];i++)if(R()<mnBad)hurtOne(g,-1,mnPain);mnQ[g]=0;mnDay[g]=d}}}
+    // the Mole: one member per circle of 4+ gets three secret tasks; the circle guesses on reveal night
+    const moleStart=c.mole&&d%7===1,moleReveal=c.mole&&d%7===6;
+    if(moleStart)for(let g=0;g<G;g++){const q=byG(g).filter(x=>x.on&&d-x.last<=3);moleG[g]=q.length>=4?pick(q).id:-1;if(moleG[g]>=0)moles++}
+    // hosted missions: circles post them; some are fake
+    const hostDay=c.hosted&&d%7===3,hostRun=c.hosted&&d%7===5;
+    if(hostDay){const fake=.25*(c.verify||c.verifyPost?.2:1)*(c.hostStake?.3*Math.exp(-d/60):1)*(c.escrowMoney?.4:1);
+      for(let g=0;g<G;g++)host[g]=af[g]>=2&&verified[g]&&canPost[g]&&R()<.35*(c.escrowMoney?.5:1)*W(c,'hosted')?{fake:R()<fake}:null}
+    if(c.mole||c.hosted||c.midnight)mTrust=Math.min(1,mTrust+.01);
+    // pots: a trip or purchase every few weeks per circle with at least 3 active
+    const anyPot=c.pots||c.pledge||c.custody;
+    if(anyPot)for(let g=0;g<G;g++){
+      if(!pot[g]&&af[g]>=3&&!partnerFailed&&R()<.05)pot[g]={end:d+7+Math.floor(R()*4),n:0};
+      if(pot[g]&&pot[g].end===d){const P=pot[g],need=4,okRate=c.custody?.92:c.pledge?.85:.75;
+        const done=P.n>=(c.pledge?need:2)&&R()<okRate;
+        for(const q of byG(g))if(q.inPot){if(done)q.potWin=d;else q.ann[6]+=c.pledge?.03:.12;q.inPot=0}
+        done?potsDone++:potsFailed++;pot[g]=null}}
+    if(c.wanderers)for(let g=0;g<G;g++)if(af[g]>=2&&R()<.1){const q=byG(g).filter(x=>x.on&&x.id!==wand[g]);if(q.length){wand[g]=pick(q).id;people[wand[g]].wandAt=d}}   // passed on: a handoff
+    if(c.shed)for(let g=0;g<G;g++)shedG[g]*=.8;
+    if(c.vanish)for(const p of people)if(p.on&&p.nextVan===d){const f0=af[p.g]-(d-p.last<=3?1:0);if(f0>=2&&R()<.5){p.vanDay=d+3;vanG[p.g]=d+3}p.nextVan=d+60}
+    for(const p of people){if(!p.on)continue;
+      const age=d-p.joined,f=Math.max(0,af[p.g]-(d-p.last<=3?1:0)),city=verified[p.g];
+      const fe=c.calls&&city&&f<4?f+1.5*W(c,'calls'):f;        // calls: borrow players and guests from other circles
+      let pull=0;
+      if(c.decay)pull+=.08;
+      if(c.reminders)pull+=.1*Math.min(1,p.owe/2);
+      if(c.market&&d%7===5)pull+=.12;
+      if(market&&p.listed)pull+=.35;
+      if(fixture&&city&&fe>=3)pull+=.2;
+      if(zoneNight&&city&&fe>=1)pull+=.15;
+      if(c.ledger&&f>0)pull+=.12*Math.min(1,f/4);
+      if(dropG[p.g])pull+=.15;
+      if(c.league&&city&&f>=3&&d-p.last>2&&R()<.25)pull+=.5;
+      if(pot[p.g])pull+=.1*W(c,'pots');                                   // watching the pot fill
+      if(p.potWin===d)pull+=.4;
+      if(hwDay)pull+=.08*W(c,'homework');
+      if(fearDay)pull+=.1*W(c,'fear');
+      if(missionDay&&city&&fe>=2)pull+=.2*W(c,'missions');
+      if(c.wanderers&&p.wandAt===d)pull+=.3*W(c,'wanderers');
+      if(p.pact)pull+=(c.pactsHard?.18:.12)*W(c,'pacts')*(f>=1?1:.5);     // your circle is watching the check-in
+      if(c.midnight&&mnDay[p.g]===d)pull+=.12*W(c,'midnight');
+      if(c.mole&&moleG[p.g]>=0&&d%7>=2&&d%7<=5)pull+=(moleG[p.g]===p.id?.15:.04)*W(c,'mole');
+      if(moleReveal&&moleG[p.g]>=0)pull+=.2*W(c,'mole');
+      if(c.vanish){if(p.vanDay-d>=1&&p.vanDay-d<=3)pull+=.12*W(c,'vanish');if(p.vanDay+1===d)pull+=.4*W(c,'vanish');if(vanG[p.g]===d&&p.vanDay!==d)pull+=.08*W(c,'vanish')}
+      if(c.feats&&city&&f>=2)pull+=.04*W(c,'feats')*Math.min(1,featsLast/(G*.5));
+      if(hostRun&&host[p.g])pull+=.12*mTrust;
+      if(age===14)p.dense=f>=3;
+      const clut=(c.clutter||0)+(c.loadK?c.loadK*load(age):0);
+      const annoy=p.ann.reduce((a,b)=>a+b,0)+clut;   // every extra concept is one more thing to learn
+      let prob=clamp(.015+.42*Math.exp(-age/1.4)+1.1*p.v+pull*(.4+.6*p.s)-.25*annoy,.005,.95);
+      if(c.vanish&&p.vanDay===d)prob=0;                                  // gone for the day
+      let val=0;
+      if(R()<prob){opens++;p.opens.add(age);p.last=d;
+        if(c.circles&&f<3&&R()<.08){const fr=byG(p.g).filter(q=>q.joined<0);if(fr.length&&R()<accept())pending.push([pick(fr),d+1,p.id])}
+        val+=Math.max(.12*Math.exp(-age/12)*(c.chapters?.7:1),c.zones?.05:0);                 // chapters: less strangers' feed
+        const dareAcc=.3+.6*p.b+(c.chapters?.1*W(c,'chapters'):0);                           // private, 24h videos: easier to say yes
+        if(R()<f/(f+3)*.5&&R()<dareAcc){val+=.3*K;
+          let ins=clamp(norm+gauss()*1.1+(c.ladder?.9*p.b:0),0,10);if(c.cap)ins=Math.min(ins,6.5);
+          const w=c.downrank?(ins<=6?Math.pow(ins+.5,1.6):Math.pow(6.5,1.6)*Math.exp(-.9*(ins-6))):Math.pow(ins+.5,1.6);dn++;wS+=w;wI+=w*ins;
+          if(ins>7&&R()<.02*(ins-7)*(ins-7)){harm++;p.ann[5]+=1.5}
+          if(c.ladder&&R()<(c.shortChains?.12:.02))p.ann[2]+=.35}
+        if(c.daily&&f>0)val+=.28*K*(f/(f+2))*(c.circlePrompts?.55+.45*Math.exp(-age/30):Math.exp(-age/25));
+        const boardP=f/(f+4)*(.3+.7*C)*(c.timebank?1+.2*W(c,'timebank'):1);
+        if(c.board&&f>0&&R()<boardP){val+=.22*K;
+          if(R()<.3){const q=byG(p.g).filter(x=>x.on&&x!==p);if(q.length)debts.push({d:p.id,h:pick(q).id,t:d})}}
+        if(c.ledger&&f>0&&R()<(1-Math.exp(-f/3))*.6)val+=.22*K;
+        if(zoneNight&&city&&fe>=1&&R()<.3+.4*p.b){val+=.4*K;
+          const zi=clamp(norm+1.5+gauss(),0,c.cap?8:10);if(zi>7&&R()<.02*(zi-7)*(zi-7)*.15){harm++;p.ann[5]+=1.5}
+          if(c.combat&&R()<.35){val+=.3*K*W(c,'combat');if(R()<.008){minor++;p.ann[5]+=.4}}           // pillow fights, foam swords, sumo suits
+          if(c.realFights&&R()<.35){val+=.4*K;if(R()<.04){harm++;p.ann[5]+=2}}}
+        if(c.hunts&&city&&f>=2&&R()<.14*hunts){val+=.35*K}
+        if(c.hunts&&city&&f>=2&&R()<.03)val+=.15*K;
+        if(dropG[p.g]&&f>=2){if(c.payPrize){if(R()<.3)val+=(R()<.3?.6:.05)*K}                    // pay to enter: fewer try, most lose
+          else if(R()<.6){if(c.cashDrops){val+=.3*K/(1+activeTotal/500);p.unbacked+=2}else val+=.3*K}}
+        if(hwDay&&R()<.5)val+=.3*K*(.5+.5*(1-p.b))*(.6+.4*Math.exp(-age/40))*W(c,'homework');      // courage, not danger: best for the timid
+        if(fearDay&&R()<.55)val+=.35*K*(.5+.5*(1-p.b))*(.75+.25*Math.exp(-age/60))*(f>=1?1:.6)*W(c,'fear');   // your own ladder, a spotter from the circle
+        if(missionDay&&city&&fe>=2&&R()<.4){val+=.4*K*W(c,'missions');featsWeek+=.2}
+        if(c.wanderers&&p.wandAt===d)val+=.12*K*W(c,'wanderers');
+        if(pot[p.g]&&!p.inPot&&R()<.5){p.inPot=1;pot[p.g].n++;val+=.12*K*W(c,'pots')}
+        if(p.potWin===d)val+=.35*K*W(c,'pots');
+        if(c.shed&&(d+p.id)%30===0&&R()<.6){shedG[p.g]+=1;val+=.12*K*W(c,'shed')}               // gave away something loved
+        if(c.bounties&&R()<.04){bounties.push({p:p.id,g:p.g,t:d})}
+        if(c.cashOut&&R()<.05)p.unbacked+=2;                                                         // bought favors with money
+        // ---- v0.5 ----
+        if(c.pacts){if(!p.pact&&f>=1&&R()<.12)p.pact={end:d+21,miss:0,str:0,wk:d,last:d};
+          if(p.pact&&R()<.85){p.pact.last=d;val+=.12*K*W(c,'pacts')}}
+        if(p.pactWin===d)val+=.4*K*W(c,'pacts');
+        if(c.midnight&&f>=1){
+          if(R()<.1){mnSent++;
+            if(c.mnTiming==='batch'||c.mnTiming==='slots'||!c.mnTiming)mnQ[p.g]++;
+            else{mnDay[p.g]=d+1;if(R()<mnBad)hurtOne(p.g,p.id,mnPain)}
+            if(R()<mnOutP){mnOut++;p.ann[9]+=.4}}                                                     // worked out who wrote it
+          if(mnDay[p.g]===d)val+=(c.mnAbout==='others'?.28:.2)*K*W(c,'midnight')}
+        if(c.mole&&moleG[p.g]>=0){const nov=.5+.5*Math.exp(-age/84);
+          if(moleG[p.g]===p.id&&d%7>=2&&d%7<=5)val+=.15*K*nov*W(c,'mole');
+          if(moleReveal){val+=.3*K*nov*W(c,'mole');if(moleG[p.g]===p.id)featsWeek+=1}}
+        if(c.vanish){if(p.vanDay+1===d){val+=.6*K*W(c,'vanish');featsWeek+=1;vanishes++;if(R()<.0005)harm++}
+          else if(vanG[p.g]===d-1&&p.vanDay!==d-1)val+=.12*K*W(c,'vanish')}
+        if(c.feats&&city&&f>=1&&R()<.3){if(c.featsTop&&af[p.g]<4){val+=.06*K*W(c,'feats');p.ann[10]+=.02}else val+=.08*K*W(c,'feats')}   // "steal this": copy another circle's idea
+        if(c.calls&&city&&R()<.06){val+=.2*K*W(c,'calls');callsAnswered++}
+        if(hostRun&&host[p.g]&&R()<.4*mTrust){hostedRun++;
+          if(host[p.g].fake){wasted++;p.ann[6]+=.25;mTrust*=.97;if(R()<(c.hostStake?.0005:.01)){lured++;harm++;p.ann[5]+=1.5}}
+          else{val+=.3*K*W(c,'hosted');featsWeek+=.2}}
+        // ----
+        if(R()<.14)p.listed=1;
+        if(p.listed&&(c.market?market:true)){
+          let pool=(c.market?3:1)*(f+1)*1.5+(c.market?0:6);
+          if(c.shed)pool+=shedG[p.g]*1.5*W(c,'shed');
+          if(c.bounties)pool+=bounties.filter(x=>x.g===p.g).length*2*W(c,'bounties');
+          const q=c.market?1-Math.exp(-pool/14):1-Math.exp(-pool/90);
+          if(R()<q){const uneven=R()<(c.timebank?.45-.2*W(c,'timebank'):.45),accepted=!uneven||R()<C;if(!accepted)p.ann[7]+=.05;
+            if(R()<(c.market?.85:.45)&&accepted){swaps++;val+=.45*K;p.listed=0;
+              if(uneven&&!(c.limit&&p.owe>=5)){const fr=byG(p.g).filter(x=>x.on&&x!==p);if(fr.length)debts.push({d:p.id,h:pick(fr).id,t:d})}}
+            else p.ann[6]+=.12}
+          else if(!c.market)p.ann[6]+=.008}
+        if(c.bounties&&market){const mine=bounties.filter(x=>x.p===p.id);for(const b of mine){if(R()<.45*W(c,'bounties')){bountyDone++;val+=.35*K;bounties.splice(bounties.indexOf(b),1)}else if(d-b.t>14){p.ann[6]+=.05;bounties.splice(bounties.indexOf(b),1)}}}
+        if(p.held>0&&R()<.15){const x=debts.find(x=>x.h===p.id);if(x){const dbt=people[x.d];tries++;
+          if(dbt.on&&R()<.4+.5*dbt.r){honor++;debts.splice(debts.indexOf(x),1);val+=.1}
+          else if(!dbt.on)debts.splice(debts.indexOf(x),1)
+          else if(c.duels&&R()<.6*W(c,'duels')){duelsRun++;honor++;debts.splice(debts.indexOf(x),1);val+=(c.zones?.3:.15)*K;dbt.ann[7]=Math.max(0,dbt.ann[7]-.1)}}}  // settled in a duel, circle votes
+        if(p.unbacked>0&&R()<.25){tries++;p.unbacked--;let unb=0;for(const q of people)if(q.on)unb+=q.unbacked;
+          if(R()<.85*C*Math.max(.1,1-unb/(4*Math.max(1,af[p.g])*G/10))){honor++;val+=.1;const q=byG(p.g).find(x=>x.on&&x!==p);if(q)q.ann[4]+=.06}else p.ann[7]+=.1}
+        if(p.owe>0&&R()<.3*p.r){const x=debts.find(x=>x.d===p.id);if(x){debts.splice(debts.indexOf(x),1);honor++;tries++}}
+      }
+      // pact bookkeeping: two free misses a week (soft) or none (hard); four strikes and it ends quietly
+      if(p.pact){const P=p.pact;if(d-P.wk>=7){P.wk=d;P.miss=0}
+        if(P.last!==d){P.miss++;if(P.miss>(c.pactsHard?0:2)){P.str++;p.ann[8]+=c.pactsHard?.12:.05*(1-p.b)}}
+        if(d>=P.end||P.str>=4){if(P.str<=3&&d>=P.end){pactsDone++;p.pactWin=d+1;featsWeek+=1}else{pactsFailed++;p.ann[8]+=c.pactsHard?.2:.05}p.pact=null}}
+      if(c.decay)p.ann[1]+=(1-p.s)*.012;
+      if(p.owe>2)p.ann[4]+=.02*(p.owe-2);
+      for(let k=0;k<NA;k++)p.ann[k]*=.93;
+      if(p.last===d)p.v=p.v*.7+val*.3;
+      let aqm=1,nqm=1;if(c.league&&city&&f>=3){aqm=.6;nqm=.4}if(c.ledger&&f>=2&&p.owe+p.held>0){aqm*=.8;nqm*=.6}
+      if(p.inPot){aqm*=.8;nqm*=.6}                                        // your money's in the trip
+      if(c.chapters&&f>=3)nqm*=1-.25*W(c,'chapters');                     // belonging: you're a member, not a user
+      if(p.pact)nqm*=.85;                                                 // you told your circle you'd do it
+      const a2=p.ann.reduce((a,b)=>a+b,0)+clut,aq=.06*Math.max(0,a2-.12)*aqm,nq=(d-p.last>14?.08:0)*nqm;
+      if(R()<aq+nq){p.on=false;let best=0;if(R()<aq/(aq+nq)){let bv=-1;for(let k=1;k<NA;k++)if(p.ann[k]>bv){bv=p.ann[k];best=k}}reasons[best]++;p.pact=null;
+        if(c.chapters&&p.vouch>=0&&age<21){const v=people[p.vouch];v.ann[2]+=.15}}               // your invitee flaked: your stake takes a hit
+    }
+    if((c.sell||c.cashOut)&&debts.length){const act=[],cum=[];let t=0;for(const q of people)if(q.on){t+=Math.pow(q.held+1,1.8);act.push(q.id);cum.push(t)}
+      for(const x of debts)if(act.length&&R()<.05){const r=R()*t;let lo=0,hi=cum.length-1;while(lo<hi){const m=(lo+hi)>>1;if(cum[m]<r)lo=m+1;else hi=m}
+        if(act[lo]!==x.d&&people[act[lo]].g!==people[x.d].g){x.h=act[lo];people[x.d].ann[3]+=.3}}}
+    if(c.jubilee&&d>0&&d%30===0)debts=debts.filter(x=>d-x.t<30);
+    if(tries>0)C=C*.9+.1*(honor/tries);
+    if(dn>0)norm=clamp(norm+.12*(wI/wS-norm)+(c.ladder?.03:0),0,10);
+    let atomic=0;for(let g=0;g<G;g++)if(af[g]>=4)atomic++;
+    atomicShare=atomic/G;o.dau.push(opens);o.C.push(C);o.swaps.push(swaps);o.atomic.push(atomic/G);o.harmD.push(harm);featsAll+=0;
+  }
+  const coh=people.filter(p=>p.joined>=0&&p.joined<=D-31),ret=[];
+  for(let k=0;k<=30;k++){let n=0;for(const p of coh)if(p.opens.has(k))n++;ret.push(n/Math.max(1,coh.length))}
+  const m1=n=>{let k=0;for(const p of n){for(let a=23;a<=30;a++)if(p.opens.has(a)){k++;break}}return k/Math.max(1,n.length)};
+  const d30=n=>n.filter(p=>p.opens.has(30)).length/Math.max(1,n.length);
+  const dense=coh.filter(p=>p.dense);
+  const timid=coh.filter(p=>p.b<1/3),bold=coh.filter(p=>p.b>2/3);
+  return {...o,ret,reasons,harm,minor,joined:people.filter(p=>p.joined>=0).length/people.length,ins:norm,m1:m1(coh),m1d:m1(dense),denseShare:dense.length/Math.max(1,coh.length),
+    d30timid:d30(timid),d30bold:d30(bold),pots:potsDone,potsFailed,duels:duelsRun,bountyDone,
+    pactsDone,pactsFailed,mnSent,mnHurt,mnOut,moles,vanishes,wasted,lured,hostedRun,callsAnswered,verifiedShare:verified.filter(Boolean).length/G,postShare:canPost.filter(Boolean).length/G};
+}
+const PRESETS={v1:V1,v2:V2,trueque:{...V2,bonus:1,limit:0},base:{...V1,decay:0,reminders:0,ladder:0,shortChains:0,sell:0}};
+const V5={...V4,pacts:1,mole:1,midnight:1,fear:1,calls:1,feats:1,timebank:1,hosted:1,verifyPost:1,hostStake:1};
+const PRE={v2:V2x,v3:V3,cash:{...V3,cashDrops:1},nocap:{...V3,cap:0,downrank:0},decay:{...V3,decay:1},v4:V4,v5:V5};
+const KEYS=['ledger','league','circles','zones','hunts','drops','cashDrops','daily','board','market','decay','shortChains','sell','cap','downrank','limit','bonus','pledge','chapters','missions','homework','timebank','duels','cashOut','realFights','payPrize','pacts','mole','midnight','fear','feats','calls','hosted','hostStake','verifyPost','pactsHard','gossip'];
+const SEEDS=3,GROUPS=150;
+const cache=new Map();
+function avgRun(flags,o){const key=JSON.stringify([flags,o]);if(cache.has(key))return cache.get(key);
+  const runs=[];for(let i=0;i<SEEDS;i++)runs.push(simulate({...V2x,...flags,groups:GROUPS,k:o.k,seed:o.seed*101+i*17}));
+  const mean=k=>runs[0][k].map((_,j)=>runs.reduce((a,r)=>a+r[k][j],0)/SEEDS),sc=k=>runs.reduce((a,r)=>a+r[k],0)/SEEDS;
+  const out={ret:mean('ret'),dau:mean('dau'),C:mean('C'),swaps:mean('swaps'),harmD:mean('harmD'),m1:sc('m1'),harm:sc('harm'),joined:sc('joined'),dense:sc('denseShare')};
+  cache.set(key,out);return out}
+const kpi=o=>({D1:o.ret[1],D7:o.ret[7],D30:o.ret[30],M1:o.m1,swk:o.swaps.slice(-28).reduce((a,b)=>a+b,0)/4,C:o.C[o.C.length-1],harm:o.harm});
+const opt={k:.7,seed:1};
+
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function niceMax(v){if(v<=0)return 1;const p=Math.pow(10,Math.floor(Math.log10(v)));const n=v/p;return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p}
+function line(id,a,b,o2){
+  const cv=$(id),dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;if(!W)return;
+  cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);
+  const ink=css('--ink'),muted=css('--muted'),ln=css('--line'),acc=css(o2.color||'--stamp');
+  const L=40,Rr=12,T=10,B=20,w=W-L-Rr,h=H-T-B,n=a.length;
+  const max=o2.max??niceMax(Math.max(...a,...(b||[0]),o2.min||0)*1.08);
+  const X=i=>L+(n<=1?0:i/(n-1))*w,Y=v=>T+h-(Math.min(v,max)/max)*h;
+  x.font='10px "IBM Plex Mono", ui-monospace, monospace';x.textBaseline='middle';
+  for(let i=0;i<=4;i++){const v=max*i/4,y=Y(v);x.strokeStyle=ln;x.lineWidth=1;x.beginPath();x.moveTo(L,y+.5);x.lineTo(L+w,y+.5);x.stroke();x.fillStyle=muted;x.textAlign='right';x.fillText(o2.fmt(v),L-6,y)}
+  x.textAlign='center';x.textBaseline='top';x.fillStyle=muted;(o2.xt||[0,Math.floor((n-1)/2),n-1]).forEach(i=>x.fillText(o2.xl(i),Math.min(Math.max(X(i),L+16),L+w-16),T+h+5));
+  if(b){x.setLineDash([4,4]);x.strokeStyle=muted;x.lineWidth=1.4;x.beginPath();b.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.stroke();x.setLineDash([])}
+  x.beginPath();a.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.lineTo(X(n-1),Y(0));x.lineTo(X(0),Y(0));x.closePath();x.globalAlpha=.12;x.fillStyle=acc;x.fill();x.globalAlpha=1;
+  x.beginPath();a.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.strokeStyle=acc;x.lineWidth=2;x.stroke();
+  x.fillStyle=acc;x.beginPath();x.arc(X(n-1),Y(a[n-1]),3.5,0,7);x.fill();
+  x.fillStyle=ink;x.textAlign='right';x.textBaseline='bottom';x.font='600 11px "IBM Plex Mono", ui-monospace, monospace';x.fillText(o2.fmt(a[n-1]),X(n-1)-6,Math.max(T+12,Y(a[n-1])-4));
+}
+
+/* ---- Road to 90%: layer-by-layer chart ---- */
+const STEPS=[['v0.1',V1,'Lonely'],['v0.2',V2x,'Circles'],['+ Ledger as money',{ledger:1},'Infrastructure'],['+ League',{ledger:1,league:1},'Infrastructure'],['+ Zones',{ledger:1,league:1,zones:1},'Spectacle'],['+ Hunts',{ledger:1,league:1,zones:1,hunts:1},'Spectacle'],['+ Drops = v0.3',{ledger:1,league:1,zones:1,hunts:1,drops:1},'Spectacle']];
+let wf=null;
+let baseM1=0;
+function computeWF(){baseM1=kpi(avgRun(PRESETS.base,opt)).M1;wf=STEPS.map(([n,f,g])=>{const base=n==='v0.1'?V1:{...V2x,...f};const k=kpi(avgRun(base,opt));return {n,g,...k}})}
+function drawWF(){
+  if(!wf)return;const cv=$('#ch-wf'),dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;if(!W)return;
+  cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);
+  const ink=css('--ink'),muted=css('--muted'),ln=css('--line'),stamp=css('--stamp'),ball=css('--ballpoint'),good=css('--good'),haz=css('--hazard');
+  const narrow=W<520,L=34,Rr=8,T=16,B=narrow?44:34,w=W-L-Rr,h=H-T-B,max=1;
+  const Y=v=>T+h-(v/max)*h;
+  x.font='10px "IBM Plex Mono", ui-monospace, monospace';x.textBaseline='middle';
+  for(let i=0;i<=4;i++){const v=i/4,y=Y(v);x.strokeStyle=ln;x.lineWidth=1;x.beginPath();x.moveTo(L,y+.5);x.lineTo(L+w,y+.5);x.stroke();x.fillStyle=muted;x.textAlign='right';x.fillText(Math.round(v*100)+'%',L-6,y)}
+  // published range band at D30
+  x.fillStyle=css('--good-soft');x.fillRect(L,Y(.10),w,Y(.04)-Y(.10));
+    // 90% target
+  x.setLineDash([5,4]);x.strokeStyle=stamp;x.lineWidth=1.5;x.beginPath();x.moveTo(L,Y(.9)+.5);x.lineTo(L+w,Y(.9)+.5);x.stroke();x.setLineDash([]);
+  x.fillStyle=stamp;x.textAlign='left';x.fillText('your target: 90%',L+6,Y(.9)-8);
+  const n=wf.length,slot=w/n,bw=Math.min(54,slot*.62);
+  wf.forEach((s,i)=>{const cx=L+slot*i+slot/2,prev=i>1?wf[i-1].D30:0;
+    const col=s.g==='Infrastructure'?good:s.g==='Spectacle'?stamp:s.n==='v0.2'?ball:muted;
+    if(i>=2){x.fillStyle=col;x.globalAlpha=.9;x.fillRect(cx-bw/2,Y(s.D30),bw,Y(prev)-Y(s.D30));x.globalAlpha=.25;x.fillRect(cx-bw/2,Y(prev),bw,Y(0)-Y(prev));x.globalAlpha=1;
+      x.strokeStyle=muted;x.setLineDash([2,3]);x.beginPath();x.moveTo(cx-slot+bw/2,Y(prev)+.5);x.lineTo(cx-bw/2,Y(prev)+.5);x.stroke();x.setLineDash([])}
+    else{x.fillStyle=col;x.fillRect(cx-bw/2,Y(s.D30),bw,Y(0)-Y(s.D30))}
+    // month-one marker
+    x.fillStyle=ink;x.beginPath();x.moveTo(cx-5,Y(s.M1));x.lineTo(cx+5,Y(s.M1));x.lineTo(cx,Y(s.M1)+6);x.closePath();x.fill();
+    x.fillStyle=ink;x.textAlign='center';x.textBaseline='bottom';x.font='600 11px "IBM Plex Mono", ui-monospace, monospace';x.fillText(pct(s.D30),cx,Y(s.D30)-3);
+    x.font='10px "IBM Plex Mono", ui-monospace, monospace';x.textBaseline='top';x.fillStyle=muted;
+    const lab=narrow?s.n.replace('+ ','+').replace(' = v0.3','').replace(' as money',''):s.n.replace('+ ','+').replace(' = v0.3','');
+    if(narrow){x.save();x.translate(cx,T+h+6);x.rotate(-.5);x.textAlign='right';x.fillText(lab,4,0);x.restore()}
+    else{x.fillText(lab,cx,T+h+6);if(s.n.includes('v0.3')){x.fillStyle=stamp;x.fillText('= v0.3',cx,T+h+18)}}
+  });
+  $('#wfnote').textContent='3-seed average';
+  const v3=wf[n-1],v2=wf[1];
+  const r=(l,v,p,cls)=>`<div class="rung ${cls||''}"><small>${l}</small><b>${v}</b><p>${p}</p></div>`;
+  $('#ladder').innerHTML=r('Day 30, v0.2',pct(v2.D30),'opened on exactly day 30')+r('Day 30, v0.3',pct(v3.D30),`${Math.round((v3.D30-v2.D30)*100)} points from five layers`,'hi')+r('Month one, v0.3',pct(v3.M1),'opened any day in days 23–30','hi')+r('Month one, plain app',pct(baseM1),'same loose measure, no hooks: compare to this, not WhatsApp');
+}
+
+/* ---- Ideas ---- */
+function ideas(){
+  const v3=kpi(avgRun(V3,opt)),cash=kpi(avgRun(PRE.cash,opt)),noz=kpi(avgRun({...V3,zones:0},opt)),noh=kpi(avgRun({...V3,hunts:0},opt)),nod=kpi(avgRun({...V3,drops:0},opt)),nocap=kpi(avgRun(PRE.nocap,opt));
+  const I=[
+   ['Random money drops','no','Out. Replaced by drops of real stuff that need three of you to claim.',
+    `<b>HQ Trivia</b> was exactly this: a daily cash prize. It peaked at more than 2.3 million concurrent players in February 2018. Then prizes split between too many winners and cheaters, games got repetitive, and by early 2020 the last prize was $5 shared among 523 people. It shut down after paying out about $6M of its $15M+ funding.<br><br>In a post-money world, cash drops are also <b>free issuance</b>, the mistake that sank the trueque clubs and Bunz.`,
+    `v0.3 with drops paid in favors:<br>favor confidence ${pct(v3.C)} → <b>${pct(cash.C)}</b><br>swaps/week ${fmt(v3.swk)} → <b>${fmt(cash.swk)}</b><br>day 30 ${pct(v3.D30)} → <b>${pct(cash.D30)}</b>`],
+   ['Treasure hunt constructions','mod','In, with one change: circles build hunts for other circles.',
+    `<b>Pokémon GO</b> peaked at about 45 million daily users in July 2016 and was down to about 30 million by late summer. Hunts designed by the company run out of novelty. Hunts built by players don't, because every circle is a new author. Each clue is a 10-second dare at a real spot, and the final box holds something from the builder's Market pool.`,
+    `Remove hunts from v0.3:<br>day 30 ${pct(v3.D30)} → <b>${pct(noh.D30)}</b><br>Small in the model. Hunts are recruitment and stories, not retention.`],
+   ['Record zones with cameras','yes','The best idea in the project. Zones are the stage the name was waiting for.',
+    `A Zone is a partner venue (a skatepark, a gym, a bar's back room, a community hall) with fixed cameras and staff. It solves three problems at once: <b>safety</b> (the insane stuff happens where someone is watching), <b>quality</b> (better footage, verified entries), and <b>gathering</b> (a weekly night out for the circle). The insanity ceiling rises from 6.5 to 8 <i>only</i> inside Zones. Zones also host the Market and League fixtures.`,
+    `Remove Zones from v0.3:<br>day 30 ${pct(v3.D30)} → <b>${pct(noz.D30)}</b><br>Remove the ceiling everywhere:<br>people hurt ${v3.harm.toFixed(0)} → <b>${fmt(nocap.harm)}</b>`],
+  ];
+  $('#ideasList').innerHTML=I.map(([t,s,v,ev,num])=>`<div class="idea"><div><h4>${t}<span class="st ${s}">${s==='no'?'NOT THIS':s==='mod'?'YES, CHANGED':'YES'}</span></h4><p><b>${v}</b></p><p class="ev">${ev}</p></div><div><div class="num">${num}</div></div></div>`).join('')+
+  `<div class="idea"><div><h4>What you didn’t suggest, and matters more<span class="st yes">ADDED</span></h4><p><b>The ledger as everyday money, and a League with weekly fixtures.</b></p><p class="ev">Neither is exciting. Both are the reason people can't leave: your shared expenses live in one, your teammates are waiting in the other.</p></div><div><div class="num">Remove the ledger from v0.3:<br>day 30 ${pct(v3.D30)} → <b>${pct(kpi(avgRun({...V3,ledger:0},opt)).D30)}</b><br>Remove the League:<br>day 30 ${pct(v3.D30)} → <b>${pct(kpi(avgRun({...V3,league:0},opt)).D30)}</b></div></div></div>`;
+}
+
+/* ---- Simulator tab ---- */
+const cfg={...V3};let cur=null,ref=null;
+function sync(){KEYS.forEach(k=>{$('#c-'+k).checked=!!cfg[k]});$('#s-k').value=opt.k;$('#o-k').textContent=(+opt.k).toFixed(2);$('#s-seed').value=opt.seed;$('#o-seed').textContent=opt.seed;
+  const m=Object.entries(PRE).find(([,p])=>KEYS.every(k=>!!p[k]===!!cfg[k]));document.querySelectorAll('#presets button').forEach(b=>b.classList.toggle('on',!!m&&b.dataset.preset===m[0]))}
+let rt;function run(){clearTimeout(rt);rt=setTimeout(()=>{ref=avgRun(V2x,opt);cur=avgRun(cfg,opt);drawSim()},30)}
+function drawSim(){if(!cur)return;const a=kpi(cur),r=kpi(ref);
+  line('#ch-ret',cur.ret,ref.ret,{fmt:pct,max:Math.max(.6,niceMax(Math.max(...cur.ret.slice(1))*1.1)),xt:[1,7,14,30],xl:i=>'D'+i});
+  line('#ch-dau',cur.dau,ref.dau,{fmt:fmt,xl:i=>'day '+(i+1),color:'--ballpoint'});
+  line('#ch-c',cur.C,ref.C,{fmt:pct,max:1,xl:i=>'day '+(i+1),color:'--good'});
+  line('#ch-harm',cur.harmD,ref.harmD,{fmt:fmt,min:10,xl:i=>'day '+(i+1)});
+  const tile=(l,v,[c,s])=>`<div class="stat"><small>${l}</small><b>${v}</b><span class="pill ${c}">${s}</span></div>`;
+  const d=(x,y,f,inv)=>{const z=x-y;const good=inv?z<=0:z>=0;return [good?'ok':'bad',(z>=0?'+':'−')+f(Math.abs(z))+' vs v0.2']};
+  $('#stats').innerHTML=tile('Day 1',pct(a.D1),d(a.D1,r.D1,v=>Math.round(v*100)+' pts'))+tile('Day 30',pct(a.D30),d(a.D30,r.D30,v=>Math.round(v*100)+' pts'))+tile('Month one',pct(a.M1),d(a.M1,r.M1,v=>Math.round(v*100)+' pts'))+
+    tile('Swaps per week',fmt(a.swk),d(a.swk,r.swk,fmt))+tile('Favor confidence',pct(a.C),a.C>.75?['ok','healthy']:a.C>.5?['warn','wobbling']:['bad','collapsing'])+tile('People hurt',fmt(a.harm),a.harm<10?['ok','in 120 days']:a.harm<50?['warn','in 120 days']:['bad','in 120 days']);
+  const s=[];
+  s.push(`Day-30 retention <b>${pct(a.D30)}</b> (v0.2: ${pct(r.D30)}); month one <b>${pct(a.M1)}</b>. ${a.D30>.5?'Above anything in the published social-app range. Read it as the optimistic end and stress-test with the slider.':''}`);
+  if(cfg.cashDrops)s.push(`Drops pay favors: confidence in favors fell to <b>${pct(a.C)}</b> and each drop is worth less as more people share it. HQ Trivia and the trueque clubs, in one toggle.`);
+  if(!cfg.cap)s.push(`No ceiling: <b>${fmt(a.harm)}</b> people hurt. A dense network escalates fast. This is the failure that would end the app, and possibly someone's life.`);
+  if(cfg.decay)s.push('Trust decay is on and the numbers go up again. The model counts opens, not how they feel. The diary says it feels like a trick, so it stays off.');
+  if(cfg.ledger&&cfg.league)s.push('Most of the gain comes from the two boring layers: the ledger people need, and the teammates who notice when they’re gone.');
+  if(cfg.pactsHard)s.push('Strict pacts are on: no free misses and public strikes. Most pacts fail, and failing in front of your circle is a reason to leave.');
+  else if(cfg.pacts)s.push('Pacts give people a small reason to open the app on days nothing insane is happening.');
+  if(cfg.gossip)s.push('Gossip about other people is on. Retention barely moves, and people start leaving because of something written about them.');
+  if(cfg.hosted&&!cfg.hostStake&&!cfg.verifyPost)s.push('Anyone can post a Mission: some are fake, and a few people get sent somewhere they shouldn’t be.');
+  $('#story').innerHTML=s.map(x=>`<li>${x}</li>`).join('');
+}
+$('#presets').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;Object.assign(cfg,PRE[b.dataset.preset]);sync();run()});
+KEYS.forEach(k=>$('#c-'+k).addEventListener('change',e=>{cfg[k]=e.target.checked?1:0;sync();run()}));
+$('#s-k').addEventListener('input',e=>{opt.k=+e.target.value;$('#o-k').textContent=opt.k.toFixed(2);wf=null;ideasDone=false;run()});
+$('#s-seed').addEventListener('input',e=>{opt.seed=+e.target.value;$('#o-seed').textContent=opt.seed;wf=null;ideasDone=false;run()});
+
+let ideasDone=false;
+function show(p){
+  document.querySelectorAll('.ptabs button').forEach(x=>{const on=x.dataset.p===p;x.setAttribute('aria-selected',on);$('#p-'+x.dataset.p).hidden=!on});
+  if(p==='road'){if(!wf)setTimeout(()=>{computeWF();drawWF()},30);else drawWF()}
+  if(p==='ideas'&&!ideasDone){ideasDone=true;$('#ideasList').innerHTML='<p class="mono">Running the experiments…</p>';setTimeout(ideas,30)}
+  if(p==='sim'){if(!cur)run();else drawSim()}
+  if(p==='next')drawNext();
+  if(p==='v5')drawV5();
+}
+document.querySelector('.ptabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)show(b.dataset.p)});
+const redraw=()=>{drawWF();drawSim();if(!$('#p-next').hidden){drawAdd();drawClutter()}if(!$('#p-v5').hidden){drawV5Add();drawV5Flow()}};
+window.addEventListener('resize',()=>{clearTimeout(redraw.t);redraw.t=setTimeout(redraw,120)});
+const mq=matchMedia('(prefers-color-scheme: dark)');mq.addEventListener&&mq.addEventListener('change',redraw);
+new MutationObserver(redraw).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+/* ---- What to build next: the OPTIONS.md ideas, simulated ---- */
+const NEXT={"v3":{"base":{"D30":0.5863,"M1":0.9611,"C":0.851,"swk":227.5469,"harm":6.375,"joined":0.4287,"timid":0.5707},"add":{"pots":{"dD30":0.0462,"se":0.0074,"dTimid":0.0403,"dJoined":-0.0035,"dC":0.0049,"dHarm":-2.375,"minor":0,"dSwk":13.2031},"pledge":{"dD30":0.0484,"se":0.0088,"dTimid":0.049,"dJoined":0.001,"dC":0.0006,"dHarm":-1.6875,"minor":0,"dSwk":16.7812},"custody":{"dD30":0.051,"se":0.0064,"dTimid":0.0487,"dJoined":0.0015,"dC":-0.0036,"dHarm":-1.8125,"minor":0,"dSwk":15.7656},"custodyFail":{"dD30":0.0027,"se":0.0072,"dTimid":-0.0015,"dJoined":0.0138,"dC":-0.0035,"dHarm":-1.8125,"minor":0,"dSwk":-21.0469},"chapters":{"dD30":0.0447,"se":0.0054,"dTimid":0.0401,"dJoined":0.0585,"dC":-0.003,"dHarm":-0.5,"minor":0,"dSwk":46.9688},"homework":{"dD30":0.0288,"se":0.0065,"dTimid":0.0216,"dJoined":0.0044,"dC":-0.0025,"dHarm":-0.8125,"minor":0,"dSwk":9.0156},"shed":{"dD30":0.0071,"se":0.0076,"dTimid":0.0116,"dJoined":0.0002,"dC":0.0,"dHarm":-1.375,"minor":0,"dSwk":3.75},"combat":{"dD30":0.0113,"se":0.0068,"dTimid":0.003,"dJoined":0.0034,"dC":-0.0013,"dHarm":-1.25,"minor":8.625,"dSwk":8.0312},"duels":{"dD30":0.0095,"se":0.0076,"dTimid":-0.0099,"dJoined":-0.0012,"dC":0.0807,"dHarm":-1.75,"minor":0,"dSwk":17.6875},"missions":{"dD30":0.0353,"se":0.0064,"dTimid":0.0281,"dJoined":0.0726,"dC":-0.0013,"dHarm":-1,"minor":0,"dSwk":48.6094},"wanderers":{"dD30":0.0088,"se":0.0061,"dTimid":-0.0022,"dJoined":0.0043,"dC":0.0016,"dHarm":-0.9375,"minor":0,"dSwk":10.3594},"bounties":{"dD30":0.012,"se":0.0064,"dTimid":0.0083,"dJoined":-0.0012,"dC":-0.0035,"dHarm":-2.1875,"minor":0,"dSwk":11.6406},"timebank":{"dD30":0.0276,"se":0.0088,"dTimid":0.0395,"dJoined":-0.0022,"dC":-0.0025,"dHarm":-1.875,"minor":0,"dSwk":10.2656},"realFights":{"dD30":0.0158,"se":0.0093,"dTimid":0.012,"dJoined":0.0075,"dC":-0.0016,"dHarm":41.3125,"minor":0,"dSwk":0.2656},"payPrize":{"dD30":0.0043,"se":0.0062,"dTimid":0.0019,"dJoined":-0.0001,"dC":0.001,"dHarm":-1.5,"minor":0,"dSwk":1.2812},"cashOut":{"dD30":-0.0576,"se":0.0057,"dTimid":-0.0559,"dJoined":0.0187,"dC":-0.3487,"dHarm":-2.5,"minor":0,"dSwk":-85.3594}}},"v2":{"base":{"D30":0.2181},"add":{"pots":{"dD30":0.0412,"se":0.0057,"dTimid":0.0345,"dJoined":-0.0135,"dC":-0.0,"dHarm":0,"minor":0,"dSwk":15.6406},"pledge":{"dD30":0.0383,"se":0.0051,"dTimid":0.0345,"dJoined":-0.0134,"dC":-0.0028,"dHarm":0,"minor":0,"dSwk":18.3906},"custody":{"dD30":0.0448,"se":0.0053,"dTimid":0.0424,"dJoined":-0.006,"dC":-0.0038,"dHarm":0,"minor":0,"dSwk":19.8281},"custodyFail":{"dD30":0.0128,"se":0.0061,"dTimid":0.014,"dJoined":-0.0008,"dC":0.0077,"dHarm":0,"minor":0,"dSwk":-14.125},"chapters":{"dD30":-0.0011,"se":0.0042,"dTimid":0.005,"dJoined":0.0669,"dC":-0.0042,"dHarm":0,"minor":0,"dSwk":21},"homework":{"dD30":0.0322,"se":0.0046,"dTimid":0.0232,"dJoined":0.0057,"dC":0.002,"dHarm":0,"minor":0,"dSwk":13.7188},"shed":{"dD30":0.0045,"se":0.0045,"dTimid":0.0086,"dJoined":-0.0007,"dC":0.0111,"dHarm":0,"minor":0,"dSwk":2.1719},"combat":{"dD30":0,"se":0,"dTimid":0,"dJoined":0,"dC":0,"dHarm":0,"minor":0,"dSwk":0},"duels":{"dD30":0.0101,"se":0.0044,"dTimid":0.0052,"dJoined":-0.003,"dC":0.0734,"dHarm":0,"minor":0,"dSwk":3.1562},"missions":{"dD30":0.0176,"se":0.004,"dTimid":0.0201,"dJoined":0.0643,"dC":0.0014,"dHarm":0,"minor":0,"dSwk":19.8281},"wanderers":{"dD30":0.0104,"se":0.0053,"dTimid":0.0171,"dJoined":-0.0001,"dC":0.0005,"dHarm":0,"minor":0,"dSwk":3.4531},"bounties":{"dD30":0.0116,"se":0.0044,"dTimid":0.0107,"dJoined":-0.0011,"dC":-0.0039,"dHarm":0,"minor":0,"dSwk":3.8125},"timebank":{"dD30":0.0135,"se":0.004,"dTimid":0.0168,"dJoined":-0.0073,"dC":-0.003,"dHarm":0,"minor":0,"dSwk":6.0938},"realFights":{"dD30":0,"se":0,"dTimid":0,"dJoined":0,"dC":0,"dHarm":0,"minor":0,"dSwk":0},"payPrize":{"dD30":0,"se":0,"dTimid":0,"dJoined":0,"dC":0,"dHarm":0,"minor":0,"dSwk":0},"cashOut":{"dD30":-0.0353,"se":0.0051,"dTimid":-0.0297,"dJoined":0.0066,"dC":-0.4245,"dHarm":0,"minor":0,"dSwk":-40.75}}},"remove":{"pledge":{"loss":0.0307,"se":0.0059},"chapters":{"loss":0.0269,"se":0.0042},"missions":{"loss":0.0202,"se":0.0047},"homework":{"loss":0.0139,"se":0.0059},"wanderers":{"loss":0.0037,"se":0.0059},"timebank":{"loss":0.0122,"se":0.0036},"duels":{"loss":0.0113,"se":0.0048},"combat":{"loss":0.003,"se":0.005},"shed":{"loss":0.0054,"se":0.006},"bounties":{"loss":0.0018,"se":0.0034}},"v4":{"D30":0.7501,"M1":0.9841,"C":0.9238,"swk":375.0469,"harm":7.0625,"minor":11.8125,"joined":0.5518},"clutter":{"0":{"v0.3":0.5884,"top 3":0.6913,"top 5":0.7266,"all 10":0.7496,"top 3 + duels":0.691},"0.01":{"v0.3":0.5884,"top 3":0.6795,"top 5":0.7101,"all 10":0.7158,"top 3 + duels":0.6765},"0.02":{"v0.3":0.5884,"top 3":0.6665,"top 5":0.6714,"all 10":0.594,"top 3 + duels":0.6664},"0.03":{"v0.3":0.5884,"top 3":0.656,"top 5":0.6283,"all 10":0.4805,"top 3 + duels":0.6416}},"sens":[{"k":"chapters","top3":0.85,"rank":2.2},{"k":"pledge","top3":0.75,"rank":2.6},{"k":"pots","top3":0.65,"rank":3.1},{"k":"homework","top3":0.4,"rank":4.3},{"k":"missions","top3":0.25,"rank":4.8},{"k":"timebank","top3":0.05,"rank":7.0},{"k":"duels","top3":0,"rank":7.6},{"k":"wanderers","top3":0,"rank":8.2},{"k":"bounties","top3":0,"rank":8.3},{"k":"combat","top3":0,"rank":8.8},{"k":"shed","top3":0.05,"rank":8.9}]};
+const IDEAS=[['pledge','Pledge, then pay','money'],['pots','Pots, ledger only','money'],['custody','Partner holds the money','money'],['custodyFail','…and the partner fails','nogo'],
+ ['chapters','Chapters','fc'],['missions','Missions','fc'],['homework','Homework','fc'],['duels','Duels','fc'],['combat','Sanctioned combat','fc'],['shed','Shed','fc'],
+ ['wanderers','Wanderers','niche'],['timebank','Time-bank favors','niche'],['bounties','Bounties','niche'],
+ ['realFights','Real fights','nogo'],['payPrize','Pay-to-enter prizes','nogo'],['cashOut','Favor cash-out','nogo']];
+const CATC={money:'--good',fc:'--stamp',niche:'--ballpoint',nogo:'--hazard'};
+const JUDGE={pledge:['Low','M','build'],pots:['Low','M','build'],custody:['High: licences','XL','no'],custodyFail:['','','no'],chapters:['Low','M','build'],missions:['Medium: permits','M','build'],
+ homework:['Low','S','cheap'],duels:['Low','S','cheap'],combat:['Medium: waivers','M','later'],shed:['Low','S','later'],wanderers:['Low','S','later'],timebank:['Low','S','cheap'],bounties:['Low','S','later'],
+ realFights:['Very high','','no'],payPrize:['Very high: lottery','','no'],cashOut:['High: e-money','','no']};
+const VERD={build:'BUILD',cheap:'CHEAP ADD',later:'LATER',no:'NO'};
+let nextBase='v3',nextLive=null,nextBusy=false;
+const sgn=(v,f)=>(v>=0?'+':'−')+f(Math.abs(v));
+const pts=v=>sgn(v,x=>(x*100).toFixed(1));
+function drawAdd(){
+  const cv=$('#ch-add');if(!cv||!cv.clientWidth)return;const src=nextLive||NEXT[nextBase].add;
+  const rows=IDEAS.filter(i=>src[i[0]]).map(([k,l,c])=>({k,l,c,d:src[k].dD30,se:src[k].se})).sort((a,b)=>b.d-a.d);
+  const dpr=window.devicePixelRatio||1,W=cv.clientWidth,rh=24,T=22,B=22,H=T+B+rows.length*rh;cv.style.height=H+'px';
+  cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);
+  const ink=css('--ink'),muted=css('--muted'),ln=css('--line');
+  const narrow=W<520;x.font='600 12px "Instrument Sans", system-ui, sans-serif';const L=Math.min(narrow?150:190,12+Math.max(...rows.map(r=>x.measureText(r.l).width))),Rr=narrow?40:56,w=W-L-Rr;
+  const lo=Math.min(-.08,...rows.map(r=>r.d-2*r.se)),hi=Math.max(.08,...rows.map(r=>r.d+2*r.se)),X=v=>L+(v-lo)/(hi-lo)*w;
+  x.font='10px "IBM Plex Mono", ui-monospace, monospace';x.textBaseline='middle';x.textAlign='center';
+  const stp=narrow?.04:.02;for(let v=Math.ceil(lo/stp)*stp;v<=hi+1e-9;v+=stp){const xx=X(v);x.strokeStyle=ln;x.lineWidth=1;x.beginPath();x.moveTo(xx+.5,T-6);x.lineTo(xx+.5,H-B);x.stroke();x.fillStyle=muted;x.fillText((v>0?'+':'')+Math.round(v*100),xx,H-B+11)}
+  x.fillStyle=muted;x.textAlign='left';x.fillText((narrow?'day-30 points vs ':'points of day-30 retention vs ')+(nextLive||nextBase==='v3'?'v0.3':'v0.2'),L,9);
+  x.strokeStyle=ink;x.lineWidth=1.2;x.beginPath();x.moveTo(X(0)+.5,T-6);x.lineTo(X(0)+.5,H-B);x.stroke();
+  rows.forEach((r,i)=>{const y=T+i*rh+rh/2,col=css(CATC[r.c]);
+    x.fillStyle=col;x.globalAlpha=r.c==='nogo'?.55:.9;const a=X(Math.min(0,r.d)),b=X(Math.max(0,r.d));x.fillRect(a,y-7,Math.max(1,b-a),14);x.globalAlpha=1;
+    x.strokeStyle=ink;x.lineWidth=1;x.beginPath();x.moveTo(X(r.d-2*r.se),y+.5);x.lineTo(X(r.d+2*r.se),y+.5);x.moveTo(X(r.d-2*r.se)+.5,y-3);x.lineTo(X(r.d-2*r.se)+.5,y+4);x.moveTo(X(r.d+2*r.se)+.5,y-3);x.lineTo(X(r.d+2*r.se)+.5,y+4);x.stroke();
+    x.fillStyle=ink;x.textAlign='right';x.font=(JUDGE[r.k][2]==='build'?'600 ':'')+'12px "Instrument Sans", system-ui, sans-serif';x.fillText(r.l,L-8,y);
+    x.font='600 11px "IBM Plex Mono", ui-monospace, monospace';x.textAlign='left';x.fillText(pts(r.d),Math.max(X(r.d+2*r.se),X(0))+6,y)});
+  $('#addnote').textContent=nextLive?'live · 4 seeds · paired':'16 seeds · paired · whiskers ±2 SE';
+}
+function drawClutter(){
+  const cv=$('#ch-clut');if(!cv||!cv.clientWidth)return;const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
+  cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);
+  const ink=css('--ink'),muted=css('--muted'),ln=css('--line'),L=40,Rr=W<520?58:84,T=12,B=24,w=W-L-Rr,h=H-T-B;
+  const ks=Object.keys(NEXT.clutter).sort((a,b)=>a-b),lab=['none','low','medium','high'],lo=.4,hi=.8;
+  const X=i=>L+i/(ks.length-1)*w,Y=v=>T+h-(v-lo)/(hi-lo)*h;
+  x.font='10px "IBM Plex Mono", ui-monospace, monospace';x.textBaseline='middle';
+  for(let v=lo;v<=hi+1e-9;v+=.1){const y=Y(v);x.strokeStyle=ln;x.beginPath();x.moveTo(L,y+.5);x.lineTo(L+w,y+.5);x.stroke();x.fillStyle=muted;x.textAlign='right';x.fillText(Math.round(v*100)+'%',L-6,y)}
+  x.textAlign='center';x.textBaseline='top';ks.forEach((k,i)=>x.fillText(lab[i]||k,X(i),T+h+6));
+  const S=[['v0.3','--muted',1],['top 3','--good'],['top 5','--ballpoint'],['all 10','--stamp']];
+  const ends=[];
+  S.forEach(([n,c,dash])=>{const col=css(c);x.strokeStyle=col;x.lineWidth=2.2;if(dash)x.setLineDash([4,4]);x.beginPath();ks.forEach((k,i)=>{const v=NEXT.clutter[k][n];i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v))});x.stroke();x.setLineDash([]);
+    ks.forEach((k,i)=>{x.fillStyle=col;x.beginPath();x.arc(X(i),Y(NEXT.clutter[k][n]),3,0,7);x.fill()});ends.push([n,col,Y(NEXT.clutter[ks[ks.length-1]][n])])});
+  ends.sort((a,b)=>a[2]-b[2]);for(let i=1;i<ends.length;i++)if(ends[i][2]-ends[i-1][2]<12)ends[i][2]=ends[i-1][2]+12;
+  x.font='600 11px "IBM Plex Mono", ui-monospace, monospace';x.textAlign='left';x.textBaseline='middle';ends.forEach(([n,col,y])=>{x.fillStyle=col;x.fillText(n,L+w+8,y)});
+}
+function nextTable(){
+  const a=NEXT.v3.add,rows=IDEAS.filter(i=>a[i[0]]).map(i=>[...i,a[i[0]]]).sort((p,q)=>q[3].dD30-p[3].dD30);
+  const sens=Object.fromEntries(NEXT.sens.map(s=>[s.k,s.top3]));
+  $('#nextTable').innerHTML=`<table class="table"><thead><tr><th>Idea</th><th>Day 30</th><th>Timid third</th><th>Growth</th><th>Favor confidence</th><th>People hurt</th><th>Top 3 under ±50%</th><th>Legal load*</th><th>Build*</th><th>Verdict</th></tr></thead><tbody>`+
+   rows.map(([k,l,c,r])=>{const j=JUDGE[k];return `<tr><td><span class="cat" style="background:var(${CATC[c]})"></span>${l}</td><td class="n">${pts(r.dD30)}</td><td class="n">${pts(r.dTimid)}</td><td class="n">${pts(r.dJoined)}</td><td class="n">${pts(r.dC)}</td><td class="n">${k==='combat'?'+'+r.minor.toFixed(0)+' minor':k==='realFights'?'<b>'+sgn(r.dHarm,v=>v.toFixed(0))+'</b>':Math.abs(r.dHarm)<4?'≈ 0':sgn(r.dHarm,v=>v.toFixed(0))}</td><td class="n">${sens[k]!=null?Math.round(sens[k]*100)+'%':'–'}</td><td>${j[0]}</td><td class="n">${j[1]}</td><td class="v"><span class="tag ${j[2]}">${VERD[j[2]]}</span></td></tr>`}).join('')+`</tbody></table>`;
+}
+function nextRungs(){
+  const c=NEXT.clutter,k0=Object.keys(c).sort((a,b)=>a-b),med=c[k0[2]],none=c[k0[0]];
+  const r=(l,v,p,cls)=>`<div class="rung ${cls||''}"><small>${l}</small><b>${v}</b><p>${p}</p></div>`;
+  $('#nextRungs').innerHTML=r('Day 30, v0.3',pct(none['v0.3']),'where we are')+r('v0.3 + top 3',pct(none['top 3']),'Pledge pots, Chapters, Missions','hi')+r('v0.3 + all 10',pct(none['all 10']),'if extra features cost users nothing')+r('All 10, realistic',pct(med['all 10']),`with a medium cost per feature; top 3 holds at ${pct(med['top 3'])}`);
+}
+function drawNext(){nextRungs();drawAdd();drawClutter();nextTable()}
+function runLive(){if(nextBusy)return;nextBusy=true;const b=$('#liveBtn');b.disabled=true;
+  const seeds=[1,2,3,4].map(i=>i*7919),base=seeds.map(s=>simulate({...V3,groups:GROUPS,k:opt.k,seed:s})),res={},todo=IDEAS.map(i=>i[0]);let i=0;
+  const step=()=>{if(i>=todo.length){nextLive=res;nextBusy=false;b.disabled=false;b.textContent='Re-run live';$('#liveMsg').textContent='Live run done: same ideas, 4 new seeds. Ranks near the top should match the 16-seed table; small effects can swap.';drawAdd();return}
+    const k=todo[i],f=k==='custodyFail'?{custody:1,partnerFailDay:60}:{[k]:1};
+    const d=seeds.map((s,j)=>simulate({...V3,...f,groups:GROUPS,k:opt.k,seed:s}).ret[30]-base[j].ret[30]),mu=d.reduce((a,v)=>a+v,0)/d.length,se=Math.sqrt(d.reduce((a,v)=>a+(v-mu)**2,0)/(d.length-1)/d.length);
+    res[k]={dD30:mu,se};i++;$('#liveMsg').textContent=`Running ${i} of ${todo.length}…`;setTimeout(step,0)};
+  setTimeout(step,30)}
+$('#nextSwitch').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;nextBase=b.dataset.b;nextLive=null;document.querySelectorAll('#nextSwitch button').forEach(x=>x.classList.toggle('on',x===b));drawAdd()});
+$('#liveBtn').addEventListener('click',()=>{document.querySelectorAll('#nextSwitch button').forEach(x=>x.classList.toggle('on',x.dataset.b==='v3'));nextBase='v3';runLive()});
+
+/* ---- v0.5 tested: new ideas on v0.4, flow, Midnight variants, fake Missions ---- */
+const V5D={"base":{"D30":0.6903},"add":{"pacts":{"dD30":0.0861,"se":0.0038,"hurt":0,"outed":0,"wasted":0,"lured":0},"pactsHard":{"dD30":-0.0443,"se":0.0043,"hurt":0,"outed":0,"wasted":0,"lured":0},"midnight":{"dD30":0.0227,"se":0.0039,"hurt":172,"outed":59,"wasted":0,"lured":0},"midnightChosen":{"dD30":0.0472,"se":0.0044,"hurt":182,"outed":303,"wasted":0,"lured":0},"midnightSlots":{"dD30":0.0322,"se":0.0048,"hurt":175,"outed":180,"wasted":0,"lured":0},"gossipBatch":{"dD30":0.0036,"se":0.004,"hurt":795,"outed":56,"wasted":0,"lured":0},"gossipInstant":{"dD30":0.0108,"se":0.005,"hurt":817,"outed":668,"wasted":0,"lured":0},"mole":{"dD30":0.0605,"se":0.0045,"hurt":0,"outed":0,"wasted":0,"lured":0},"fear":{"dD30":0.0249,"se":0.0038,"hurt":0,"outed":0,"wasted":0,"lured":0},"homework":{"dD30":0.0136,"se":0.0045,"hurt":0,"outed":0,"wasted":0,"lured":0},"vanish":{"dD30":0.0029,"se":0.0042,"hurt":0,"outed":0,"wasted":0,"lured":0},"feats":{"dD30":0.0147,"se":0.0039,"hurt":0,"outed":0,"wasted":0,"lured":0},"featsTop":{"dD30":0.0193,"se":0.0038,"hurt":0,"outed":0,"wasted":0,"lured":0},"calls":{"dD30":0.0161,"se":0.004,"hurt":0,"outed":0,"wasted":0,"lured":0},"timebank":{"dD30":0.0142,"se":0.0045,"hurt":0,"outed":0,"wasted":0,"lured":0},"duels":{"dD30":0.0054,"se":0.0039,"hurt":0,"outed":0,"wasted":0,"lured":0},"verify":{"dD30":-0.0212,"se":0.0035,"hurt":0,"outed":0,"wasted":0,"lured":0},"verifyPost":{"dD30":-0.0041,"se":0.0037,"hurt":0,"outed":0,"wasted":0,"lured":0},"hostedOpen":{"dD30":0.0005,"se":0.0041,"hurt":0,"outed":0,"wasted":128,"lured":1.4375},"hostedSafe":{"dD30":0.0065,"se":0.0041,"hurt":0,"outed":0,"wasted":5,"lured":0.0312},"placebo":{"dD30":-0.0039,"se":0.0037,"hurt":0,"outed":0,"wasted":0,"lured":0}},"defence":{"none":{"dD30":0.0005,"se":0.0041,"wasted":128,"lured":1.4375},"handshake":{"dD30":-0.0179,"se":0.0049,"wasted":48,"lured":0.5},"stake":{"dD30":0.0049,"se":0.0041,"wasted":31,"lured":0.0312},"both":{"dD30":-0.0139,"se":0.0044,"wasted":6,"lured":0},"postGate":{"dD30":0.0066,"se":0.0041,"wasted":48,"lured":0.3125},"postGateStake":{"dD30":0.0065,"se":0.0041,"wasted":5,"lured":0.0312},"moneyEscrow":{"dD30":-0.0,"se":0.0039,"wasted":53,"lured":0.375},"escrowPlusBoth":{"dD30":-0.0012,"se":0.0044,"wasted":1,"lured":0}},"flow":{"0":{"v4":0.6903,"allAtOnce":0.8931,"merged":0.8931,"unlocked":0.8931},"0.01":{"v4":0.6784,"allAtOnce":0.8537,"merged":0.8804,"unlocked":0.8837},"0.02":{"v4":0.6487,"allAtOnce":0.7328,"merged":0.8632,"unlocked":0.868},"0.03":{"v4":0.6362,"allAtOnce":0.6024,"merged":0.8157,"unlocked":0.8466}},"ladder":[{"n":"v0.4","D30":0.6938},{"n":"pacts","D30":0.7772},{"n":"mole","D30":0.819},{"n":"feats","D30":0.8536},{"n":"midnight","D30":0.8723},{"n":"calls","D30":0.879},{"n":"fear","D30":0.885},{"n":"timebank","D30":0.8911},{"n":"hosted","D30":0.8958}],"remove":{"pacts":{"loss":0.0377},"mole":{"loss":0.0232},"midnight":{"loss":0.01},"fear":{"loss":0.0065},"calls":{"loss":0.0097},"feats":{"loss":0.0214},"timebank":{"loss":0.0098},"hosted":{"loss":0.0047}},"sens":[{"k":"pacts","top3":1},{"k":"mole","top3":0.95},{"k":"fear","top3":0.45},{"k":"midnight","top3":0.5},{"k":"feats","top3":0.05},{"k":"calls","top3":0.05},{"k":"timebank","top3":0},{"k":"hosted","top3":0}]};
+const V5ROWS=[['pacts','Pacts, two free misses a week','reg'],['mole','The Mole','fun'],['midnightChosen','Midnight, you pick the minute','nogo'],['midnightSlots','Midnight, pick one of three slots','fun'],['fear','Ladder pacts','fun'],['midnight','Midnight, batched at 00:00','fun'],
+ ['featsTop','Wall of Feats, best circles','reg'],['calls','Calls between circles','reg'],['feats','Wall of Feats, circles your size','reg'],['timebank','Favors in hours','reg'],['homework','Homework (v0.4 idea)','fun'],['gossipInstant','Gossip about others, sent instantly','nogo'],
+ ['hostedSafe','Circle Missions, stake + met in person','safe'],['duels','Duels','fun'],['gossipBatch','Gossip about others, batched','nogo'],['vanish','Vanish','fun'],['hostedOpen','Circle Missions, anyone can post','safe'],
+ ['placebo','A switch that does nothing','plc'],['verifyPost','Met in person to post','safe'],['verify','Met in person to join anything','safe'],['pactsHard','Strict pacts','nogo']];
+const V5S={"pacts": "Pacts", "mole": "The Mole", "midnightChosen": "Midnight, any minute", "midnightSlots": "Midnight, 3 slots", "fear": "Ladder pacts", "midnight": "Midnight, 00:00", "featsTop": "Wall, best circles", "calls": "Calls", "feats": "Wall, your size", "timebank": "Favors in hours", "homework": "Homework", "gossipInstant": "Gossip, instant", "hostedSafe": "Missions, safe", "duels": "Duels", "gossipBatch": "Gossip, batched", "vanish": "Vanish", "hostedOpen": "Missions, open", "placebo": "Placebo", "verifyPost": "Met to post", "verify": "Met to join", "pactsHard": "Strict pacts"};
+const V5C={reg:'--good',fun:'--stamp',safe:'--ballpoint',nogo:'--hazard',plc:'--muted'};
+function drawV5Add(){const cv=$('#ch-v5add');if(!cv||!cv.clientWidth||!V5D)return;const src=V5D.add;
+  const W0=cv.clientWidth,rows=V5ROWS.filter(r=>src[r[0]]).map(([k,l,c])=>({k,l:W0<520?V5S[k]:l,c,d:src[k].dD30,se:src[k].se})).sort((a,b)=>b.d-a.d);
+  const dpr=window.devicePixelRatio||1,W=cv.clientWidth,rh=23,T=22,B=22,H=T+B+rows.length*rh;cv.style.height=H+'px';
+  cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);
+  const ink=css('--ink'),muted=css('--muted'),ln=css('--line'),narrow=W<520;
+  x.font='12px "Instrument Sans", system-ui, sans-serif';const L=Math.min(narrow?170:240,12+Math.max(...rows.map(r=>x.measureText(r.l).width))),Rr=narrow?40:56,w=W-L-Rr;
+  const lo=Math.min(-.06,...rows.map(r=>r.d-2*r.se)),hi=Math.max(.06,...rows.map(r=>r.d+2*r.se)),X=v=>L+(v-lo)/(hi-lo)*w;
+  x.font='10px "IBM Plex Mono", ui-monospace, monospace';x.textBaseline='middle';x.textAlign='center';
+  const stp=narrow?.04:.02;for(let v=Math.ceil(lo/stp)*stp;v<=hi+1e-9;v+=stp){const xx=X(v);x.strokeStyle=ln;x.lineWidth=1;x.beginPath();x.moveTo(xx+.5,T-6);x.lineTo(xx+.5,H-B);x.stroke();x.fillStyle=muted;x.fillText((v>0?'+':'')+Math.round(v*100),xx,H-B+11)}
+  x.fillStyle=muted;x.textAlign='left';x.fillText(narrow?'day-30 points vs v0.4':'points of day-30 retention vs v0.4 ('+pct(V5D.base.D30)+')',L,9);
+  x.strokeStyle=ink;x.lineWidth=1.2;x.beginPath();x.moveTo(X(0)+.5,T-6);x.lineTo(X(0)+.5,H-B);x.stroke();
+  rows.forEach((r,i)=>{const y=T+i*rh+rh/2,col=css(V5C[r.c]);
+    x.fillStyle=col;x.globalAlpha=r.c==='nogo'||r.c==='plc'?.55:.9;const a=X(Math.min(0,r.d)),b=X(Math.max(0,r.d));x.fillRect(a,y-7,Math.max(1,b-a),14);x.globalAlpha=1;
+    x.strokeStyle=ink;x.lineWidth=1;x.beginPath();x.moveTo(X(r.d-2*r.se),y+.5);x.lineTo(X(r.d+2*r.se),y+.5);x.moveTo(X(r.d-2*r.se)+.5,y-3);x.lineTo(X(r.d-2*r.se)+.5,y+4);x.moveTo(X(r.d+2*r.se)+.5,y-3);x.lineTo(X(r.d+2*r.se)+.5,y+4);x.stroke();
+    x.fillStyle=ink;x.textAlign='right';x.font=(r.k==='pacts'||r.k==='mole'?'600 ':'')+'12px "Instrument Sans", system-ui, sans-serif';x.fillText(r.l,L-8,y);
+    x.font='600 11px "IBM Plex Mono", ui-monospace, monospace';x.textAlign='left';x.fillText(pts(r.d),Math.max(X(r.d+2*r.se),X(0))+6,y)});
+}
+function drawV5Flow(){const cv=$('#ch-v5flow');if(!cv||!cv.clientWidth||!V5D)return;const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
+  cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);
+  const muted=css('--muted'),ln=css('--line'),L=40,Rr=W<520?66:96,T=12,B=24,w=W-L-Rr,h=H-T-B,F=V5D.flow;
+  const ks=Object.keys(F).sort((a,b)=>a-b),lab=['none','low','medium','high'],lo=.5,hi=.95,X=i=>L+i/(ks.length-1)*w,Y=v=>T+h-(v-lo)/(hi-lo)*h;
+  x.font='10px "IBM Plex Mono", ui-monospace, monospace';x.textBaseline='middle';
+  for(let v=lo;v<=hi+1e-9;v+=.1){const y=Y(v);x.strokeStyle=ln;x.beginPath();x.moveTo(L,y+.5);x.lineTo(L+w,y+.5);x.stroke();x.fillStyle=muted;x.textAlign='right';x.fillText(Math.round(v*100)+'%',L-6,y)}
+  x.textAlign='center';x.textBaseline='top';ks.forEach((k,i)=>x.fillText(lab[i]||k,X(i),T+h+6));
+  const S=[['v4','v0.4','--muted',1],['allAtOnce',W<520?'at once':'all at once','--stamp'],['merged','merged','--ballpoint'],['unlocked','unlocked','--good']],ends=[];
+  S.forEach(([k,n,c,dash])=>{const col=css(c);x.strokeStyle=col;x.lineWidth=2;if(dash)x.setLineDash([4,4]);x.beginPath();ks.forEach((q,i)=>{const v=F[q][k];i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v))});x.stroke();x.setLineDash([]);
+    ks.forEach((q,i)=>{x.fillStyle=col;x.beginPath();x.arc(X(i),Y(F[q][k]),4,0,7);x.fill()});ends.push([n,col,Y(F[ks[ks.length-1]][k])])});
+  ends.sort((a,b)=>a[2]-b[2]);for(let i=1;i<ends.length;i++)if(ends[i][2]-ends[i-1][2]<12)ends[i][2]=ends[i-1][2]+12;
+  x.font='600 11px "IBM Plex Mono", ui-monospace, monospace';x.textAlign='left';x.textBaseline='middle';ends.forEach(([n,col,y])=>{x.fillStyle=col;x.fillText(n,L+w+8,y)});
+}
+function v5Tables(){if(!V5D)return;const A=V5D.add,F=V5D.flow,hi=F[Object.keys(F).sort((a,b)=>b-a)[0]];
+  document.querySelectorAll('[data-v5]').forEach(e=>{const k=e.dataset.v5;e.textContent=k==='pactsHardNeg'?(Math.abs(A.pactsHard.dD30)*100).toFixed(1):(A[k].dD30*100).toFixed(1)});
+  const r=(l,v,p,cls)=>`<div class="rung ${cls||''}"><small>${l}</small><b>${v}</b><p>${p}</p></div>`;
+  $('#v5Rungs').innerHTML=r('Day 30, v0.4',pct(V5D.base.D30),'where we are')+r('+ Pacts',pts(A.pacts.dD30),'two free misses a week','hi')+r('Strict pacts',pts(A.pactsHard.dD30),'no misses, public strikes')+r('High cost per concept',pct(hi.unlocked),`merged and unlocked gradually; all at once: ${pct(hi.allAtOnce)}`,'hi');
+  $('#v5Placebo').textContent=`A switch that changes nothing but the random numbers moved day 30 by ${pts(A.placebo.dD30)} points. Treat differences under about 1.5 points as noise.`;
+  const MID=[['midnight','About you · batched at 00:00, at least 3','build'],['midnightSlots','About you · pick one of three slots','maybe'],['midnightChosen','About you · pick the exact minute','no'],['gossipBatch','About others · batched','no'],['gossipInstant','About others · sent instantly','no']];
+  $('#v5Mid').innerHTML=`<table class="table"><thead><tr><th>Version</th><th>Day 30</th><th>People hurt</th><th>Authors worked out</th><th>Verdict</th></tr></thead><tbody>`+MID.map(([k,l,v])=>`<tr><td>${l}</td><td class="n">${pts(A[k].dD30)}</td><td class="n">${fmt(A[k].hurt)}</td><td class="n">${fmt(A[k].outed)}</td><td><span class="tag ${v==='build'?'build':v==='maybe'?'later':'no'}">${v==='build'?'BUILD':v==='maybe'?'IF ASKED':'NO'}</span></td></tr>`).join('')+`</tbody></table><p class="formula">Over 120 days in a city of 1,800. The built version lets you pick the night; the app picks the moment.</p>`;
+  const D=V5D.defence,DEF=[['none','Anyone can post'],['handshake','Met in person to join anything'],['postGate','Met in person to post'],['stake','Host stakes 3 Reliability'],['postGateStake','Met in person to post + stake'],['moneyEscrow','Host pays a money deposit'],['escrowPlusBoth','Deposit + met in person + stake']];
+  $('#v5Def').innerHTML=`<table class="table"><thead><tr><th>Rule for circle-made Missions</th><th>Day 30</th><th>Wasted trips to fakes</th><th>People lured</th><th>Verdict</th></tr></thead><tbody>`+DEF.filter(([k])=>D[k]).map(([k,l])=>`<tr><td>${l}</td><td class="n">${pts(D[k].dD30)}</td><td class="n">${fmt(D[k].wasted)}</td><td class="n">${D[k].lured.toFixed(1)}</td><td><span class="tag ${k==='postGateStake'?'build':k==='stake'?'later':'no'}">${k==='postGateStake'?'BUILD':k==='stake'?'MINIMUM':'NO'}</span></td></tr>`).join('')+`</tbody></table><p class="formula">"Lured" means someone sent to an isolated spot by a fake Mission. Built: only circles that have met in person can propose, they stake Reliability, three other circles confirm, a Zone approves, and the spot goes only to people who said yes.</p>`;
+  const lad=V5D.ladder,rem=V5D.remove,sens=Object.fromEntries(V5D.sens.map(s=>[s.k,s.top3])),NM={pacts:'Pacts',mole:'The Mole',feats:'Wall of Feats',midnight:'Midnight',calls:'Calls',fear:'Ladder pacts',timebank:'Favors in hours',hosted:'Circle Missions (safe)'};
+  $('#v5Rank').innerHTML=`<table class="table"><thead><tr><th>Step</th><th>Idea added</th><th>Day 30 after</th><th>Loss if removed from all eight</th><th>Top 3 under ±50%</th></tr></thead><tbody>`+lad.slice(1).map((s,i)=>`<tr><td class="n">${i+1}</td><td>${NM[s.n]}</td><td class="n">${pct(s.D30)}</td><td class="n">${(rem[s.n].loss*100).toFixed(1)}</td><td class="n">${Math.round(sens[s.n]*100)}%</td></tr>`).join('')+`</tbody></table><p class="formula">Greedy ladder from v0.4 (${pct(lad[0].D30)}), adding the best remaining idea each step, no concept cost. The first two steps carry most of the gain.</p>`;
+}
+function drawV5(){v5Tables();drawV5Add();drawV5Flow()}
+
+sync();
+const startTab=['v5','road','next','ideas','sim','week'].includes(location.hash.slice(1))?location.hash.slice(1):'v5';
+show(startTab);
+})();
+</script>

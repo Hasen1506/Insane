@@ -166,7 +166,8 @@ button{cursor:pointer}
 .chip{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13.5px;cursor:pointer}
 .chip input{accent-color:var(--stamp);width:15px;height:15px;margin:0;flex:none}
 .chip .vt{font-family:var(--f-mono);font-size:9.5px;border-radius:4px;padding:0 4px;margin-left:auto;flex:none;border:1px solid}
-.vt.v2{color:var(--ballpoint);border-color:var(--ballpoint)}.vt.v5{color:var(--hazard);border-color:var(--hazard)}.vt.v4{color:var(--good);border-color:var(--good)}.vt.v3{color:var(--stamp);border-color:var(--stamp)}
+.vt.v2{color:var(--ballpoint);border-color:var(--ballpoint)}.vt.v6{background:var(--ball-soft);color:var(--ballpoint)}
+.vt.v5{color:var(--hazard);border-color:var(--hazard)}.vt.v4{color:var(--good);border-color:var(--good)}.vt.v3{color:var(--stamp);border-color:var(--stamp)}
 .sliders{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin-bottom:16px;font-size:13px}
 .sliders label{display:flex;align-items:center;gap:8px}
 .sliders input[type=range]{accent-color:var(--ink);width:120px}
@@ -324,15 +325,57 @@ button{cursor:pointer}
 .sh-i{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:9px 2px;font-size:14px;font-weight:600}
 .phone-note button{background:none;border:0;padding:0;color:var(--ballpoint);text-decoration:underline;font:inherit;cursor:pointer}
 .nav{z-index:4}
+/* v0.6 phone */
+.seg.n5{grid-template-columns:repeat(5,1fr)}.seg.n5 button{font-size:11px;padding:6px 1px}
+.readc{border:1.5px solid var(--good);background:var(--good-soft);border-radius:12px;padding:9px 11px;margin:0 0 10px;font-size:13px}
+.readc.empty{border-style:dashed;border-color:var(--line);background:transparent;color:var(--muted)}
+.readc.warn{border-color:var(--hazard);background:var(--haz-soft)}
+.readc .rk{font-family:var(--f-mono);font-size:10px;letter-spacing:.1em;color:var(--good);text-transform:uppercase;margin-bottom:4px}
+.rrow{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px dashed var(--line)}
+.rrow span{font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}.rrow b{text-align:right;font-size:13px}
+.readc p{margin:6px 0 0!important;font-size:12px!important}
+.threads{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:8px;scrollbar-width:none}
+.thr{flex:0 0 auto;text-align:left;border:1.5px solid var(--line);background:var(--card);border-radius:12px;padding:6px 10px;min-width:118px}
+.thr b{display:block;font-size:12.5px}.thr small{display:block;font-family:var(--f-mono);font-size:9.5px;color:var(--muted)}
+.thr i{font-style:normal;font-family:var(--f-mono);font-size:9px;color:var(--muted)}.thr i.ping{color:var(--stamp)}
+.thr.on{border-color:var(--ink);background:var(--paper)}
+.chat{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+.msg{max-width:82%;align-self:flex-start;background:var(--card);border:1px solid var(--line);border-radius:12px 12px 12px 4px;padding:5px 10px;font-size:13.5px}
+.msg small{display:block;font-family:var(--f-mono);font-size:9.5px;color:var(--muted)}
+.msg.me{align-self:flex-end;background:var(--ink);color:var(--paper);border-color:var(--ink);border-radius:12px 12px 4px 12px}.msg.me small{color:inherit;opacity:.7}
+.compose{display:flex;gap:6px;margin:6px 0}
+.compose input{flex:1;min-width:0;border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:7px 10px;font-family:var(--f-body);font-size:16px;color:var(--ink)}
+.card.dec{border:1.5px solid var(--ballpoint)}
+.clue{font-style:italic;font-size:14px!important}
+.hints{display:flex;flex-direction:column;gap:3px;margin:6px 0}
+.hint{font-family:var(--f-mono);font-size:10.5px;border:1px dashed var(--line);border-radius:8px;padding:3px 8px;color:var(--muted)}
+.hint.on{border-style:solid;border-color:var(--ballpoint);color:var(--ballpoint);background:var(--ball-soft)}
+.hint.lock{color:var(--muted)}
+.card.room{border:1.5px dashed var(--ballpoint)}
+.card.sealbar{background:#151D36;color:#ECEEE7;border-color:#151D36}.card.sealbar .meta{color:#9AA3B8}
+.card.darkc{border:1.5px solid var(--ink)}
+.darkc p{margin:6px 0 2px}
+.darkc .rad{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;margin:8px 0}
+.screen.darkmode .nav,.screen.darkmode .hud{display:none}
+.screen.darkmode .view{background:#05070D;color:#C9CED9}
+.dark{min-height:100%;display:flex;flex-direction:column;justify-content:center;text-align:center;padding:30px 10px}
+.dk{font-family:var(--f-mono);letter-spacing:.4em;font-size:11px;color:#6B7389}
+.dclock{font-family:var(--f-mono);font-size:44px;font-weight:600;color:#ECEEE7;margin:10px 0}
+.dark p{font-size:13.5px;margin:0 0 10px}
+.dwith{font-size:13px;border:1px solid #2A3247;border-radius:999px;padding:5px 12px;margin:4px auto 12px;display:inline-block}
+.dsmall{font-family:var(--f-mono);font-size:10.5px!important;color:#6B7389}
+.dark .btns{justify-content:center}.dark .btn.ghost{border-color:#3A4566;color:#C9CED9;background:transparent}
+.reacts.lt button{border-color:var(--line);color:var(--ink)}.reacts.lt button.on{background:var(--ink);color:var(--paper)}.reacts.lt .rm{color:var(--muted)}
+[hidden]{display:none!important}
 </style>
 
 <header class="top wrap">
   <div class="brandrow">
-    <span class="wordmark">INSANE</span><span class="ver">v0.5</span>
+    <span class="wordmark">INSANE</span><span class="ver">v0.6</span>
     <span class="ticket">Your circle runs on it · the app never holds money</span>
   </div>
-  <h1>v0.5 makes the everyday stuff the reason to stay, and shows the app a little at a time.</h1>
-  <p><b>Pacts</b> are the things you keep saying you’ll do, with your circle checking in (two free misses a week). <b>Midnight</b> is unsigned messages about yourself, released together at midnight. <b>The Mole</b> is one secret saboteur a week. The City gets a <b>Wall</b> of what other circles did and <b>Calls</b> so circles can work together, and circles that have met in person can propose Missions with their Reliability on the line. Chapters merged into your circle, favors are now hours, and groceries moved to Pots. The phone opens on your first five minutes.</p>
+  <h1>v0.6 adds the things people asked for, chat, a public feed, going dark, built the quiet way.</h1>
+  <p>Your first pact now starts from your own words: say what you <b>need</b>, <b>want</b> or have an <b>urge</b> to do, and it becomes a pact, a plan, a ladder, a dare, a Mole task or a Midnight message. <b>Chat</b> lives in threads on plans, pots and pacts, and only pings the people in them. Circles get <b>rooms</b> together that close afterwards, and you can message someone from another circle only after you’ve met in person. The City has a <b>feed</b> with no counts and no stranger comments, weekly <b>Decode</b> nights (points by solve order, never by who arrives first), <b>drops in every zone</b> and walkable <b>trails</b>. <b>Go dark</b> covers your noisy apps for up to a day, alone or with your circle. Midnight adds <b>sealed</b> messages that open later.</p>
 </header>
 
 <main class="wrap grid">
@@ -356,21 +399,69 @@ button{cursor:pointer}
         </nav>
       </div>
     </div>
-    <div class="phone-note">v0.5 · <button data-act="replay">replay the first five minutes</button> · <button data-act="skip">skip to Thursday</button></div>
+    <div class="phone-note">v0.6 · <button data-act="replay">replay the first five minutes</button> · <button data-act="skip">skip to Thursday</button></div>
   </section>
 
   <section aria-label="Research console">
     <div class="ptabs" role="tablist">
-      <button role="tab" data-p="v5" aria-selected="true">v0.5, tested</button>
+      <button role="tab" data-p="v6" aria-selected="true">v0.6, tested</button>
+      <button role="tab" data-p="v5" aria-selected="false">v0.5, tested</button>
       <button role="tab" data-p="road" aria-selected="false">Road to 90%</button>
       <button role="tab" data-p="next" aria-selected="false">What to build next</button>
       <button role="tab" data-p="ideas" aria-selected="false">Your ideas, tested</button>
       <button role="tab" data-p="sim" aria-selected="false">Simulator</button>
-      <button role="tab" data-p="week" aria-selected="false">A week on v0.5</button>
+      <button role="tab" data-p="week" aria-selected="false">A week on v0.6</button>
+    </div>
+
+    <!-- V6 -->
+    <div id="p-v6">
+      <div class="verdict">
+        <h3>Chat, a public feed and Go dark all help, but only built the quiet way. The loud versions are the ones people already know, and they're the ones that hurt.</h3>
+        <p><b>Chat:</b> one room for the whole circle <i>loses</i> about 6 points of day-30 retention, because every message pings everyone. Threads that live on a plan, pot or pact, and only ping the people in it, add up to 3. Rooms between circles that close after the thing is done help. Open DMs between strangers bring back about the same number of people, plus <span data-v6="dmHarm"></span> people sent messages they didn't want.</p>
+        <p><b>Public feed:</b> a feed without like counts, follower counts or comments from strangers is the best new idea in this round. The same feed with counts and comments adds less and hurts about <span data-v6="feedHarm"></span> people.</p>
+        <p><b>The city:</b> circles mostly don't sit back and wait for others to crack a clue. That happens when the clue is too hard, whatever the hint rules are. The real danger is <b>racing</b>: whenever arriving first wins, everyone rushes, and the busiest spot gets about 1.5 times the crowd. So points go by solve order, prizes are drawn among everyone who turns up, and drops go one per zone.</p>
+        <p><b>Read the levels with care.</b> In the calibrated model, v0.5 already sits near 90% on day 30, so new ideas have little room to show. Each idea is also run in a "busier people" world where every reason to open the app counts half. Trust the ranking and the comparisons, not the levels.</p>
+      </div>
+      <div class="ladder" id="v6Rungs"></div>
+      <div class="chart"><h5>Add one idea to v0.5 <span>32 seeds · paired · bars: busier people · dots: calibrated · whiskers ±2 SE</span></h5>
+        <canvas id="ch-v6add" class="tall" aria-label="Day-30 retention change from each v0.6 idea"></canvas>
+        <div class="legend"><span><i class="cat" style="background:var(--good)"></i>build</span><span><i class="cat" style="background:var(--ballpoint)"></i>build, for safety or wellbeing</span><span><i class="cat" style="background:var(--hazard)"></i>no-gos, simulated anyway</span><span><i class="cat" style="background:var(--muted)"></i>a switch that does nothing</span><span>● calibrated world</span></div>
+      </div>
+      <p class="formula" id="v6Placebo"></p>
+      <h3 class="sec">Chat: threads, not one room</h3>
+      <div class="score" id="v6Chat"></div>
+      <h3 class="sec">Decode: will circles just wait for others to solve it?</h3>
+      <div class="score" id="v6Dec"></div>
+      <h3 class="sec">Drops: where they go, and whether arriving first wins</h3>
+      <div class="score" id="v6Drops"></div>
+      <h3 class="sec">Every kind of city play, ranked</h3>
+      <div class="score" id="v6Play"></div>
+      <h3 class="sec">Can the phone scan be faked?</h3>
+      <div class="score" id="v6Fake"></div>
+      <div class="two">
+        <div class="note"><h4>What surprised the model</h4><ul>
+          <li><b>One chat room is worse than no chat.</b> Even at a quarter of the assumed noise, threads beat the room. "Too many notifications" became a top reason to leave.</li>
+          <li><b>The feed's job is week one.</b> The model assumes it's worth most in someone's first two weeks, when their own circle is quiet, which is exactly when new people leave. If that assumption is wrong, the feed matters less.</li>
+          <li><b>Free-riding on clues is mostly a difficulty problem.</b> Easy enough to crack in about an hour, 3% of circles end up waiting. Twice as hard, with effort that feels like work, about a quarter wait, whatever the hint rules. Showing hints only to circles that have tried, or passing a hint on, barely changes that. Passing a hint on does help weaker circles score.</li>
+          <li><b>Auctioning drop spots to shops</b> puts them all in the middle of town. Outskirts circles within reach fall from 100% to about 40%.</li>
+          <li><b>Go dark and sealed messages barely move retention</b> in the calibrated world. They're built because they're good for people, not because they keep them.</li>
+        </ul></div>
+        <div class="note red"><h4>The no-gos</h4><ul>
+          <li><b>One busy room for the whole circle:</b> about −6 points. It's the WhatsApp group again, and people already have one.</li>
+          <li><b>Open DMs between strangers:</b> about 190 people a season get messages they didn't want. Ofcom's 2023 survey found three in five UK 11 to 18 year olds had had potentially uncomfortable contact online.</li>
+          <li><b>Like counts and stranger comments:</b> smaller circles feel behind, and some people get comments they didn't want. Meta's own 2020 research found that 32% of teen girls who already felt bad about their bodies said Instagram made them feel worse.</li>
+          <li><b>Any play where arriving first wins</b> (first-come drops, shrinking zones, the Hunt): everyone rushes. Pokémon GO's first 148 days were linked to 286 extra crashes in one Indiana county, 134 of them near PokéStops; in 2016, players in Missouri were lured to secluded spots and robbed at gunpoint.</li>
+        </ul></div>
+        <div class="note" style="grid-column:1/-1"><h4>What the model can't see</h4><ul>
+          <li>Notification noise, harassment rates and the fun of each play type are guesses. The noise sweep shows the chat result holds from a quarter to the full assumed noise. Play-type inputs are listed in docs/V06.md so you can disagree with them.</li>
+          <li>It can't see whether the needs, wants and urges screen reads people right. In the model a better-fitting first pact barely moves retention, because most people start a pact in week one anyway. The test is whether people go on to finish the thing they typed.</li>
+          <li>The fake-account table is a cost sum, not a simulation: what each check makes an attacker buy or do.</li>
+        </ul></div>
+      </div>
     </div>
 
     <!-- V5 -->
-    <div id="p-v5">
+    <div id="p-v5" hidden>
       <div class="verdict">
         <h3>The stupid stuff is why people join. Pacts are why they stay. And showing the app a little at a time matters as much as what's in it.</h3>
         <p>Every new idea was added to v0.4 on its own, on 32 paired seeds. Two lead by a distance: <b>Pacts</b> (goals your circle checks in on) and <b>the Mole</b> (one secret saboteur a week). Both happen every week, inside the circle, and nobody has to be brave in public. That's the reason to persist you were looking for: you won't do something insane every day, but you will check in on a pact.</p>
@@ -509,6 +600,7 @@ button{cursor:pointer}
         <button data-preset="decay">v0.3 + trust decay</button>
         <button data-preset="v4">v0.4</button>
         <button data-preset="v5">v0.5</button>
+        <button data-preset="v6">v0.6</button>
       </div>
       <div class="controls">
         <div class="cgroup"><h4>Infrastructure</h4>
@@ -556,6 +648,18 @@ button{cursor:pointer}
           <label class="chip"><input type="checkbox" id="c-feats">Wall of Feats<span class="vt v5">v0.5</span></label>
           <label class="chip"><input type="checkbox" id="c-calls">Calls between circles<span class="vt v5">v0.5</span></label>
         </div>
+        <div class="cgroup"><h4>v0.6 ideas</h4>
+          <label class="chip"><input type="checkbox" id="c-chatThreads">Chat in threads<span class="vt v6">v0.6</span></label>
+          <label class="chip"><input type="checkbox" id="c-xRooms">Rooms with other circles<span class="vt v6">v0.6</span></label>
+          <label class="chip"><input type="checkbox" id="c-feedSoft">City feed, no counts<span class="vt v6">v0.6</span></label>
+          <label class="chip"><input type="checkbox" id="c-sealed">Sealed messages<span class="vt v6">v0.6</span></label>
+          <label class="chip"><input type="checkbox" id="c-mnWindow">Midnight, pick a week<span class="vt v6">v0.6</span></label>
+          <label class="chip"><input type="checkbox" id="c-obFree">First pact in your own words<span class="vt v6">v0.6</span></label>
+          <label class="chip"><input type="checkbox" id="c-darkTogether">Go dark together<span class="vt v6">v0.6</span></label>
+        </div>
+        <div class="cgroup"><h4>The world</h4>
+          <label class="chip"><input type="checkbox" id="c-busy">Busier people (every reason to open is worth half)</label>
+        </div>
         <div class="cgroup"><h4>Circle-made Missions</h4>
           <label class="chip"><input type="checkbox" id="c-hosted">Circles can propose Missions</label>
           <label class="chip"><input type="checkbox" id="c-hostStake">Host stakes Reliability<span class="vt v5">v0.5</span></label>
@@ -567,6 +671,9 @@ button{cursor:pointer}
           <label class="chip"><input type="checkbox" id="c-payPrize">Pay to enter Drops</label>
           <label class="chip"><input type="checkbox" id="c-pactsHard">Strict pacts (no misses, public strikes)</label>
           <label class="chip"><input type="checkbox" id="c-gossip">Anonymous gossip about others</label>
+          <label class="chip"><input type="checkbox" id="c-chatRoom">One chat room for the whole circle</label>
+          <label class="chip"><input type="checkbox" id="c-xDMs">Open DMs between strangers</label>
+          <label class="chip"><input type="checkbox" id="c-feedOpen">Open feed with likes and comments</label>
         </div>
       </div>
       <div class="sliders">
@@ -586,17 +693,17 @@ button{cursor:pointer}
 
     <!-- WEEK -->
     <div id="p-week" hidden>
-      <p class="lead">Same user as the earlier diaries, one week on v0.5. <b>Opened 7 of 7 days, about 5 minutes a day.</b> v0.4 gave the circle things to plan. v0.5 gives every day one small thing: a check-in, a message, a secret.</p>
+      <p class="lead">Same user as the earlier diaries, one week on v0.6. <b>Opened 7 of 7 days, about 6 minutes a day, and went dark for 6 hours on Sunday.</b> v0.5 gave every day one small thing. v0.6 lets the circle talk where the plan is, and gives the City something to do on weeknights.</p>
       <div class="week">
-        <div class="wd"><div class="day">Mon<small>4 min</small></div><span class="tag" style="color:var(--good)">Pact · Pot</span><p>Ran before work and checked in: one tap, the circle sees a tick. Pia’s groceries pot was £14 each; I paid her from my bank app. Groceries aren’t favors any more, so nobody argues about what half a bag of shopping is worth.</p></div>
-        <div class="wd"><div class="day">Tue<small>6 min</small></div><span class="tag" style="color:var(--ballpoint)">Midnight</span><p>Four unsigned messages from last night. One said “I applied for a job in Lisbon. Haven’t told anyone.” Five people reacted “brave”. I queued my own for Wednesday night. I picked the night; the app picked the moment.</p></div>
-        <div class="wd"><div class="day">Wed<small>5 min</small></div><span class="tag" style="color:var(--hazard)">The Mole</span><p>I’m the Mole this week. Swapped the fridge magnets around while Dev was on the phone. Nobody noticed. Missed my run: one of my two free misses.</p></div>
-        <div class="wd"><div class="day">Thu<small>9 min + 4 h out</small></div><span class="tag" style="color:var(--stamp)">Fixture · Call</span><p>Our lineup was full, so I answered Night Shift’s Call and played as their guest in the first round. Got two people to say “pineapple” at Zone Night. <b>Best night of the month, again.</b></p></div>
-        <div class="wd"><div class="day">Fri<small>3 min</small></div><span class="tag" style="color:var(--good)">Wall</span><p>Allotment 9 finished six pacts out of six. Maya hit “Steal this” and now the whole circle starts one on Monday. Even Rin.</p></div>
-        <div class="wd"><div class="day">Sat<small>2 min + 1 h out</small></div><span class="tag" style="color:var(--good)">Mission</span><p>Mission 07, The Freeze. The exact spot arrived at 11:00. Third Floor all showed up, and it went on the Wall before we got home.</p></div>
-        <div class="wd"><div class="day">Sun<small>7 min + 1 h out</small></div><span class="tag" style="color:var(--hazard)">Mole reveal</span><p>Reveal at 21:00. One vote out of five on me. Got away with it. Market Day in the morning: the camping stove went for two hours of help painting.</p></div>
+        <div class="wd"><div class="day">Mon<small>5 min</small></div><span class="tag" style="color:var(--good)">Chat · Pot</span><p>Maya @’d me in the Lisbon pot thread: flights are £80 if we book by Friday. I pledged right there. The General thread had 30 messages about oat milk; I never got a single ping for it.</p></div>
+        <div class="wd"><div class="day">Tue<small>6 min</small></div><span class="tag" style="color:var(--ballpoint)">Midnight · Sealed</span><p>Wrote a sealed one for New Year’s Eve: I bet Dev finishes his Spanish pact. Signed, so I picked the moment. My unsigned one goes out some night this week, with the batch.</p></div>
+        <div class="wd"><div class="day">Wed<small>4 min</small></div><span class="tag" style="color:var(--good)">Feed</span><p>The Cousins posted their grandma’s dumpling fold. No likes to count, so I just hit “steal this”. It’s on our plans for Sunday.</p></div>
+        <div class="wd"><div class="day">Thu<small>8 min + 2 h out</small></div><span class="tag" style="color:var(--ballpoint)">Decode</span><p>Clue at 19:00. We had a go, got it wrong, and that unlocked the public hints. Pia cracked it: the river steps. 15th of 40, so 37 points. We walked there. Nobody runs, because getting there first wins nothing. Passed a hint to The Cousins: 15 points each.</p></div>
+        <div class="wd"><div class="day">Fri<small>3 min + 1 h out</small></div><span class="tag" style="color:var(--hazard)">Drops</span><p>Three bike drops tonight, one in our zone. Turned up at 19:40 with Rin and Jules, went into the draw, didn’t win. Met Kai from Night Shift there; we scanned phones, so now we can message.</p></div>
+        <div class="wd"><div class="day">Sat<small>5 min + 2 h out</small></div><span class="tag" style="color:var(--ballpoint)">Trail · Room</span><p>Allotment 9’s Bridges Trail, five stops in any order. Answered Night Shift’s Call for a fourth player, and a room for our two circles opened. It closes 48 hours after the fixture.</p></div>
+        <div class="wd"><div class="day">Sun<small>6 h dark</small></div><span class="tag" style="color:var(--stamp)">Go dark</span><p>Dark Sunday with Maya, Pia and Rin: social and video covered from 10 until 4. Calls still worked. Walked to the lido. The Mole reveal at 21:00 was the first thing I opened.</p></div>
       </div>
-      <h3 class="sec">Who v0.5 is not for, and what keeps them anyway</h3>
+      <h3 class="sec">Who v0.6 is not for, and what keeps them anyway</h3>
       <div class="two">
         <div class="note"><h4>The trader (41, parent)</h4><p>Skips the Mole and Midnight. Opens most days anyway for a pact (“call my mum on Sundays”) and the school-run rota in favors, now in hours. Pots hold the family holiday.</p></div>
         <div class="note"><h4>The performer (19, student)</h4><p>Lives for Missions and Zone nights, and found that Midnight is the one place nobody performs. Their Ladder pact is “say no to something every week”.</p></div>
@@ -612,9 +719,9 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const pct=v=>Math.round(v*100)+'%',fmt=n=>Math.round(n).toLocaleString('en-US');
 
 /* ================================================================
-   PHONE v0.5: first five minutes, then Home · Circle · + · City · Ledger
-   Fewer nouns: Circle (vouched, 24h clips), Dares, Favors (hours), Pots (money), Plans,
-   Pacts (habit or ladder), Midnight, the Mole, and the City (Zones, Missions, League, Wall, Calls).
+   PHONE v0.6: first five minutes, then Home · Circle · + · City · Ledger
+   v0.6 adds: needs / wants / urges in your own words, threaded chat (on plans, pots and pacts), rooms with
+   other circles that close after, a City feed without counts, Decode nights, drops per zone, Go dark, sealed messages.
    ================================================================ */
 const CIRCLE=['You','Maya','Jules','Pia','Dev','Rin'];
 const HANDLES=['STATIC','LOW TIDE','PAPERCUT','NIGHT BUS'];
@@ -624,9 +731,52 @@ const PACT_OPTS=[
  {n:'Call home on Sundays',k:'habit',f:'weekly'},
  {n:'Ladder: speaking up',k:'ladder',f:'7 rungs'},
  {n:'Ladder: cold water',k:'ladder',f:'5 rungs, the last one at a Zone'}];
+const LANES={
+ need:{k:'I need to…',ph:'run three times a week',ex:['run 3 times a week','call home on Sundays','be in bed by 1 every night','read 10 pages a day']},
+ want:{k:'I want to…',ph:'go to Lisbon with the flat',ex:['go to Lisbon in May','learn one proper dish','see a gig every month','buy a PS5 for the flat']},
+ urge:{k:'I’ve got an urge to…',ph:'sing karaoke in public',ex:['sing karaoke in public','tell someone how I feel','swim in the sea in winter','pull off a prank and get away with it']}};
+const NUM={one:1,once:1,two:2,twice:2,three:3,four:4,five:5,six:6,seven:7};
+const DAYS=['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+// Rules, not AI: your words stay on your phone. Returns what the line becomes and how it'll be checked.
+function readUrge(lane,raw){
+  let t=raw.trim().replace(/^(i\s+(really\s+)?(need|want|have|’ve got|'ve got|got)\s+(an\s+urge\s+)?to\s+|to\s+)/i,'').replace(/[.!]+$/,'');
+  if(!t)return null;const l=t.toLowerCase();
+  if(/suicid|kill myself|hurt myself|harm myself|cut myself|end it all|self.?harm/.test(l))return {kind:'Support',what:t};
+  if(/\b(hurt|beat|kill|stab|steal|rob|revenge|stalk|weapon|drunk driv|drive drunk|fight someone|break in)\b/.test(l))return {kind:'No',what:t};
+  let how='';const m=l.match(/\b(\d+|one|two|three|four|five|six|seven|once|twice)\s*(x|times?)?\s*(a|per|each)\s*(week|wk)/);
+  if(m)how=(NUM[m[1]]||+m[1])+' a week';else if(/every\s*(day|night|morning)|daily|each day|a day\b/.test(l))how='every day';
+  else{const d=DAYS.find(x=>l.includes(x));if(d)how='every '+d[0].toUpperCase()+d.slice(1,3);else if(/month/.test(l))how='once a month'}
+  const clean=t.replace(/\s*(\d+|one|two|three|four|five|six|seven|once|twice)\s*(x|times?)?\s*(a|per|each)\s*(week|wk)/i,'').replace(/\s*(every\s*(day|night|morning)|daily|each day)/i,'').trim();
+  const what=clean.charAt(0).toUpperCase()+clean.slice(1);
+  if(lane==='urge'){
+    if(/prank|get away|without (anyone|getting)|sneak|secret/.test(l))return {kind:'Mole',what,how:'your next Mole week',proof:'the Sunday vote',note:'It goes on your Mole list, from the app’s harmless tasks. Nothing involving money, phones, bedrooms or strangers.'};
+    if(/tell|confess|admit|how i feel|say (it|sorry)|apologi/.test(l))return {kind:'Midnight',what,how:'a night you pick',proof:'nothing to prove',note:'Unsigned at Midnight, or sealed with your name to open later. Your call on the next screen.'};
+    if(/scared|afraid|fear|nervous|terrif|heights|cold|sea|swim|jump|public|karaoke|sing|stage|speak|dance|ask (her|him|them|someone) out/.test(l))
+      return {kind:'Ladder',what,how:/sea|swim|cold|heights|jump/.test(l)?'5 rungs · the last one at a Zone, with staff':'7 rungs, one a week',proof:'a 5 s clip or your spotter’s tick',note:'You write the rungs privately. Your circle only sees “rung 2 of 7”.'};
+    return {kind:'Dare',what,how:'this week',proof:'a 15 s clip, gone in 24 h',note:'Goes in your circle’s dare jar, sized to you. Start at a 3 out of 10 and climb.'}}
+  if(lane==='want'){
+    if(/£|\$|€|\bbuy\b|tickets?|trip|holiday|flight|festival|\bgo to [a-z]/i.test(t))return {kind:'Plan + pot',what,how:'the circle picks a date',proof:'pledge, then pay',note:'Nobody pays unless enough of you pledge. INSANE never holds the money.'};
+    if(how)return {kind:'Pact',what,how,proof:'a tick',note:'21 days, two free misses a week.'};
+    return {kind:'Plan',what,how:'the circle picks a date',proof:'who turns up',note:'Goes to the circle as one plan with its own thread.'}}
+  return {kind:'Pact',what,how:how||'3 a week',proof:'a tick, or a 5 s clip if you like',note:'21 days, two free misses a week. Four strikes and it ends quietly.'};
+}
+const THREADS=[
+ {id:'lisbon',n:'Lisbon pot',sub:'4 in · 2 of 4 paid',on:true,msgs:[['Maya','Flights are £80 each if we book by Friday'],['Jules','paid mine'],['Maya','@You you in? need it by Fri']]},
+ {id:'fix',n:'Thursday fixture',sub:'lineup 3 of 4',on:true,msgs:[['Rin','who’s 4th? I can’t do round 2'],['Dev','Night Shift can lend us a guest, I answered their Call']]},
+ {id:'mpact',n:'Maya’s pact',sub:'day 9 of 21',on:false,msgs:[['Maya','day 9. phone stays in the kitchen at 12 again'],['Pia','proud of you']]},
+ {id:'gen',n:'General',sub:'muted unless someone @s you',on:false,msgs:[['Pia','who finished the oat milk'],['Dev','not me. the Mole maybe'],['Rin','👀']]}];
+const ROOMS0=[{c:'Allotment 9',t:'Co-building the May hunt',close:'closes 2 days after it runs'}];
+const MET=[{n:'Kai',c:'Night Shift',w:'Thu, The Loading Dock'},{n:'Sol',c:'Third Floor',w:'Mission 07'}];
+const POSTS=[
+ {c:'Night Shift',w:'1 h ago',k:'Made',t:'Built a cardboard arcade cabinet for the fixture. It works. Barely.'},
+ {c:'The Cousins',w:'yesterday',k:'Show & tell',t:'Grandma taught all four of us her dumpling fold. Recipe in the thread.'}];
+const SEAL_WHEN=['When my pact ends','New Year’s Eve','In 3 months','Our circle’s first birthday'],SEAL_AT=['when your pact ends','on New Year’s Eve','in 3 months','on your circle’s first birthday'];
+const DARK_H=[1,3,6,12,24];
 const STAKES=['My circle picks a dare from the jar','I cook for the circle','No stake, just the check-ins'];
 const P={tab:'home',ob:0,onboard:true,handle:0,verified:false,pick:0,stake:0,
-  cseg:'week',yseg:'map',lseg:'favors',sel:'mission',sheet:false,
+  lane:'need',urge:'',made:null,thread:'lisbon',chatDraft:'',rooms:[],metMsg:{},feedR:{},fposted:false,
+  dec:{tries:0,solved:false,passed:false},darkSet:false,darkH:2,darkMode:0,darkWith:true,darkOn:false,mnMode:'unsigned',sealWhen:0,sealed:false,
+  cseg:'chat',yseg:'map',lseg:'favors',sel:'decode',sheet:false,
   checked:false,posted:false,cheer:{},rsvp:{fixture:false,market:true},lineupN:3,
   mnDraft:'',mnNight:0,mnWaiting:2,mnSent:false,mnRemoved:{},mnReact:{},
   mole:[false,true,false],pine:1,stolen:{},called:{},missionIn:false,missionN:212,propose:false,proposed:false,
@@ -669,7 +819,7 @@ const VAULT=[
  {who:'Rin',what:'Movie-trailer coffee order',left:'3 h 12 m',g:'linear-gradient(150deg,#C8214B,#3B1640)'},
  {who:'Jules',what:'Rung 4: asked a question at the talk',left:'14 h 05 m',g:'linear-gradient(150deg,#1F7A4D,#0E1320)'},
 ];
-const myPact=()=>PACT_OPTS[P.pick];
+const myPact=()=>{const m=P.made;if(m&&(m.kind==='Pact'||m.kind==='Ladder'))return {n:m.what,k:m.kind==='Ladder'?'ladder':'habit',f:m.how};return PACT_OPTS[P.pick]};
 const bal=()=>tx.reduce((a,x)=>a+x.h,0);
 const hrs=h=>{const a=Math.abs(h),s=h>0?'+':h<0?'−':'';return s+(a%1===0?a:a.toFixed(2).replace(/0$/,''))+' h'};
 const potOf=id=>POTS.find(p=>p.id===id);
@@ -685,7 +835,7 @@ function onboarding(){
   if(P.ob===0)return `${dots}<div class="ob"><div class="obk">INVITE</div><h2 class="obh">Maya brought you in.</h2>
     <p>INSANE is invite-only. Maya vouched for you, so <b>her Reliability rides on you</b> for your first 21 days.</p>
     <div class="card"><p><b>What it’s for</b></p><ul class="obl"><li>Plans, pots and favors with the people you live and hang out with</li><li>Pacts: the things you keep saying you’ll do, with your circle checking in</li><li>The stupid stuff you’d never do alone: dares, Midnight, the Mole, Missions</li></ul></div>
-    <p class="obsmall">No chat in here: keep talking in your group chat. INSANE holds the plans, the money tracking and the dares.</p>
+    <p class="obsmall">Chat lives on the thing you’re planning, so only the people in it get pinged. Keep your group chat for everything else.</p>
     <div class="btns"><button class="btn red" data-act="obNext">Accept Maya’s invite</button></div></div>`;
   if(P.ob===1)return `${dots}<div class="ob"><div class="obk">YOUR MASK</div><h2 class="obh">Pick a handle.</h2>
     <p>Your circle sees your name. At <b>Midnight</b> and at Zone nights you go by your handle.</p>
@@ -698,13 +848,22 @@ function onboarding(){
     <div class="qr" aria-hidden="true">${P.verified?'<span>✓</span>':''}</div>
     <div class="btns">${P.verified?'<button class="btn red" data-act="obNext">Next</button>':'<button class="btn red" data-act="verify">We’re together: scan</button><button class="btn ghost" data-act="obNext">Later</button>'}</div>
     <p class="obsmall">${P.verified?'Verified in person, 4 of 6 scanned.':'Until then you can do everything inside the circle, and join anything in the City.'}</p></div>`;
-  return `${dots}<div class="ob"><div class="obk">YOUR FIRST PACT</div><h2 class="obh">What do you keep saying you’ll do?</h2>
-    <div class="opts">${PACT_OPTS.map((o,i)=>`<button class="opt ${P.pick===i?'on':''}" data-act="pickPact" data-i="${i}"><b>${o.n}</b><small>${o.k==='ladder'?'Ladder · ':''}${o.f}</small></button>`).join('')}</div>
-    <h3>If I miss</h3><div class="chips">${STAKES.map((s,i)=>`<button class="chipb ${P.stake===i?'on':''}" data-act="pickStake" data-i="${i}">${s}</button>`).join('')}</div>
-    <p class="obsmall">21 days. Two free misses a week. Four strikes and the pact just ends: no public shaming, ever. ${myPact().k==='ladder'?'Your circle sees which rung you’re on, never what the rungs are.':''}</p>
-    <div class="btns"><button class="btn red" data-act="obDone">Start the pact</button></div></div>`;
+  const L=LANES[P.lane],r=readUrge(P.lane,P.urge),isPact=r&&(r.kind==='Pact'||r.kind==='Ladder');
+  return `${dots}<div class="ob"><div class="obk">WHAT’S ON YOUR MIND</div><h2 class="obh">Say it the way you’d say it to a friend.</h2>
+    ${seg('lane',P.lane,[['need','Need'],['want','Want'],['urge','Urge']])}
+    <div class="card newpot"><label>${L.k}<input id="ob-urge" maxlength="80" autocomplete="off" placeholder="${L.ph}" value="${esc(P.urge)}"></label>
+      <div class="chips">${L.ex.map(x=>`<button class="chipb" data-act="obEx" data-x="${esc(x)}">${esc(x)}</button>`).join('')}</div></div>
+    <div id="ob-read">${readCard(r)}</div>
+    <div id="ob-stake" ${isPact?'':'hidden'}><h3>If I miss</h3><div class="chips">${STAKES.map((x,i)=>`<button class="chipb ${P.stake===i?'on':''}" data-act="pickStake" data-i="${i}">${x}</button>`).join('')}</div></div>
+    <div class="btns"><button class="btn red" data-act="obDone" ${r&&r.kind!=='No'&&r.kind!=='Support'?'':'disabled'}>${obLabel(r)}</button><button class="btn ghost" data-act="obSkip">Skip for now</button></div>
+    <p class="obsmall">INSANE sorts it with simple rules on your phone; nobody reads it unless you send it. Needs become pacts, wants become plans (with a pot if money’s involved), urges become a ladder, a dare, a Mole task or a Midnight message.</p></div>`;
 }
 
+const obLabel=r=>!r?'Start':r.kind==='Pact'||r.kind==='Ladder'?'Start the '+r.kind.toLowerCase():r.kind==='Midnight'?'Write it for Midnight':r.kind==='Mole'?'Add it to my Mole list':r.kind==='Dare'?'Put it in the jar':r.kind.startsWith('Plan')?'Send the plan to my circle':'Start';
+function readCard(r){if(!r)return '<div class="readc empty">Type a line, or tap an example. It turns into something your circle can see and check.</div>';
+  if(r.kind==='Support')return '<div class="readc warn"><b>That sounds heavy.</b> INSANE isn’t the right place for it, but people are. In the UK and Ireland, Samaritans answer 24/7 on 116 123. Anywhere else, your local emergency number or a crisis line.</div>';
+  if(r.kind==='No')return '<div class="readc warn"><b>Not that one.</b> Nothing that could hurt someone, including you. Try it as a ladder or a dare instead.</div>';
+  return `<div class="readc"><div class="rk">How INSANE reads it</div><div class="rrow"><span>Becomes</span><b>${r.kind}</b></div><div class="rrow"><span>What</span><b>${esc(r.what)}</b></div><div class="rrow"><span>When</span><b>${esc(r.how)}</b></div><div class="rrow"><span>Proof</span><b>${esc(r.proof)}</b></div><p>${r.note}</p></div>`}
 /* ---------- shared cards ---------- */
 function potCard(p){const open=P.pot===p.id,n=nIn(p),done=p.due==='done';
   const prog=p.mode==='pledge'?`${n}/${p.need} pledged`:`${nPaid(p)}/${n} paid`,frac=p.mode==='pledge'?n/p.need:nPaid(p)/n;
@@ -738,7 +897,7 @@ const communityMission=()=>`<div class="card mission"><div class="meta"><span cl
   <div class="sub">If it doesn’t happen as described, Night Shift loses its stake and can’t host again. Nobody ever pays to join a Mission.</div></div>`;
 
 /* ---------- screens ---------- */
-const mapSVG=()=>`<svg viewBox="0 0 320 250" role="img" aria-label="City map with a Zone, two Mission areas, a hunt route and a drop">
+const mapSVG=()=>`<svg viewBox="0 0 320 250" role="img" aria-label="City map with a Zone, Mission areas, the Decode area, a trail and three drops">
   <rect width="320" height="250" fill="var(--map)"/>
   <path class="water" d="M0 178 C70 160 120 200 190 186 S290 160 320 172 L320 214 C270 205 220 230 160 222 S60 205 0 222Z"/>
   <rect class="park" x="214" y="28" width="78" height="54" rx="8"/>
@@ -746,23 +905,32 @@ const mapSVG=()=>`<svg viewBox="0 0 320 250" role="img" aria-label="City map wit
   <g class="road" stroke-width="3"><path d="M0 95H320"/><path d="M115 0V178"/><path d="M205 0V178"/><path d="M30 0V178"/></g>
   <path d="M232 168 L232 236" stroke="var(--ink)" stroke-width="5" opacity=".25"/>
   <text class="lbl" x="232" y="58">Elm Park</text><text class="lbl" x="104" y="242">river steps</text><text class="lbl" x="76" y="56">Market St</text>
-  <path d="M95 112 L140 78 L188 104" fill="none" stroke="var(--ballpoint)" stroke-width="2" stroke-dasharray="5 4"/>
-  ${[[95,112],[140,78],[188,104]].map(([x,y],i)=>`<g class="pin" data-pin="hunt"><circle cx="${x}" cy="${y}" r="7" fill="${i<1?'var(--ballpoint)':'var(--card)'}" stroke="var(--ballpoint)" stroke-width="2"/></g>`).join('')}
+  <path d="M95 112 L140 78 L188 104 L230 120 L250 160" fill="none" stroke="var(--ballpoint)" stroke-width="2" stroke-dasharray="5 4"/>
+  ${[[95,112],[140,78],[188,104],[230,120],[250,160]].map(([x,y],i)=>`<g class="pin" data-pin="trail"><circle cx="${x}" cy="${y}" r="6" fill="${i<2?'var(--ballpoint)':'var(--card)'}" stroke="var(--ballpoint)" stroke-width="2"/></g>`).join('')}
+  <g class="pin" data-pin="decode">${P.dec.solved?'<circle cx="104" cy="214" r="9" fill="var(--ballpoint)" stroke="var(--card)" stroke-width="2"/>':'<circle cx="112" cy="206" r="38" fill="var(--ball-soft)" stroke="var(--ballpoint)" stroke-width="1.5" stroke-dasharray="3 3"/><text x="112" y="211" text-anchor="middle" style="font:700 15px var(--f-mono);fill:var(--ballpoint)">?</text>'}<text class="zl" x="112" y="${P.dec.solved?236:178}" text-anchor="middle">Decode</text></g>
   <g class="pin" data-pin="mission"><circle cx="34" cy="148" r="26" fill="var(--good-soft)" stroke="var(--good)" stroke-width="1.5" stroke-dasharray="4 3"/><circle cx="34" cy="148" r="10" fill="var(--good)"/><text x="34" y="152" text-anchor="middle" style="font:700 12px var(--f-mono);fill:#fff">?</text><text class="zl" x="34" y="186" text-anchor="middle">Mission 07</text></g>
   <g class="pin" data-pin="community"><circle cx="232" cy="200" r="22" fill="var(--good-soft)" stroke="var(--good)" stroke-width="1.5" stroke-dasharray="4 3"/><circle cx="232" cy="200" r="8" fill="var(--card)" stroke="var(--good)" stroke-width="2"/><text class="zl" x="268" y="236" text-anchor="middle">Slow Walk</text></g>
   <g class="pin" data-pin="zone"><circle cx="48" cy="34" r="15" fill="var(--stamp)"/><path d="M41 30h10v8H41zM51 32l5-3v10l-5-3" fill="#fff"/><text class="zl" x="48" y="62" text-anchor="middle">The Loading Dock</text></g>
-  <g class="pin" data-pin="drop"><circle class="pulse" cx="150" cy="206" r="14" fill="var(--hazard)"/><circle cx="150" cy="206" r="8" fill="var(--hazard)" stroke="var(--card)" stroke-width="2"/></g>
+  ${[[178,150],[262,46],[296,118]].map(([x,y],i)=>`<g class="pin" data-pin="drop"><circle class="${i?'':'pulse'}" cx="${x}" cy="${y}" r="12" fill="var(--hazard)" opacity=".5"/><circle cx="${x}" cy="${y}" r="6" fill="var(--hazard)" stroke="var(--card)" stroke-width="2"/></g>`).join('')}
 </svg>`;
 const DETAIL={
  mission:missionCard, community:communityMission,
  zone:()=>`<div class="card zone"><div class="meta"><span class="kind z">Zone · tonight 20:00</span><span>staff on site</span></div><p><b>The Loading Dock</b>. Your fixture against Third Floor, then Zone Night. Cameras, padding and staff: the only place the ceiling goes above 6.5.</p><div class="btns"><button class="btn sm red" data-act="toLeague">Lineup</button></div></div>`,
+ decode:()=>decodeCard(),
+ trail:()=>`<div class="card hunt"><div class="meta"><span class="kind h">Trail · Sat 12:00–14:00</span><span>2 of 5 stamped</span></div><p><b>The Bridges Trail</b>, made by Allotment 9. Five stops, any order, two hours, a stamp and a 10-second dare at each. Finish it and you’re in the draw.</p><div class="sub">No clock races you between stops. Walking pace wins the same as running.</div></div>`,
  hunt:()=>`<div class="card hunt"><div class="meta"><span class="kind h">Hunt by Third Floor</span><span>1/3 clues</span></div><p><b>The Lost Toaster.</b> Each clue is a 10-second dare at the spot. The last pin opens a box from their Market pool.</p></div>`,
- drop:()=>`<div class="card drop"><div class="meta"><span class="kind d">Drop · 1 h 52 m</span><span>needs 3 of you</span></div><p><b>Refurbished bike</b> from Spoke &amp; Chain, at the river steps. Real stuff, never favors or cash.</p></div>`,
+ drop:()=>`<div class="card drop"><div class="meta"><span class="kind d">Drops · Fri 19:00–20:00</span><span>3 tonight, one per zone</span></div><p><b>Refurbished bikes</b> from Spoke &amp; Chain. One drop in each zone, sized to how many circles live there.</p>
+   <div class="trust"><span>turn up any time in the hour</span><span>draw among everyone there</span><span>needs 3 of you</span><span>sponsored by the shop</span></div>
+   <div class="sub">Arriving first wins nothing, so nobody runs or drives fast. Shops pay to host a drop; spots are never auctioned, so the outskirts get drops too.</div></div>`,
 };
 const V={
 home(){const ps5=potOf('ps5'),o=myPact(),things=[!P.checked,!P.posted,!ps5.in.You,!P.rsvp.fixture].filter(Boolean).length;
+  const m=P.made,np=m&&!(m.kind==='Pact'||m.kind==='Ladder');
   return `<h2>Thursday <span>${things?things+' things today':'all done for today'}</span></h2>
+  ${P.darkSet?darkSetup():''}
+  ${np?`<div class="card plan"><div class="meta"><span class="kind l">Your first ${m.kind==='Mole'?'Mole task':m.kind.toLowerCase()}</span><span>from onboarding</span></div><p><b>${esc(m.what)}</b> · ${esc(m.how)}</p><div class="sub">${m.note}</div></div>`:''}
   ${pactCard()}
+  <div class="card dec"><div class="meta"><span class="kind h">Decode · tonight 19:00</span><span>${P.dec.solved?'solved ✓':'14 of 40 circles solved'}</span></div><p>A clue goes out at 19:00. Solve it with your circle; the answer is a place.</p><div class="btns"><button class="btn sm" data-act="toDecode">Open the clue</button></div></div>
   <div class="dd"><div class="k">DAILY DARE · BY RIN</div><div class="q">Order your coffee in the voice of a movie trailer.</div>${P.posted?'<span class="mono" style="font-size:11px">Posted · 5 of 6 · gone in 24 h</span>':'<button class="btn sm" data-act="post">Record 15 s</button>'}</div>
   <h3>Needs you</h3>
   ${!ps5.in.You?`<div class="card pot"><div class="meta"><span class="kind l">Pledge pot · Dev</span><span>${nIn(ps5)}/${ps5.need}</span></div><p>PS5 for the flat, £75 each. Nobody pays unless six pledge by Friday.</p><div class="btns"><button class="btn sm good" data-act="openPot" data-pot="ps5">See the pot</button></div></div>`:''}
@@ -774,10 +942,10 @@ home(){const ps5=potOf('ps5'),o=myPact(),things=[!P.checked,!P.posted,!ps5.in.Yo
   <div class="formula">One list. Whatever needs you today is here; everything else waits in Circle and City. It opens up as you go: day one is your circle, dares and favors; pacts and Midnight arrive in the first week; the Mole once four of you are active; the City after two weeks.</div>`},
 circle(){return `<h2>4B &amp; co <span>${P.verified?'met in person ✓':'not verified yet'}</span></h2>
   <div class="avs sm">${CIRCLE.map(n=>`<span class="av ${n==='You'?'me':''}" title="${n}">${n.slice(0,2).toUpperCase()}</span>`).join('')}<button class="av add" data-act="vouch" aria-label="Vouch for someone">+</button></div>
-  ${seg('c',P.cseg,[['week','Plans'],['pacts','Pacts'],['midnight','Midnight'],['mole','Mole']])}
+  ${seg('c',P.cseg,[['chat','Chat'],['week','Plans'],['pacts','Pacts'],['midnight','Midnight'],['mole','Mole']])}
   ${CV[P.cseg]()}`},
 city(){return `<h2>City <span>circles near you</span></h2>
-  ${seg('y',P.yseg,[['map','Map'],['wall','Wall'],['calls','Calls'],['league','League']])}
+  ${seg('y',P.yseg,[['map','Map'],['feed','Feed'],['calls','Calls'],['league','League']])}
   ${YV[P.yseg]()}`},
 ledger(){const b=bal();return `<h2>Ledger <span>favors in hours · pots in money</span></h2>
   ${seg('l',P.lseg,[['favors','Favors'],['pots','Pots']])}
@@ -800,6 +968,10 @@ ledger(){const b=bal();return `<h2>Ledger <span>favors in hours · pots in money
     <div class="btns"><button class="btn sm good" data-act="createPot">Create pot</button></div></div>`:`<div class="btns"><button class="btn sm" data-act="newPot">+ New pot</button></div>`}`}`},
 };
 const CV={
+chat(){const th=THREADS.find(x=>x.id===P.thread);return `<div class="threads">${THREADS.map(x=>`<button class="thr ${x.id===P.thread?'on':''}" data-act="thread" data-id="${x.id}"><b>${esc(x.n)}</b><small>${esc(x.sub)}</small><i class="${x.on?'ping':'mute'}">${x.on?'pings you':'muted'}</i></button>`).join('')}</div>
+  <div class="chat" aria-live="polite">${th.msgs.map(([w,t])=>`<div class="msg ${w==='You'?'me':''}"><small>${w}</small><span>${esc(t).replace('@You','<b>@You</b>')}</span></div>`).join('')}</div>
+  <div class="compose"><input id="chat-in" maxlength="200" autocomplete="off" placeholder="Message ${esc(th.n)}" value="${esc(P.chatDraft)}" aria-label="Message"><button class="btn sm" data-act="sendMsg">Send</button></div>
+  <div class="formula">Every plan, pot and pact has its own thread, and only pings the people in it. General is muted unless someone @s you. In the model, one busy room for the whole circle cost about 6 points of day-30 retention; threads added up to 3.</div>`},
 week(){return `${P.newPlan?`<div class="card newpot"><div class="meta"><span class="kind l">Plan something</span><button class="link" data-act="cancelPlan">cancel</button></div>
     <label>What<input id="pl-what" maxlength="40" placeholder="Climbing, then pho"></label>
     <div class="np2"><label>When<select id="pl-when"><option>Sat afternoon</option><option>Sun 11:00</option><option>Next Fri night</option></select></label><label>Money?<select id="pl-pot"><option value="">No pot</option><option value="pledge">Pledge pot</option><option value="split">Split pot</option></select></label></div>
@@ -811,7 +983,7 @@ week(){return `${P.newPlan?`<div class="card newpot"><div class="meta"><span cla
   ${P.newPlan?'':'<div class="btns"><button class="btn sm" data-act="newPlan">Plan something</button></div>'}
   <h3>This week’s clips <span class="mono" style="text-transform:none;letter-spacing:0">· circle only · gone after 24 h</span></h3>
   <div class="vault">${VAULT.map((v,i)=>`<button class="vt-tile" data-act="watch" data-i="${i}" style="background:${v.g}"><span class="left">${v.left}</span><b>${esc(v.what)}</b><small>${v.who}${P.watched[i]?' · watched':''}</small></button>`).join('')}</div>
-  <div class="formula">Talk it through in your group chat. INSANE holds the date, who’s in and the money tracking.</div>`},
+  <div class="formula">Each plan gets its own thread in Chat. INSANE holds the date, who’s in and the money tracking.</div>`},
 pacts(){return `${pactCard()}
   <h3>Everyone’s pacts</h3>
   ${PACTS.map((p,i)=>`<div class="card pact sm"><div class="meta"><span>${p.who}</span><span>${p.p}</span></div><p><b>${esc(p.n)}</b>${p.today?' <span class="ok">✓ today</span>':''}</p>${p.note?`<div class="sub">${p.note}</div>`:''}${p.ladder?'<div class="sub">The circle sees the rung number, not what the rungs are.</div>':''}<div class="btns"><button class="btn sm ghost" data-act="cheer" data-i="${i}" ${P.cheer[i]?'disabled':''}>${P.cheer[i]?'Cheered':'Cheer'}</button></div></div>`).join('')}
@@ -819,11 +991,13 @@ pacts(){return `${pactCard()}
   <div class="formula">Two free misses a week. Four strikes and a pact just ends. Stakes are dares or cooking, never money. Ladders: physical rungs (heights, cold water) only count at a Zone, with staff.</div>`},
 midnight(){const left=LAST_NIGHT.map((t,i)=>[t,i]).filter(([,i])=>!P.mnRemoved[i]);return `<div class="mnhead"><b>Last night at 00:00</b><span>${left.length} unsigned · shuffled</span></div>
   ${left.map(([t,i])=>`<div class="card mnmsg"><p>${esc(t)}</p><div class="reacts">${['same','brave','❤'].map(r=>`<button data-act="react" data-i="${i}" data-r="${r}" class="${P.mnReact[i]===r?'on':''}">${r}</button>`).join('')}<button class="rm" data-act="mnRemove" data-i="${i}">remove</button></div></div>`).join('')}
+  <div class="card sealbar"><div class="meta"><span class="kind mnk">Sealed</span><span>2 waiting</span></div><p>Next one opens <b>New Year’s Eve</b>, from Jules. Signed, so nobody has to guess.</p></div>
   <h3>Write for Midnight</h3>
-  <div class="card newpot"><label>About you, unsigned<textarea id="mn-text" maxlength="200" rows="3" placeholder="Something you’ve never said out loud">${esc(P.mnDraft)}</textarea></label>
-   <fieldset><legend>Which night</legend><div class="chips">${['Tonight','Tomorrow','Friday'].map((n,i)=>`<button class="chipb ${P.mnNight===i?'on':''}" data-act="mnNight" data-i="${i}">${n}</button>`).join('')}</div></fieldset>
+  ${seg('mnm',P.mnMode,[['unsigned','Unsigned'],['sealed','Sealed, opens later']])}
+  ${P.mnMode==='sealed'?sealForm():`<div class="card newpot"><label>About you, unsigned<textarea id="mn-text" maxlength="200" rows="3" placeholder="Something you’ve never said out loud">${esc(P.mnDraft)}</textarea></label>
+   <fieldset><legend>Which night</legend><div class="chips">${['Tonight','Tomorrow','Some night this week'].map((n,i)=>`<button class="chipb ${P.mnNight===i?'on':''}" data-act="mnNight" data-i="${i}">${n}</button>`).join('')}</div></fieldset>
    <div class="sub">Goes out at 00:00 with everyone else’s, in random order, once at least three are waiting. You pick the night; the app picks the moment, so nobody can match it to when you were on your phone.</div>
-   <div class="btns">${P.mnSent?'<span class="mono done-l">Queued · goes out tonight</span>':'<button class="btn sm" data-act="mnSend">Queue it</button>'}</div></div>
+   <div class="btns">${P.mnSent?'<span class="mono done-l">Queued</span>':'<button class="btn sm" data-act="mnSend">Queue it</button>'}</div></div>`}
   <div class="formula">Rules: only about yourself. Names and descriptions of members are blocked before sending. Anyone in the circle can remove a message for everyone, no reason needed. You’re ${HANDLES[P.handle]} here.</div>`},
 mole(){const n=P.mole.filter(Boolean).length;return `<div class="card mole big"><div class="meta"><span class="kind mk">Week 3 · you’re the Mole</span><span>reveal Sun 21:00</span></div>
    <p>Do three things without getting caught. On Sunday everyone votes. If fewer than half guess you, you got away with it.</p>
@@ -833,9 +1007,24 @@ mole(){const n=P.mole.filter(Boolean).length;return `<div class="card mole big">
   <div class="card"><p><b>Jules was the Mole.</b> 3 of 3 tasks, 1 vote out of 5. Got away with it. It went on the Wall as a Feat.</p></div>
   <div class="formula">Mole rules: tasks come from the app’s list, never made up. Nothing involving phones, money, bedrooms, or anyone outside the circle. Anyone can sit a week out.</div>`},
 };
+function sealForm(){return `<div class="card newpot"><label>Signed with your name<textarea id="seal-text" maxlength="400" rows="3" placeholder="Something to open later: a prediction, a promise, a thank-you">${esc(P.sealDraft||'')}</textarea></label>
+  <fieldset><legend>Opens</legend><div class="chips">${SEAL_WHEN.map((w,i)=>`<button class="chipb ${P.sealWhen===i?'on':''}" data-act="sealWhen" data-i="${i}">${w}</button>`).join('')}</div></fieldset>
+  <div class="sub">Nobody can read it before then, you included. The circle sees “1 sealed message from you, opens ${SEAL_AT[P.sealWhen]}”. Signed means you can schedule the exact moment; unsigned ones always go out with the batch, so nobody can match the time to you.</div>
+  <div class="btns">${P.sealed?'<span class="mono done-l">Sealed</span>':'<button class="btn sm" data-act="seal">Seal it</button>'}</div></div>`}
+function darkSetup(){return `<div class="card darkc"><div class="meta"><span class="kind">Go dark</span><button class="link" data-act="darkCancel">cancel</button></div>
+  <p><b>How long</b></p><div class="chips">${DARK_H.map((h,i)=>`<button class="chipb ${P.darkH===i?'on':''}" data-act="darkH" data-i="${i}">${h} h</button>`).join('')}</div>
+  <p><b>What goes dark</b></p><div class="chips">${['Noisy apps: social, video, games','Everything except calls, messages, maps, camera'].map((x,i)=>`<button class="chipb ${P.darkMode===i?'on':''}" data-act="darkMode" data-i="${i}">${x}</button>`).join('')}</div>
+  <label class="rad"><input type="checkbox" id="dark-with" ${P.darkWith?'checked':''}><span><b>With the circle.</b> Maya, Pia and Rin are going dark Sunday 10:00 too.</span></label>
+  <div class="sub">INSANE can’t switch your phone off, and no app can. It uses your phone’s own app limits (Screen Time on iPhone, usage access on Android) to cover the apps you pick with an INSANE countdown. Calls and emergency numbers always work. Most is 24 hours.</div>
+  <div class="btns"><button class="btn sm" data-act="darkGo">Go dark for ${DARK_H[P.darkH]} h</button></div></div>`}
+function darkScreen(){const h=DARK_H[P.darkH];return `<div class="dark"><div class="dk">DARK</div><div class="dclock">${String(h-1).padStart(2,'0')}:59:${String(41).padStart(2,'0')}</div>
+  <p>${P.darkMode?'Everything but calls, messages, maps and camera':'Social, video and games'} covered until ${h>=24?'this time tomorrow':'later today'}.</p>
+  ${P.darkWith?'<div class="dwith">Dark with you: <b>Maya · Pia · Rin</b></div>':''}
+  <p class="dsmall">Calls and emergency numbers always work. This screen is all INSANE shows while you’re dark: no feed, no badges.</p>
+  <div class="btns"><button class="btn ghost" data-act="darkEnd">Skip to the end</button><button class="btn ghost" data-act="darkBreak">Come back early</button></div></div>`}
 const YV={
 map(){return `<div class="mapbox">${mapSVG()}</div>
-  <div class="legendrow"><span><i style="background:var(--stamp)"></i>Zone</span><span><i style="background:var(--good)"></i>Mission area</span><span><i style="background:var(--ballpoint)"></i>Hunt</span><span><i style="background:var(--hazard)"></i>Drop</span></div>
+  <div class="legendrow"><span><i style="background:var(--stamp)"></i>Zone</span><span><i style="background:var(--good)"></i>Mission area</span><span><i style="background:var(--ballpoint)"></i>Decode · Trail</span><span><i style="background:var(--hazard)"></i>Drops</span></div>
   <h3>Selected</h3>${DETAIL[P.sel]()}
   ${P.proposed?`<div class="card"><div class="meta"><span class="kind m">Your proposal</span><span>with the Zone</span></div><p><b>The Human Tunnel</b>, Sat 14 June. 0 of 3 circles confirmed. Your 3 Reliability is staked.</p></div>`:
    P.propose?`<div class="card newpot"><div class="meta"><span class="kind m">Propose a Mission</span><button class="link" data-act="cancelPropose">cancel</button></div>
@@ -843,33 +1032,53 @@ map(){return `<div class="mapbox">${mapSVG()}</div>
     <div class="btns"><button class="btn sm good" data-act="sendPropose" ${P.verified?'':'disabled'}>Send to The Loading Dock</button></div>${P.verified?'':'<div class="sub">Scan each other’s phones first: only circles that have met in person can propose.</div>'}</div>`:
    `<div class="btns"><button class="btn sm" data-act="propose">Propose a Mission</button></div>`}
   <div class="formula">The map never shows people. Missions show an area until two hours before.</div>`},
-wall(){return `<div class="safe">Feats from circles your size, nearby. Not a feed: one card per thing a circle actually did. Shared to Instagram only if everyone in it says yes, with faces blurred otherwise.</div>
-  ${FEATS.map((f,i)=>`<div class="card feat"><div class="meta"><span class="kind l">${f.k} · ${f.c}</span><span>${f.w}</span></div><p>${esc(f.t)}</p><div class="btns">${f.steal.startsWith('Nothing')?'':`<button class="btn sm ghost" data-act="steal" data-i="${i}" ${P.stolen[i]?'disabled':''}>${P.stolen[i]?'Added to your circle':'Steal this'}</button>`}<button class="btn sm ghost" data-act="share" data-i="${i}">Share</button></div></div>`).join('')}`},
+feed(){const items=[...(P.fposted?[{c:'4B & co',w:'just now',k:'Feat',t:'Lisbon pot hit four of four. We’re going.',mine:1}]:[]),...POSTS.map((p,i)=>({...p,pi:i})),...FEATS.map((f,i)=>({...f,fi:i}))];
+  return `<div class="safe">What circles nearby did or made. Anyone verified can post. <b>No like counts, no follower counts, no comments from strangers</b>: if you want in, answer with a Call.</div>
+  ${P.fposted?'':`<div class="btns"><button class="btn sm" data-act="fpost" ${P.verified?'':'disabled'}>Post what your circle did</button></div>`}
+  ${items.map((f,j)=>`<div class="card feat"><div class="meta"><span class="kind l">${esc(f.k)} · ${esc(f.c)}</span><span>${esc(f.w)}</span></div><p>${esc(f.t)}</p>
+    ${f.mine?'<div class="sub">Posted. Nobody sees a number on it, including you.</div>':`<div class="reacts lt">${['❤','we’re in','steal this'].map(r=>`<button data-act="freact" data-j="${j}" data-r="${r}" class="${P.feedR[j]===r?'on':''}">${r}</button>`).join('')}<button class="rm" data-act="share">share</button></div>`}</div>`).join('')}
+  <div class="formula">In the model, a feed like this added 2 to 5 points. The same feed with counts and stranger comments added less and hurt about 230 people in 120 days.</div>`},
 calls(){return `${P.verified?'':'<div class="lock">Anyone can answer a Call. Posting one needs your circle to have met in person.</div>'}
   ${CALLS.map((c,i)=>`<div class="card call"><div class="meta"><span class="kind h">Call · ${c.c}</span><span>${i===0?'tonight':'this week'}</span></div><p>${esc(c.t)}</p><div class="btns"><button class="btn sm ${P.called[i]?'ghost':''}" data-act="answer" data-i="${i}" ${P.called[i]?'disabled':''}>${P.called[i]?'Sent: they’ll confirm':c.a}</button></div></div>`).join('')}
   <div class="btns"><button class="btn sm" data-act="postCall" ${P.verified?'':'disabled'}>Post a Call</button></div>
+  <h3>Rooms with other circles</h3>
+  ${[...P.rooms,...ROOMS0].map(r=>`<div class="card room"><div class="meta"><span class="kind h">${esc(r.c)} × 4B &amp; co</span><span>${esc(r.close)}</span></div><p>${esc(r.t)}</p></div>`).join('')}
+  <h3>People you’ve met</h3>
+  ${MET.map((m,i)=>`<div class="tx"><span><b>${m.n}</b> · ${m.c}</span><button class="btn sm ghost" data-act="metMsg" data-i="${i}" ${P.metMsg[i]?'disabled':''}>${P.metMsg[i]?'Sent':'Message'}</button><small>scanned phones ${m.w}</small></div>`).join('')}
+  <div class="sub">No cold DMs. You can message someone from another circle only after you’ve scanned phones in person, and either of you can close it.</div>
   <div class="formula">Calls are how circles work together: a spare player, co-builders, a lend. Favors across circles settle in hours, the same as inside.</div>`},
 league(){return `<div class="card zone"><div class="meta"><span class="kind z">Tonight's fixture</span><span>${P.lineupN}/4</span></div><p><b>4B &amp; co vs Third Floor</b> · 20:00. Three rounds, judged by both circles and the Zone crowd.</p><div class="btns">${P.rsvp.fixture?'<span class="mono done-l">Lineup full</span>':'<button class="btn sm red" data-act="fixtureIn">I’m in</button>'}</div></div>
   <table class="table"><thead><tr><th>#</th><th>Circle</th><th>P</th><th style="text-align:right">Pts</th></tr></thead><tbody>
   ${[['Basement Kings',5,18],['Night Shift',5,15],['4B & co',5,14],['Third Floor',5,12],['Allotment 9',5,7],['The Cousins',5,4]].map((r,i)=>`<tr class="${r[0]==='4B & co'?'me':''}"><td>${i+1}</td><td>${esc(r[0])}</td><td>${r[1]}</td><td class="n">${r[2]}</td></tr>`).join('')}</tbody></table>
   <div class="formula">Short a player? Answer or post a Call: guests from other circles can fill a lineup.</div>`},
 };
-const SHEET=[['check','Check in on your pact'],['dare','Dare someone in the circle'],['favor','Ask a favor'],['plan','Plan something'],['pot','Start a pot'],['midnight','Write for Midnight'],['call','Post a Call'],['mission','Propose a Mission']];
+function decodeCard(){const d=P.dec;return `<div class="card dec"><div class="meta"><span class="kind h">Decode · tonight 19:00–21:00</span><span>${d.solved?'you solved it ✓':'14 of 40 circles solved'}</span></div>
+  <p class="clue">“Where the river forgets its name, count the arches. The answer is where you sit to count them.”</p>
+  <div class="hints">${['Public hint 1 · 3 solved: it’s by the water','Public hint 2 · 8 solved: south of Market St','Public hint 3 · 15 solved','Full reveal · area only'].map((h,i)=>`<div class="hint ${i<2?(d.tries||d.solved?'on':'lock'):''}">${i<2&&!(d.tries||d.solved)?'Have a go first to see hint '+(i+1):h}</div>`).join('')}</div>
+  ${d.solved?`<div class="sub"><b>Solved 15th: 37 points.</b> Exact spot: the river steps. Come any time before 22:00; there’s no prize for arriving first.</div>
+    <div class="btns">${d.passed?'<span class="mono done-l">Passed a hint to The Cousins · +15 each</span>':'<button class="btn sm ghost" data-act="decPass">Pass a hint to a circle that’s stuck</button>'}</div>`:
+   `<div class="compose"><input id="dec-in" maxlength="40" autocomplete="off" placeholder="Your circle’s answer" aria-label="Decode answer"><button class="btn sm" data-act="decTry">Submit</button></div>
+    <div class="sub">Full reveal in about 30 min, sooner with every solve, but it only shows the area. Points go by solve order, not by who gets there first.</div>`}</div>`}
+const SHEET=[['check','Check in on your pact'],['dark','Go dark for a while'],['seal','Seal a message for later'],['fpost','Post to the City feed'],['dare','Dare someone in the circle'],['favor','Ask a favor'],['plan','Plan something'],['pot','Start a pot'],['midnight','Write for Midnight'],['call','Post a Call'],['mission','Propose a Mission']];
 function sheet(){return `<div class="sheet" role="dialog" aria-label="Make something"><div class="sh-h"><b>Make something</b><button class="link" data-act="closeSheet">close</button></div>${SHEET.map(([k,l])=>`<button class="sh-i" data-act="make" data-k="${k}">${l}</button>`).join('')}</div>`}
 
 function render(){const sc=$('.screen');sc.classList.toggle('obmode',P.onboard);
-  $('#view').innerHTML=P.onboard?onboarding():V[P.tab]()+(P.sheet?sheet():'');
+  sc.classList.toggle('darkmode',P.darkOn);
+  $('#view').innerHTML=P.onboard?onboarding():P.darkOn?darkScreen():V[P.tab]()+(P.sheet?sheet():'');
   document.querySelectorAll('.nav button[data-tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===P.tab));
   $('#hudC').textContent='4B & co'+(P.verified?' ✓':'');$('#hudP').textContent=P.onboard?'–':'4 / 21';$('#balV').textContent=hrs(bal());
   const nh=[!P.checked,!P.posted,!potOf('ps5').in.You,!P.rsvp.fixture].filter(Boolean).length;$('#bHome').textContent=nh;$('#bHome').hidden=!nh;
   $('#bLed').textContent=owesYou();$('#bLed').hidden=!owesYou()}
 const go=(tab,extra)=>{P.tab=tab;P.sheet=false;Object.assign(P,extra||{});$('#view').scrollTop=0;render()};
 document.querySelector('.nav').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||P.onboard)return;if(b.dataset.make){P.sheet=!P.sheet;render();return}go(b.dataset.tab)});
-document.querySelector('.phone-note').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.act==='replay'){Object.assign(P,{onboard:true,ob:0,verified:false,checked:false});render()}else{Object.assign(P,{onboard:false,tab:'home'});render()}});
-$('#view').addEventListener('input',e=>{if(e.target.id==='mn-text')P.mnDraft=e.target.value});
+document.querySelector('.phone-note').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.act==='replay'){Object.assign(P,{onboard:true,ob:0,verified:false,checked:false,darkOn:false,urge:'',made:null});render()}else{Object.assign(P,{onboard:false,tab:'home'});render()}});
+$('#view').addEventListener('input',e=>{const id=e.target.id;if(id==='mn-text')P.mnDraft=e.target.value;if(id==='chat-in')P.chatDraft=e.target.value;if(id==='seal-text')P.sealDraft=e.target.value;
+  if(id==='ob-urge'){P.urge=e.target.value;const r=readUrge(P.lane,P.urge);$('#ob-read').innerHTML=readCard(r);const b=document.querySelector('[data-act=obDone]');if(b){b.disabled=!(r&&r.kind!=='No'&&r.kind!=='Support');b.textContent=obLabel(r)}const st=$('#ob-stake');if(st)st.hidden=!(r&&(r.kind==='Pact'||r.kind==='Ladder'))}});
+$('#view').addEventListener('keydown',e=>{if(e.key!=='Enter')return;const id=e.target.id;if(id==='chat-in'){e.preventDefault();document.querySelector('[data-act=sendMsg]').click()}if(id==='dec-in'){e.preventDefault();document.querySelector('[data-act=decTry]').click()}});
+$('#view').addEventListener('change',e=>{if(e.target.id==='dark-with')P.darkWith=e.target.checked});
 $('#view').addEventListener('click',e=>{
   const pin=e.target.closest('[data-pin]');if(pin){P.sel=pin.dataset.pin;render();return}
-  const sg=e.target.closest('[data-seg]');if(sg){P[sg.dataset.seg+'seg']=sg.dataset.v;render();return}
+  const sg=e.target.closest('[data-seg]');if(sg){const n=sg.dataset.seg;if(n==='lane')P.lane=sg.dataset.v;else if(n==='mnm')P.mnMode=sg.dataset.v;else P[n+'seg']=sg.dataset.v;render();return}
   const t=e.target.closest('button');
   if(!t){const pc=e.target.closest('[data-potcard]');if(pc&&!e.target.closest('input,select,label')){P.pot=P.pot===pc.dataset.potcard?null:pc.dataset.potcard;P.pay=null;render()}return}
   const a=t.dataset.act,i=+t.dataset.i,pot=t.dataset.pot&&potOf(t.dataset.pot);
@@ -878,8 +1087,33 @@ $('#view').addEventListener('click',e=>{
   if(a==='pickHandle'){P.handle=i;render();return}
   if(a==='verify'){P.verified=true;render();toast('Scanned with Maya, Pia and Rin. Your circle is verified in person.');return}
   if(a==='pickPact'){P.pick=i;render();return}
+  if(a==='obEx'){P.urge=t.dataset.x;render();return}
+  if(a==='obSkip'){P.made=null;P.onboard=false;P.tab='home';render();toast('Skipped. Starting you on “Run three times a week”; change it any time.');return}
   if(a==='pickStake'){P.stake=i;render();return}
-  if(a==='obDone'){P.onboard=false;P.tab='home';render();toast('Pact started. Skipping ahead to Thursday: day 4 of 21.');return}
+  if(a==='obDone'){const r=readUrge(P.lane,P.urge);if(!r||r.kind==='No'||r.kind==='Support')return;P.made=r;P.onboard=false;P.tab='home';
+    if(r.kind.startsWith('Plan'))P.plans.unshift({what:r.what,when:'date to pick',pot:r.kind==='Plan + pot'?'pledge':''});
+    render();toast(r.kind==='Pact'||r.kind==='Ladder'?r.kind+' started. Skipping ahead to Thursday: day 4 of 21.':r.kind.startsWith('Plan')?'Sent to your circle as a plan with its own thread. Skipping ahead to Thursday.':r.kind==='Midnight'?'Saved as a draft in Midnight. Skipping ahead to Thursday.':r.kind==='Mole'?'On your Mole list for your next week. Skipping ahead to Thursday.':'In the jar. Skipping ahead to Thursday.');return}
+  // chat, rooms, feed
+  if(a==='thread'){P.thread=t.dataset.id;render();return}
+  if(a==='sendMsg'){const v=(P.chatDraft||'').trim();if(!v)return;THREADS.find(x=>x.id===P.thread).msgs.push(['You',v]);P.chatDraft='';render();const th=THREADS.find(x=>x.id===P.thread);toast(th.on||th.id!=='gen'?'Sent. Only the people in “'+esc(th.n)+'” get pinged.':'Sent to General. Nobody gets pinged unless you @ them.');setTimeout(()=>$('#chat-in')&&$('#chat-in').focus(),0);return}
+  if(a==='metMsg'){P.metMsg[i]=1;render();toast(`Opened a chat with ${MET[i].n}. Either of you can close it, and it closes for both.`);return}
+  if(a==='fpost'){if(!P.verified){toast('Scan phones with your circle first: only circles that have met can post.');return}P.fposted=true;go('city',{yseg:'feed'});toast('Posted to the feed. No counts, no stranger comments.');return}
+  if(a==='freact'){const j=+t.dataset.j;P.feedR[j]=P.feedR[j]===t.dataset.r?null:t.dataset.r;render();if(P.feedR[j]==='steal this')toast('Added to your circle’s ideas. They see you stole it; that’s the point.');if(P.feedR[j]==='we’re in')toast('That circle sees your circle wants in. If they post a Call, you’re first to hear.');return}
+  // decode
+  if(a==='toDecode'){go('city',{yseg:'map',sel:'decode'});return}
+  if(a==='decTry'){const v=($('#dec-in').value||'').trim().toLowerCase();if(!v){toast('Type your circle’s answer first.');return}P.dec.tries++;
+    if(/step|bench/.test(v)){P.dec.solved=true;render();toast('<b>Solved, 15th of 40.</b> 37 points. The exact spot is yours; the others only get the area.')}else{render();toast('Not it. Your circle can now see the public hints.')}return}
+  if(a==='decPass'){P.dec.passed=true;render();toast('Passed a hint to The Cousins. You both get 15 points.');return}
+  // dark
+  if(a==='darkH'){P.darkH=i;render();return}
+  if(a==='darkMode'){P.darkMode=i;render();return}
+  if(a==='darkCancel'){P.darkSet=false;render();return}
+  if(a==='darkGo'){P.darkSet=false;P.darkOn=true;render();return}
+  if(a==='darkBreak'){P.darkOn=false;go('home');toast(`Back early. Your circle sees “1 h of ${DARK_H[P.darkH]}”. No strike, no stake.`);return}
+  if(a==='darkEnd'){P.darkOn=false;go('home');toast(`Dark for ${DARK_H[P.darkH]} h. ${P.darkWith?'Maya walked to the lido, Rin finally finished a book. ':''}Tell the circle what you did: it goes on your pact thread.`);return}
+  // sealed
+  if(a==='sealWhen'){P.sealWhen=i;render();return}
+  if(a==='seal'){const v=($('#seal-text').value||'').trim();if(!v){toast('Write something first.');return}P.sealed=true;render();toast(`Sealed. It opens ${SEAL_AT[P.sealWhen]}, signed with your name.`);return}
   // home
   if(a==='check'||a==='checkClip'){P.checked=true;render();toast(a==='checkClip'?'Checked in with a 5-second clip. It’s gone in 24 hours.':'Checked in. Your circle sees a tick, nothing else.');return}
   if(a==='post'){P.posted=true;render();toast('Posted to the circle. Gone in 24 hours.');return}
@@ -906,7 +1140,7 @@ $('#view').addEventListener('click',e=>{
   // city
   if(a==='steal'){P.stolen[i]=1;render();toast(`Added to your circle: ${esc(FEATS[i].steal)}.`);return}
   if(a==='share'){toast('Makes a story card for Instagram. Faces are blurred unless everyone in it says yes.');return}
-  if(a==='answer'){P.called[i]=1;render();toast(`${CALLS[i].c} gets your name. They confirm before anything’s set.`);return}
+  if(a==='answer'){P.called[i]=1;P.rooms.unshift({c:CALLS[i].c,t:CALLS[i].t.split('.')[0],close:'closes 48 h after'});render();toast(`${CALLS[i].c} gets your name, and a room opens for the two circles. It closes 48 hours after it’s done.`);return}
   if(a==='postCall'){toast('Calls go to circles nearby. One open Call per circle at a time.');return}
   if(a==='propose'){P.propose=true;render();return}
   if(a==='cancelPropose'){P.propose=false;render();return}
@@ -936,15 +1170,21 @@ $('#view').addEventListener('click',e=>{
     if(k==='check')go('home');else if(k==='dare'){go('home');toast('Dares go in the circle’s jar. Tomorrow’s Daily Dare is picked from it.')}
     else if(k==='favor')go('ledger',{lseg:'favors',askFavor:true});else if(k==='plan')go('circle',{cseg:'week',newPlan:true});
     else if(k==='pot')go('ledger',{lseg:'pots',newPot:true});else if(k==='midnight')go('circle',{cseg:'midnight'});
-    else if(k==='call')go('city',{yseg:'calls'});else if(k==='mission')go('city',{yseg:'map',propose:true});return}
+    else if(k==='call')go('city',{yseg:'calls'});else if(k==='dark')go('home',{darkSet:true});else if(k==='seal')go('circle',{cseg:'midnight',mnMode:'sealed'});
+    else if(k==='fpost')go('city',{yseg:'feed'});else if(k==='mission')go('city',{yseg:'map',propose:true});return}
 });
 $('#view').addEventListener('keydown',e=>{const pc=e.target.closest&&e.target.closest('[data-potcard]');if(pc&&e.target===pc&&(e.key==='Enter'||e.key===' ')){e.preventDefault();pc.click()}});
 render();
 
 /* ================================================================
-   SIMULATOR (v0.2 engine + v0.3 layers + v0.4 and v0.5 ideas)
+   SIMULATOR (v0.2 engine + v0.3 layers + v0.4, v0.5 and v0.6 ideas)
    ================================================================ */
-const REASONS=['Nothing to do','Trust decay pressure','Blamed for a broken chain','IOU sold to a stranger','Debt stress','Hurt doing a dare','Plans that fell through','Favors nobody would honor','Pressure from a pact','Hurt by an anonymous message','Felt behind other circles'];
+// v0.6 engine: v0.5 plus chat (circle room or threads, cross-circle rooms or open DMs), a public feed, sealed messages,
+// Go dark (an app lock, solo or with the circle), a first pact in onboarding, and a harsher-world dial (hz).
+// With every new flag off it reproduces engine5 exactly.
+// v0.5 engine: v0.4 plus Pacts, Midnight, the Mole, the Ladder, Vanish, Feats, Calls, hosted Missions (with fakes), the in-person handshake and concept load.
+// With every new flag off it reproduces engine4 exactly. W(c,'x') is a mechanic's strength (default 1) for sensitivity runs.
+const REASONS=['Nothing to do','Trust decay pressure','Blamed for a broken chain','IOU sold to a stranger','Debt stress','Hurt doing a dare','Plans that fell through','Favors nobody would honor','Pressure from a pact','Hurt by an anonymous message','Felt behind other circles','Too many notifications','Unwanted messages'];
 const NA=REASONS.length;
 const V1={circles:0,daily:0,circlePrompts:0,board:0,market:0,decay:1,reminders:1,ladder:1,shortChains:1,sell:1,limit:0,bonus:0,jubilee:0,cap:0,downrank:0};
 const V2={circles:1,daily:1,circlePrompts:1,board:1,market:1,decay:0,reminders:1,ladder:1,shortChains:0,sell:0,limit:1,bonus:0,jubilee:1,cap:1,downrank:1};
@@ -956,23 +1196,29 @@ const clamp=(x,a,b)=>x<a?a:x>b?b:x;
 const W=(c,k)=>c.w&&c.w[k]!=null?c.w[k]:1;
 
 function simulate(c){
-  if(c.gossip)c={...c,midnight:1,mnAbout:'others',mnTiming:'instant'};   // the no-go version: gossip about other people, sent the moment it's written
+  if(c.gossip)c={...c,midnight:1,mnAbout:'others',mnTiming:'instant'};
+  // on/off aliases for the page's simulator checkboxes
+  if(c.chatRoom)c={...c,chat:'room'};if(c.chatThreads)c={...c,chat:'threads'};if(c.xRooms)c={...c,xchat:'rooms'};if(c.xDMs)c={...c,xchat:'dms'};
+  if(c.feedSoft)c={...c,feed:'soft'};if(c.feedOpen)c={...c,feed:'open'};if(c.darkTogether)c={...c,dark:'together'};if(c.mnWindow&&!c.gossip)c={...c,mnTiming:'window'};if(c.obFree)c={...c,obPact:'free'};if(c.busy)c={...c,pw:.5};   // the no-go version: gossip about other people, sent the moment it's written
   const K=c.k,R=mulberry(c.seed),gauss=()=>{let u=0;while(!u)u=R();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*R())};
   const G=c.groups,S=12,D=120,people=[];
   for(let g=0;g<G;g++)for(let i=0;i<S;i++)people.push({id:people.length,g,joined:-1,on:false,s:clamp(.5+gauss()*.2,0,1),b:R(),r:.3+R()*.7,v:0,ann:new Float32Array(NA),last:-99,opens:new Set(),owe:0,held:0,listed:0,unbacked:0,vouch:-1,inPot:0,pact:null,nextVan:-1,vanDay:-9});
   const byG=g=>people.slice(g*S,g*S+S),pick=a=>a[Math.floor(R()*a.length)];
   let debts=[],C=.9,norm=3,harm=0,minor=0,pending=[],fails=0,duelsRun=0,potsDone=0,potsFailed=0,bounties=[],bountyDone=0,partnerFailed=false;
   let pactsDone=0,pactsFailed=0,mnSent=0,mnHurt=0,mnOut=0,moles=0,vanishes=0,featsAll=0,featsWeek=0,featsLast=0,wasted=0,lured=0,hostedRun=0,mTrust=1,callsAnswered=0;
+  let sealedMade=0,sealedOpened=0,harassed=0,darkDays=0,darkBroken=0,feedPosts=0,obPacts=0;
+  const sealedG=Array.from({length:G},()=>[]),darkG=new Array(G).fill(-9),hz=c.hz||1;
   const reasons=new Array(NA).fill(0);
   const o={dau:[],C:[],swaps:[],atomic:[],harmD:[]};let atomicShare=0;
   const pot=new Array(G).fill(null),wand=new Array(G).fill(-1),shedG=new Array(G).fill(0);
   const mnQ=new Array(G).fill(0),mnDay=new Array(G).fill(-9),moleG=new Array(G).fill(-1),vanG=new Array(G).fill(-9),verified=new Array(G).fill(!c.verify),canPost=new Array(G).fill(!c.verifyPost),host=new Array(G).fill(null);
   const accept=()=>c.chapters?.45+.15*W(c,'chapters'):.45;
   const load=age=>{if(!c.sched)return 0;let L=0;for(const [a,n] of c.sched)if(age>=a)L=n;return Math.max(0,L-9)};   // concepts beyond the nine v0.3 asked people to learn
-  const mnBad=c.mnAbout==='others'?.15:.03,mnPain=c.mnAbout==='others'?.6:.25,mnOutP=c.mnTiming==='instant'?.12:c.mnTiming==='chosen'?.05:c.mnTiming==='slots'?.03:.01;
+  const mnBad=c.mnAbout==='others'?.15:.03,mnPain=c.mnAbout==='others'?.6:.25,mnOutP=c.mnTiming==='instant'?.12:c.mnTiming==='chosen'?.05:c.mnTiming==='slots'?.03:c.mnTiming==='window'?.006:.01;
   const hurtOne=(g,except,amt)=>{const q=byG(g).filter(x=>x.on&&x.id!==except);if(q.length){pick(q).ann[9]+=amt;mnHurt++}};
   const join=(p,d,by)=>{if(p.joined>=0)return;p.joined=d;p.on=true;p.last=d;p.v=.06;if(c.bonus)p.unbacked=5;if(by!=null)p.vouch=by;
     if(c.vanish)p.nextVan=d+30+Math.floor(R()*30);
+    if(c.pacts&&c.obPact&&R()<(c.obPact==='free'?.6:.45)){p.pact={end:d+21,miss:0,str:0,wk:d,last:d,fit:c.obPact==='free'?.05:0};obPacts++}   // first pact during onboarding: presets, or your own words structured
     const fr=byG(p.g).filter(q=>q.joined<0),k=c.circles?3:(R()<.3?1:0);
     for(let i=0;i<k&&i<fr.length;i++)if(R()<(c.circles?accept():.3))pending.push([pick(fr),d+1+Math.floor(R()*3),p.id])};
   for(let d=0;d<D;d++){
@@ -993,7 +1239,7 @@ function simulate(c){
     if(c.custody&&c.partnerFailDay===d){partnerFailed=true;C*=.4;for(const q of people)if(q.on&&pot[q.g])q.ann[4]+=1.5;pot.fill(null)}   // the Synapse scenario
     // Midnight: the night's unsigned messages go out together once at least three are waiting
     if(c.midnight)for(let g=0;g<G;g++){
-      if(c.mnTiming==='batch'||c.mnTiming==='slots'||!c.mnTiming){if(mnQ[g]>=(c.mnTiming==='slots'?2:3)){for(let i=0;i<mnQ[g];i++)if(R()<mnBad)hurtOne(g,-1,mnPain);mnQ[g]=0;mnDay[g]=d}}}
+      if(c.mnTiming==='batch'||c.mnTiming==='slots'||c.mnTiming==='window'||!c.mnTiming){if(mnQ[g]>=(c.mnTiming==='slots'?2:3)){for(let i=0;i<mnQ[g];i++)if(R()<mnBad)hurtOne(g,-1,mnPain);mnQ[g]=0;mnDay[g]=d}}}
     // the Mole: one member per circle of 4+ gets three secret tasks; the circle guesses on reveal night
     const moleStart=c.mole&&d%7===1,moleReveal=c.mole&&d%7===6;
     if(moleStart)for(let g=0;g<G;g++){const q=byG(g).filter(x=>x.on&&d-x.last<=3);moleG[g]=q.length>=4?pick(q).id:-1;if(moleG[g]>=0)moles++}
@@ -1006,12 +1252,16 @@ function simulate(c){
     const anyPot=c.pots||c.pledge||c.custody;
     if(anyPot)for(let g=0;g<G;g++){
       if(!pot[g]&&af[g]>=3&&!partnerFailed&&R()<.05)pot[g]={end:d+7+Math.floor(R()*4),n:0};
-      if(pot[g]&&pot[g].end===d){const P=pot[g],need=4,okRate=c.custody?.92:c.pledge?.85:.75;
+      if(pot[g]&&pot[g].end===d){const P=pot[g],need=4,okRate=(c.custody?.92:c.pledge?.85:.75)+(c.chat==='threads'?.06:c.chat==='room'?.03:0);
         const done=P.n>=(c.pledge?need:2)&&R()<okRate;
-        for(const q of byG(g))if(q.inPot){if(done)q.potWin=d;else q.ann[6]+=c.pledge?.03:.12;q.inPot=0}
+        for(const q of byG(g))if(q.inPot){if(done)q.potWin=d;else q.ann[6]+=(c.pledge?.03:.12)*(c.chat==='threads'?.7:c.chat==='room'?.85:1);q.inPot=0}
         done?potsDone++:potsFailed++;pot[g]=null}}
     if(c.wanderers)for(let g=0;g<G;g++)if(af[g]>=2&&R()<.1){const q=byG(g).filter(x=>x.on&&x.id!==wand[g]);if(q.length){wand[g]=pick(q).id;people[wand[g]].wandAt=d}}   // passed on: a handoff
     if(c.shed)for(let g=0;g<G;g++)shedG[g]*=.8;
+    if(c.dark==='together')for(const q of people)if(q.on&&darkG[q.g]===d&&q.darkDay!==d&&R()<.75){q.darkDay=d;q.darkWith=true;darkDays++}
+    const sealedToday=new Array(G).fill(false);
+    if(c.sealed)for(let g=0;g<G;g++){const n0=sealedG[g].length;sealedG[g]=sealedG[g].filter(t=>t!==d);if(sealedG[g].length<n0){sealedToday[g]=true;sealedOpened+=n0-sealedG[g].length}}
+    if(c.dark==='together'&&d%14===6)for(let g=0;g<G;g++)if(af[g]>=3&&R()<.5)darkG[g]=d+1;   // the circle agrees a Dark Sunday
     if(c.vanish)for(const p of people)if(p.on&&p.nextVan===d){const f0=af[p.g]-(d-p.last<=3?1:0);if(f0>=2&&R()<.5){p.vanDay=d+3;vanG[p.g]=d+3}p.nextVan=d+60}
     for(const p of people){if(!p.on)continue;
       const age=d-p.joined,f=Math.max(0,af[p.g]-(d-p.last<=3?1:0)),city=verified[p.g];
@@ -1039,11 +1289,21 @@ function simulate(c){
       if(c.vanish){if(p.vanDay-d>=1&&p.vanDay-d<=3)pull+=.12*W(c,'vanish');if(p.vanDay+1===d)pull+=.4*W(c,'vanish');if(vanG[p.g]===d&&p.vanDay!==d)pull+=.08*W(c,'vanish')}
       if(c.feats&&city&&f>=2)pull+=.04*W(c,'feats')*Math.min(1,featsLast/(G*.5));
       if(hostRun&&host[p.g])pull+=.12*mTrust;
+      // ---- v0.6 ----
+      if(c.chat&&f>=1)pull+=(c.chat==='threads'?.07:.06)*W(c,'chat')*f/(f+2);
+      if(c.xchat==='rooms'&&c.calls&&city)pull+=.02*W(c,'xchat');
+      if(c.xchat==='dms'&&city)pull+=.04*W(c,'xchat');
+      if(c.feed==='open'||c.feed==='soft')pull+=(c.feed==='open'?.08:.06)*W(c,'feed')*(age<14?1.5:1);   // something to look at when your circle is quiet
+      if(c.sealed){if(sealedToday[p.g])pull+=.15*W(c,'sealed');else if(sealedG[p.g].length)pull+=.02*W(c,'sealed')}
+      if(c.dark&&p.darkDay===d-1)pull+=.3*W(c,'dark');                   // coming back: what did everyone do?
+      if(c.dark==='together'&&darkG[p.g]===d+1)pull+=.06*W(c,'dark');
       if(age===14)p.dense=f>=3;
       const clut=(c.clutter||0)+(c.loadK?c.loadK*load(age):0);
       const annoy=p.ann.reduce((a,b)=>a+b,0)+clut;   // every extra concept is one more thing to learn
-      let prob=clamp(.015+.42*Math.exp(-age/1.4)+1.1*p.v+pull*(.4+.6*p.s)-.25*annoy,.005,.95);
+      let prob=clamp(.015+.42*Math.exp(-age/1.4)+1.1*p.v+pull*(.4+.6*p.s)*(c.pw||1)-.25*annoy,.005,.95);
       if(c.vanish&&p.vanDay===d)prob=0;                                  // gone for the day
+      if(c.dark&&p.darkDay===d){prob=Math.min(prob,.35);if(R()<(p.darkWith?.12:.25)){darkBroken++;p.ann[8]+=.03}}                   // the lock screen is ours: you still see the countdown, little else
+      if(c.chat&&f>=1)p.ann[11]+=(c.chat==='threads'?.0015:.004)*f*(c.noise??1);      // a busy room pings you; threads only ping what you're in
       let val=0;
       if(R()<prob){opens++;p.opens.add(age);p.last=d;
         if(c.circles&&f<3&&R()<.08){const fr=byG(p.g).filter(q=>q.joined<0);if(fr.length&&R()<accept())pending.push([pick(fr),d+1,p.id])}
@@ -1078,11 +1338,11 @@ function simulate(c){
         if(c.cashOut&&R()<.05)p.unbacked+=2;                                                         // bought favors with money
         // ---- v0.5 ----
         if(c.pacts){if(!p.pact&&f>=1&&R()<.12)p.pact={end:d+21,miss:0,str:0,wk:d,last:d};
-          if(p.pact&&R()<.85){p.pact.last=d;val+=.12*K*W(c,'pacts')}}
+          if(p.pact&&R()<.85+(p.pact.fit||0)+(c.chat==='threads'?.03:0)){p.pact.last=d;val+=.12*K*W(c,'pacts')}}
         if(p.pactWin===d)val+=.4*K*W(c,'pacts');
         if(c.midnight&&f>=1){
           if(R()<.1){mnSent++;
-            if(c.mnTiming==='batch'||c.mnTiming==='slots'||!c.mnTiming)mnQ[p.g]++;
+            if(c.mnTiming==='batch'||c.mnTiming==='slots'||c.mnTiming==='window'||!c.mnTiming)mnQ[p.g]++;
             else{mnDay[p.g]=d+1;if(R()<mnBad)hurtOne(p.g,p.id,mnPain)}
             if(R()<mnOutP){mnOut++;p.ann[9]+=.4}}                                                     // worked out who wrote it
           if(mnDay[p.g]===d)val+=(c.mnAbout==='others'?.28:.2)*K*W(c,'midnight')}
@@ -1096,6 +1356,19 @@ function simulate(c){
         if(hostRun&&host[p.g]&&R()<.4*mTrust){hostedRun++;
           if(host[p.g].fake){wasted++;p.ann[6]+=.25;mTrust*=.97;if(R()<(c.hostStake?.0005:.01)){lured++;harm++;p.ann[5]+=1.5}}
           else{val+=.3*K*W(c,'hosted');featsWeek+=.2}}
+        // ---- v0.6 ----
+        if(c.chat&&f>=1)val+=(c.chat==='threads'?.06:.05)*K*W(c,'chat');
+        if(c.xchat==='rooms'&&c.calls&&city&&R()<.04){val+=.08*K*W(c,'xchat');callsAnswered++}
+        if(c.xchat==='dms'&&city){if(R()<.3)val+=.04*K*W(c,'xchat');
+          if(R()<.004*(c.verify||c.verifyPost?.6:1)){const q=people.filter(x=>x.on&&x.g!==p.g&&verified[x.g]);if(q.length){pick(q).ann[12]+=.8;harassed++}}}   // a cold DM nobody wanted
+        if(c.feed==='open'||c.feed==='soft'){val+=.05*K*W(c,'feed');
+          if(R()<.4)p.ann[10]+=c.feed==='open'?(af[p.g]<4?.03:.015):(af[p.g]<4?.012:.006);    // like counts make it a scoreboard
+          if(c.feed==='open'&&R()<.003){p.ann[12]+=.6;harassed++}                          // a stranger in the comments
+          if(R()<.05)feedPosts++}
+        if(c.sealed&&f>=1){if(R()<.03){sealedG[p.g].push(d+7+Math.floor(R()*54));sealedMade++}
+          if(sealedToday[p.g]){val+=.25*K*W(c,'sealed');if(R()<.02)hurtOne(p.g,p.id,.2)}}
+        if(c.dark&&p.darkDay===d-1){val+=(p.darkWith?.45:.3)*K*W(c,'dark');featsWeek+=p.darkWith?.5:.2}
+        if(c.dark==='solo'&&!(p.darkDay>=d-30)&&f>=1&&R()<.04){p.darkDay=d+1;p.darkWith=false;darkDays++}
         // ----
         if(R()<.14)p.listed=1;
         if(p.listed&&(c.market?market:true)){
@@ -1129,7 +1402,7 @@ function simulate(c){
       if(p.inPot){aqm*=.8;nqm*=.6}                                        // your money's in the trip
       if(c.chapters&&f>=3)nqm*=1-.25*W(c,'chapters');                     // belonging: you're a member, not a user
       if(p.pact)nqm*=.85;                                                 // you told your circle you'd do it
-      const a2=p.ann.reduce((a,b)=>a+b,0)+clut,aq=.06*Math.max(0,a2-.12)*aqm,nq=(d-p.last>14?.08:0)*nqm;
+      const a2=p.ann.reduce((a,b)=>a+b,0)+clut,aq=.06*Math.max(0,a2-.12)*aqm*hz,nq=(d-p.last>14?.08:0)*nqm*hz;
       if(R()<aq+nq){p.on=false;let best=0;if(R()<aq/(aq+nq)){let bv=-1;for(let k=1;k<NA;k++)if(p.ann[k]>bv){bv=p.ann[k];best=k}}reasons[best]++;p.pact=null;
         if(c.chapters&&p.vouch>=0&&age<21){const v=people[p.vouch];v.ann[2]+=.15}}               // your invitee flaked: your stake takes a hit
     }
@@ -1150,12 +1423,14 @@ function simulate(c){
   const timid=coh.filter(p=>p.b<1/3),bold=coh.filter(p=>p.b>2/3);
   return {...o,ret,reasons,harm,minor,joined:people.filter(p=>p.joined>=0).length/people.length,ins:norm,m1:m1(coh),m1d:m1(dense),denseShare:dense.length/Math.max(1,coh.length),
     d30timid:d30(timid),d30bold:d30(bold),pots:potsDone,potsFailed,duels:duelsRun,bountyDone,
-    pactsDone,pactsFailed,mnSent,mnHurt,mnOut,moles,vanishes,wasted,lured,hostedRun,callsAnswered,verifiedShare:verified.filter(Boolean).length/G,postShare:canPost.filter(Boolean).length/G};
+    pactsDone,pactsFailed,mnSent,mnHurt,mnOut,moles,vanishes,wasted,lured,hostedRun,callsAnswered,sealedMade,sealedOpened,harassed,darkDays,darkBroken,feedPosts,obPacts,verifiedShare:verified.filter(Boolean).length/G,postShare:canPost.filter(Boolean).length/G};
 }
+
 const PRESETS={v1:V1,v2:V2,trueque:{...V2,bonus:1,limit:0},base:{...V1,decay:0,reminders:0,ladder:0,shortChains:0,sell:0}};
 const V5={...V4,pacts:1,mole:1,midnight:1,fear:1,calls:1,feats:1,timebank:1,hosted:1,verifyPost:1,hostStake:1};
-const PRE={v2:V2x,v3:V3,cash:{...V3,cashDrops:1},nocap:{...V3,cap:0,downrank:0},decay:{...V3,decay:1},v4:V4,v5:V5};
-const KEYS=['ledger','league','circles','zones','hunts','drops','cashDrops','daily','board','market','decay','shortChains','sell','cap','downrank','limit','bonus','pledge','chapters','missions','homework','timebank','duels','cashOut','realFights','payPrize','pacts','mole','midnight','fear','feats','calls','hosted','hostStake','verifyPost','pactsHard','gossip'];
+const V6={...V5,chatThreads:1,xRooms:1,feedSoft:1,sealed:1,mnWindow:1,obFree:1,darkTogether:1};
+const PRE={v2:V2x,v3:V3,cash:{...V3,cashDrops:1},nocap:{...V3,cap:0,downrank:0},decay:{...V3,decay:1},v4:V4,v5:V5,v6:V6};
+const KEYS=['ledger','league','circles','zones','hunts','drops','cashDrops','daily','board','market','decay','shortChains','sell','cap','downrank','limit','bonus','pledge','chapters','missions','homework','timebank','duels','cashOut','realFights','payPrize','pacts','mole','midnight','fear','feats','calls','hosted','hostStake','verifyPost','pactsHard','gossip','chatThreads','xRooms','feedSoft','sealed','mnWindow','obFree','darkTogether','chatRoom','xDMs','feedOpen','busy'];
 const SEEDS=3,GROUPS=150;
 const cache=new Map();
 function avgRun(flags,o){const key=JSON.stringify([flags,o]);if(cache.has(key))return cache.get(key);
@@ -1264,6 +1539,11 @@ function drawSim(){if(!cur)return;const a=kpi(cur),r=kpi(ref);
   if(cfg.pactsHard)s.push('Strict pacts are on: no free misses and public strikes. Most pacts fail, and failing in front of your circle is a reason to leave.');
   else if(cfg.pacts)s.push('Pacts give people a small reason to open the app on days nothing insane is happening.');
   if(cfg.gossip)s.push('Gossip about other people is on. Retention barely moves, and people start leaving because of something written about them.');
+  if(cfg.chatRoom&&!cfg.chatThreads)s.push('One chat room for the whole circle: every message pings everyone. “Too many notifications” becomes a top reason to leave.');
+  if(cfg.chatThreads)s.push('Chat lives in threads on plans, pots and pacts, so only the people in each thing get pinged.');
+  if(cfg.xDMs)s.push('Anyone can DM anyone in the City. Some of those messages are unwanted, and the people who get them leave.');
+  if(cfg.feedOpen&&!cfg.feedSoft)s.push('The feed shows like counts and takes comments from strangers: smaller circles feel behind, and some people get comments they didn’t want.');
+  if(cfg.busy)s.push('Busier people: every reason to open the app is worth half. The levels drop, and the differences between versions show more clearly.');
   if(cfg.hosted&&!cfg.hostStake&&!cfg.verifyPost)s.push('Anyone can post a Mission: some are fake, and a few people get sent somewhere they shouldn’t be.');
   $('#story').innerHTML=s.map(x=>`<li>${x}</li>`).join('');
 }
@@ -1280,9 +1560,10 @@ function show(p){
   if(p==='sim'){if(!cur)run();else drawSim()}
   if(p==='next')drawNext();
   if(p==='v5')drawV5();
+  if(p==='v6')drawV6();
 }
 document.querySelector('.ptabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)show(b.dataset.p)});
-const redraw=()=>{drawWF();drawSim();if(!$('#p-next').hidden){drawAdd();drawClutter()}if(!$('#p-v5').hidden){drawV5Add();drawV5Flow()}};
+const redraw=()=>{drawWF();drawSim();if(!$('#p-next').hidden){drawAdd();drawClutter()}if(!$('#p-v5').hidden){drawV5Add();drawV5Flow()}if(!$('#p-v6').hidden)drawV6Add()};
 window.addEventListener('resize',()=>{clearTimeout(redraw.t);redraw.t=setTimeout(redraw,120)});
 const mq=matchMedia('(prefers-color-scheme: dark)');mq.addEventListener&&mq.addEventListener('change',redraw);
 new MutationObserver(redraw).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
@@ -1410,8 +1691,74 @@ function v5Tables(){if(!V5D)return;const A=V5D.add,F=V5D.flow,hi=F[Object.keys(F
 }
 function drawV5(){v5Tables();drawV5Add();drawV5Flow()}
 
+const V6D={"base":{"cal":0.894,"busy":0.7954},"add":{"obPreset":{"cal":-0.001,"calSe":0.0027,"busy":0.0012,"busySe":0.0031,"harassed":0,"outed":81,"sealed":0,"dark":0,"broken":0},"obFree":{"cal":0.0017,"calSe":0.0027,"busy":0.0021,"busySe":0.0032,"harassed":0,"outed":78,"sealed":0,"dark":0,"broken":0},"chatRoom":{"cal":-0.057,"calSe":0.0031,"busy":-0.0565,"busySe":0.0032,"harassed":0,"outed":65,"sealed":0,"dark":0,"broken":0},"chatThreads":{"cal":0.0016,"calSe":0.0025,"busy":0.0256,"busySe":0.0028,"harassed":0,"outed":78,"sealed":0,"dark":0,"broken":0},"xRooms":{"cal":0.008,"calSe":0.0029,"busy":0.014,"busySe":0.0033,"harassed":0,"outed":80,"sealed":0,"dark":0,"broken":0},"xDMs":{"cal":0.002,"calSe":0.0027,"busy":0.0169,"busySe":0.0034,"harassed":178,"outed":74,"sealed":0,"dark":0,"broken":0},"threadsRooms":{"cal":0.0036,"calSe":0.003,"busy":0.0376,"busySe":0.0033,"harassed":0,"outed":77,"sealed":0,"dark":0,"broken":0},"feedSoft":{"cal":0.0216,"calSe":0.0028,"busy":0.0548,"busySe":0.0037,"harassed":0,"outed":80,"sealed":0,"dark":0,"broken":0},"feedOpen":{"cal":0.007,"calSe":0.0024,"busy":0.0403,"busySe":0.0031,"harassed":220,"outed":79,"sealed":0,"dark":0,"broken":0},"sealed":{"cal":0.0026,"calSe":0.0028,"busy":0.0167,"busySe":0.0034,"harassed":0,"outed":78,"sealed":1463,"dark":0,"broken":0},"mnWindow":{"cal":0.0022,"calSe":0.002,"busy":0.0042,"busySe":0.0031,"harassed":0,"outed":48,"sealed":0,"dark":0,"broken":0},"darkSolo":{"cal":-0.005,"calSe":0.0028,"busy":0.0009,"busySe":0.0038,"harassed":0,"outed":77,"sealed":0,"dark":1634,"broken":407},"darkTogether":{"cal":-0.0068,"calSe":0.0028,"busy":0.0036,"busySe":0.0034,"harassed":0,"outed":79,"sealed":0,"dark":2530,"broken":300},"vanish":{"cal":0.0005,"calSe":0.0027,"busy":0.0057,"busySe":0.0034,"harassed":0,"outed":75,"sealed":0,"dark":0,"broken":0},"placebo":{"cal":-0.0027,"calSe":0.0029,"busy":-0.0002,"busySe":0.0029,"harassed":0,"outed":75,"sealed":0,"dark":0,"broken":0}},"noise":{"cal":{"base":0.8949,"room0.25":0.0068,"threads0.25":0.0199,"room0.5":-0.0126,"threads0.5":0.0141,"room1":-0.0587,"threads1":0.0018},"busy":{"base":0.7975,"room0.25":0.0271,"threads0.25":0.0535,"room0.5":0.0033,"threads0.5":0.0455,"room1":-0.0611,"threads1":0.0246}},"bundle":{"cal":{"v5":0.8949,"v6":0.8948,"loud":0.8006,"harassed":0,"loudHarassed":365},"busy":{"v5":0.7975,"v6":0.8588,"loud":0.7545,"harassed":0,"loudHarassed":323}},"flow":{"cal":{"v5":0.8719,"v6AtOnce":0.7548,"v6Unlocked":0.8497},"busy":{"v5":0.7581,"v6AtOnce":0.6833,"v6Unlocked":0.7988}},"dec":{"easy":{"race":{"wait1":0.166,"wait12":0.034,"solved":0.468,"free":0.003,"rush":1,"peak":76.3,"low":0.205,"fun":0.48,"att":0.85},"raceGated":{"wait1":0.166,"wait12":0.033,"solved":0.467,"free":0.003,"rush":1,"peak":76.9,"low":0.21,"fun":0.48,"att":0.853},"points":{"wait1":0.164,"wait12":0.029,"solved":0.462,"free":0.005,"rush":0.052,"peak":49.9,"low":0.281,"fun":0.533,"att":0.88},"gated":{"wait1":0.164,"wait12":0.029,"solved":0.466,"free":0.005,"rush":0.052,"peak":48.7,"low":0.28,"fun":0.529,"att":0.88},"full":{"wait1":0.195,"wait12":0.028,"solved":0.472,"free":0.001,"rush":0.05,"peak":49.1,"low":0.325,"fun":0.527,"att":0.882},"fullNoGate":{"wait1":0.195,"wait12":0.029,"solved":0.471,"free":0.001,"rush":0.05,"peak":49.8,"low":0.325,"fun":0.526,"att":0.884}},"hard":{"race":{"wait1":0.261,"wait12":0.244,"solved":0.334,"free":0.045,"rush":1,"peak":99.1,"low":0.214,"fun":0.539,"att":0.903},"raceGated":{"wait1":0.261,"wait12":0.233,"solved":0.337,"free":0.04,"rush":1,"peak":100,"low":0.198,"fun":0.541,"att":0.905},"points":{"wait1":0.263,"wait12":0.241,"solved":0.342,"free":0.038,"rush":0.058,"peak":62.4,"low":0.221,"fun":0.593,"att":0.934},"gated":{"wait1":0.263,"wait12":0.234,"solved":0.332,"free":0.037,"rush":0.055,"peak":63.3,"low":0.206,"fun":0.594,"att":0.939},"full":{"wait1":0.259,"wait12":0.287,"solved":0.353,"free":0.037,"rush":0.046,"peak":62.7,"low":0.256,"fun":0.593,"att":0.936},"fullNoGate":{"wait1":0.259,"wait12":0.282,"solved":0.35,"free":0.037,"rush":0.042,"peak":62.4,"low":0.266,"fun":0.594,"att":0.935}}},"drops":{"bigRace":{"reach":0.73,"outskirts":0.35,"peak":234.9,"rush":0.7,"rushKm":54.88,"perPrize":12.2},"zoneRace":{"reach":1,"outskirts":1,"peak":160,"rush":0.71,"rushKm":32.61,"perPrize":16.67},"zoneWindow":{"reach":1,"outskirts":1,"peak":46.4,"rush":0.04,"rushKm":1.95,"perPrize":16.08},"shrink":{"reach":0.83,"outskirts":0.55,"peak":158.9,"rush":0.7,"rushKm":70.15,"perPrize":13.92},"trail":{"reach":0.92,"outskirts":0.72,"peak":8,"rush":0.04,"rushKm":2.69,"perPrize":15.34},"auction":{"reach":0.82,"outskirts":0.41,"peak":33.2,"rush":0.04,"rushKm":2.54,"perPrize":13.73}},"types":{"decode":{"n":"Decode","fun":442.3,"meets":201.9,"perPlay":0.33,"att12":0.62,"cost":60},"trail":{"n":"Trail","fun":388.9,"meets":281,"perPlay":0.18,"att12":0.61,"cost":40},"dropWindow":{"n":"Drops, one per zone","fun":286.1,"meets":184.4,"perPlay":0.31,"att12":0.51,"cost":150},"dropRace":{"n":"Drop, first come","fun":225.1,"meets":94.3,"perPlay":2.05,"att12":0.4,"cost":150},"shrink":{"n":"Shrinking zone","fun":271.2,"meets":147.4,"perPlay":3.45,"att12":0.43,"cost":80},"turf":{"n":"Turf season","fun":367.8,"meets":182.1,"perPlay":0.68,"att12":0.55,"cost":30},"bingo":{"n":"City bingo","fun":308,"meets":132.3,"perPlay":0.15,"att12":0.56,"cost":10},"relay":{"n":"Relay across circles","fun":324.2,"meets":559.7,"perPlay":0.49,"att12":0.53,"cost":20},"swap":{"n":"Trade-up chain","fun":329.9,"meets":516.7,"perPlay":0.15,"att12":0.56,"cost":5},"blind":{"n":"Blind circle dinner","fun":329.6,"meets":543.5,"perPlay":0.15,"att12":0.5,"cost":0},"capsule":{"n":"Cache for another circle","fun":288.7,"meets":255.9,"perPlay":0.15,"att12":0.55,"cost":5},"mission":{"n":"Mission (flash mob)","fun":420.9,"meets":453.7,"perPlay":0.19,"att12":0.58,"cost":120},"fixture":{"n":"League fixture","fun":394.8,"meets":358.9,"perPlay":0.16,"att12":0.57,"cost":50},"hideSeek":{"n":"Hide-and-seek at a Zone","fun":327,"meets":288,"perPlay":0.86,"att12":0.5,"cost":60},"cityMole":{"n":"City Mole","fun":374.1,"meets":324.7,"perPlay":0.2,"att12":0.57,"cost":10},"hunt":{"n":"The Hunt (assassin)","fun":362.3,"meets":153.3,"perPlay":7.78,"att12":0.48,"cost":20}}};
+/* ---- v0.6 tested: chat, feed, sealed, Go dark, onboarding; Decode, drops, play types, fake scans ---- */
+const V6ROWS=[['feedSoft','City feed, no counts or stranger comments','build'],['threadsRooms','Threads + rooms with other circles','build'],['chatThreads','Chat in threads on plans, pots, pacts','build'],
+ ['xRooms','Rooms with other circles, close after','build'],['sealed','Sealed messages, signed, open later','safe'],['mnWindow','Midnight, you pick the week','safe'],['obFree','First pact in your own words','build'],['obPreset','First pact from a preset list','build'],
+ ['darkTogether','Go dark, with the circle','safe'],['darkSolo','Go dark, on your own','safe'],['vanish','Vanish (v0.5 version)','safe'],
+ ['feedOpen','Open feed: likes, followers, comments','nogo'],['xDMs','Open DMs between strangers','nogo'],['chatRoom','One chat room for the whole circle','nogo'],['placebo','A switch that does nothing','plc']];
+const V6S={feedSoft:'Feed, no counts',threadsRooms:'Threads + rooms',chatThreads:'Chat in threads',xRooms:'Rooms between circles',sealed:'Sealed messages',mnWindow:'Midnight, a week',obFree:'Pact in own words',obPreset:'Pact from presets',
+ darkTogether:'Dark, together',darkSolo:'Dark, alone',vanish:'Vanish (v0.5)',feedOpen:'Open feed',xDMs:'Open DMs',chatRoom:'One chat room',placebo:'Does nothing'};
+const V6C={build:'--good',safe:'--ballpoint',nogo:'--hazard',plc:'--muted'};
+function drawV6Add(){const cv=$('#ch-v6add');if(!cv||!cv.clientWidth||!V6D)return;const A=V6D.add;
+  const W=cv.clientWidth,narrow=W<520,rows=V6ROWS.filter(r=>A[r[0]]).map(([k,l,c])=>({k,l:narrow?V6S[k]:l,c,d:A[k].busy,se:A[k].busySe,dc:A[k].cal})).sort((a,b)=>b.d-a.d);
+  const dpr=window.devicePixelRatio||1,rh=23,T=22,B=22,H=T+B+rows.length*rh;cv.style.height=H+'px';
+  cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);
+  const ink=css('--ink'),muted=css('--muted'),ln=css('--line');
+  x.font='12px "Instrument Sans", system-ui, sans-serif';const L=Math.min(narrow?150:270,12+Math.max(...rows.map(r=>x.measureText(r.l).width))),Rr=narrow?40:56,w=W-L-Rr;
+  const lo=Math.min(-.07,...rows.map(r=>Math.min(r.d-2*r.se,r.dc))),hi=Math.max(.07,...rows.map(r=>Math.max(r.d+2*r.se,r.dc))),X=v=>L+(v-lo)/(hi-lo)*w;
+  x.font='10px "IBM Plex Mono", ui-monospace, monospace';x.textBaseline='middle';x.textAlign='center';
+  const stp=narrow?.04:.02;for(let v=Math.ceil(lo/stp)*stp;v<=hi+1e-9;v+=stp){const xx=X(v);x.strokeStyle=ln;x.lineWidth=1;x.beginPath();x.moveTo(xx+.5,T-6);x.lineTo(xx+.5,H-B);x.stroke();x.fillStyle=muted;x.fillText((v>0?'+':'')+Math.round(v*100),xx,H-B+11)}
+  x.fillStyle=muted;x.textAlign='left';x.fillText(narrow?'day-30 points vs v0.5':'points of day-30 retention vs v0.5 (busier people: '+pct(V6D.base.busy)+', calibrated: '+pct(V6D.base.cal)+')',L,9);
+  x.strokeStyle=ink;x.lineWidth=1.2;x.beginPath();x.moveTo(X(0)+.5,T-6);x.lineTo(X(0)+.5,H-B);x.stroke();
+  rows.forEach((r,i)=>{const y=T+i*rh+rh/2,col=css(V6C[r.c]);
+    x.fillStyle=col;x.globalAlpha=r.c==='nogo'||r.c==='plc'?.55:.9;const a=X(Math.min(0,r.d)),b=X(Math.max(0,r.d));x.fillRect(a,y-7,Math.max(1,b-a),14);x.globalAlpha=1;
+    x.strokeStyle=ink;x.lineWidth=1;x.beginPath();x.moveTo(X(r.d-2*r.se),y+.5);x.lineTo(X(r.d+2*r.se),y+.5);x.stroke();
+    x.fillStyle=css('--card');x.strokeStyle=ink;x.lineWidth=1.5;x.beginPath();x.arc(X(r.dc),y,3.5,0,7);x.fill();x.stroke();
+    x.fillStyle=ink;x.textAlign='right';x.font=(r.k==='feedSoft'||r.k==='chatRoom'?'600 ':'')+'12px "Instrument Sans", system-ui, sans-serif';x.fillText(r.l,L-8,y);
+    x.font='600 11px "IBM Plex Mono", ui-monospace, monospace';x.textAlign='left';x.fillText(pts(r.d),Math.max(X(r.d+2*r.se),X(0),X(r.dc)+4)+6,y)});
+}
+// what each check makes a faker buy or do; budgets: troll £0 and 2 hours, scammer £300 and 20 hours, farm £5,000 and 300 hours
+const FAKE=[
+ {n:'Sign up, nothing else',m:0,h:.3,once:0,how:'Four accounts on one phone or an emulator',hon:'none'},
+ {n:'Scan a static QR code',m:0,h:.4,once:0,how:'Screenshot the code and forward it',hon:'one scan together'},
+ {n:'Rotating code, changes every 15 s',m:0,h:.8,once:0,how:'Relay it live; emulators on one laptop can still scan each other',hon:'same'},
+ {n:'+ Bluetooth handshake, same room',m:0,h:.8,once:160,how:'Four real phones in one room (reusable)',hon:'same tap'},
+ {n:'+ genuine-app check, one account per phone',m:160,h:1,once:0,how:'Four fresh phones per circle (App Attest, Play Integrity)',hon:'invisible'},
+ {n:'+ a real phone number, no VoIP',m:176,h:1.2,once:0,how:'Four SIMs per circle',hon:'one SMS code'},
+ {n:'+ 14 days’ probation: one real meet-up with an established circle before posting',m:176,h:4.2,once:0,meet:1,how:'Show up in person to a fixture or a Call',hon:'none for most: it only delays posting'},
+ {n:'+ liveness selfie, Mission hosts only',m:176,h:4.5,once:0,meet:1,face:1,how:'A different real face per hosting circle',hon:'one selfie, hosts only (biometric law applies)'}];
+const ATT=[['troll',0,2,1],['scammer',300,20,1],['farm',5000,300,5]];
+const fakes=(f,[,B,H,faces])=>{if(f.once>B)return 0;let n=Math.min(f.m?(B-f.once)/f.m:1e9,H/f.h);if(f.meet)n*=.75;if(f.face)n=Math.min(n,faces);return Math.floor(n)};
+const PLAYV={decode:['Build now','weekly; points by solve order'],mission:['Keep','already in v0.5'],trail:['Build now','safest per outing'],fixture:['Keep','already in v0.5'],cityMole:['Build next','cheap, mixes circles'],turf:['Later','a season arc; claims by stamp, never speed'],
+ relay:['Build next','most cross-circle meetings'],swap:['Build next','cheap, mixes circles'],blind:['Opt-in','great for bonds, hard for the timid'],bingo:['Filler','cheap, low ceiling'],capsule:['Filler','slow burn'],dropWindow:['Build now','per zone, a window, sponsored'],
+ hideSeek:['Zones only','chasing needs staff'],dropRace:['No-go','everyone rushes'],shrink:['No-go','rushing plus crowding'],hunt:['No-go','chasing people in public']};
+function v6Tables(){if(!V6D)return;const A=V6D.add,N=V6D.noise,Bd=V6D.bundle,F=V6D.flow,fx=v=>v.toFixed(0);
+  document.querySelectorAll('[data-v6]').forEach(e=>{const k=e.dataset.v6;e.textContent=k==='dmHarm'?fmt(A.xDMs.harassed):k==='feedHarm'?fmt(A.feedOpen.harassed):''});
+  const r=(l,v,p,cls)=>`<div class="rung ${cls||''}"><small>${l}</small><b>${v}</b><p>${p}</p></div>`;
+  $('#v6Rungs').innerHTML=r('v0.5, busier people',pct(Bd.busy.v5),'where we are, in the world with room to show')+r('v0.6 built quiet',pct(Bd.busy.v6),'threads, rooms, feed without counts, sealed, Go dark together','hi')+r('v0.6 built loud',pct(Bd.busy.loud),`one room, open DMs, an open feed: ${fmt(Bd.busy.loudHarassed)} people sent unwanted messages`)+r('All at once vs unlocked',pct(F.busy.v6AtOnce)+' / '+pct(F.busy.v6Unlocked),'with a cost per new thing to learn: unlock it over the first month');
+  $('#v6Placebo').textContent=`A switch that changes nothing but the random numbers moved day 30 by ${pts(A.placebo.cal)} (calibrated) and ${pts(A.placebo.busy)} (busier) points. Treat differences under about 1 point as noise.`;
+  $('#v6Chat').innerHTML=`<table class="table"><thead><tr><th>How noisy chat is</th><th>One room · calibrated</th><th>Threads · calibrated</th><th>One room · busier</th><th>Threads · busier</th></tr></thead><tbody>`+
+   [['0.25','A quarter of the assumed noise'],['0.5','Half'],['1','As assumed']].map(([k,l])=>`<tr><td>${l}</td><td class="n">${pts(N.cal['room'+k])}</td><td class="n">${pts(N.cal['threads'+k])}</td><td class="n">${pts(N.busy['room'+k])}</td><td class="n">${pts(N.busy['threads'+k])}</td></tr>`).join('')+
+   `<tr><td>Rooms with other circles, closing after</td><td class="n" colspan="2">${pts(A.xRooms.cal)} · nobody hurt</td><td class="n" colspan="2">${pts(A.xRooms.busy)}</td></tr><tr><td>Open DMs between strangers</td><td class="n" colspan="2">${pts(A.xDMs.cal)} · <b>${fmt(A.xDMs.harassed)} sent unwanted messages</b></td><td class="n" colspan="2">${pts(A.xDMs.busy)}</td></tr></tbody></table>`;
+  const DV=[['race','Arrive first wins, hints for everyone','no'],['raceGated','Arrive first wins, hints only if you tried','no'],['points','Points by solve order, prize drawn among arrivals','maybe'],['gated','+ hints only if you’ve tried in the last 30 min','build'],['full','+ reveal shows an area, solvers can pass a hint on','build']];
+  const D=V6D.dec;$('#v6Dec').innerHTML=`<table class="table"><thead><tr><th>Rules</th><th>Circles waiting, week 12<br><small>easy clue · hard clue</small></th><th>Rushing to the spot</th><th>Busiest 10 min at the spot<br><small>people, hard clue</small></th><th>Weakest third who score</th><th>Fun</th><th>Verdict</th></tr></thead><tbody>`+
+   DV.map(([k,l,v])=>`<tr><td>${l}</td><td class="n">${pct(D.easy[k].wait12)} · ${pct(D.hard[k].wait12)}</td><td class="n">${pct(D.hard[k].rush)}</td><td class="n">${fx(D.hard[k].peak)}</td><td class="n">${pct(D.hard[k].low)}</td><td class="n">${D.hard[k].fun.toFixed(2)}</td><td><span class="vt ${v==='build'?'v4':v==='maybe'?'v5':'v3'}">${v==='build'?'build':v==='maybe'?'ok':'no-go'}</span></td></tr>`).join('')+'</tbody></table><p class="formula">60 circles, 12 weekly Decodes, 40 seeds. Each week circles copy whichever paid off better, working on the clue or waiting for hints. Easy: an average circle cracks it in about an hour. Hard: twice as hard, and effort feels like work.</p>';
+  const DR=[['bigRace','One big drop in the middle, first come'],['zoneRace','One per zone, first come'],['shrink','Shrinking zone'],['auction','Shops bid for the spots'],['trail','A trail: five stops, any order, two hours'],['zoneWindow','One per zone, sized to it, any time in the hour, prize drawn']];
+  const P=V6D.drops;$('#v6Drops').innerHTML=`<table class="table"><thead><tr><th>Design</th><th>Circles with one in reach</th><th>Outskirts circles in reach</th><th>Busiest 10 min at a site</th><th>Rushing</th><th>Verdict</th></tr></thead><tbody>`+
+   DR.map(([k,l])=>{const d=P[k],ok=d.rush<.1&&d.outskirts>.7;return `<tr><td>${l}</td><td class="n">${pct(d.reach)}</td><td class="n">${pct(d.outskirts)}</td><td class="n">${fx(d.peak)} people</td><td class="n">${pct(d.rush)}</td><td><span class="vt ${ok?'v4':'v3'}">${ok?'build':'no'}</span></td></tr>`}).join('')+'</tbody></table><p class="formula">100 circles in six zones, dense in the middle, 40 seeds. Shops sponsor drops in their own venues, and INSANE places them where circles live. Spots are never auctioned.</p>';
+  const T=Object.entries(V6D.types),mf=Math.max(...T.map(([,t])=>t.fun)),mm=Math.max(...T.map(([,t])=>t.meets));
+  const rows=T.map(([k,t])=>({k,...t,score:t.fun/mf+.5*t.meets/mm-.5*t.perPlay})).sort((a,b)=>{const ng=x=>PLAYV[x.k][0]==='No-go'?1:0;return ng(a)-ng(b)||b.score-a.score});
+  $('#v6Play').innerHTML=`<table class="table"><thead><tr><th>#</th><th>Play</th><th>Fun over 12 weeks</th><th>Cross-circle meetings</th><th>Still coming, week 12</th><th>People hurt per 1,000 outings</th><th>Cost per event</th><th>Verdict</th></tr></thead><tbody>`+
+   rows.map((t,i)=>{const v=PLAYV[t.k];return `<tr><td class="n">${v[0]==='No-go'?'–':i+1}</td><td>${t.n}</td><td class="n">${fmt(t.fun)}</td><td class="n">${fmt(t.meets)}</td><td class="n">${pct(t.att12)}</td><td class="n">${t.perPlay.toFixed(2)}</td><td class="n">£${t.cost}</td><td><b>${v[0]}</b> · ${v[1]}</td></tr>`}).join('')+'</tbody></table><p class="formula">100 circles, 12 weeks of each play type, 40 seeds. How fun each is the first time, how fast it gets old, how much it mixes circles and how risky it is are judgement calls, listed in docs/V06.md. The model adds what follows from them: crowds, rushing, novelty wearing off, and who keeps coming. Score = fun + half the meetings − harm.</p>';
+  $('#v6Fake').innerHTML=`<table class="table"><thead><tr><th>Check (each row adds to the one above)</th><th>What faking it takes</th><th>Fake circles: troll<br><small>£0, 2 h</small></th><th>scammer<br><small>£300, 20 h</small></th><th>farm<br><small>£5,000, 300 h</small></th><th>Cost to real people</th></tr></thead><tbody>`+
+   FAKE.map(f=>`<tr><td>${f.n}</td><td>${f.how}</td>${ATT.map(a=>`<td class="n">${fmt(fakes(f,a))}</td>`).join('')}<td>${f.hon}</td></tr>`).join('')+'</tbody></table><p class="formula">A cost sum, not a simulation. A fake circle needs four accounts that can post. Phones £40 each used, SIMs £4. Each real meet-up has a 1 in 4 chance of the fakers being spotted. Fingerprints and Face ID can’t help: your phone tells an app only “the owner unlocked it”, never who you are. Default: rotating code + Bluetooth + genuine-app check + phone number, and probation before posting. Selfies only for Mission hosts, if at all.</p>';
+}
+function drawV6(){v6Tables();drawV6Add()}
+
+
 sync();
-const startTab=['v5','road','next','ideas','sim','week'].includes(location.hash.slice(1))?location.hash.slice(1):'v5';
+const startTab=['v6','v5','road','next','ideas','sim','week'].includes(location.hash.slice(1))?location.hash.slice(1):'v6';
 show(startTab);
 })();
 </script>

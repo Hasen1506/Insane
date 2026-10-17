@@ -8,7 +8,7 @@ The question: *of the pooling options, the Fight Club layer and the niche ideas,
 - **Leave out** anything where the app holds money, favors turn into cash, or people get hurt.
 - **Ship fewer features.** Once extra features cost users anything at all, the top three beat shipping everything.
 
-**Built in v0.4:** see [`V04.md`](V04.md). **Next round (v0.5):** Pacts, Midnight, the Mole and a simpler flow, simulated on top of v0.4 in [`V05.md`](V05.md).
+**Built in v0.4:** see [`V04.md`](V04.md). **v0.6** (chat, feed, Go dark, city play): see [`V06.md`](V06.md). **Next round (v0.5):** Pacts, Midnight, the Mole and a simpler flow, simulated on top of v0.4 in [`V05.md`](V05.md).
 
 The interactive version is the **What to build next** tab in [`prototype/index.html`](../prototype/index.html). Its candidate ideas are also toggles in the Simulator tab, and it can re-run the ranking live.
 

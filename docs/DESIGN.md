@@ -12,6 +12,8 @@ The interactive prototype and simulator are in [`prototype/index.html`](../proto
 
 > **v0.3** (city layer: ledger as money, League, Zones, Hunts, Drops) is described in [`V03.md`](V03.md).
 > **v0.4** (Pots, Chapters, Missions) is described in [`V04.md`](V04.md); why those three is in [`IMPACT.md`](IMPACT.md).
+> **v0.6** (needs/wants/urges, threaded chat, a City feed without counts, Decode, drops per zone, Go dark, sealed messages) is described in [`V06.md`](V06.md).
+>
 > **v0.5** (Pacts, Midnight, the Mole, the Wall and Calls, a first five minutes and a simpler flow) is described in [`V05.md`](V05.md).
 
 ## 0. What changed in v0.2
