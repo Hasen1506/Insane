@@ -20,3 +20,4 @@ main#app role=main
   button.btn.ghost role=button act="ob-back" "Back"
   button.btn role=button act="ob-next" disabled="" "Next"
 div#layer
+div#toasts role=status

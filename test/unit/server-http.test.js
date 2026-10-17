@@ -89,8 +89,13 @@ module.exports = async function (t) {
     await S.signIn('owner@example.com');
     const rep2 = (await S.get('funnel', 'owner@example.com')).body;
     t.ok('funnel counts email, code, name, circle, welcome from real flows', rep2.total.email >= 3 && rep2.total.code >= 3 && rep2.total.name >= 2 && rep2.total.circle === 1 && rep2.total.welcome === 1, JSON.stringify(rep2.total));
-    { const d = new DatabaseSync(S.db, { readOnly: true }); const dumpRows = JSON.stringify([...d.prepare('SELECT * FROM funnel').all(), ...d.prepare('SELECT * FROM funnel_seen').all()]); d.close();
-      t.ok('the funnel tables hold no uid, email or browser id', !dumpRows.includes(a) && !dumpRows.includes(k) && !/@|browser-1|u_/.test(dumpRows), dumpRows.slice(0, 300)); }
+    { // every real uid and email in users, and the anon browser id, checked against every cell of both funnel tables
+      // (int-2: was a /u_/ substring test, which a random hex hash in funnel_seen.h can contain by chance)
+      const d = new DatabaseSync(S.db, { readOnly: true }); const users = d.prepare('SELECT uid, email FROM users').all();
+      const rows = [...d.prepare('SELECT * FROM funnel').all(), ...d.prepare('SELECT * FROM funnel_seen').all()]; d.close();
+      const secrets = [...users.flatMap(x => [x.uid, x.email]), a, k, 'browser-1'].filter(Boolean), cells = rows.flatMap(r => Object.values(r).map(String));
+      const leak = cells.find(c => secrets.some(x => c.includes(x)) || c.includes('@'));
+      t.ok('the funnel tables hold no uid, email or browser id', users.length >= 3 && !leak, leak ? 'leak: ' + leak : JSON.stringify(rows).slice(0, 300)); }
     /* Google sign-in (mocked tokeninfo) */
     const g1 = await S.post('auth/google', { credential: 'aaa.good.sig' });
     t.ok('Google sign-in with a valid token for this client signs in (lower-cased email) and sets the cookie', g1.status === 200 && /^u_/.test(g1.body.uid) && /insane_s=/.test(g1.headers.get('set-cookie')), JSON.stringify(g1.body));

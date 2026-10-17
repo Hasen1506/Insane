@@ -17,3 +17,4 @@ main#app role=main
   button.btn.wide role=button act="wel-start" "Get started"
   button.btn.ghost.wide role=button act="wel-code" "I have an invite"
 div#layer
+div#toasts role=status

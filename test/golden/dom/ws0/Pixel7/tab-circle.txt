@@ -3,14 +3,13 @@ main#app role=main
     span.mark "INSANE"
     button.bell role=button act="sheet" v="activity" aria-label="What’s new"
       svg
-    span.where "Third Floor Chennai · 4 km² square"
+    button.where role=button act="sheet" v="circles" aria-label="Third Floor: your circles" "Third Floor"
       span.live.demo
-      br
     button.me-btn role=button act="tab" v="you" aria-label="You: profile, journeys, settings" "M"
   div.banner "Nothing leaves this browser. Open the shared link signed in to play with other people."
     b "Demo on this device."
   div#v
-    h1.v role=heading "Third Floor"
+    h1.v.cname role=heading "Third Floor"
     p.lede "1 of 8 · not met in person yet · code"
       b "7W9SPX"
     button.av.me role=button act="cseg" v="people" aria-label="Meera" "M"
@@ -41,3 +40,4 @@ main#app role=main
     button role=button act="tab" v="ledger" aria-current="false" "Ledger"
       svg
 div#layer
+div#toasts role=status

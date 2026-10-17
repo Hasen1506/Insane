@@ -127,6 +127,7 @@ fieldset.dob select{min-height:48px}
 .why{font-size:13.5px;color:var(--muted);margin:6px 0 0;min-height:1em}
 .obchip{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:14.5px;margin-top:10px}
 .obchip:empty{display:none}
+.obchip .chip{min-height:0;min-width:0;padding:3px 12px} /* int-2: a label, not a tap target; at 44 px its text sat at the top of the pill */
 .qi{display:inline-flex;align-items:center;justify-content:center;width:var(--tap);height:var(--tap);margin:-14px -12px -14px -6px;padding:0;border:0;background:none;color:var(--ball);vertical-align:middle;position:relative;flex:none}
 .eyebrow .qi{font-family:var(--f-body);letter-spacing:0}
 .qi>span{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;border:1.5px solid currentColor;font:700 12px/1 var(--f-body)}

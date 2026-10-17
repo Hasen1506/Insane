@@ -41,3 +41,4 @@ main#app role=main
   button.link role=button act="ob-finish" v="skip" "Skip for now"
   p.meta "INSANE sorts it with simple rules on your phone; nobody reads it unless you send it. Needs become pacts, wants become plans (with a pot if money’s involved), urges become a ladder, a dare or a Midnight message."
 div#layer
+div#toasts role=status

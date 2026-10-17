@@ -9,7 +9,7 @@ main#app role=main
   label.f role=label "Your name"
     small "your circle sees this"
   input#ob-name.in-t role=textbox placeholder="Meera" value=""
-  p#ob-name-n.cnt-n "0/24"
+  p#ob-name-n.cnt-n "0/40"
   label.f role=label "Your handle"
     small "public"
   p.ob-hint "Strangers in the City see this, never your name. Pick one or make your own."
@@ -145,3 +145,4 @@ main#app role=main
   button.btn.wide role=button act="ob-next" disabled="" "Next"
   p#ob-why.why "Add your name to go on."
 div#layer
+div#toasts role=status

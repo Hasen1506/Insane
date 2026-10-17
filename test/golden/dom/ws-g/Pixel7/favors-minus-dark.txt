@@ -3,9 +3,8 @@ main#app role=main
     span.mark "INSANE"
     button.bell role=button act="sheet" v="activity" aria-label="What’s new"
       svg
-    span.where "Third Floor Chennai · 4 km² square"
+    button.where role=button act="sheet" v="circles" aria-label="Third Floor: your circles" "Third Floor"
       span.live.demo
-      br
     button.me-btn role=button act="tab" v="you" aria-label="You: profile, journeys, settings" "A"
   div.banner "Nothing leaves this browser. Open the shared link signed in to play with other people."
     b "Demo on this device."

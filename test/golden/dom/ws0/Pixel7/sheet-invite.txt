@@ -3,9 +3,8 @@ main#app role=main
     span.mark "INSANE"
     button.bell role=button act="sheet" v="activity" aria-label="What’s new"
       svg
-    span.where "Third Floor Chennai · 4 km² square"
+    button.where role=button act="sheet" v="circles" aria-label="Third Floor: your circles" "Third Floor"
       span.live.demo
-      br
     button.me-btn.on role=button act="tab" v="you" aria-label="You: profile, journeys, settings" "M"
   div.banner "Nothing leaves this browser. Open the shared link signed in to play with other people."
     b "Demo on this device."
@@ -24,27 +23,15 @@ main#app role=main
     h3 role=heading "Run"
     svg
     div.meta "0 of 3 this week · 3 a week"
-    i.t
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
+    div.days.wk role=img aria-label="This week: 0 of 3 days done"
+      i.t "M"
+      i "T"
+      i "W"
+      i "T"
+      i "F"
+      i "S"
+      i "S"
+    p.meta "3 more by Sunday. 4 days are free misses."
     p.meta "If you miss: i cook for the circle"
     button.btn.s role=button act="tick" v="j_u3eu3sdmbb" "Done today"
     button.btn.s.ghost role=button act="j-menu" v="j_u3eu3sdmbb" "More"
@@ -97,6 +84,10 @@ main#app role=main
       input role=checkbox checked=true
       span "Only your circle sees “Here now”. Never shown in the City."
         b "Show when I’m here."
+    label.chk role=label
+      input role=checkbox checked=false
+      span "Off unless you turn it on. Your circle sees your 4 km² square square on their map, never a dot or a pin. Nobody else, ever."
+        b "Show my square to my circle."
     label.f role=label "Blocked"
     p.meta "Nobody. To block or report someone, tap their name in your circle."
     p.meta ", and . Grievance officer: ."
@@ -126,10 +117,13 @@ div#layer
   div.sheet-bg act="sheet-bg"
     div.sheet role=dialog
       div.grab
-      h2 role=heading "Bring someone in"
-      p.meta "They scan this with their phone camera, or type the code. Circles stop at 8."
+      h2#sheet-h role=heading "Bring someone in"
+      p.meta "Send the link, or let them scan this with their phone camera. Circles stop at 8."
       svg
-      div.big "7W9SPX"
-      button.btn.s.ghost role=button act="copy" v="http://localhost:8777/?as=meera#c7W9SPX" "Copy invite link"
+      div.big.code "7W9SPX"
+      button.btn.s role=button act="share" "Share invite"
+      a.btn.s.ghost role=link href="https://wa.me/?text=Join%20my%20circle%20%E2%80%9CThird%20Floor%E2%80%9D%20on%20INSANE%3A%20http%3A%2F%2Flocalhost%3A8777%2F%3Fas%3Dmeera%23c7W9SPX%20(code%207W9SPX)" "WhatsApp"
+      button.btn.s.ghost role=button act="copy" v="http://localhost:8777/?as=meera#c7W9SPX" "Copy link"
       p.meta "Next time you’re together, scan each other’s phones (Meet someone). Two of you meeting in person unlocks posting in the City."
       button.btn.ghost.wide role=button act="sheet-close" "Close"
+div#toasts role=status

@@ -3,9 +3,8 @@ main#app role=main
     span.mark "INSANE"
     button.bell role=button act="sheet" v="activity" aria-label="What’s new"
       svg
-    span.where "Third Floor Chennai · 4 km² square"
+    button.where role=button act="sheet" v="circles" aria-label="Third Floor: your circles" "Third Floor"
       span.live.demo
-      br
     button.me-btn role=button act="tab" v="you" aria-label="You: profile, journeys, settings" "M"
   div.banner "Nothing leaves this browser. Open the shared link signed in to play with other people."
     b "Demo on this device."
@@ -53,11 +52,10 @@ main#app role=main
         span "?"
       button role=button act="sheet" v="trail-new" "+ Make a trail"
     p.meta "No trails yet. A trail is 3 to 6 stops your circle likes, walked in any order inside a window, with a 10-second dare at each."
-    button.card.ball role=button act="sheet" v="decode"
-      div.meta "Decode · week 42"
-      h3 role=heading "Read every other letter, starting with the first: MYAPRFGBATZQHXI"
-      div.meta "0 solved in Chennai · answer out in"
-        span "6d 14h"
+    button.card.ball.dtz role=button act="sheet" v="decode"
+      b "Decode · week 42"
+      span.meta "0 solved in Chennai"
+      span "›"
     p.formula "The map never shows people, only your own square. Missions show an area until two hours before."
   nav.tabs role=navigation aria-label="Sections"
     button role=button act="tab" v="today" aria-current="false" "Home"
@@ -71,3 +69,4 @@ main#app role=main
     button role=button act="tab" v="ledger" aria-current="false" "Ledger"
       svg
 div#layer
+div#toasts role=status

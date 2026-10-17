@@ -20,3 +20,4 @@ main#app role=main
   button.link role=button act="ob-circle" v="skip" "Look around first"
   p.why "You can join later from Circle. Most things need a circle."
 div#layer
+div#toasts role=status

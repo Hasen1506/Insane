@@ -3,49 +3,38 @@ main#app role=main
     span.mark "INSANE"
     button.bell role=button act="sheet" v="activity" aria-label="What’s new"
       svg
-    span.where "Third Floor Chennai · 1 km² square"
+    button.where role=button act="sheet" v="circles" aria-label="Third Floor: your circles" "Third Floor"
       span.live.demo
-      br
     button.me-btn role=button act="tab" v="you" aria-label="You: profile, journeys, settings" "M"
   div.banner "Nothing leaves this browser. Open the shared link signed in to play with other people."
     b "Demo on this device."
   div#v
     h1.v role=heading "Monday"
     p.lede "· Chennai"
-      b "2 things today"
+      b "2 things need you"
+    div.meta "Bring your people in · 1 of 8"
+    div.big.code "7W9SPX"
+    button.btn.s role=button act="share" "Share invite"
+    a.btn.s.ghost role=link href="https://wa.me/?text=Join%20my%20circle%20%E2%80%9CThird%20Floor%E2%80%9D%20on%20INSANE%3A%20http%3A%2F%2Flocalhost%3A33059%2F%3Fas%3Dmeera%23c7W9SPX%20(code%207W9SPX)" "WhatsApp"
+    button.btn.s.ghost role=button act="copy" v="http://localhost:33059/?as=meera#c7W9SPX" "Copy link"
+    p.meta "2 more to unlock Midnight. They tap the link or type the code."
+      button.link role=button act="sheet" v="invite" "Show the QR"
     span.tag.need "Need"
     span.meta "Pact"
     h3 role=heading "Walk 30 minutes"
     svg
     div.meta "0 of 7 this week · every day"
-    i.t
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
-    i
+    div.days.wk role=img aria-label="This week: 0 of 7 days done"
+      i.t "M"
+      i "T"
+      i "W"
+      i "T"
+      i "F"
+      i "S"
+      i "S"
+    p.meta "7 more by Sunday. 0 days are free misses."
     p.meta "If you miss: my circle picks a dare from the jar"
     button.btn.s role=button act="tick" v="j_u3eu3sdmbb" "Done today"
-    button.card.ball role=button act="sheet" v="decode"
-      div.meta "Decode · week 42"
-      h3 role=heading "Read every other letter, starting with the first: MYAPRFGBATZQHXI"
-      div.meta "0 solved in Chennai · answer out in"
-        span "6d 14h"
     div.k "DAILY DARE · FROM THE STARTER JAR · BOLD 5/6"
       button.qi.new role=button act="gloss" v="daily" aria-label="What’s Daily dare?"
         span "?"
@@ -53,9 +42,12 @@ main#app role=main
     button.btn.s role=button act="sheet" v="proof" "I did it"
     button.btn.s.ghost role=button act="sheet" v="dare" "Add to the jar"
     button.link.flag role=button act="dare-flag" v="daily" aria-label="Flag this dare as not safe" "⚑ Not safe"
-    h3 role=heading "No drops within 5 km yet"
-    p.meta "Run a shop, a stall or a club night? Host one: a swap box, a dare at the counter, an offer for whoever turns up."
-    button.btn.s.ghost role=button act="sheet" v="host" "Host a drop"
+    button.card.ball.dtz role=button act="sheet" v="decode"
+      b "Decode · week 42"
+      span.meta "0 solved in Chennai"
+      span "›"
+    p.meta.drops0 "No drops within 5 km ·"
+      button.link role=button act="sheet" v="host" "Host one"
     p.formula "One list. Whatever needs you today is here; everything else waits in Circle, City and Ledger."
   nav.tabs role=navigation aria-label="Sections"
     button.on role=button act="tab" v="today" aria-current="page" "Home"
@@ -75,3 +67,4 @@ div#layer
     p "What needs you today: plans to answer, your pact ticks, the daily dare."
     button.link role=button act="tour-skip" "Skip tour"
     button.btn.s role=button act="tour-next" "Next"
+div#toasts role=status

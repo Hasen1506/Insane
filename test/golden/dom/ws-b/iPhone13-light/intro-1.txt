@@ -10,3 +10,4 @@ main#app role=main
   i
   button.btn role=button act="intro-go" v="1" "Next"
 div#layer
+div#toasts role=status

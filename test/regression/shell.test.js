@@ -44,6 +44,13 @@ module.exports = async function (t) {
       await p.goBack(); await L.tabOn(p, 'today');
       t.ok(P + 'R-C05 Back again returns to Home, still in INSANE', (await L.onTab(p)) === 'today' && p.url().startsWith(srv.url), p.url());
       t.ok(P + 'R-C05 no extra history entries from re-renders', (await p.evaluate(() => history.length)) === depth0 + 2, await p.evaluate(() => history.length));
+      // R-C05 (int-2): a sheet opened after Back's popstate but before its hashchange stays open (the golden
+      // suite's openSheet('invite') right after Escape closed the + sheet was closed again by that hashchange)
+      await L.tap(p, '[data-act="make"]'); await p.waitForSelector('.sheet');
+      await p.evaluate(() => new Promise(res => { addEventListener('popstate', () => { openSheet('invite'); res(); }, { once: true }); history.back(); }));
+      await E.until(() => p.evaluate(() => !!document.querySelector('.sheet') && S.ui.sheet && S.ui.sheet.t === 'invite' && location.hash.includes('/sheet/invite')), { what: 'invite sheet after Back', timeout: 4000 }).catch(() => { });
+      t.ok(P + 'R-C05 a sheet opened between Back\'s popstate and its hashchange is not closed by the hashchange', await p.evaluate(() => !!(S.ui.sheet && S.ui.sheet.t === 'invite' && document.querySelector('.sheet') && location.hash.includes('/sheet/invite'))), await p.evaluate(() => JSON.stringify({ sheet: S.ui.sheet, hash: location.hash })));
+      await p.keyboard.press('Escape'); await E.gone(p, '.sheet');
       t.ok(P + 'no script errors', !p.errors.length, p.errors.join(' | '));
       await ctx.close();
     }

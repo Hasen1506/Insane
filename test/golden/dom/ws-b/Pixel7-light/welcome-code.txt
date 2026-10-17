@@ -21,3 +21,4 @@ main#app role=main
     input#wel-code.in-t role=textbox placeholder="K7QF2M" value=""
     button.btn role=button "Open"
 div#layer
+div#toasts role=status

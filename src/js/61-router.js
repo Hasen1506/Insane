@@ -59,7 +59,7 @@ function routeApply(st){
   const y=st.y||0;ROUTE.y=y;requestAnimationFrame(()=>scrollTo(0,y));
 }
 function routePop(e){
-  const st=e.state;
+  const st=e.state;ROUTE.popped=location.href; // its hashchange (a separate task, after this) is the same traversal
   if(ROUTE.pending){ROUTE.pending=false;if(st&&st.insane&&st.r!==routeOf(S.ui))routeSync();return}
   if(!st||!st.insane||!routeLive())return;
   routeApply(st);
@@ -69,8 +69,11 @@ addEventListener('popstate',routePop);
 // scrolls to the top before the next draw pushes, and that 0 belongs to the new entry, not the old one.
 addEventListener('scroll',()=>{if(ROUTE.on&&!ROUTE.pending&&routeOf(S.ui)===ROUTE.last)ROUTE.y=scrollY},{passive:true});
 // A #/ link followed inside the page (same document, so no boot): go there. Back/Forward also fire
-// hashchange, after popstate has already put S.ui there, so those are no-ops.
-addEventListener('hashchange',()=>{
+// hashchange, after popstate has already put S.ui there, so those are no-ops: matched by URL, since a sheet
+// opened between the two (int-2: the golden suite's openSheet right after an Escape's history.back) is not
+// on the entry Back went to, and must not be closed by it.
+addEventListener('hashchange',e=>{
+  if(e.newURL===ROUTE.popped){ROUTE.popped=null;return}
   if(!/^#\//.test(location.hash)||!routeLive()||ROUTE.pending||routeOf(S.ui)===location.hash)return;
   const o=routeParse(location.hash);if(!o)return;
   Object.assign(S.ui,{open:null,sheet:null},o);wire2();draw();scrollTo(0,0);

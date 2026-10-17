@@ -11,3 +11,4 @@ main#app role=main
   button.btn.ghost role=button act="intro-go" v="1" "Back"
   button.btn role=button act="intro-go" v="3" "Next"
 div#layer
+div#toasts role=status
